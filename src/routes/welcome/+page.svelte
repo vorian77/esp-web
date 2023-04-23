@@ -46,7 +46,7 @@
 
 	.content {
 		position: fixed;
-		top: 83%;
+		top: 79%;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		width: 90%;
