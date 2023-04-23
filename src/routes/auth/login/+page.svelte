@@ -72,4 +72,15 @@
 	</div>
 </div>
 
+<nav class="navbar is-fixed-bottom navbar-footer">
+	<div class="navbar-item">
+		<p class="text-footer">
+			By continuing you agree to the City of Baltimore's
+			<a href="https://www.baltimorecity.gov/terms-of-use">Terms of Use</a>
+			and
+			<a href="https://www.baltimorecity.gov/privacy-policy">Privacy Policy</a>
+		</p>
+	</div>
+</nav>
+
 <SuperDebug data={$form} />

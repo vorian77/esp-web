@@ -1,6 +1,10 @@
+<script>
+	import { goto } from '$app/navigation';
+</script>
+
 <nav class="navbar navbar-top is-fixed-top">
 	<div class="navbar-item">
-		<p class="title is-4 ">KidSmart Mobile Device API Demo</p>
+		<a class="title is-4" href="/">KidSmart Mobile Device API Demo</a>
 	</div>
 </nav>
 
