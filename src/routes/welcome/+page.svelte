@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import Modal from './Modal.svelte';
+	// import Modal from './Modal.svelte';
 	import logo from '$lib/assets/YO-Baltimore-logo.png';
 	let showModal = false;
 </script>
