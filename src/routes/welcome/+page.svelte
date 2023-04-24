@@ -8,11 +8,11 @@
 <div id="full-screen" class="container">
 	<div class="content">
 		<div class="block">
-			<img class="has-ratio" src={logo} width="200" />
-			<p class="text-logo">
-				<!-- <span class="text-logo-bold">Upgrade</span> your future with education and employment -->
+			<img class="has-ratio" src={logo} width="260" />
+			<!-- <span class="text-logo-bold">Upgrade</span> your future with education and employment -->
+			<!-- <p class="text-logo">
 				Education and employment to <span class="text-logo-bold">upgrade</span> your future
-			</p>
+			</p> -->
 		</div>
 
 		<!-- button group -->
