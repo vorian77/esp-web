@@ -11,6 +11,4 @@
 
 <a href="/demo">Demo</a>
 <a href="/welcome">Welcome</a>
-<a href="/auth/signup">Signup</a>
-<a href="/auth/login">Login</a>
 <a href="/app">App</a>

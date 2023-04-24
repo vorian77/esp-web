@@ -1,4 +1,24 @@
-<h1>Auth</h1>
+<!-- header -->
+<nav class="level navbar-top is-fixed-top m-4">
+	<div class="level-item">
+		<div class="tabs is-toggle is-toggle-rounded ">
+			<ul>
+				<li>
+					<a>
+						<span>Sign up</span>
+					</a>
+				</li>
+				<li class="is-active">
+					<a>
+						<span>Log in</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<slot />
 
 <!-- Footer -->
 <nav class="navbar is-fixed-bottom navbar-footer">
