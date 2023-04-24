@@ -1,13 +1,17 @@
 <script>
 	import { goto } from '$app/navigation';
+	import Modal from './Modal.svelte';
+	import logo from '$lib/assets/YO-Baltimore-logo.png';
+	let showModal = false;
 </script>
 
 <div id="full-screen" class="container">
 	<div class="content">
 		<div class="block">
+			<img class="has-ratio" src={logo} width="200" />
 			<p class="text-logo">
-				<span class="text-logo-bold">Upgrade</span> your future with education and employment at
-				<span class="text-logo-bold">Youth Opportunity Baltimore </span>
+				<!-- <span class="text-logo-bold">Upgrade</span> your future with education and employment -->
+				Education and employment to <span class="text-logo-bold">upgrade</span> your future
 			</p>
 		</div>
 
@@ -23,11 +27,15 @@
 				>
 					Log in
 				</button>
+				<!-- <button class="button is-primary is-light" on:click={() => (showModal = true)}>
+					Auth
+				</button> -->
 			</div>
 		</div>
 	</div>
 </div>
 
+<!-- <Modal bind:showModal>Modal Body</Modal> -->
 <style>
 	#full-screen {
 		height: 100vh;
@@ -46,7 +54,7 @@
 
 	.content {
 		position: fixed;
-		top: 79%;
+		top: 70%;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		width: 90%;
