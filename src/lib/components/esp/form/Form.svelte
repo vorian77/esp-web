@@ -1,14 +1,14 @@
 <script setup>
-	import { enhance } from '$app/forms'
+	import { enhance } from '$app/forms';
 	//import { ActionData } from './$types'
 
-	import FormElText from '$lib/components/form/FormElText.svelte'
-	import * as yup from 'yup'
+	import FormElText from '$lib/components/esp/form/FormElText.svelte';
+	import * as yup from 'yup';
 
-	export let form
-	export let formDef
+	export let form;
+	export let formDef;
 
-	const comps = [{ type: 'text', component: FormElText }]
+	const comps = [{ type: 'text', component: FormElText }];
 
 	// const comps = new Map([
 	// 	['checkbox', resolveComponent('FormElCheckbox')],
@@ -19,19 +19,19 @@
 	// ]);
 
 	function getComp(type) {
-		let obj = comps.find((comp) => comp.type === type)
-		return obj.component
+		let obj = comps.find((comp) => comp.type === type);
+		return obj.component;
 	}
 
 	function onSubmit(e) {
-		const formData = new FormData(e.target)
+		const formData = new FormData(e.target);
 
-		const data = {}
+		const data = {};
 		for (let field of formData) {
-			const [key, value] = field
-			data[key] = value
+			const [key, value] = field;
+			data[key] = value;
 		}
-		alert(JSON.stringify(data, null, 2))
+		alert(JSON.stringify(data, null, 2));
 	}
 </script>
 
