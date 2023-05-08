@@ -1,11 +1,15 @@
 <script>
 	import { goto } from '$app/navigation';
 	import logo from '$assets/YO-Baltimore-logo.png';
+
+	function goBack() {
+		history.back();
+	}
 </script>
 
 <div id="full-screen" class="container">
 	<div class="content">
-		<img class="mx-auto" src={logo} width="260" alt="YO logo" />
+		<img class="mx-auto" src={logo} width="260" alt="YO logo" on:click={goBack} />
 
 		<!-- button group -->
 		<div class="flex-box">
