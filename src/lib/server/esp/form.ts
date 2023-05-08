@@ -1,4 +1,4 @@
-import { dbGetFormDefn } from '$lib/server/fauna';
+import { dbGetFormDefn } from '$server/fauna';
 // import { getSchema } from '$comps/esp/form/validate'
 // import { applyAction, enhance, type SubmitFunction } from '$app/forms'
 

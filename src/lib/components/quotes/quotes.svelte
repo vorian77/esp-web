@@ -8,7 +8,6 @@
 		<p>{quote.quote}</p>
 		<p><span>Author: </span>{quote.author}</p>
 		<!-- <p><span>Category: </span>{quote.category}</p> -->
-		<!-- <p>API: {quote.api}</p> -->
 	</dir>
 </div>
 

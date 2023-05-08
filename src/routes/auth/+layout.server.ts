@@ -1,4 +1,4 @@
-import { getFormDefn } from '$lib/server/esp/form';
+import { getFormDefn } from '$server/esp/form';
 
 let authType = '';
 let formIdLogin = '364001027435790416';

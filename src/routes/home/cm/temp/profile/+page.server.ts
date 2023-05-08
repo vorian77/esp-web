@@ -1,4 +1,4 @@
-import { getFormDefn } from '$lib/server/esp/form';
+import { getFormDefn } from '$server/esp/form';
 
 let formId = '364158513654530125';
 
