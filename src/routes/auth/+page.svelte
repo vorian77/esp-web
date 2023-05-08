@@ -1,6 +1,6 @@
 <script>
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
-	import TabsNav from '$comps/tabs/TabsNav.svelte';
+	import TabsNav from '$comps/nav-tabs/TabsNav.svelte';
 	import Form from '$comps/esp/form/Form.svelte';
 	import ChevronLeft from '$lib/assets/icons/ChevronLeft.svelte';
 

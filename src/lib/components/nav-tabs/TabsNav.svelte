@@ -1,5 +1,5 @@
 <script>
-	import TabsItem from '$comps/tabs/TabsItem.svelte';
+	import TabsItem from '$comps/nav-tabs/TabsItem.svelte';
 	export let tabList = [];
 	export let currentTab = '';
 
