@@ -35,8 +35,6 @@
 		"@capacitor/core": "^5.0.1",
 		"@capacitor/geolocation": "^5.0.1",
 		"faunadb": "^4.8.0",
-		"twilio": "^4.11.0",
-		"zod": "^3.21.4",
-		"zod-form-data": "^2.0.1"
+		"twilio": "^4.11.0"
 	}
 }

@@ -1,6 +1,6 @@
 <script>
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
-	import TabsNav from '$comps/nav-tabs/TabsNav.svelte';
+	import TabsNav from '$comps/navTabs/TabsNav.svelte';
 	import Form from '$comps/esp/form/Form.svelte';
 	import ChevronLeft from '$lib/assets/icons/ChevronLeft.svelte';
 
@@ -40,5 +40,4 @@
 	</svelte:fragment>
 
 	<svelte:component this={forms[currentTab].component} {...{ formDefn: forms[currentTab].defn }} />
-	<!-- <pre>{JSON.stringify(forms[currentTab], null, 2)}</pre> -->
 </AppShell>
