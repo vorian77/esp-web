@@ -2,7 +2,9 @@ function validity(type, message, level = 'error') {
 	return { type, message, level: level }
 }
 
-export const validate = (field, event) => {
+export function validateForm(formData, formDefn) {}
+
+export function validateField(field, event) {
 	const fieldValue = event.target.value
 	let nbrValue = Number(fieldValue)
 	const evalutedAccesses = new Set([undefined, 'required', 'optional'])

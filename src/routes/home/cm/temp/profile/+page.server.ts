@@ -1,9 +1,9 @@
-import { getFormDefn } from '$server/esp/form';
+import { formInit } from '$server/esp/form/formInit'
 
-let formId = '364158513654530125';
+let formId = '364158513654530125'
 
 export async function load({ url }) {
 	return {
-		formDefn: await getFormDefn(formId)
-	};
+		formDefn: await formInit(formId)
+	}
 }

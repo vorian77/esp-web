@@ -1,23 +1,19 @@
 import { dbGetFormDefn } from '$server/fauna'
 
-export async function getFormDefn(formId) {
-	let formDefn = await dbGetFormDefn(formId)
-
-	if (formDefn) {
-		formDefn = validateForm(formDefn)
-		if (formDefn) {
-			return formDefn
+export async function formInit(formId) {
+	async function getDefn() {
+		const result = await dbGetFormDefn(formId)
+		if (!result) {
+			throw error(404, `Could not retrieve form id: ${formId}.`)
 		}
-		// throw error(404, 'Invalid form definition')
+		return result
 	}
-	// throw error(404, 'Could not retrieve form definition')
-}
 
-function validateForm(formDefn) {
-	function validateFields(fields) {
+	function buildFields(fields) {
 		let newFields = []
-		formDefn.fields.forEach((field, index) => {
+		fields.forEach((field, index) => {
 			field['index'] = index
+
 			// field type
 			switch (field.type) {
 				case 'email':
@@ -59,7 +55,9 @@ function validateForm(formDefn) {
 		return newFields
 	}
 
-	formDefn.fields = validateFields(formDefn.fields)
+	let formDefn = await getDefn()
+
+	formDefn.fields = buildFields(formDefn.fields)
 
 	return formDefn
 }

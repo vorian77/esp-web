@@ -1,6 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte'
-	import { validate } from '$comps/esp/form/formValidate'
+	import { validateField } from '$comps/esp/form/formValidate'
 
 	const dispatch = createEventDispatcher()
 
@@ -12,7 +12,7 @@
 	}
 
 	function onChange(event) {
-		const newValidity = validate(field, event)
+		const newValidity = validateField(field, event)
 		if (newValidity?.escalate) {
 			dispatch('escalateValidity', newValidity)
 		} else {
@@ -32,6 +32,7 @@
 		name={field.name}
 		placeholder={field.placeHolder ?? ''}
 		value={field.value ?? ''}
+		disabled={field?.disabled}
 		on:change={onChange}
 	/>
 </label>
