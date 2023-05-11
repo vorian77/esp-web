@@ -1,4 +1,4 @@
-import { dbGetFormDefn } from '$server/fauna'
+import { dbGetFormDefn } from '$server/db'
 
 export async function formInit(formId) {
 	async function getDefn() {

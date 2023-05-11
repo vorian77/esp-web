@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte'
+	import { goto } from '$app/navigation'
 
 	onMount(async () => {
 		// goto('/welcome');
-	});
+	})
 </script>
 
 <div class="esp-card">
@@ -13,6 +13,12 @@
 	<ul>
 		<li>
 			<a href="/welcome">Welcome</a>
+		</li>
+		<li>
+			<a href="/auth?type=signup">Auth-Signup</a>
+		</li>
+		<li>
+			<a href="/auth?type=login">Auth-Login</a>
 		</li>
 		<li>
 			<a href="/home/cm">Case Manager (Placeholders)</a>

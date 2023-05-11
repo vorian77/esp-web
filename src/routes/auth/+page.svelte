@@ -35,7 +35,7 @@
 				</div>
 			</svelte:fragment>
 
-			<div style=" width:200px">
+			<div style=" width:275px">
 				<TabsNav {tabList} bind:currentTab />
 			</div>
 		</AppBar>
