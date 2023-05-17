@@ -8,23 +8,10 @@ export class Validity {
 		this.message = message
 		this.level = level
 	}
-
-	fieldValidityItem(index: number) {
-		const rtnValidity = this.type
-			? { type: this.type, message: this.message, level: this.level }
-			: null
-		return { index, validity: rtnValidity }
-	}
-
-	fieldValidity(index: number) {
-		return [this.fieldValidityItem(index)]
-	}
-
-	validateField(fieldName: string, fieldValue: string, form) {}
 }
 
 export namespace Validity {
-	export enum type {
+	export enum Type {
 		valid = 'valid',
 		required = 'required',
 		minLength = 'minLength',
@@ -35,10 +22,8 @@ export namespace Validity {
 		matchColumn = 'matchColumn'
 	}
 
-	export enum level {
+	export enum Level {
 		warning = 'warning',
 		error = 'error'
 	}
-
-	export type validity = {}
 }

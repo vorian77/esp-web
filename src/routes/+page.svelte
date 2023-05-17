@@ -21,6 +21,9 @@
 			<a href="/auth?type=login">Auth-Login</a>
 		</li>
 		<li>
+			<a href="/auth?type=profile">Profile</a>
+		</li>
+		<li>
 			<a href="/home/cm">Case Manager (Placeholders)</a>
 		</li>
 		<li>

@@ -3,11 +3,12 @@
 </script>
 
 <fieldset>
-	<legend>{field.legend}</legend>
+	<legend>{field.label}</legend>
 
 	{#each field.items as item, index (item.id)}
+		{@const itemName = field.name + '.' + item.id}
 		<label class="flex items-center space-x-2">
-			<input type="checkbox" name={field.name} value={item.id} checked={item.selected} />
+			<input type="checkbox" name={itemName} value={item.id} checked={item.selected} on:click />
 			<p>{item.label}</p>
 		</label>
 	{/each}

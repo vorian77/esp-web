@@ -14,9 +14,9 @@
 	let currentTab = data.authType
 
 	const forms = {
-		signup: { component: Form, defn: data.formDefnSignup },
-		login: { component: Form, defn: data.formDefnLogin },
-		profile: { component: Form, defn: data.formDefnProfile }
+		// signup: { component: Form, defn: data.formDefnSignup },
+		// login: { component: Form, defn: data.formDefnLogin },
+		// profile: { component: Form, defn: data.formDefnProfile }
 	}
 
 	function goBack() {
@@ -41,5 +41,5 @@
 		</AppBar>
 	</svelte:fragment>
 
-	<svelte:component this={forms[currentTab].component} {...{ formDefn: forms[currentTab].defn }} />
+	<!-- <svelte:component this={forms[currentTab].component} {...{ formDefn: forms[currentTab].defn }} /> -->
 </AppShell>
