@@ -1,22 +1,22 @@
 <script>
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton'
 	import TabsNav from '$comps/navTabs/TabsNav.svelte'
-	import Form from '$comps/esp/form/Form.svelte'
 	import ChevronLeft from '$lib/assets/icons/ChevronLeft.svelte'
+	import Form from '$comps/esp/form/Form.svelte'
 
 	export let data
+	let currentTab = data.authType
 
 	let tabList = [
 		{ id: 'signup', label: 'Sign up' },
 		{ id: 'login', label: 'Log in' },
 		{ id: 'profile', label: 'Profile' }
 	]
-	let currentTab = data.authType
 
 	const forms = {
-		// signup: { component: Form, defn: data.formDefnSignup },
-		// login: { component: Form, defn: data.formDefnLogin },
-		// profile: { component: Form, defn: data.formDefnProfile }
+		signup: data.formDefnSignup,
+		login: data.formDefnLogin,
+		profile: data.formDefnProfile
 	}
 
 	function goBack() {
@@ -41,5 +41,5 @@
 		</AppBar>
 	</svelte:fragment>
 
-	<!-- <svelte:component this={forms[currentTab].component} {...{ formDefn: forms[currentTab].defn }} /> -->
+	<Form formInit={forms[currentTab]} />
 </AppShell>

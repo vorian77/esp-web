@@ -3,6 +3,9 @@ export async function dbRecGet(targetTable, id) {
 	return table.find((rec) => rec.id == id)['data']
 }
 
+// import { dbRecGet } from '$server/db'
+// const formDefnRaw = await dbRecGet('forms', formId)
+
 const db = [
 	{
 		name: 'forms',
@@ -49,9 +52,6 @@ const db = [
 							name: 'password',
 							label: 'Password',
 							placeHolder: 'Enter password...',
-							pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$!%*?&])[A-Za-z\\d@#$!%*?&]{8,}$',
-							patternMsg:
-								'Your password must be at least 8 characters long, and must contain at least 1 uppercase character, at least 1 lowercase character, at least 1 number, and at least 1 special character (@$!%*#?&).',
 							value: 'JakeDog#1'
 						},
 						{
@@ -98,10 +98,7 @@ const db = [
 							type: 'password',
 							name: 'password',
 							label: 'Password',
-							placeHolder: 'Enter password...',
-							pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$!%*?&])[A-Za-z\\d@#$!%*?&]{8,}$',
-							patternMsg:
-								'Your password must be at least 8 characters long, and must contain at least 1 uppercase character, at least 1 lowercase character, at least 1 number, and at least 1 special character (@$!%*#?&).'
+							placeHolder: 'Enter password...'
 						}
 					]
 				}

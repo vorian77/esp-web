@@ -1,27 +1,27 @@
 /** array.utils.js */
 
-import {hasPropertyOf} from './model.utils'
+import { hasPropertyOf } from './model.utils'
 
 export function getArray(objs) {
 	objs = objs != null ? objs : []
-	let array = []
+	let arr = []
 
 	if (Array.isArray(objs)) {
-		array = objs
+		arr = objs
 	} else {
-		array = [objs]
+		arr = [objs]
 	}
-	return array
+	return arr
 }
 
 export function getArrayofModels(clazz, objs) {
 	objs = getArray(objs)
-	const array = []
+	const arr = []
 
 	for (const obj of objs) {
-        hasPropertyOf(clazz, obj)) {
-            array.push(new clazz(obj))
-        }
+		if (hasPropertyOf(clazz, obj)) {
+			arr.push(new clazz(obj))
+		}
 	}
-    return array
+	return arr
 }

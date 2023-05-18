@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { process } from '$comps/esp/form/formProcess'
-	import FormInp from '$comps/esp/form/FormInp.svelte'
-	import FormInpCheckbox from '$comps/esp/form/FormInpCheckbox.svelte'
-	import FormInpRadio from '$comps/esp/form/FormInpRadio.svelte'
-	import FormInpSelect from '$comps/esp/form/FormInpSelect.svelte'
-	import { Form, ValidityField, Validation, ValidityLevel } from '$comps/esp/form/form'
+	import FormElInp from '$comps/esp/form/FormElInp.svelte'
+	import FormElInpCheckbox from '$comps/esp/form/FormElInpCheckbox.svelte'
+	import FormElInpRadio from '$comps/esp/form/FormElInpRadio.svelte'
+	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
+	import { Form } from '$comps/esp/form/form'
+	import type { Validation, ValidityField } from '$comps/esp/form/fieldValidation'
 
-	export let formDefn = {}
-	$: elements = []
-
-	// export let retrievalParms = {}
-	const formClass = new Form()
+	export let formInit = {}
+	$: form = new Form(formInit)
 
 	function setValidities(newValidities: [ValidityField]) {
 		newValidities.forEach(({ index, validity }) => {
@@ -45,22 +43,20 @@
 		// console.log(formData)
 		// process(event, formDefn, formData, this.action)
 	}
-
-	$: fields = [...formDefn.fields]
 </script>
 
 <div class="esp-card">
-	<form method="POST" id={formDefn.id} action="form?/save" on:submit|preventDefault={handleSubmit}>
-		{#each fields as field, index (field.name)}
+	<form method="POST" id={form.getId} action="form?/save" on:submit|preventDefault={handleSubmit}>
+		{#each form.fields as field, index (field.name)}
 			<div class:mt-3={index}>
 				{#if field.type === 'checkbox'}
-					<FormInpCheckbox {field} />
+					<FormElInpCheckbox {field} />
 				{:else if field.type === 'radio'}
-					<FormInpRadio {field} />
+					<FormElInpRadio {field} />
 				{:else if field.element === 'select'}
-					<FormInpSelect {field} bind:this={elements[index]} on:change={validateField} />
-				{:else if !field.component}
-					<FormInp {field} bind:this={elements[index]} on:change={validateField} />
+					<FormElSelect {field} />
+				{:else}
+					<FormElInp {field} />
 				{/if}
 			</div>
 
@@ -78,9 +74,9 @@
 		{/each}
 
 		<button type="submit" class="btn variant-filled-primary w-full mt-2"
-			>{formDefn.submitButtonLabel}</button
+			>{form.submitButtonLabel}</button
 		>
 	</form>
 </div>
 
-<pre>{JSON.stringify(formDefn, null, 2)}</pre>
+<pre>{JSON.stringify(form.fields, null, 2)}</pre>

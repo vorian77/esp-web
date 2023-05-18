@@ -1,8 +1,7 @@
 /** model.utils.js */
 
-export function getValueOrDefault(val, defaultVal) {
-	return val != null ? val : defaultVal
-}
+import { espError } from '$utils/utils'
+import { error } from '@sveltejs/kit'
 
 export function hasPropertyOf(clazz, obj) {
 	const model = new clazz()
@@ -16,7 +15,6 @@ export function hasPropertyOf(clazz, obj) {
 	}
 	return false
 }
-
 export function isInstanceOf(clazz, obj) {
 	const model = new clazz()
 	const modelKeys = Object.keys(model)
@@ -28,4 +26,54 @@ export function isInstanceOf(clazz, obj) {
 		}
 	}
 	return true
+}
+export function memberOfEnum(val, enumVals) {
+	if (Object.values(enumVals).includes(val)) {
+		return val
+	} else {
+		throw error(500, {
+			message: `"${val}" is not member of enum ${JSON.stringify(enumVals)}.`,
+			codeFile: 'model.utils.js',
+			sourceObject: 'memberOfEnum'
+		})
+	}
+}
+export function valueOrDefault(val, defaultVal) {
+	return val != null ? val : defaultVal
+}
+export function strAppend(currentVal, newVal, separator = ' ') {
+	if (currentVal) {
+		currentVal += separator
+	}
+	return currentVal + newVal
+}
+export function strLower(val) {
+	if (val) {
+		return val.toLowerCase()
+	}
+}
+export function strRqd(val) {
+	if ((typeof val === 'string' || val instanceof String) && val) {
+		// return JSON.stringify(val)
+		return val
+	} else {
+		throw error(500, {
+			message: `"${val}" appears for required string.`,
+			codeFile: 'model.utils.js',
+			sourceObject: 'strRqd'
+		})
+	}
+}
+export function strValid(val) {
+	if (typeof val === 'string' || val instanceof String) {
+		// it's a string
+		return JSON.stringify(val)
+	} else {
+		// it's something else
+		throw error(500, {
+			message: `"${val}" is not a valid string.`,
+			codeFile: 'model.utils.js',
+			sourceObject: 'strValid'
+		})
+	}
 }
