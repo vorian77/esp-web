@@ -1,3 +1,12 @@
+import {
+	Validation,
+	ValidationStatus,
+	ValidationType,
+	Validity,
+	ValidityField,
+	ValidityType,
+	ValidityLevel
+} from '$comps/esp/form/form'
 import { Field } from '$comps/esp/form/field'
 import { memberOfEnum, valueOrDefault } from '$utils/utils'
 
@@ -14,8 +23,8 @@ export class FieldInput extends Field {
 	patternMsg: string
 	patternReplacement: string
 
-	constructor(defn: {}) {
-		super(defn)
+	constructor(defn: {}, index: number) {
+		super(defn, index)
 
 		defn = valueOrDefault(defn, {})
 		this.type = memberOfEnum(defn.type, FieldType)
@@ -51,6 +60,109 @@ export class FieldInput extends Field {
 				}
 				break
 		}
+	}
+
+	validate(formData): Validation {
+		const v = super.validate(formData)
+		if (v.status == ValidationStatus.valid || v.status == ValidationStatus.invalid) {
+			return v
+		}
+		const fieldValue = v.data
+		let nbrValue = Number(fieldValue)
+
+		// minLength
+		if (this.minLength || this.minLength === 0) {
+			if (fieldValue.length < this.minLength) {
+				return this.fieldInvalid(
+					this.index,
+					ValidityType.minLength,
+					`"${this.label}" must be at least ${this.minLength} character(s). It is currently ${fieldValue.length} character(s).`,
+					ValidityLevel.error
+				)
+			}
+		}
+		// maxLength
+		if (this.maxLength || this.maxLength === 0) {
+			if (fieldValue.length > this.maxLength) {
+				return this.fieldInvalid(
+					this.index,
+					ValidityType.maxLength,
+					`"${this.label}" cannot exceed ${this.maxLength} character(s). It is currently ${fieldValue.length} character(s).`,
+					ValidityLevel.error
+				)
+			}
+		}
+		// minValue
+		if (this.minValue || this.minValue === 0) {
+			if (nbrValue < this.minValue) {
+				return this.fieldInvalid(
+					this.index,
+					ValidityType.minValue,
+					`"${this.label}" must be at least ${this.minValue}.`,
+					ValidityLevel.error
+				)
+			}
+		}
+		// maxValue
+		if (this.maxValue || this.maxValue === 0) {
+			if (nbrValue > this.maxValue) {
+				return this.fieldInvalid(
+					this.index,
+					ValidityType.maxValue,
+					`"${this.label}" cannot exceed ${this.maxValue}.`,
+					ValidityLevel.error
+				)
+			}
+		}
+		// pattern
+		if (this.pattern) {
+			const regex = new RegExp(this.pattern)
+			if (!regex.test(fieldValue)) {
+				const errorMsg = this.patternMsg || `The value you entered is not a valid "${this.label}".`
+				console.log('pattern...', errorMsg)
+				return this.fieldInvalid(this.index, ValidityType.pattern, errorMsg, ValidityLevel.error)
+			}
+		}
+		// matchColumn
+		if (this.matchColumn) {
+			// get matchColumn value
+			const matchColumnValue = formData.get(this.matchColumn.name)
+
+			// compare values to set validiities
+			let validity: Validity
+			let validationStatus: ValidationStatus
+			let data = undefined
+
+			if (fieldValue == matchColumnValue) {
+				//equal - fields are valid
+				validity = new Validity()
+				validationStatus = ValidationStatus.valid
+				data = fieldValue
+			} else {
+				validationStatus = ValidationStatus.invalid
+				if (!fieldValue || !matchColumnValue) {
+					// one blank field - warning
+					validity = new Validity(
+						ValidityType.matchColumn,
+						this.matchColumn.message,
+						ValidityLevel.warning
+					)
+				} else {
+					// both entered and unequal - error
+					validity = new Validity(
+						ValidityType.matchColumn,
+						this.matchColumn.message,
+						ValidityLevel.error
+					)
+				}
+			}
+			// set validiities
+			let validityFields: [ValidityField] = [new ValidityField(this.index, validity)]
+			validityFields.push(new ValidityField(this.matchColumn.index, validity))
+			return new Validation(ValidationType.field, validationStatus, validityFields, data)
+		}
+		// default
+		return this.fieldValid(this.index, fieldValue)
 	}
 }
 

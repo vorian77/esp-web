@@ -1,23 +1,22 @@
 import { Field } from '$comps/esp/form/field'
-import { valueOrDefault } from '$utils/utils'
+import { memberOfEnum, valueOrDefault } from '$utils/utils'
 import { Validation, ValidationStatus } from '$comps/esp/form/form'
 
-export class FieldSelect extends Field {
-	items: []
+export class FieldTextarea extends Field {
+	rows: number
+	cols: number
 	constructor(defn: {}, index: number) {
 		super(defn, index)
 
 		defn = valueOrDefault(defn, {})
-
-		this.items = valueOrDefault(defn.items, [])
-		this.items = this.initItems(this.items)
+		this.rows = valueOrDefault(defn.rows, 4)
+		this.cols = valueOrDefault(defn.cols, 50)
 	}
 	validate(formData): Validation {
 		const v = super.validate(formData)
 		if (v.status == ValidationStatus.valid || v.status == ValidationStatus.invalid) {
 			return v
 		}
-		console.log('fieldSelect.index:', this.index)
 		return this.fieldValid(this.index, v.data)
 	}
 }

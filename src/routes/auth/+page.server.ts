@@ -17,3 +17,13 @@ export async function load({ url }) {
 		formDefnProfile: await getFormInit('364158513654530125')
 	}
 }
+
+export const actions = {
+	default: async ({ request }) => {
+		console.log('auth.default - +page.server.ts...')
+		const formData = await request.formData()
+		const obj = JSON.parse(formData.get('data'))
+		console.log('data:', obj)
+		return { success: true }
+	}
+}

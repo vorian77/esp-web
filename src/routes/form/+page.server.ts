@@ -1,28 +1,16 @@
-import { fail, redirect } from '@sveltejs/kit'
+// import { fail, json, redirect } from '@sveltejs/kit'
 // import { processForm } from '$server/esp/form/formProcess'
-import { validateForm } from '$comps/esp/form/formValidate'
+// import { validateForm } from '$comps/esp/form/formValidate'
 
 export const actions = {
-	save: async ({ request }) => {
+	sql: async ({ request }) => {
+		console.log('form.sql - +page.server.ts...')
 		const formData = await request.formData()
-		// const authType = url.searchParams.getAll('type')[0]
-		// const { data, errors } = validateForm(formData, formDefn)
-
-		console.log('page server')
-
-		const data = {
-			success: false,
-			errors: {}
-		}
-
-		// if (!todo) {
-		// 	data.errors.todo = 'required'
-		// 	return json(data, { status: 400 })
-		// return fail(400, { data, missing: true })
-		// }
-
-		// return { success: true }
-		// redirect the user
-		throw redirect(303, '/home')
+		console.log('SQL:', formData.get('sql'))
+		const obj = JSON.parse(formData.get('data'))
+		console.log('data:', obj)
+		// console.log('datamap:', obj[1]['name'])
+		// console.log('datamap:', obj[1]['value'])
+		return { success: true }
 	}
 }

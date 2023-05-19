@@ -1,14 +1,8 @@
-<svelte:options accessors />
-
 <script lang="ts">
 	import type { FieldInput } from '$comps/esp/form/fieldInput'
-	import { Validity, ValidityLevel } from '$comps/esp/form/fieldValidation'
+	import { ValidityLevel } from '$comps/esp/form/form'
 
 	export let field: FieldInput
-
-	export function setValidity(newValidity: Validity): void {
-		field.validity = newValidity
-	}
 </script>
 
 <label class="label" for={field.name}>
