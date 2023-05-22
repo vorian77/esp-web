@@ -1,6 +1,7 @@
 /** utils.js */
 
 export * from './array.utils'
+export * from './databus.utils'
 export * from './date.utils'
 export * from './error.utils'
 export * from './model.utils'

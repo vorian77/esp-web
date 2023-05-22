@@ -1,5 +1,5 @@
-import { API_NINJAS_SECRET } from '$env/static/private';
-const categories = ['inspirational', 'courage'];
+import { API_NINJAS_SECRET } from '$env/static/private'
+const categories = ['inspirational', 'courage']
 // const categories = [
 // 	'amazing',
 // 	'art',
@@ -35,14 +35,14 @@ const categories = ['inspirational', 'courage'];
 
 const demoQuote = {
 	quote:
-		"I try to give to the poor people for love what the rich could get for money. No, I wouldn't touch a leper for a thousand pounds yet I willingly cure him for the love of God.",
-	author: 'Mother Teresa',
-	category: 'love'
-};
+		"If you accept the expectations of others, especially negative ones, then you never will change the outcome.'",
+	author: 'Michael Jordon',
+	category: 'inspirational'
+}
 
 export async function fetchQuote() {
-	const categoryIdx = Math.floor(Math.random() * (categories.length + 1));
-	const api = 'https://api.api-ninjas.com/v1/quotes?limit=1&category=' + categories[categoryIdx];
+	const categoryIdx = Math.floor(Math.random() * (categories.length + 1))
+	const api = 'https://api.api-ninjas.com/v1/quotes?limit=1&category=' + categories[categoryIdx]
 
 	const quotesRes = await fetch(api, {
 		method: 'GET',
@@ -50,10 +50,11 @@ export async function fetchQuote() {
 			'X-API-KEY': API_NINJAS_SECRET,
 			contentType: 'application/json'
 		}
-	});
-	const quotesData = await quotesRes.json();
-	return quotesData[0];
-	// return { ...demoQuote };
+	})
+	const quotesData = await quotesRes.json()
+	console.log('quotes', quotesData)
+	// return quotesData[0]
+	return { ...demoQuote }
 }
 
 // throw error(404', 'Not found');

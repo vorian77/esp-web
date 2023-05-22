@@ -1,10 +1,8 @@
-import { fetchQuote } from '$server/quotes';
+import { fetchQuote } from '$server/quotes'
 
 export async function load({ fetch }) {
 	return {
-		quote: await fetchQuote(),
-		user: 'Jason Jones',
-		title: 'My CaseManager'
-	};
+		quote: await fetchQuote()
+	}
 	// throw error(404', 'Not found');
 }

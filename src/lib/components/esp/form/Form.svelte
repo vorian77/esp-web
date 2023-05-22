@@ -2,6 +2,7 @@
 	import { process } from '$comps/esp/form/formProcess'
 	import {
 		Form,
+		FooterText,
 		Validation,
 		ValidityField,
 		ValidityLevel,
@@ -12,11 +13,15 @@
 	import FormElInpRadio from '$comps/esp/form/FormElInpRadio.svelte'
 	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
+	import FormLink from '$comps/esp/form/FormLink.svelte'
 	import { applyAction, enhance, type SubmitFunction } from '$app/forms'
-	import { RequestResult } from 'faunadb'
+	import DATABUS from '$lib/utils/databus.utils'
+	import { createEventDispatcher } from 'svelte'
 
 	export let formInit = {}
 	$: form = new Form(formInit)
+
+	const dispatch = createEventDispatcher()
 
 	function validateFieldBase(event) {
 		const fieldName = event.target.name
@@ -42,17 +47,36 @@
 			setValidities(v.validityFields)
 			return v
 		}
-		formData.append('data', JSON.stringify(v.data))
-		formData.append('sql', form.sql)
+		DATABUS.upsert('form', form.id, v.data)
 		return v
 	}
 
-	const handleSubmit: SubmitFunction = ({ form, data, action, cancel, submitter }) => {
+	const handleSubmit = () => {
+		// before form submit
+		const elem = document.getElementById(form.id)
+		const formData = new FormData(elem)
+
+		const v: Validation = validateForm(formData)
+		if (v.status == ValidationStatus.invalid) {
+			return
+		}
+
+		// temp
+		dispatch('form-submitted', form.id)
+	}
+
+	const handleSubmitOld: SubmitFunction = ({ form, data, action, cancel, submitter }) => {
 		// before form submit
 		const v: Validation = validateForm(data)
 		if (v.status == ValidationStatus.invalid) {
-			cancel()
+			alert(`handleSubmit - validation failed...`)
+			cancel
 		}
+
+		// temp
+		alert(`handleSubmit - formId: ${form.id}`)
+		dispatch('form-submitted', form.id)
+		cancel()
 
 		// submitting
 
@@ -77,7 +101,18 @@
 </script>
 
 <div class="esp-card">
-	<form id={form.getId} method="POST" action={form.action} use:enhance={handleSubmit}>
+	{#if form.header}
+		<h1 class={form.subHeader ? '-mb-3' : ''}>{form.header}</h1>
+	{/if}
+	{#if form.subHeader}
+		<div class="-mt-8">
+			<p class="text-sm text-gray-500">
+				{form.subHeader}
+			</p>
+		</div>
+	{/if}
+	<!-- <form id={form.id} method="POST" action={form.action} use:enhance={handleSubmit}> -->
+	<form id={form.id} method="POST" on:submit|preventDefault={handleSubmit}>
 		{#each form.fields as field, index (field.name)}
 			<div class:mt-3={index}>
 				{#if field.type === 'checkbox'}
@@ -108,6 +143,14 @@
 			>{form.submitButtonLabel}</button
 		>
 	</form>
+	{#each form.footerText as txt}
+		<div class="text-center {txt.size}">
+			<p>{txt.label}</p>
+		</div>
+	{/each}
+	{#each form.footerLinks as link}
+		<FormLink footerLink={link} on:form-link />
+	{/each}
 </div>
 
-<pre>{JSON.stringify(form.fields, null, 2)}</pre>
+<!-- <pre>{JSON.stringify(form, null, 2)}</pre> -->

@@ -3,36 +3,34 @@ import { FieldInput } from '$comps/esp/form/fieldInput'
 import { FieldRadio } from '$comps/esp/form/fieldRadio'
 import { FieldSelect } from '$comps/esp/form/fieldSelect'
 import { FieldTextarea } from '$comps/esp/form/fieldTextarea'
-import { valueOrDefault, strRqd } from '$lib/utils/model.utils'
+import { getArrayOfModels, strRqd, strLower, valueOrDefault } from '$lib/utils/utils'
 
 export class Form {
-	formDefn: {}
-
-	id: number
-	name: string
-	label: string
+	id: string
+	header: string
+	subHeader: string
 	description: string
 	submitButtonLabel: string
+	height: string
 	action: string
 	sql: string
-	formData: {}
 	fields: []
+	footerText: Array<FooterText>
+	footerLinks: Array<FooterLinks>
 
-	constructor(formInit: {}) {
-		this.formDefn = valueOrDefault(formInit.defn, {})
-		this.formData = valueOrDefault(formInit.data, {})
-		this.fields = valueOrDefault(this.formDefn.fields, [])
-
-		this.id = valueOrDefault(this.formDefn.id, 0)
-		this.name = valueOrDefault(this.formDefn.name, '')
-		this.label = valueOrDefault(this.formDefn.label, '')
-		this.description = valueOrDefault(this.formDefn.description, '')
-		this.submitButtonLabel = valueOrDefault(this.formDefn.submitButtonLabel, 'Submit')
-
-		this.sql = valueOrDefault(this.formDefn.sql, '')
-		this.action = this.formDefn.action || (this.formDefn.sql ? '/form?/sql' : '')
-
-		this.fields = this.initFields(this.formDefn.fields)
+	constructor(obj) {
+		obj = valueOrDefault(obj, {})
+		this.id = strLower(valueOrDefault(obj.id, ''))
+		this.header = valueOrDefault(obj.header, '')
+		this.subHeader = valueOrDefault(obj.subHeader, '')
+		this.description = valueOrDefault(obj.description, '')
+		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, 'Submit')
+		this.height = valueOrDefault(obj.height, '')
+		this.sql = valueOrDefault(obj.sql, '')
+		this.action = obj.action || (obj.sql ? '/form?/sql' : '')
+		this.fields = this.initFields(obj.fields)
+		this.footerText = getArrayOfModels(FooterText, obj.footerText)
+		this.footerLinks = getArrayOfModels(FooterLink, obj.footerLinks)
 	}
 
 	get getDefn() {
@@ -45,11 +43,8 @@ export class Form {
 		})
 	}
 
-	get getId() {
-		return `form_${this.id}`
-	}
-
 	initFields(fields) {
+		fields = valueOrDefault(fields, [])
 		let newFields = []
 		fields.forEach((field, index) => {
 			let newField
@@ -172,6 +167,27 @@ export class Validation {
 		this.status = status
 		this.validityFields = validityFields
 		this.data = data
+	}
+}
+export class FooterText {
+	label: string
+	size: string
+	constructor(obj) {
+		obj = obj != null ? obj : {}
+		this.label = valueOrDefault(obj.label, '')
+		this.size = this.label ? (this.size = valueOrDefault(obj.size, 'text-base')) : ''
+	}
+}
+export class FooterLink {
+	prefix: string
+	label: string
+	action: string
+
+	constructor(obj) {
+		obj = obj != null ? obj : {}
+		this.prefix = valueOrDefault(obj.prefix, '')
+		this.label = valueOrDefault(obj.label, '')
+		this.action = valueOrDefault(obj.action, '')
 	}
 }
 export enum FieldElement {

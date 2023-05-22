@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation'
 
 	onMount(async () => {
-		// goto('/welcome');
+		goto('/welcome')
 	})
 </script>
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton'
 	import TabsNav from '$comps/navTabs/TabsNav.svelte'
 	import ChevronLeft from '$lib/assets/icons/ChevronLeft.svelte'
