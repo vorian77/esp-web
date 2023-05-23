@@ -59,7 +59,7 @@
 		<FormElSelect {field} />
 
 		<button type="button" class="btn variant-filled-primary w-full mt-2" on:click={takePicture}
-			>2. Take a picture of the document with your camera</button
+			>2. Take a picture of the document.</button
 		>
 
 		<img class="mx-auto mt-2" src={currentPict} alt="Eligibility Document Image" width="250" />
