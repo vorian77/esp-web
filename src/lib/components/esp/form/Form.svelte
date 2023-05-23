@@ -51,17 +51,38 @@
 		return v
 	}
 
-	const handleSubmit = () => {
-		// before form submit
-		const elem = document.getElementById(form.id)
-		const formData = new FormData(elem)
+	async function onSubmit(event: Event) {
+		// validate form
+		const formEl = event.target as HTMLFormElement
+		const formData = new FormData(formEl)
 
 		const v: Validation = validateForm(formData)
 		if (v.status == ValidationStatus.invalid) {
 			return
 		}
 
-		// temp
+		// save form data to bus
+		DATABUS.upsert('form', form.id, v.data)
+
+		// post form
+		console.log('onSubmit.server route:', form.submitServerRoute)
+		const response = await fetch('', {
+			method: 'POST',
+			body: JSON.stringify({
+				formId: form.id,
+				actionType: form.submitAction.type,
+				actionURL: form.submitAction.url,
+				actionMethod: form.submitAction.method,
+				actionData: form.submitActionData(v.data)
+			})
+		})
+		const responseData = await response.json()
+		if (responseData.success == false) {
+			alert(form.submitAction.messageFailure)
+			return
+		}
+		console.log('form submission successful...')
+		console.log(JSON.stringify(responseData))
 		dispatch('form-submitted', form.id)
 	}
 
@@ -112,7 +133,7 @@
 		</div>
 	{/if}
 	<!-- <form id={form.id} method="POST" action={form.action} use:enhance={handleSubmit}> -->
-	<form id={form.id} method="POST" on:submit|preventDefault={handleSubmit}>
+	<form id={form.id} on:submit|preventDefault={onSubmit}>
 		{#each form.fields as field, index (field.name)}
 			<div class:mt-3={index}>
 				{#if field.type === 'checkbox'}

@@ -51,10 +51,12 @@ export async function fetchQuote() {
 			contentType: 'application/json'
 		}
 	})
-	const quotesData = await quotesRes.json()
-	console.log('quotes', quotesData)
-	// return quotesData[0]
-	return { ...demoQuote }
+	let quotesData = await quotesRes.json()
+	// console.log('quotes', quotesData)
+	if (quotesData.length == 0) {
+		quotesData = [demoQuote]
+	}
+	return quotesData[0]
 }
 
 // throw error(404', 'Not found');

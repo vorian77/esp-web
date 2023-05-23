@@ -23,8 +23,8 @@ export class Field {
 		this.index = index
 		defn = valueOrDefault(defn, {})
 		this.element = pipe(defn.element, strRqd, strLower)
-		this.name = strRqd(defn.name)
-		this.label = strRqd(defn.label)
+		this.name = strRqd(defn.name, 'field.name')
+		this.label = strRqd(defn.label, 'field.label')
 		this.access = valueOrDefault(defn.access, FieldAccess.required)
 		this.disabled = this.access == FieldAccess.displayOnly
 		this.validity = new Validity()

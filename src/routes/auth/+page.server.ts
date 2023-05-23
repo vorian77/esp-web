@@ -1,11 +1,11 @@
-import { dbGetFormDefn } from '$server/dbFauna'
+import { dbGetDoc } from '$server/dbFauna'
 
 export async function load({ url }) {
 	const dataBus = {} // from app.store
 
 	async function getFormInit(formId) {
 		return {
-			defn: await dbGetFormDefn(formId),
+			defn: await dbGetDoc('forms', formId),
 			data: dataBus
 		}
 	}

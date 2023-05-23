@@ -48,12 +48,12 @@
 
 	const field = new FieldSelect(fieldDefn, 0)
 	function msg() {
-		alert('Uploading document...')
+		alert('Uploading eligibility document...')
 	}
 </script>
 
 <div class="esp-card">
-	<h3 class="font-bold">Eligibility Documentation</h3>
+	<h3 class="font-bold">Eligibility Document</h3>
 
 	<section class="">
 		<FormElSelect {field} />
@@ -62,7 +62,7 @@
 			>2. Take a picture of the document with your camera</button
 		>
 
-		<img class="mx-auto mt-2" src={currentPict} alt="demo pic" width="250" />
+		<img class="mx-auto mt-2" src={currentPict} alt="Eligibility Document Image" width="250" />
 
 		<button type="button" class="btn variant-filled-primary w-full mt-2" on:click={msg}
 			>3. Submit Document</button

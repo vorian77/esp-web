@@ -52,13 +52,12 @@ export function strLower(val) {
 		return val.toLowerCase()
 	}
 }
-export function strRqd(val) {
+export function strRqd(val, fieldName) {
 	if ((typeof val === 'string' || val instanceof String) && val) {
-		// return JSON.stringify(val)
 		return val
 	} else {
 		throw error(500, {
-			message: `"${val}" appears for required string.`,
+			message: `For required field "${fieldName}", no (or invlid) value supplied "${val}".`,
 			codeFile: 'model.utils.js',
 			sourceObject: 'strRqd'
 		})

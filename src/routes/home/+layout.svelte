@@ -1,12 +1,9 @@
 <script>
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton'
-	import DATABUS from '$lib/utils/databus.utils'
-
-	const nameFirst = DATABUS.getItemFieldValue('cookie', 'user', 'nameFirst')
-	const nameLast = DATABUS.getItemFieldValue('cookie', 'user', 'nameLast')
-	const user = nameFirst
 
 	export let data
+
+	const user = data.user.per_name_full
 
 	function goBack() {
 		history.back()

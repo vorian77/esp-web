@@ -1,12 +1,12 @@
 <script>
-	export let quote;
+	export let quote
 </script>
 
 <div class="esp-card">
-	<h4>Quote</h4>
+	<h4>Quote ({quote.author})</h4>
 	<dir style="text-sm">
-		<p>{quote.quote}</p>
-		<p><span>Author: </span>{quote.author}</p>
+		{quote.quote}
+		<!-- <p><span>Author: </span>{quote.author}</p> -->
 		<!-- <p><span>Category: </span>{quote.category}</p> -->
 	</dir>
 </div>

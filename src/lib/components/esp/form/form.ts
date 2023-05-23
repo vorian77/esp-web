@@ -3,7 +3,7 @@ import { FieldInput } from '$comps/esp/form/fieldInput'
 import { FieldRadio } from '$comps/esp/form/fieldRadio'
 import { FieldSelect } from '$comps/esp/form/fieldSelect'
 import { FieldTextarea } from '$comps/esp/form/fieldTextarea'
-import { getArrayOfModels, strRqd, strLower, valueOrDefault } from '$lib/utils/utils'
+import { getArray, getArrayOfModels, strRqd, strLower, valueOrDefault } from '$lib/utils/utils'
 
 export class Form {
 	id: string
@@ -11,9 +11,9 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
+	submitAction: SubmitAction
+	submitServerRoute: string
 	height: string
-	action: string
-	sql: string
 	fields: []
 	footerText: Array<FooterText>
 	footerLinks: Array<FooterLinks>
@@ -25,9 +25,9 @@ export class Form {
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, 'Submit')
+		this.submitServerRoute = this.serverRoute(obj.submitServerRoute)
+		this.submitAction = new SubmitAction(obj.submitAction)
 		this.height = valueOrDefault(obj.height, '')
-		this.sql = valueOrDefault(obj.sql, '')
-		this.action = obj.action || (obj.sql ? '/form?/sql' : '')
 		this.fields = this.initFields(obj.fields)
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)
 		this.footerLinks = getArrayOfModels(FooterLink, obj.footerLinks)
@@ -43,15 +43,28 @@ export class Form {
 		})
 	}
 
+	serverRoute(val) {
+		valueOrDefault(val, '')
+		if (val == '') {
+			// default
+			return '/form'
+			// } else if (val.toLowerCase() == 'current') {
+		} else if (val == 'current') {
+			return ''
+		} else {
+			return val
+		}
+	}
+
 	initFields(fields) {
 		fields = valueOrDefault(fields, [])
 		let newFields = []
 		fields.forEach((field, index) => {
 			let newField
-			const element = strRqd(field.element)
+			const element = strRqd(field.element, 'form.field.element')
 			switch (element) {
 				case FieldElement.input:
-					const type = strRqd(field.type)
+					const type = strRqd(field.type, 'form.field.type')
 					switch (type) {
 						case 'checkbox':
 							newField = new FieldCheckbox(field, index)
@@ -116,6 +129,37 @@ export class Form {
 		}
 		return new Validation(ValidationType.form, ValidationStatus.valid, validityFields, values)
 	}
+
+	submitActionData(data: Array<FieldValue>) {
+		function getValue(name: string, data: Array<FieldValue>) {
+			const obj = data.find((obj) => obj.name == name)
+			if (obj) {
+				return obj.value
+			}
+			console.error('Cannot find value for field: ' + name, data)
+			return ''
+		}
+
+		switch (this.submitAction.type) {
+			case SubmitActionType.api:
+				let parms = {}
+				this.submitAction.parms.forEach(({ name, type, source }) => {
+					switch (type) {
+						case SubmitActionParmType.clone:
+							parms[name] = getValue(source, data)
+							break
+						case SubmitActionParmType.literal:
+							parms[name] = source
+							break
+					}
+				})
+				return JSON.stringify(parms)
+				break
+
+			case SubmitActionType.sql:
+				break
+		}
+	}
 }
 
 export class FieldValue {
@@ -125,6 +169,79 @@ export class FieldValue {
 	constructor(name: string, value: any) {
 		this.name = name
 		this.value = value
+	}
+}
+export class FooterLink {
+	prefix: string
+	label: string
+	action: string
+
+	constructor(obj) {
+		obj = valueOrDefault(obj, {})
+		this.prefix = valueOrDefault(obj.prefix, '')
+		this.label = valueOrDefault(obj.label, '')
+		this.action = valueOrDefault(obj.action, '')
+	}
+}
+export class FooterText {
+	label: string
+	size: string
+	constructor(obj) {
+		obj = valueOrDefault(obj, {})
+		this.label = valueOrDefault(obj.label, '')
+		this.size = this.label ? (this.size = valueOrDefault(obj.size, 'text-base')) : ''
+	}
+}
+export class SubmitAction {
+	type: SubmitActionType
+	url: string
+	method: 'GET' | 'POST'
+	messageFailure: string
+	parms: Array<SubmitActionParm>
+
+	constructor(obj) {
+		obj = valueOrDefault(obj, {})
+		this.type = obj.type
+		this.url = obj.url
+		this.method = obj.method
+		this.messageFailure = valueOrDefault(obj.messageFailure, 'Form submit failed!')
+
+		// parms
+		const parms = getArray(obj.parms)
+		this.parms = []
+		parms.forEach((p) => {
+			this.parms.push(new SubmitActionParm(p))
+		})
+	}
+}
+export class SubmitActionParm {
+	name: string | String
+	type: SubmitActionParmType
+	source: string
+
+	constructor(obj) {
+		obj = valueOrDefault(obj, {})
+		this.name = strRqd(obj.name, 'SubmitActionParm.name')
+		this.type = obj.type ? obj.type : SubmitActionParmType.clone
+		this.source = obj.source ? obj.source : obj.name
+	}
+}
+export class Validation {
+	type: ValidationType
+	status: ValidationStatus
+	validityFields: Array<ValidityField>
+	data: Array<FieldValue>
+
+	constructor(
+		type: ValidationType,
+		status: ValidationStatus,
+		validityFields: Array<ValidityField>,
+		data: Array<FieldValue>
+	) {
+		this.type = type
+		this.status = status
+		this.validityFields = validityFields
+		this.data = data
 	}
 }
 export class Validity {
@@ -151,49 +268,23 @@ export class ValidityField {
 		this.validity = validity
 	}
 }
-export class Validation {
-	type: ValidationType
-	status: ValidationStatus
-	validityFields: Array<ValidityField>
-	data: Array<FieldValue>
-
-	constructor(
-		type: ValidationType,
-		status: ValidationStatus,
-		validityFields: Array<ValidityField>,
-		data: Array<FieldValue>
-	) {
-		this.type = type
-		this.status = status
-		this.validityFields = validityFields
-		this.data = data
-	}
-}
-export class FooterText {
-	label: string
-	size: string
-	constructor(obj) {
-		obj = obj != null ? obj : {}
-		this.label = valueOrDefault(obj.label, '')
-		this.size = this.label ? (this.size = valueOrDefault(obj.size, 'text-base')) : ''
-	}
-}
-export class FooterLink {
-	prefix: string
-	label: string
-	action: string
-
-	constructor(obj) {
-		obj = obj != null ? obj : {}
-		this.prefix = valueOrDefault(obj.prefix, '')
-		this.label = valueOrDefault(obj.label, '')
-		this.action = valueOrDefault(obj.action, '')
-	}
-}
 export enum FieldElement {
 	input = 'input',
 	select = 'select',
 	textarea = 'textarea'
+}
+export enum SubmitActionParmType {
+	clone = 'clone',
+	literal = 'literal'
+}
+export enum SubmitActionType {
+	api = 'api',
+	sql = 'sql'
+}
+export enum SubmitServerRoute {
+	default = '/form',
+	currentRoute = '',
+	other = 'other'
 }
 export enum ValidationStatus {
 	valid = 'valid',

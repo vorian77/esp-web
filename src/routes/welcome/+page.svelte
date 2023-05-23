@@ -14,6 +14,7 @@
 	}
 
 	function openPage(page: string) {
+		console.log('openPage: ', page)
 		pageCurrent = page
 		const s: DrawerSettings = {
 			id: 'demo',
@@ -25,9 +26,28 @@
 
 	function formSubmitted(event) {
 		const formId = event.detail
+		console.log('welcome.page - formSubmitted:', formId)
 		let formData
 
+		// alert(`form submitted: ${formId}`)
+
 		switch (formId) {
+			case 'auth_login':
+			case 'auth_signup':
+				goto('/home')
+				// formData = DATABUS.get('form', formId)
+
+				// const pwLogin = DATABUS.getItemFieldValue('form', 'auth_login', 'password')
+				// const pwSignup = DATABUS.getItemFieldValue('form', 'auth_signup', 'password')
+				// if (pwLogin != pwSignup) {
+				// 	alert(
+				// 		'We could not log you in. Please check your mobile phone number and password and try again.'
+				// 	)
+				// 	break
+				// }
+				// initialize()
+				break
+
 			case 'auth_signup':
 				sendCode()
 				openPage('auth_verify_phone_mobile')
@@ -40,25 +60,12 @@
 					alert('You did not enter the correct security code. Please try again.')
 					break
 				}
-				register()
-				break
-
-			case 'auth_login':
-				formData = DATABUS.get('form', formId)
-				const pwLogin = DATABUS.getItemFieldValue('form', 'auth_login', 'password')
-				const pwSignup = DATABUS.getItemFieldValue('form', 'auth_signup', 'password')
-				if (pwLogin != pwSignup) {
-					alert(
-						'We could not log you in. Please check your mobile phone number and password and try again.'
-					)
-					break
-				}
-				register()
+				initialize()
 				break
 		}
 	}
 
-	function register() {
+	function initialize() {
 		pageCurrent = ''
 		drawerStore.close()
 		const user = DATABUS.get('form', 'auth_signup')
