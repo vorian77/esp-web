@@ -1,16 +1,18 @@
 <script>
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar } from '@skeletonlabs/skeleton'
 
-	export let data;
+	export let data
+
+	const user = data.user.per_name_full
 
 	function goBack() {
-		history.back();
+		history.back()
 	}
 </script>
 
 <AppShell>
 	<AppBar>
-		<div on:click={goBack}>Welcome, {data.user}</div></AppBar
+		<div on:click={goBack}>Welcome, {user}</div></AppBar
 	>
 
 	<slot />

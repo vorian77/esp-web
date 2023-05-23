@@ -1,9 +1,11 @@
 <script>
-	import Quotes from '$comps/quotes/quotes.svelte';
-	export let data;
+	import Quotes from '$comps/quotes/quotes.svelte'
+	export let data
 </script>
 
-<Quotes quote={data.quote} />
+{#if data?.quote}
+	<Quotes quote={data.quote} />
+{/if}
 
 <div class="esp-card">
 	<h2>Home</h2>

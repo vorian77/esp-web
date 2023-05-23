@@ -1,14 +1,15 @@
-<script>
-	export let field = {}
+<script lang="ts">
+	import type { FieldSelect } from '$comps/esp/form/fieldSelect'
+	export let field: FieldSelect
 </script>
 
 <label class="label">
 	<span>{field.label}</span>
 
-	<select class="select" name={field.name}>
+	<select class="select" name={field.name} on:change>
 		<option disabled selected value>Select an option</option>
-		{#each field.items as item, index (item.id)}
-			<option class="" value={item.id}>{item.label}</option>
+		{#each field.items as { id, label }, index (id)}
+			<option value={id}>{label}</option>
 		{/each}
 	</select>
 </label>

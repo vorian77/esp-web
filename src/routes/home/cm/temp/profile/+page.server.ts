@@ -1,9 +1,7 @@
-import { formInit } from '$server/esp/form/formInit'
+import { dbGetDoc } from '$server/dbFauna'
 
-let formId = '364158513654530125'
-
-export async function load({ url }) {
+export async function load() {
 	return {
-		formDefn: await formInit(formId)
+		profile: await dbGetDoc('forms', '364158513654530125')
 	}
 }

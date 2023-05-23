@@ -1,7 +1,10 @@
-export function dbGetFormDefn(formId) {
-	const table = db.find((table) => (table.name = 'forms'))['data']
-	return table.find((rec) => rec.id == formId)['form']
+export async function dbRecGet(targetTable, id) {
+	const table = db.find((table) => (table.name = targetTable))['data']
+	return table.find((rec) => rec.id == id)['data']
 }
+
+// import { dbRecGet } from '$server/db'
+// const formDefnRaw = await dbRecGet('forms', formId)
 
 const db = [
 	{
@@ -9,7 +12,7 @@ const db = [
 		data: [
 			{
 				id: '363255616174555209',
-				form: {
+				data: {
 					id: '1',
 					name: 'Auth-Signup',
 					label: 'Auth Signup Label',
@@ -17,14 +20,17 @@ const db = [
 					submitButtonLabel: 'Sign up',
 					fields: [
 						{
+							element: 'input',
 							type: 'text',
 							name: 'nameFirst',
 							label: 'First Name',
 							placeHolder: 'Enter first name...',
 							minLength: 2,
+							maxLength: 7,
 							value: 'Phyllip'
 						},
 						{
+							element: 'input',
 							type: 'text',
 							name: 'nameLast',
 							label: 'Last Name',
@@ -33,6 +39,7 @@ const db = [
 							value: 'Hall'
 						},
 						{
+							element: 'input',
 							type: 'tel',
 							name: 'phoneMobile',
 							label: 'Mobile Phone Number',
@@ -40,21 +47,39 @@ const db = [
 							value: '2487985578'
 						},
 						{
+							element: 'input',
 							type: 'password',
 							name: 'password',
 							label: 'Password',
 							placeHolder: 'Enter password...',
-							pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$!%*?&])[A-Za-z\\d@#$!%*?&]{8,}$',
-							patternMsg:
-								'Your password must be at least 8 characters long, and must contain at least 1 uppercase character, at least 1 lowercase character, at least 1 number, and at least 1 special character (@$!%*#?&).',
 							value: 'JakeDog#1'
+						},
+						{
+							element: 'input',
+							type: 'checkbox',
+							name: 'favoriteIceCreams',
+							label: 'Favorite Ice Cream(s)',
+							items: [
+								{
+									id: 1,
+									label: 'Vanila Bean'
+								},
+								{
+									id: 2,
+									label: 'Chocolate'
+								},
+								{
+									id: 3,
+									label: 'Mint Chip'
+								}
+							]
 						}
 					]
 				}
 			},
 			{
 				id: '364001027435790416',
-				form: {
+				data: {
 					id: '2',
 					name: 'Auth-Login',
 					label: 'Auth Login Label',
@@ -62,12 +87,14 @@ const db = [
 					submitButtonLabel: 'Log in',
 					fields: [
 						{
+							element: 'input',
 							type: 'tel',
 							name: 'phoneMobile',
 							label: 'Mobile Phone Number',
 							placeHolder: 'Enter mobile phone number...'
 						},
 						{
+							element: 'input',
 							type: 'password',
 							name: 'password',
 							label: 'Password',
@@ -78,7 +105,7 @@ const db = [
 			},
 			{
 				id: '364158513654530125',
-				form: {
+				data: {
 					id: '1',
 					name: 'Profile',
 					label: "User's Profile",
@@ -86,12 +113,22 @@ const db = [
 					submitButtonLabel: 'Save',
 					fields: [
 						{
+							element: 'input',
 							type: 'date',
 							name: 'birthdate',
 							label: 'Birthdate',
-							access: 'optional'
+							access: 'required'
 						},
 						{
+							element: 'input',
+							type: 'number',
+							name: 'age',
+							label: 'Age',
+							minValue: 0,
+							maxValue: 10
+						},
+						{
+							element: 'input',
 							type: 'password',
 							name: 'ssn',
 							label: 'Social Security Number (skip if unknown)',
@@ -100,6 +137,7 @@ const db = [
 							patternMsg: 'A social secruity number must be exactly 9 digits.'
 						},
 						{
+							element: 'input',
 							type: 'password',
 							name: 'ssn-verify',
 							label: 'Reenter Social Security Number To Verify',
@@ -109,10 +147,10 @@ const db = [
 							matchColumn: 'ssn'
 						},
 						{
-							component: 'select',
+							element: 'select',
 							name: 'gender',
 							label: 'Gender',
-							access: 'optional',
+
 							items: [
 								{
 									id: 1,
@@ -133,10 +171,9 @@ const db = [
 							]
 						},
 						{
-							component: 'select',
+							element: 'select',
 							name: 'race',
 							label: 'Race',
-							access: 'optional',
 							items: [
 								{
 									id: 1,
@@ -165,10 +202,9 @@ const db = [
 							]
 						},
 						{
-							component: 'select',
+							element: 'select',
 							name: 'ethnicity',
 							label: 'Ethnicity',
-							access: 'optional',
 							items: [
 								{
 									id: 1,
@@ -185,10 +221,9 @@ const db = [
 							]
 						},
 						{
-							component: 'select',
+							element: 'select',
 							name: 'disability-status',
 							label: 'Disability Status',
-							access: 'optional',
 							items: [
 								{
 									id: 1,
@@ -209,8 +244,9 @@ const db = [
 							]
 						},
 						{
-							component: 'radio',
-							name: 'favoriateRapper',
+							element: 'input',
+							type: 'radio',
+							name: 'favoriteRapper',
 							legend: 'Favorite Rapper',
 							value: 3,
 							items: [
@@ -229,9 +265,10 @@ const db = [
 							]
 						},
 						{
-							component: 'checkbox',
-							name: 'favoriateIceCreams',
-							legend: 'Favorite Ice Cream(s)',
+							element: 'input',
+							type: 'checkbox',
+							name: 'favoriteIceCreams',
+							label: 'Favorite Ice Cream(s)',
 							items: [
 								{
 									id: 1,

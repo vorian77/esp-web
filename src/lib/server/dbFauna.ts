@@ -22,9 +22,9 @@ function rtnError(err) {
 }
 
 // DB functions
-export async function dbGetFormDefn(formId) {
+export async function dbGetDoc(collection, id) {
 	try {
-		const res = await client.query(q.Get(q.Ref(q.Collection('forms'), formId)))
+		const res = await client.query(q.Get(q.Ref(q.Collection(collection), id)))
 		return await res.data
 	} catch (err) {
 		rtnError(err)

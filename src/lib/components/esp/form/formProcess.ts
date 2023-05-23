@@ -1,18 +1,33 @@
-import { applyAction, type SubmitFunction } from '$app/forms'
+import { applyAction, type SubmitFunction, deserialize } from '$app/forms'
+import type { Form, FieldValue } from '$comps/esp/form/form'
+import type { ActionData } from './$types'
+import type { ActionResult } from '@sveltejs/kit'
 
-export const process = (event, formDefn, formData, action) => {
-	console.log('process')
-	console.log(event)
-	console.log(formDefn)
-	console.log(formData)
+export async function process(
+	event: SubmitEvent,
+	action: string,
+	form: Form,
+	data: Array<FieldValue>
+) {
+	// before the form submits
+	const formData = new FormData(event.target)
 
-	// alert(String(formData.get('nameLast')))
-
+	console.log('process - before submit...')
+	// console.log(event)
 	console.log('action:', action)
-	console.log('name', String(formData.get('nameFirst')))
+	// console.log(form)
+	// console.log(data)
+	console.log('phoneMobile:', formData.get('phoneMobile'))
+	console.log('password:', formData.get('password'))
 
-	// const formEl = event.target as HTMLFormElement
-	// const data = new FormData(formEl)
+	// fetch
+	const response = await fetch(action, {
+		method: 'POST',
+		body: formData
+	})
+
+	const result: ActionResult = deserialize(await response.text())
+	console.log('result:', result)
 }
 
 export const process1 = (event, formDefn) => {
