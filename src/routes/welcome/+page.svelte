@@ -19,6 +19,7 @@
 		const s: DrawerSettings = {
 			id: 'demo',
 			position: 'bottom',
+			height: 'h-[75%]',
 			meta: 'Meta Data Received'
 		}
 		drawerStore.open(s)
