@@ -16,9 +16,6 @@ dependencies:
   faunadb:
     specifier: ^4.8.0
     version: 4.8.0
-  qs:
-    specifier: ^6.11.2
-    version: 6.11.2
   twilio:
     specifier: ^4.11.0
     version: 4.11.0

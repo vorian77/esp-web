@@ -3,7 +3,20 @@ import { FieldInput } from '$comps/esp/form/fieldInput'
 import { FieldRadio } from '$comps/esp/form/fieldRadio'
 import { FieldSelect } from '$comps/esp/form/fieldSelect'
 import { FieldTextarea } from '$comps/esp/form/fieldTextarea'
-import { getArray, getArrayOfModels, strRqd, strLower, valueOrDefault } from '$lib/utils/utils'
+import {
+	booleanOrFalse,
+	getArray,
+	getArrayOfModels,
+	memberOfEnum,
+	strLower,
+	strRqd,
+	strUpper,
+	valueOrDefault
+} from '$lib/utils/utils'
+import type { Field } from '$comps/esp/form/field'
+import { error } from '@sveltejs/kit'
+
+const FILENAME = '/$comps/esp/form/form.ts/'
 
 export class Form {
 	id: string
@@ -11,60 +24,41 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
-	submitAction: SubmitAction
-	submitServerRoute: string
+	submitAction: SubmitAction | undefined
 	height: string
-	fields: []
+	fields: Array<Field>
 	footerText: Array<FooterText>
-	footerLinks: Array<FooterLinks>
+	footerLinks: Array<FooterLink>
+	data: {}
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.id = strLower(valueOrDefault(obj.id, ''))
+		this.id = strRqd(obj.id, FILENAME + 'Form.id')
 		this.header = valueOrDefault(obj.header, '')
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, 'Submit')
-		this.submitServerRoute = this.serverRoute(obj.submitServerRoute)
-		this.submitAction = new SubmitAction(obj.submitAction)
+		this.submitAction = obj.submitAction ? new SubmitAction(obj.submitAction) : undefined
 		this.height = valueOrDefault(obj.height, '')
 		this.fields = this.initFields(obj.fields)
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)
 		this.footerLinks = getArrayOfModels(FooterLink, obj.footerLinks)
-	}
-
-	get getDefn() {
-		return JSON.stringify({
-			name: this.name,
-			label: this.label,
-			description: this.description,
-			submitButtonLabel: this.submitButtonLabel,
-			fields: this.fields
-		})
-	}
-
-	serverRoute(val) {
-		valueOrDefault(val, '')
-		if (val == '') {
-			// default
-			return '/form'
-			// } else if (val.toLowerCase() == 'current') {
-		} else if (val == 'current') {
-			return ''
-		} else {
-			return val
-		}
+		this.data = {}
 	}
 
 	initFields(fields) {
 		fields = valueOrDefault(fields, [])
-		let newFields = []
-		fields.forEach((field, index) => {
-			let newField
-			const element = strRqd(field.element, 'form.field.element')
+		let newFields: Array<Field> = []
+		fields.forEach((field, index: number) => {
+			let newField: Field
+			const element = memberOfEnum(
+				strLower(strRqd(field.element, 'Form.Field.element')),
+				'FieldElement',
+				FieldElement
+			)
 			switch (element) {
 				case FieldElement.input:
-					const type = strRqd(field.type, 'form.field.type')
+					const type = strRqd(field.type, FILENAME + 'Form.Field.type')
 					switch (type) {
 						case 'checkbox':
 							newField = new FieldCheckbox(field, index)
@@ -86,25 +80,6 @@ export class Form {
 					newField = new FieldTextarea(field, index)
 					break
 			}
-			// matchColumn
-			if (newField.matchColumn) {
-				const idxParent = newFields.map((f) => f.name).indexOf(newField.matchColumn)
-				if (idxParent >= 0) {
-					const message = `Fields "${newFields[idxParent].label}" and "${newField.label}" must match.`
-					// set parent
-					newFields[idxParent].matchColumn = {
-						name: newField.name,
-						index: newField.index,
-						message
-					}
-					// update child
-					newField.matchColumn = {
-						name: newFields[idxParent].name,
-						index: newFields[idxParent].index,
-						message
-					}
-				}
-			}
 			newFields.push(newField)
 		})
 		return newFields
@@ -113,56 +88,83 @@ export class Form {
 	validateForm(formData: FormData): Validation {
 		// set formData
 		let validityFields: Array<ValidityField> = []
-		let values: Array<FieldValue> = []
+		let values = {}
 
 		// process each field
 		for (let i = 0; i < this.fields.length; i++) {
 			// can't break out of "forEach" loop
-			const validation: Validation = this.fields[i].validate(formData)
+			const v: Validation = this.fields[i].validate(formData)
 
-			if (validation.status == ValidationStatus.valid) {
-				validityFields = [...validation.validityFields]
-				values.push(new FieldValue(this.fields[i].name, validation.data))
+			if (v.status == ValidationStatus.valid) {
+				validityFields = [...v.validityFields]
+				values[this.fields[i].name] = v.data
 			} else {
-				return validation
+				return v
 			}
 		}
+		console.log(FILENAME + '.values...')
+		console.log(values)
+		this.data = values
 		return new Validation(ValidationType.form, ValidationStatus.valid, validityFields, values)
 	}
 
-	submitActionData(data: Array<FieldValue>) {
-		function getValue(name: string, data: Array<FieldValue>) {
-			const obj = data.find((obj) => obj.name == name)
-			if (obj) {
-				return obj.value
-			}
-			console.error('Cannot find value for field: ' + name, data)
-			return ''
-		}
-
-		switch (this.submitAction.type) {
-			case SubmitActionType.api:
+	getSubmitActionParms() {
+		switch (this.submitAction?.target) {
+			case SubmitActionTarget.esp_api:
 				let parms = {}
 				this.submitAction.parms.forEach(({ name, type, source }) => {
 					switch (type) {
 						case SubmitActionParmType.clone:
-							parms[name] = getValue(source, data)
+							// parms[name] = getValue(source, data)
+							parms[name] = this.data[name]
 							break
 						case SubmitActionParmType.literal:
 							parms[name] = source
 							break
+						default:
+							throw error(500, {
+								file: FILENAME,
+								function: 'submitActionData',
+								message: `No case defined for Form.SubmitAction.parms.type: "${type}".`
+							})
 					}
 				})
-				return JSON.stringify(parms)
+				return parms
 				break
 
-			case SubmitActionType.sql:
-				break
+			default:
+				throw error(500, {
+					file: FILENAME,
+					function: 'submitActionData',
+					message: `No case defined for Form.submitAction.type: "${this.submitAction.type}".`
+				})
+		}
+	}
+
+	updateSubmitAction(submitAction: SubmitAction, data: {}) {
+		this.submitAction = submitAction
+		this.data = data
+	}
+
+	getFieldValue(fieldName: string) {
+		const obj = this.fields.find((obj) => obj.name == fieldName)
+		return obj?.value || ''
+	}
+	setFieldValue(fieldName: string, value: any) {
+		const obj = this.fields.find((obj) => obj.name == fieldName)
+		if (obj) {
+			obj.value = value
+		} else {
+			throw error(500, {
+				file: FILENAME,
+				function: 'setFieldValue',
+				message: `Unable to find field: ${fieldName} in form: ${this.id}.`
+			})
 		}
 	}
 }
 
-export class FieldValue {
+export class DataValue {
 	name: string
 	value: any
 
@@ -179,64 +181,80 @@ export class FooterLink {
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
 		this.prefix = valueOrDefault(obj.prefix, '')
-		this.label = valueOrDefault(obj.label, '')
-		this.action = valueOrDefault(obj.action, '')
+		this.label = strRqd(obj.label, FILENAME + 'FooterLink.label')
+		this.action = strRqd(obj.action, FILENAME + 'FooterLink.action')
 	}
 }
 export class FooterText {
 	label: string
-	size: string
+	fontSize: string
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.label = valueOrDefault(obj.label, '')
-		this.size = this.label ? (this.size = valueOrDefault(obj.size, 'text-base')) : ''
+		this.label = strRqd(obj.label, FILENAME + 'FooterText.label')
+		this.fontSize = valueOrDefault(obj.fontSize, 'text-base')
 	}
 }
 export class SubmitAction {
-	type: SubmitActionType
-	url: string
-	method: 'GET' | 'POST'
+	processLocally: boolean
+	target: SubmitActionTarget
 	messageFailure: string
+	messageSuccess: string
+	method: SubmitActionMethod
+	url: string
+	statement: string
 	parms: Array<SubmitActionParm>
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.type = obj.type
-		this.url = obj.url
-		this.method = obj.method
-		this.messageFailure = valueOrDefault(obj.messageFailure, 'Form submit failed!')
+		this.processLocally = booleanOrFalse(
+			obj.processLocally,
+			FILENAME + 'SubmitAction.processLocally'
+		)
+		this.target = memberOfEnum(obj.target, 'SubmitActionTarget', SubmitActionTarget)
+		this.messageSuccess = valueOrDefault(obj.messageSuccess, 'Form submit succeeded.')
+		this.messageFailure = valueOrDefault(obj.messageFailure, 'Form submit failed.')
+		this.method = [SubmitActionTarget.esp_api].includes(this.target)
+			? strUpper(memberOfEnum(strUpper(obj.method), 'SubmitActionMethod', SubmitActionMethod))
+			: ''
+		this.url = [SubmitActionTarget.esp_api].includes(this.target)
+			? strRqd(obj.url, FILENAME + 'SubmitAction.url')
+			: ''
+		this.statement = [SubmitActionTarget.esp_sql].includes(this.target)
+			? strRqd(obj.statement, FILENAME + 'SubmitAction.statement')
+			: ''
 
 		// parms
-		const parms = getArray(obj.parms)
-		this.parms = []
-		parms.forEach((p) => {
-			this.parms.push(new SubmitActionParm(p))
-		})
+		this.parms = getArrayOfModels(SubmitActionParm, obj.parms)
 	}
 }
 export class SubmitActionParm {
-	name: string | String
+	name: string
 	type: SubmitActionParmType
 	source: string
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.name = strRqd(obj.name, 'SubmitActionParm.name')
-		this.type = obj.type ? obj.type : SubmitActionParmType.clone
-		this.source = obj.source ? obj.source : obj.name
+		this.name = strRqd(obj.name, FILENAME + 'SubmitActionParm.name')
+		this.type = memberOfEnum(
+			valueOrDefault(obj.type, SubmitActionParmType.clone),
+			'SubmitActionParmType',
+			SubmitActionParmType
+		)
+		// default - data source field name is same as target field
+		this.source = valueOrDefault(obj.source, obj.name)
 	}
 }
 export class Validation {
 	type: ValidationType
 	status: ValidationStatus
 	validityFields: Array<ValidityField>
-	data: Array<FieldValue>
+	data: Array<DataValue> | undefined
 
 	constructor(
 		type: ValidationType,
 		status: ValidationStatus,
 		validityFields: Array<ValidityField>,
-		data: Array<FieldValue>
+		data?: Array<DataValue>
 	) {
 		this.type = type
 		this.status = status
@@ -273,18 +291,19 @@ export enum FieldElement {
 	select = 'select',
 	textarea = 'textarea'
 }
+export enum SubmitActionMethod {
+	GET = 'GET',
+	POST = 'POST'
+}
 export enum SubmitActionParmType {
 	clone = 'clone',
 	literal = 'literal'
 }
-export enum SubmitActionType {
-	api = 'api',
-	sql = 'sql'
-}
-export enum SubmitServerRoute {
-	default = '/form',
-	currentRoute = '',
-	other = 'other'
+export enum SubmitActionTarget {
+	local = 'local',
+	esp_api = 'esp_api',
+	esp_sql = 'esp_sql',
+	fauna = 'fauna'
 }
 export enum ValidationStatus {
 	valid = 'valid',

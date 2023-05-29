@@ -52,11 +52,10 @@ export async function fetchQuote() {
 		}
 	})
 	let quotesData = await quotesRes.json()
+	return demoQuote
 	// console.log('quotes', quotesData)
 	if (quotesData.length == 0) {
 		quotesData = [demoQuote]
 	}
 	return quotesData[0]
 }
-
-// throw error(404', 'Not found');

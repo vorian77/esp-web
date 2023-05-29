@@ -1,52 +1,50 @@
-import { json } from '@sveltejs/kit'
-import { fetchESP } from '$server/formFetch.js'
+import { fetchESP } from '$server/esp'
+import { sendText } from '$server/twilio'
+import { error } from '@sveltejs/kit'
+
+const FILENAME = '/routes/welcome/+server.ts'
 
 export async function POST({ request, cookies }) {
-	const data = request.json()
-	const { formId, actionType, actionURL, actionMethod, actionData } = await data
-	let responseData
+	const requestData = await request.json()
+	const { action } = requestData
 
-	switch (formId) {
-		case 'auth_login':
-		case 'auth_signup':
-			const response = await fetchESP(actionURL, actionMethod, actionData)
-			if (!response.hasOwnProperty('success') || !response.success) {
-				// success
-				const userId = response.applicantId
-				cookies.set('user_id', userId, {
-					path: '/',
-					httpOnly: true,
-					sameSite: 'strict',
-					maxAge: 60 * 60 * 24 * 7 // one week
-				})
+	switch (action) {
+		case 'sms_send':
+			const { phoneMobile, message } = requestData
+			sendText(phoneMobile, message)
+			break
+
+		case 'form_submit':
+			const { formId, submitAction, data } = requestData
+
+			switch (formId) {
+				case 'auth_login':
+				case 'auth_reset_password':
+				case 'auth_signup':
+					const response = await fetchESP(submitAction, data)
+					const responseData = await response.json()
+					const id = responseData.applicantId
+
+					cookies.set('session_id', id, {
+						path: '/',
+						httpOnly: true,
+						sameSite: 'strict',
+						secure: true,
+						maxAge: 60 * 60 * 24 * 7 // one week
+					})
+					return new Response(JSON.stringify({ success: true, data: responseData }))
+					break
+
+				case 'auth_verify_phone_mobile':
+					return new Response(JSON.stringify({ success: true, data }))
+					break
+				default:
+					throw error(500, {
+						file: FILENAME,
+						function: 'POST',
+						message: `No case defined for SubmitAction.target: ${target}`
+					})
 			}
-			return json(response)
-
 			break
-		case 'auth_reset_password':
-			break
-
-		case 'auth_verify_phone_mobile':
-			break
-	}
-}
-
-function processApiResult(response) {
-	console.log('response...')
-	console.log(response)
-	const data1 = {
-		success: true,
-		errors: {}
-	}
-	return json(data1, { status: 400 })
-
-	if (response.success == false) {
-		return new Response()
-	}
-	console.log('processApiResult:', response)
-
-	return {
-		success: true,
-		data: response
 	}
 }

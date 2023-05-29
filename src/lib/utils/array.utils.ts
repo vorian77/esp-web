@@ -18,9 +18,7 @@ export function getArrayOfModels(clazz, objs) {
 	objs = getArray(objs)
 	const arr = []
 	for (const obj of objs) {
-		if (hasPropertyOf(clazz, obj)) {
-			arr.push(new clazz(obj))
-		}
+		arr.push(new clazz(obj))
 	}
 	return arr
 }

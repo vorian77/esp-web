@@ -7,20 +7,11 @@
 </script>
 
 <div class="esp-card">
-	<h2>Menu</h2>
+	<h2>Root Menu</h2>
 
 	<ul>
 		<li>
 			<a href="/welcome">Welcome</a>
-		</li>
-		<li>
-			<a href="/auth?type=signup">Auth-Signup</a>
-		</li>
-		<li>
-			<a href="/auth?type=login">Auth-Login</a>
-		</li>
-		<li>
-			<a href="/auth?type=profile">Profile</a>
 		</li>
 		<li>
 			<a href="/home/cm">Case Manager (Placeholders)</a>

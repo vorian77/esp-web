@@ -1,4 +1,4 @@
-import { pipe, strRqd, strLower, valueOrDefault } from '$utils/utils'
+import { memberOfEnum, strRqd, strLower, valueOrDefault } from '$utils/utils'
 import {
 	Validation,
 	ValidationType,
@@ -8,6 +8,9 @@ import {
 	ValidityType,
 	ValidityLevel
 } from '$comps/esp/form/form'
+import { error } from '@sveltejs/kit'
+
+const COMPONENT = '/$comps/esp/form/field.ts/'
 
 export class Field {
 	index: number
@@ -19,16 +22,25 @@ export class Field {
 	validity: Validity
 	value: string
 
-	constructor(defn: {}, index: number) {
+	constructor(obj: {}, index: number) {
+		obj = valueOrDefault(obj, {})
 		this.index = index
-		defn = valueOrDefault(defn, {})
-		this.element = pipe(defn.element, strRqd, strLower)
-		this.name = strRqd(defn.name, 'field.name')
-		this.label = strRqd(defn.label, 'field.label')
-		this.access = valueOrDefault(defn.access, FieldAccess.required)
+
+		this.element = memberOfEnum(
+			strLower(strRqd(obj.element, COMPONENT + 'Field.element')),
+			'FieldElement',
+			FieldElement
+		)
+		this.name = strRqd(obj.name, COMPONENT + 'Field.name')
+		this.label = strRqd(obj.label, COMPONENT + 'Field.label')
+		this.access = memberOfEnum(
+			valueOrDefault(obj.access, FieldAccess.required),
+			'FieldAccess',
+			FieldAccess
+		)
 		this.disabled = this.access == FieldAccess.displayOnly
 		this.validity = new Validity()
-		this.value = valueOrDefault(defn.value, '')
+		this.value = valueOrDefault(obj.value, '')
 	}
 	// UTILITY METHODS
 	initItems(itemsDefn) {
@@ -87,16 +99,6 @@ export class Field {
 	}
 }
 
-export enum FieldAccess {
-	required = 'required',
-	optional = 'optional',
-	displayOnly = 'displayonly'
-}
-export enum FieldElement {
-	input = 'input',
-	select = 'select',
-	textarea = 'textarea'
-}
 export class FieldItem {
 	id: number
 	label: string
@@ -107,4 +109,14 @@ export class FieldItem {
 		this.label = label
 		this.selected = selected
 	}
+}
+export enum FieldAccess {
+	required = 'required',
+	optional = 'optional',
+	displayOnly = 'displayonly'
+}
+export enum FieldElement {
+	input = 'input',
+	select = 'select',
+	textarea = 'textarea'
 }

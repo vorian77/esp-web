@@ -9,7 +9,7 @@ export class FieldCheckbox extends Field {
 		super(defn, index)
 
 		defn = valueOrDefault(defn, {})
-		this.type = memberOfEnum(defn.type, FieldType)
+		this.type = memberOfEnum(defn.type, 'FieldType', FieldType)
 
 		this.items = valueOrDefault(defn.items, [])
 		this.items = this.initItems(this.items)

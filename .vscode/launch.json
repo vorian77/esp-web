@@ -1,0 +1,17 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "SvelteKit",
+			"url": "http://localhost:5173",
+			"webRoot": "${workspaceFolder}/src",
+			"serverReadyAction": {
+				"pattern": "listening on.* (https?://\\S+|[0-9]+)",
+				"uriFormat": "http://localhost:%s",
+				"action": "openExternally"
+			}
+		}
+	]
+}

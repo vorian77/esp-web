@@ -9,12 +9,14 @@ import {
 } from '$comps/esp/form/form'
 import { Field } from '$comps/esp/form/field'
 import { memberOfEnum, valueOrDefault } from '$utils/utils'
+import { error } from '@sveltejs/kit'
+
+const FILENAME = '$comps/esp/form/fieldInput.ts'
 
 export class FieldInput extends Field {
 	type: FieldType
 	placeHolder: string
-
-	matchColumn: string
+	matchColumn: MatchColumn | string
 	minLength: number
 	maxLength: number
 	minValue: number
@@ -23,21 +25,22 @@ export class FieldInput extends Field {
 	patternMsg: string
 	patternReplacement: string
 
-	constructor(defn: {}, index: number) {
-		super(defn, index)
+	constructor(obj: {}, index: number, fields: Array<FieldInput>) {
+		super(obj, index)
 
-		defn = valueOrDefault(defn, {})
-		this.type = memberOfEnum(defn.type, FieldType)
-		this.placeHolder = valueOrDefault(defn.placeHolder, '')
+		obj = valueOrDefault(obj, {})
+		this.type = memberOfEnum(obj.type, 'FieldType', FieldType)
+		this.placeHolder = valueOrDefault(obj.placeHolder, '')
 
-		this.matchColumn = defn.matchColumn
-		this.minLength = defn.minLength
-		this.maxLength = defn.maxLength
-		this.minValue = defn.minValue
-		this.maxValue = defn.maxValue
-		this.pattern = defn.pattern
-		this.patternMsg = defn.patternMsg
-		this.patternReplacement = defn.patternReplacement
+		// validators
+		this.matchColumn = initMatchColumn(obj.matchColumn, this.name, this.index, this.label, fields)
+		this.minLength = obj.minLength
+		this.maxLength = obj.maxLength
+		this.minValue = obj.minValue
+		this.maxValue = obj.maxValue
+		this.pattern = obj.pattern
+		this.patternMsg = obj.patternMsg
+		this.patternReplacement = obj.patternReplacement
 
 		// set field type defaults
 		switch (this.type) {
@@ -60,6 +63,34 @@ export class FieldInput extends Field {
 				}
 				break
 		}
+
+		function initMatchColumn(
+			parentMatchColumn: string,
+			thisName: string,
+			thisIndex: number,
+			thisLabel: string,
+			fields: Array<FieldInput>
+		) {
+			if (!parentMatchColumn) {
+				return ''
+			}
+			const idxParent = fields.map((f) => f.name).indexOf(parentMatchColumn)
+			if (idxParent >= 0) {
+				const message = `Fields "${fields[idxParent].label}" and "${thisLabel}" must match.`
+
+				// set parent
+				fields[idxParent].matchColumn = new MatchColumn(thisName, thisIndex, message)
+
+				// return this field's match column
+				return new MatchColumn(parentMatchColumn, fields[idxParent].index, message)
+			} else {
+				throw error(500, {
+					file: FILENAME,
+					function: 'constructor.initMatchColumn',
+					message: `For column: "${thisName}", can not find parent matchColumn: "${parentMatchColumn}".`
+				})
+			}
+		}
 	}
 
 	validate(formData): Validation {
@@ -67,6 +98,7 @@ export class FieldInput extends Field {
 		if (v.status == ValidationStatus.valid || v.status == ValidationStatus.invalid) {
 			return v
 		}
+
 		const fieldValue = v.data
 		let nbrValue = Number(fieldValue)
 
@@ -119,7 +151,6 @@ export class FieldInput extends Field {
 			const regex = new RegExp(this.pattern)
 			if (!regex.test(fieldValue)) {
 				const errorMsg = this.patternMsg || `The value you entered is not a valid "${this.label}".`
-				console.log('pattern...', errorMsg)
 				return this.fieldInvalid(this.index, ValidityType.pattern, errorMsg, ValidityLevel.error)
 			}
 		}
@@ -159,7 +190,7 @@ export class FieldInput extends Field {
 			// set validiities
 			let validityFields: [ValidityField] = [new ValidityField(this.index, validity)]
 			validityFields.push(new ValidityField(this.matchColumn.index, validity))
-			return new Validation(ValidationType.field, validationStatus, validityFields, data)
+			return new Validation(ValidationType.field, validationStatus, validityFields)
 		}
 		// default
 		return this.fieldValid(this.index, fieldValue)
@@ -173,4 +204,17 @@ export enum FieldType {
 	password = 'password',
 	tel = 'tel',
 	text = 'text'
+}
+export class MatchColumn {
+	name: string
+	index: number | undefined
+	message: string | undefined
+
+	constructor(name: string, index: number, message: string) {
+		this.name = valueOrDefault(name, '')
+		if (this.name) {
+			this.index = index
+			this.message = message
+		}
+	}
 }

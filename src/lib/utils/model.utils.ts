@@ -1,7 +1,8 @@
 /** model.utils.js */
 
-import { espError } from '$utils/utils'
 import { error } from '@sveltejs/kit'
+
+const FILENAME = '/utils/model.utils.js'
 
 export function hasPropertyOf(clazz, obj) {
 	const model = new clazz()
@@ -15,6 +16,19 @@ export function hasPropertyOf(clazz, obj) {
 	}
 	return false
 }
+export function booleanOrFalse(val, name) {
+	if (!val) {
+		return false
+	} else if (typeof val === 'boolean') {
+		return val
+	} else {
+		throw error(500, {
+			file: FILENAME,
+			function: 'booleanOrFalse',
+			message: `Value: "${value} for Field: "${name}" is expected to be typeof "boolean" but is typeof "${typeof val}".`
+		})
+	}
+}
 export function isInstanceOf(clazz, obj) {
 	const model = new clazz()
 	const modelKeys = Object.keys(model)
@@ -27,14 +41,14 @@ export function isInstanceOf(clazz, obj) {
 	}
 	return true
 }
-export function memberOfEnum(val, enumVals) {
-	if (Object.values(enumVals).includes(val)) {
+export function memberOfEnum(val, enumName, enumType) {
+	if (Object.values(enumType).includes(val)) {
 		return val
 	} else {
 		throw error(500, {
-			message: `"${val}" is not member of enum ${JSON.stringify(enumVals)}.`,
-			codeFile: 'model.utils.js',
-			sourceObject: 'memberOfEnum'
+			file: FILENAME,
+			function: `memberOfEnum: ${enumName}`,
+			message: `"${val}" is not member of enum ${JSON.stringify(enumType)}.`
 		})
 	}
 }
@@ -52,15 +66,20 @@ export function strLower(val) {
 		return val.toLowerCase()
 	}
 }
-export function strRqd(val, fieldName) {
-	if ((typeof val === 'string' || val instanceof String) && val) {
+export function strRqd(val, name) {
+	if (typeof val === 'string' && val) {
 		return val
 	} else {
 		throw error(500, {
-			message: `For required field "${fieldName}", no (or invlid) value supplied "${val}".`,
-			codeFile: 'model.utils.js',
-			sourceObject: 'strRqd'
+			file: FILENAME,
+			function: 'strRqd',
+			message: `Required value: "${name}" - is undefined or has an invlid value: "${val}".`
 		})
+	}
+}
+export function strUpper(val) {
+	if (val) {
+		return val.toUpperCase()
 	}
 }
 export function strValid(val) {
@@ -70,9 +89,9 @@ export function strValid(val) {
 	} else {
 		// it's something else
 		throw error(500, {
-			message: `"${val}" is not a valid string.`,
-			codeFile: 'model.utils.js',
-			sourceObject: 'strValid'
+			file: FILENAME,
+			function: 'strValid',
+			message: `"${val}" is not a valid string.`
 		})
 	}
 }

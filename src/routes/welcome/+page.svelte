@@ -1,20 +1,31 @@
 <script lang="ts">
+	import { Form as FormDefn } from '$comps/esp/form/form'
 	import { goto } from '$app/navigation'
 	import logo from '$assets/YO-Baltimore-logo.png'
 	import { Drawer, drawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import Form from '$comps/esp/form/Form.svelte'
-	import DATABUS from '$lib/utils/databus.utils'
+
+	const FILENAME = 'routes/welcome/+page.svelte'
 
 	export let data
-	$: pageCurrent = 'auth_signup'
-	$: securityCode = 0
 
+	$: pageCurrent = ''
+	$: securityCode = 0
+	$: forms = initForms()
+	$: data = []
+	$: verifyFrom = ''
+
+	function initForms() {
+		let forms = []
+		for (const [key, value] of Object.entries(data)) {
+			forms[key] = new FormDefn(value)
+		}
+		return forms
+	}
 	function goBack() {
 		history.back()
 	}
-
 	function openPage(page: string) {
-		console.log('openPage: ', page)
 		pageCurrent = page
 		const s: DrawerSettings = {
 			id: 'demo',
@@ -24,60 +35,61 @@
 		}
 		drawerStore.open(s)
 	}
-
-	function formSubmitted(event) {
+	async function onFormSubmitted(event) {
 		const formId = event.detail
-		console.log('welcome.page - formSubmitted:', formId)
-		let formData
-
-		// alert(`form submitted: ${formId}`)
 
 		switch (formId) {
 			case 'auth_login':
-			case 'auth_signup':
-				goto('/home')
-				// formData = DATABUS.get('form', formId)
-
-				// const pwLogin = DATABUS.getItemFieldValue('form', 'auth_login', 'password')
-				// const pwSignup = DATABUS.getItemFieldValue('form', 'auth_signup', 'password')
-				// if (pwLogin != pwSignup) {
-				// 	alert(
-				// 		'We could not log you in. Please check your mobile phone number and password and try again.'
-				// 	)
-				// 	break
-				// }
-				// initialize()
-				break
-
-			case 'auth_signup':
-				sendCode()
-				openPage('auth_verify_phone_mobile')
+				launch()
 				break
 
 			case 'auth_verify_phone_mobile':
-				formData = DATABUS.get('form', formId)
-				const userSecurityCode = DATABUS.getItemFieldValue('form', formId, 'securityCode')
-				if (securityCode.toString() != userSecurityCode) {
-					alert('You did not enter the correct security code. Please try again.')
-					break
+				// verify security code
+				const userSecurityCode = forms[formId].data.securityCode
+				if (userSecurityCode != securityCode) {
+					alert(
+						'The security code you entered does not match the security we sent. Please try again.'
+					)
+					return
 				}
-				initialize()
+
+				// process verify from form
+				const response = await fetch('', {
+					method: 'POST',
+					body: JSON.stringify({
+						action: 'form_submit',
+						formId: forms[verifyFrom].id,
+						submitAction: forms[verifyFrom].submitAction,
+						data: forms[verifyFrom].getSubmitActionParms()
+					})
+				})
+				const responseData = await response.json()
+				if (!responseData.success) {
+					alert(forms[verifyFrom].submitAction.messageFailure)
+					return
+				}
+				launch()
 				break
+
+			case 'auth_signup':
+			case 'auth_reset_password':
+				verifyFrom = formId
+				sendCode()
+				openPage('auth_verify_phone_mobile')
+				break
+		}
+
+		function launch() {
+			pageCurrent = ''
+			drawerStore.close()
+			goto('/home/cm')
 		}
 	}
 
-	function initialize() {
-		pageCurrent = ''
-		drawerStore.close()
-		const user = DATABUS.get('form', 'auth_signup')
-		DATABUS.upsert('cookie', 'user', user)
-		goto('/home')
-	}
-
-	function formLink(event) {
+	async function onFormLink(event) {
 		// switch page
-		if (event.detail.startsWith('auth_')) {
-			sendCode()
+
+		if (Object.keys(forms).some((key) => key === event.detail)) {
 			openPage(event.detail)
 			return
 		}
@@ -85,37 +97,42 @@
 		// other functions
 		switch (event.detail) {
 			case 'resend_security_code':
-				sendCode()
+				await sendCode()
 				break
 		}
 	}
 
-	function sendCode() {
+	async function sendCode() {
 		const min = 100000
 		const max = 999999
 		securityCode = Math.floor(Math.random() * (max - min + 1)) + min
+		const response = await fetch('', {
+			method: 'POST',
+			body: JSON.stringify({
+				action: 'sms_send',
+				phoneMobile: '2487985578',
+				message: `Mobile phone number verification code: ${securityCode}`
+			})
+		})
 	}
 </script>
 
 <Drawer>
-	{#if pageCurrent == 'auth_signup'}
-		<Form formInit={data.auth_signup} on:form-submitted={formSubmitted} on:form-link={formLink} />
-	{:else if pageCurrent == 'auth_login'}
-		<Form formInit={data.auth_login} on:form-submitted={formSubmitted} on:form-link={formLink} />
-	{:else if pageCurrent == 'auth_verify_phone_mobile'}
-		Security Code: {securityCode}
-		<Form
-			formInit={data.auth_verify_phone_mobile}
-			on:form-submitted={formSubmitted}
-			on:form-link={formLink}
-		/>
-	{:else if pageCurrent == 'auth_reset_password'}
-		<Form
-			formInit={data.auth_reset_password}
-			on:form-submitted={formSubmitted}
-			on:form-link={formLink}
-		/>
-	{/if}
+	<p>Security Code: {securityCode}</p>
+	<!-- <p>Current Page: {pageCurrent}</p> -->
+	{#each Object.entries(forms) as [key, value], index}
+		{@const form = value}
+		{#if pageCurrent == form.id}
+			<!-- <h3>Form Data</h3>
+			<pre>{JSON.stringify(data[index], null, 2)}</pre> -->
+			<Form
+				{form}
+				bind:responseData={data[index]}
+				on:formSubmitted={onFormSubmitted}
+				on:form-link={onFormLink}
+			/>
+		{/if}
+	{/each}
 </Drawer>
 
 <div id="full-screen" class="container">
@@ -136,7 +153,7 @@
 				class="btn variant-ringed-primary w-full mt-1"
 				on:click={() => openPage('auth_login')}
 			>
-				Login
+				Log in
 			</button>
 		</div>
 	</div>

@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { process } from '$comps/esp/form/formProcess'
 	import {
 		Form,
-		FooterText,
 		Validation,
 		ValidityField,
 		ValidityLevel,
@@ -14,12 +12,11 @@
 	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
 	import FormLink from '$comps/esp/form/FormLink.svelte'
-	import { applyAction, enhance, type SubmitFunction } from '$app/forms'
 	import DATABUS from '$lib/utils/databus.utils'
 	import { createEventDispatcher } from 'svelte'
 
-	export let formInit = {}
-	$: form = new Form(formInit)
+	export let form: Form
+	export let responseData = {}
 
 	const dispatch = createEventDispatcher()
 
@@ -40,84 +37,49 @@
 		const v: Validation = form.fields[idx].validate(formData)
 		setValidities(v.validityFields)
 	}
+	function setValidities(newValidities: [ValidityField]) {
+		newValidities.forEach(({ index, validity }) => {
+			form.fields[index].validity = validity
+		})
+	}
 
-	function validateForm(formData): Validation {
+	async function submitForm(event: Event) {
+		// validate form
+		const formEl = event.target as HTMLFormElement
+		const formData = new FormData(formEl)
+
 		const v: Validation = form.validateForm(formData)
 		if (v.status != ValidationStatus.valid) {
 			setValidities(v.validityFields)
 			return v
 		}
-		DATABUS.upsert('form', form.id, v.data)
-		return v
-	}
-
-	async function onSubmit(event: Event) {
-		// validate form
-		const formEl = event.target as HTMLFormElement
-		const formData = new FormData(formEl)
-
-		const v: Validation = validateForm(formData)
-		if (v.status == ValidationStatus.invalid) {
-			return
-		}
 
 		// save form data to bus
-		DATABUS.upsert('form', form.id, v.data)
+		DATABUS.upsert('form', form.id, form.data)
 
-		// post form
-		console.log('onSubmit.server route:', form.submitServerRoute)
-		const response = await fetch('', {
-			method: 'POST',
-			body: JSON.stringify({
-				formId: form.id,
-				actionType: form.submitAction.type,
-				actionURL: form.submitAction.url,
-				actionMethod: form.submitAction.method,
-				actionData: form.submitActionData(v.data)
+		// post form to server
+		if (form.submitAction) {
+			const url = form.submitAction.processLocally ? '' : '/api/formFetch'
+
+			const response = await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify({
+					action: 'form_submit',
+					formId: form.id,
+					submitAction: form.submitAction,
+					data: form.getSubmitActionParms()
+				})
 			})
-		})
-		const responseData = await response.json()
-		if (responseData.success == false) {
-			alert(form.submitAction.messageFailure)
-			return
-		}
-		console.log('form submission successful...')
-		console.log(JSON.stringify(responseData))
-		dispatch('form-submitted', form.id)
-	}
 
-	const handleSubmitOld: SubmitFunction = ({ form, data, action, cancel, submitter }) => {
-		// before form submit
-		const v: Validation = validateForm(data)
-		if (v.status == ValidationStatus.invalid) {
-			alert(`handleSubmit - validation failed...`)
-			cancel
-		}
-
-		// temp
-		alert(`handleSubmit - formId: ${form.id}`)
-		dispatch('form-submitted', form.id)
-		cancel()
-
-		// submitting
-
-		// results
-		return async ({ result }) => {
-			if (result.type === 'success') {
-				console.log('result: sucess')
-				await applyAction(result)
-			}
-
-			if (result.type === 'failure') {
-				console.log('result: failure')
+			// process response
+			responseData = await response.json()
+			if (responseData.success == false) {
+				alert(form.submitAction.messageFailure)
+				return
 			}
 		}
-	}
-
-	function setValidities(newValidities: [ValidityField]) {
-		newValidities.forEach(({ index, validity }) => {
-			form.fields[index].validity = validity
-		})
+		// alert parent
+		dispatch('formSubmitted', form.id)
 	}
 </script>
 
@@ -132,8 +94,8 @@
 			</p>
 		</div>
 	{/if}
-	<!-- <form id={form.id} method="POST" action={form.action} use:enhance={handleSubmit}> -->
-	<form id={form.id} on:submit|preventDefault={onSubmit}>
+
+	<form id={form.id} on:submit|preventDefault={submitForm}>
 		{#each form.fields as field, index (field.name)}
 			<div class:mt-3={index}>
 				{#if field.type === 'checkbox'}
@@ -165,7 +127,7 @@
 		>
 	</form>
 	{#each form.footerText as txt}
-		<div class="text-center {txt.size}">
+		<div class="text-center {txt.fontSize}">
 			<p>{txt.label}</p>
 		</div>
 	{/each}
@@ -174,4 +136,5 @@
 	{/each}
 </div>
 
-<!-- <pre>{JSON.stringify(form, null, 2)}</pre> -->
+<!-- Form Definition:
+<pre>{JSON.stringify(form, null, 2)}</pre> -->

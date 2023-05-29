@@ -36,7 +36,6 @@
 		"@capacitor/geolocation": "^5.0.2",
 		"axios": "^1.4.0",
 		"faunadb": "^4.8.0",
-		"qs": "^6.11.2",
 		"twilio": "^4.11.0"
 	}
 }

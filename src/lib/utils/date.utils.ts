@@ -5,7 +5,7 @@ export function formatDate(date) {
 	try {
 		formattedDate = new Date(date).toLocaleDateString()
 	} catch (err) {
-		console.error('dateUtils.formatDate - Invalid date: ', date)
+		console.error('/utils/dateUtils.formatDate - Invalid date: ', date)
 	}
 	return formattedDate
 }
@@ -16,7 +16,7 @@ export function isValidDate(date) {
 		let d = new Date(date)
 		isValid = d.toString() !== 'Invalid Date'
 	} catch (err) {
-		console.error('dateUtils.isValidDate - Invalid Date: ', date)
+		console.error('/utils/dateUtils.isValidDate - Invalid Date: ', date)
 		isValid = false
 	}
 	return isValid

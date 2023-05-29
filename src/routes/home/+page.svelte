@@ -3,22 +3,15 @@
 	export let data
 </script>
 
-{#if data?.quote}
-	<Quotes quote={data.quote} />
-{/if}
-
 <div class="esp-card">
-	<h2>Home</h2>
+	<h2>Home (Master)</h2>
 
 	<ul>
 		<li>
-			<a href="/home/cm/temp/profile">Profile</a>
+			<a href="/home/cm/">Case Manager</a>
 		</li>
 		<li>
-			<a href="/home/cm/temp/docs">Docs</a>
-		</li>
-		<li>
-			<a href="/home/cm/temp/message">Message Us</a>
+			<a href="/home/app2">App 2</a>
 		</li>
 	</ul>
 </div>
