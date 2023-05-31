@@ -1,4 +1,4 @@
-import { SubmitActionTarget } from '$comps/esp/form/form'
+import { SubmitActionTarget } from '$comps/esp/form/types'
 import { fetchESP } from '$server/esp'
 import { error } from '@sveltejs/kit'
 

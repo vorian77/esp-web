@@ -10,10 +10,3 @@
 		<!-- <p><span>Category: </span>{quote.category}</p> -->
 	</dir>
 </div>
-
-<style>
-	span,
-	h4 {
-		font-weight: 600;
-	}
-</style>

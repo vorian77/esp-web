@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Field as FieldCheckbox } from '$comps/esp/form/fieldCheckbox'
+	import type { FieldCheckbox } from '$comps/esp/form/fieldCheckbox'
 	export let field: FieldCheckbox
 </script>
 

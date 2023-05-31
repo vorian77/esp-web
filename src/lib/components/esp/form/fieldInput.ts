@@ -6,7 +6,7 @@ import {
 	ValidityField,
 	ValidityType,
 	ValidityLevel
-} from '$comps/esp/form/form'
+} from '$comps/esp/form/types'
 import { Field } from '$comps/esp/form/field'
 import { memberOfEnum, valueOrDefault } from '$utils/utils'
 import { error } from '@sveltejs/kit'

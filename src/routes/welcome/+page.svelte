@@ -11,19 +11,22 @@
 
 	$: pageCurrent = ''
 	$: securityCode = 0
-	$: forms = initForms()
-	$: data = []
 	$: verifyFrom = ''
+	const forms1 = initForms()
 
 	function initForms() {
+		console.log('Init forms...')
+		console.log('Pre..')
+		console.log(data)
+
 		let forms = []
 		for (const [key, value] of Object.entries(data)) {
 			forms[key] = new FormDefn(value)
 		}
+
+		console.log('Post..')
+		console.log(forms)
 		return forms
-	}
-	function goBack() {
-		history.back()
 	}
 	function openPage(page: string) {
 		pageCurrent = page
@@ -45,7 +48,7 @@
 
 			case 'auth_verify_phone_mobile':
 				// verify security code
-				const userSecurityCode = forms[formId].data.securityCode
+				const userSecurityCode = forms1[formId].data.securityCode
 				if (userSecurityCode != securityCode) {
 					alert(
 						'The security code you entered does not match the security we sent. Please try again.'
@@ -53,19 +56,19 @@
 					return
 				}
 
-				// process verify from form
+				// process verify-from form
 				const response = await fetch('', {
 					method: 'POST',
 					body: JSON.stringify({
 						action: 'form_submit',
-						formId: forms[verifyFrom].id,
-						submitAction: forms[verifyFrom].submitAction,
-						data: forms[verifyFrom].getSubmitActionParms()
+						formId: forms1[verifyFrom].id,
+						submitAction: forms1[verifyFrom].submitAction,
+						data: forms1[verifyFrom].getSubmitActionParms()
 					})
 				})
 				const responseData = await response.json()
 				if (!responseData.success) {
-					alert(forms[verifyFrom].submitAction.messageFailure)
+					alert(forms1[verifyFrom].submitAction.messageFailure)
 					return
 				}
 				launch()
@@ -88,8 +91,7 @@
 
 	async function onFormLink(event) {
 		// switch page
-
-		if (Object.keys(forms).some((key) => key === event.detail)) {
+		if (Object.keys(forms1).some((key) => key === event.detail)) {
 			openPage(event.detail)
 			return
 		}
@@ -106,11 +108,11 @@
 		const min = 100000
 		const max = 999999
 		securityCode = Math.floor(Math.random() * (max - min + 1)) + min
-		const response = await fetch('', {
+		await fetch('', {
 			method: 'POST',
 			body: JSON.stringify({
 				action: 'sms_send',
-				phoneMobile: '2487985578',
+				phoneMobile: forms1[verifyFrom].data.phoneMobile,
 				message: `Mobile phone number verification code: ${securityCode}`
 			})
 		})
@@ -118,26 +120,17 @@
 </script>
 
 <Drawer>
-	<p>Security Code: {securityCode}</p>
-	<!-- <p>Current Page: {pageCurrent}</p> -->
-	{#each Object.entries(forms) as [key, value], index}
+	{#each Object.entries(forms1) as [key, value], index}
 		{@const form = value}
 		{#if pageCurrent == form.id}
-			<!-- <h3>Form Data</h3>
-			<pre>{JSON.stringify(data[index], null, 2)}</pre> -->
-			<Form
-				{form}
-				bind:responseData={data[index]}
-				on:formSubmitted={onFormSubmitted}
-				on:form-link={onFormLink}
-			/>
+			<Form {form} on:formSubmitted={onFormSubmitted} on:form-link={onFormLink} />
 		{/if}
 	{/each}
 </Drawer>
 
 <div id="full-screen" class="container">
 	<div class="content">
-		<img class="mx-auto" src={logo} width="260" alt="YO logo" on:click={goBack} />
+		<img class="mx-auto" src={logo} width="260" alt="YO logo" />
 
 		<!-- button group -->
 		<div class="flex-box">

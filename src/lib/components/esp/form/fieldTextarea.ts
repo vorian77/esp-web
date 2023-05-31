@@ -1,16 +1,16 @@
 import { Field } from '$comps/esp/form/field'
-import { memberOfEnum, valueOrDefault } from '$utils/utils'
-import { Validation, ValidationStatus } from '$comps/esp/form/form'
+import { valueOrDefault } from '$utils/utils'
+import { Validation, ValidationStatus } from '$comps/esp/form/types'
 
 export class FieldTextarea extends Field {
 	rows: number
 	cols: number
-	constructor(defn: {}, index: number) {
-		super(defn, index)
+	constructor(obj: {}, index: number) {
+		super(obj, index)
 
-		defn = valueOrDefault(defn, {})
-		this.rows = valueOrDefault(defn.rows, 4)
-		this.cols = valueOrDefault(defn.cols, 50)
+		obj = valueOrDefault(obj, {})
+		this.rows = valueOrDefault(obj.rows, 4)
+		this.cols = valueOrDefault(obj.cols, 50)
 	}
 	validate(formData): Validation {
 		const v = super.validate(formData)

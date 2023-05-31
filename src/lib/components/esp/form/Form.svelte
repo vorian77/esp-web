@@ -1,11 +1,6 @@
 <script lang="ts">
-	import {
-		Form,
-		Validation,
-		ValidityField,
-		ValidityLevel,
-		ValidationStatus
-	} from '$comps/esp/form/form'
+	import type { Form } from '$comps/esp/form/form'
+	import { Validation, ValidityField, ValidityLevel, ValidationStatus } from '$comps/esp/form/types'
 	import FormElInp from '$comps/esp/form/FormElInp.svelte'
 	import FormElInpCheckbox from '$comps/esp/form/FormElInpCheckbox.svelte'
 	import FormElInpRadio from '$comps/esp/form/FormElInpRadio.svelte'

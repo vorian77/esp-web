@@ -62,7 +62,7 @@
 			>2. Take a picture of the document.</button
 		>
 
-		<img class="mx-auto mt-2" src={currentPict} alt="Eligibility Document Image" width="250" />
+		<img class="mx-auto mt-2" src={currentPict} alt="Eligibility Document" width="250" />
 
 		<button type="button" class="btn variant-filled-primary w-full mt-2" on:click={msg}
 			>3. Submit Document</button

@@ -12,8 +12,7 @@
 
 <AppShell>
 	<AppBar>
-		<div on:click={goBack}>Welcome, {user}</div></AppBar
-	>
-
+		<div on:click={goBack}>Welcome, {user}</div>
+	</AppBar>
 	<slot />
 </AppShell>

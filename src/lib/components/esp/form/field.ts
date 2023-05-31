@@ -1,5 +1,6 @@
 import { memberOfEnum, strRqd, strLower, valueOrDefault } from '$utils/utils'
 import {
+	FieldElement,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -7,8 +8,7 @@ import {
 	ValidityField,
 	ValidityType,
 	ValidityLevel
-} from '$comps/esp/form/form'
-import { error } from '@sveltejs/kit'
+} from '$comps/esp/form/types'
 
 const COMPONENT = '/$comps/esp/form/field.ts/'
 
@@ -16,8 +16,8 @@ export class Field {
 	index: number
 	element: FieldElement
 	name: string
-	label: string
 	access: FieldAccess
+	label: string
 	disabled: boolean
 	validity: Validity
 	value: string
@@ -25,19 +25,21 @@ export class Field {
 	constructor(obj: {}, index: number) {
 		obj = valueOrDefault(obj, {})
 		this.index = index
-
 		this.element = memberOfEnum(
 			strLower(strRqd(obj.element, COMPONENT + 'Field.element')),
 			'FieldElement',
 			FieldElement
 		)
 		this.name = strRqd(obj.name, COMPONENT + 'Field.name')
-		this.label = strRqd(obj.label, COMPONENT + 'Field.label')
 		this.access = memberOfEnum(
 			valueOrDefault(obj.access, FieldAccess.required),
 			'FieldAccess',
 			FieldAccess
 		)
+		this.label = strRqd(obj.label, COMPONENT + 'Field.label')
+		if (this.access == FieldAccess.optional) {
+			this.label += ' (optional)'
+		}
 		this.disabled = this.access == FieldAccess.displayOnly
 		this.validity = new Validity()
 		this.value = valueOrDefault(obj.value, '')
@@ -114,9 +116,4 @@ export enum FieldAccess {
 	required = 'required',
 	optional = 'optional',
 	displayOnly = 'displayonly'
-}
-export enum FieldElement {
-	input = 'input',
-	select = 'select',
-	textarea = 'textarea'
 }

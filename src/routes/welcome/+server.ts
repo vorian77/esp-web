@@ -4,14 +4,14 @@ import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/welcome/+server.ts'
 
-export async function POST({ request, cookies }) {
+export async function POST({ request, cookies, locals }) {
 	const requestData = await request.json()
 	const { action } = requestData
 
 	switch (action) {
 		case 'sms_send':
 			const { phoneMobile, message } = requestData
-			sendText(phoneMobile, message)
+			return sendText(phoneMobile, message)
 			break
 
 		case 'form_submit':
@@ -23,9 +23,9 @@ export async function POST({ request, cookies }) {
 				case 'auth_signup':
 					const response = await fetchESP(submitAction, data)
 					const responseData = await response.json()
-					const id = responseData.applicantId
+					const userId = responseData.applicantId
 
-					cookies.set('session_id', id, {
+					cookies.set('session_id', userId, {
 						path: '/',
 						httpOnly: true,
 						sameSite: 'strict',

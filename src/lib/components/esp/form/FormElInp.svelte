@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { FieldInput } from '$comps/esp/form/fieldInput'
-	import { ValidityLevel } from '$comps/esp/form/form'
+	import { ValidityLevel } from '$comps/esp/form/types'
 
 	export let field: FieldInput
 </script>

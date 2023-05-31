@@ -1,15 +1,15 @@
 import { Field } from '$comps/esp/form/field'
 import { valueOrDefault } from '$utils/utils'
-import { Validation, ValidationStatus } from '$comps/esp/form/form'
+import { Validation, ValidationStatus } from '$comps/esp/form/types'
 
 export class FieldSelect extends Field {
 	items: []
-	constructor(defn: {}, index: number) {
-		super(defn, index)
+	constructor(obj: {}, index: number) {
+		super(obj, index)
 
-		defn = valueOrDefault(defn, {})
+		obj = valueOrDefault(obj, {})
 
-		this.items = valueOrDefault(defn.items, [])
+		this.items = valueOrDefault(obj.items, [])
 		this.items = this.initItems(this.items)
 	}
 	validate(formData): Validation {
