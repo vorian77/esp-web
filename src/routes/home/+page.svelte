@@ -1,5 +1,5 @@
 <div class="esp-card">
-	<h2>Home (Master)</h2>
+	<h1>Home (Master)</h1>
 
 	<ul>
 		<li>

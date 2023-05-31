@@ -23,3 +23,8 @@ export async function dbSelect(query: string) {
 	let result = await dbConn.query(query)
 	return result[0]
 }
+
+// import { dbSelect } from '$server/dbMySQL'
+// const r = dbSelect('select * from esp.sessions')
+// const d = await r
+// console.log(d)

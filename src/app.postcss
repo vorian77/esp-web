@@ -1,23 +1,25 @@
-/*
-	Modified from Skeleton guidelines per: 
-	https://github.com/skeletonlabs/skeleton/issues/1152
-	Allows build to work when @apply is used with Skeleton classes, such as "card"
- */
-@import './theme.postcss'; /* custom esp theme that rather than a Skeleton theme*/
-@import '@skeletonlabs/skeleton/styles/all.css';
-
-/*place global styles here */
 html,
 body {
-	@apply h-full overflow-hidden;
+	@apply h-full;
+	/* @apply h-full overflow-hidden; */
 }
+
 body {
-	background: whitesmoke;
+	background: white;
 	@apply dark:bg-surface-700;
 }
+
 fieldset {
 	@apply border border-surface-400-500-token focus:border-surface-400-500-token rounded-lg px-3 pb-2;
 }
+
+h1 {
+	@apply font-semibold;
+}
+
 .esp-card {
-	@apply card p-4 bg-white text-token space-y-4 m-3;
+	@apply card p-4 bg-white text-token space-y-4 mt-3 rounded-lg;
+}
+.esp-card-modal {
+	@apply card p-4 bg-white text-token space-y-4;
 }

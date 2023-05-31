@@ -12,7 +12,15 @@
 
 <AppShell>
 	<AppBar>
-		<div on:click={goBack}>Welcome, {user}</div>
+		<div class="text-xs" on:click={goBack}>Welcome, {user}</div>
 	</AppBar>
-	<slot />
+	<div id="body">
+		<slot />
+	</div>
 </AppShell>
+
+<style>
+	#body {
+		padding: 15px 15px 15px 15px;
+	}
+</style>

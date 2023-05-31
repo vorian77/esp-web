@@ -12,6 +12,7 @@
 
 	export let form: Form
 	export let responseData = {}
+	export let surface = ''
 
 	const dispatch = createEventDispatcher()
 
@@ -78,12 +79,12 @@
 	}
 </script>
 
-<div class="esp-card">
+<div class={surface}>
 	{#if form.header}
-		<h1 class={form.subHeader ? '-mb-3' : ''}>{form.header}</h1>
+		<h1 class="h1 {form.subHeader ? '' : 'mb-5'}">{form.header}</h1>
 	{/if}
 	{#if form.subHeader}
-		<div class="-mt-8">
+		<div class="mb-5">
 			<p class="text-sm text-gray-500">
 				{form.subHeader}
 			</p>

@@ -116,7 +116,12 @@
 	{#each Object.entries(forms) as [key, value], index}
 		{@const form = value}
 		{#if pageCurrent == form.id}
-			<Form {form} on:formSubmitted={onFormSubmitted} on:form-link={onFormLink} />
+			<Form
+				{form}
+				surface="esp-card-modal"
+				on:formSubmitted={onFormSubmitted}
+				on:form-link={onFormLink}
+			/>
 		{/if}
 	{/each}
 </Drawer>

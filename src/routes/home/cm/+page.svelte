@@ -8,23 +8,23 @@
 {/if}
 
 <div class="esp-card">
-	<h2>CaseManager Home</h2>
+	<h1>CaseManager Home</h1>
 
 	<ul>
 		<li>
-			<a href="/home/cm/profile">Profile</a>
+			<a class="anchor" href="/home/cm/profile">Profile</a>
 		</li>
 		<li>
-			<a href="/home/cm/docs">Docs</a>
+			<a class="anchor" href="/home/cm/docs">Docs</a>
 		</li>
 		<li>
-			<a href="/home/cm/message">Message Us</a>
+			<a class="anchor" href="/home/cm/message">Message Us</a>
 		</li>
 		<li>
-			<a href="/home/cm/temp/example">Example Form</a>
+			<a class="anchor" href="/home/cm/temp/example">Example Form</a>
 		</li>
 		<li>
-			<a href="/logout">Log out</a>
+			<a class="anchor" href="/logout">Log out</a>
 		</li>
 	</ul>
 </div>
