@@ -12,20 +12,13 @@
 	$: pageCurrent = ''
 	$: securityCode = 0
 	$: verifyFrom = ''
-	const forms1 = initForms()
+	const forms = initForms()
 
 	function initForms() {
-		console.log('Init forms...')
-		console.log('Pre..')
-		console.log(data)
-
 		let forms = []
 		for (const [key, value] of Object.entries(data)) {
 			forms[key] = new FormDefn(value)
 		}
-
-		console.log('Post..')
-		console.log(forms)
 		return forms
 	}
 	function openPage(page: string) {
@@ -48,7 +41,7 @@
 
 			case 'auth_verify_phone_mobile':
 				// verify security code
-				const userSecurityCode = forms1[formId].data.securityCode
+				const userSecurityCode = forms[formId].data.securityCode
 				if (userSecurityCode != securityCode) {
 					alert(
 						'The security code you entered does not match the security we sent. Please try again.'
@@ -61,14 +54,14 @@
 					method: 'POST',
 					body: JSON.stringify({
 						action: 'form_submit',
-						formId: forms1[verifyFrom].id,
-						submitAction: forms1[verifyFrom].submitAction,
-						data: forms1[verifyFrom].getSubmitActionParms()
+						formId: forms[verifyFrom].id,
+						submitAction: forms[verifyFrom].submitAction,
+						data: forms[verifyFrom].getSubmitActionParms()
 					})
 				})
 				const responseData = await response.json()
 				if (!responseData.success) {
-					alert(forms1[verifyFrom].submitAction.messageFailure)
+					alert(forms[verifyFrom].submitAction.messageFailure)
 					return
 				}
 				launch()
@@ -91,7 +84,7 @@
 
 	async function onFormLink(event) {
 		// switch page
-		if (Object.keys(forms1).some((key) => key === event.detail)) {
+		if (Object.keys(forms).some((key) => key === event.detail)) {
 			openPage(event.detail)
 			return
 		}
@@ -112,7 +105,7 @@
 			method: 'POST',
 			body: JSON.stringify({
 				action: 'sms_send',
-				phoneMobile: forms1[verifyFrom].data.phoneMobile,
+				phoneMobile: forms[verifyFrom].data.phoneMobile,
 				message: `Mobile phone number verification code: ${securityCode}`
 			})
 		})
@@ -120,7 +113,7 @@
 </script>
 
 <Drawer>
-	{#each Object.entries(forms1) as [key, value], index}
+	{#each Object.entries(forms) as [key, value], index}
 		{@const form = value}
 		{#if pageCurrent == form.id}
 			<Form {form} on:formSubmitted={onFormSubmitted} on:form-link={onFormLink} />

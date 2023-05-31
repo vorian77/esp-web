@@ -2,10 +2,10 @@ import faunadb from 'faunadb'
 export const q = faunadb.query
 import { error } from '@sveltejs/kit'
 
+const FILENAME = '/server/dbFauna.ts'
+
 // Acquire the env var
 import { FAUNADB_SECRET } from '$env/static/private'
-
-const FILENAME = '/server/dbFauna.ts'
 
 if (typeof FAUNADB_SECRET === 'undefined' || FAUNADB_SECRET === '') {
 	throw error(401, {

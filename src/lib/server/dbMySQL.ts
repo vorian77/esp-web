@@ -1,5 +1,7 @@
 import mysql from 'mysql2/promise'
 
+import { MYSQL_PASSWORD } from '$env/static/private'
+
 let dbConn = await db()
 
 async function db() {
@@ -10,8 +12,8 @@ async function db() {
 			host: 'esp-web-mysql-do-user-13618756-0.b.db.ondigitalocean.com',
 			port: 25060,
 			user: 'doadmin',
-			password: 'AVNS_sthZAdW_0hTt_9-h76N',
-			database: 'defaultdb'
+			password: MYSQL_PASSWORD,
+			database: 'esp'
 		})
 	}
 	return mysqlconn
