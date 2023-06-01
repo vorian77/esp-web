@@ -1,5 +1,5 @@
 import { API_NINJAS_SECRET } from '$env/static/private'
-import { getArrayItemFirst } from '$utils/utils'
+import { getResponseObj } from '$utils/utils'
 const CATEGORIES = ['inspirational', 'courage']
 // const categories = [
 // 	'amazing',
@@ -58,15 +58,18 @@ export async function fetchQuote() {
 		category: 'inspirational'
 	}
 
-	const quotesRes = await fetch(api, {
-		method: 'GET',
-		headers: {
-			'X-API-KEY': API_NINJAS_SECRET,
-			contentType: 'application/json'
-		}
-	})
+	// const quotesRes = await fetch(api, {
+	// 	method: 'GET',
+	// 	headers: {
+	// 		'X-API-KEY': API_NINJAS_SECRET,
+	// 		contentType: 'application/json'
+	// 	}
+	// })
+	// const quotes = await quotesRes.json()
 
-	const quote = getArrayItemFirst(await quotesRes.json(), demoQuote)
+	const quotes = []
+
+	const quote = getResponseObj(quotes, demoQuote)
 	const color = { color: COLORS[Math.floor(Math.random() * COLORS.length)] }
 
 	return { ...quote, ...color }

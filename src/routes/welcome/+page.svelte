@@ -56,7 +56,7 @@
 						action: 'form_submit',
 						formId: forms[verifyFrom].id,
 						submitAction: forms[verifyFrom].submitAction,
-						data: forms[verifyFrom].getSubmitActionParms()
+						data: forms[verifyFrom].data
 					})
 				})
 				const responseData = await response.json()

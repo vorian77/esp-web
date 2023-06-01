@@ -122,6 +122,7 @@ export enum SubmitActionMethod {
 }
 export enum SubmitActionParmType {
 	clone = 'clone',
+	env = 'env',
 	literal = 'literal'
 }
 export enum SubmitActionTarget {

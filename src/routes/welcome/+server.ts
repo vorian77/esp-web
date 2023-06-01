@@ -1,5 +1,6 @@
-import { fetchESP } from '$server/esp'
 import { sendText } from '$server/twilio'
+import { getResponseObj } from '$utils/utils'
+import { formFetch } from '$server/formFetch'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/welcome/+server.ts'
@@ -21,9 +22,17 @@ export async function POST({ request, cookies, locals }) {
 				case 'auth_login':
 				case 'auth_reset_password':
 				case 'auth_signup':
-					const response = await fetchESP(submitAction, data)
-					const responseData = await response.json()
+					const response = await formFetch(submitAction, data)
+					const responseData = getResponseObj(await response.json(), {})
+
 					const userId = responseData.applicantId
+					if (!userId) {
+						throw error(500, {
+							file: FILENAME,
+							function: `POST.form_submit: ${formId}`,
+							message: `Invalid userId returned. Parms: ${JSON.stringify(data)}`
+						})
+					}
 
 					cookies.set('session_id', userId, {
 						path: '/',
@@ -42,7 +51,7 @@ export async function POST({ request, cookies, locals }) {
 					throw error(500, {
 						file: FILENAME,
 						function: 'POST',
-						message: `No case defined for SubmitAction.target: ${target}`
+						message: `No case defined for formId: ${formId}`
 					})
 			}
 			break

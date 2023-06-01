@@ -4,10 +4,10 @@ import { error } from '@sveltejs/kit'
 
 const FILENAME = '/server/esp.ts'
 
-export async function fetchESP(submitAction: SubmitAction, data: {}) {
+export async function fetchESP(submitAction: SubmitAction, parms: {}) {
 	switch (submitAction.target) {
 		case SubmitActionTarget.esp_api:
-			return await fetchESPAPI(submitAction.method, submitAction.url, data)
+			return await fetchESPAPI(submitAction.method, submitAction.url, parms)
 			break
 
 		case SubmitActionTarget.esp_sql:
@@ -15,14 +15,14 @@ export async function fetchESP(submitAction: SubmitAction, data: {}) {
 	}
 }
 
-export async function fetchESPAPI(method, url, data) {
+export async function fetchESPAPI(method, url, parms) {
 	let options = { method, url: 'https://esp1.kssc.com:3000/esp/' + url }
 	switch (method.toLowerCase()) {
 		case 'get':
-			options.params = data
+			options.params = parms
 			break
 		default:
-			options.data = data
+			options.data = parms
 	}
 
 	try {

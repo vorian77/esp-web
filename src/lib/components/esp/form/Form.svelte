@@ -56,6 +56,10 @@
 		// post form to server
 		if (form.submitAction) {
 			const url = form.submitAction.processLocally ? '' : '/api/formFetch'
+			console.log('Form...')
+			console.log(form.id)
+			console.log(form.data)
+			console.log(form.submitAction)
 
 			const response = await fetch(url, {
 				method: 'POST',
@@ -63,7 +67,7 @@
 					action: 'form_submit',
 					formId: form.id,
 					submitAction: form.submitAction,
-					data: form.getSubmitActionParms()
+					data: form.data
 				})
 			})
 

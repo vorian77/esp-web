@@ -21,6 +21,9 @@
 			<a class="anchor" href="/home/cm/message">Message Us</a>
 		</li>
 		<li>
+			<a class="anchor" href="/home/cm/temp/apiTest">ESP API Test</a>
+		</li>
+		<li>
 			<a class="anchor" href="/home/cm/temp/example">Example Form</a>
 		</li>
 		<li>

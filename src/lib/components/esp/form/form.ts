@@ -106,48 +106,8 @@ export class Form {
 				return v
 			}
 		}
-		console.log(FILENAME + '.values...')
-		console.log(values)
 		this.data = values
 		return new Validation(ValidationType.form, ValidationStatus.valid, validityFields, values)
-	}
-
-	getSubmitActionParms() {
-		switch (this.submitAction?.target) {
-			case SubmitActionTarget.esp_api:
-				let parms = {}
-				this.submitAction.parms.forEach(({ name, type, source }) => {
-					switch (type) {
-						case SubmitActionParmType.clone:
-							// parms[name] = getValue(source, data)
-							parms[name] = this.data[name]
-							break
-						case SubmitActionParmType.literal:
-							parms[name] = source
-							break
-						default:
-							throw error(500, {
-								file: FILENAME,
-								function: 'submitActionData',
-								message: `No case defined for Form.SubmitAction.parms.type: "${type}".`
-							})
-					}
-				})
-				return parms
-				break
-
-			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'submitActionData',
-					message: `No case defined for Form.submitAction.type: "${this.submitAction.type}".`
-				})
-		}
-	}
-
-	updateSubmitAction(submitAction: SubmitAction, data: {}) {
-		this.submitAction = submitAction
-		this.data = data
 	}
 
 	getFieldValue(fieldName: string) {
