@@ -1,17 +1,17 @@
 <script>
-	import { Geolocation } from '@capacitor/geolocation';
+	import { Geolocation } from '@capacitor/geolocation'
 
-	let lat;
-	let long;
+	let lat
+	let long
 
 	async function getLocation() {
-		const position = await Geolocation.getCurrentPosition();
-		lat = position.coords.latitude;
-		long = position.coords.longitude;
+		const position = await Geolocation.getCurrentPosition()
+		lat = position.coords.latitude
+		long = position.coords.longitude
 	}
 </script>
 
-<div class="esp-card">
+<div class="esp-card-space-y">
 	<h3 class="font-bold">Geolocation API Test</h3>
 	<section class="">
 		<p class="text-slate-400 italic">

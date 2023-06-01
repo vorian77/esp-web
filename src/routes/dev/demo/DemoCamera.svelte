@@ -1,19 +1,19 @@
 <script>
-	import { Camera, CameraResultType } from '@capacitor/camera';
+	import { Camera, CameraResultType } from '@capacitor/camera'
 
-	let currentPict;
+	let currentPict
 
 	const takePicture = async () => {
 		const image = await Camera.getPhoto({
 			quality: 90,
 			allowEditing: true,
 			resultType: CameraResultType.Uri
-		});
-		currentPict = image.webPath;
-	};
+		})
+		currentPict = image.webPath
+	}
 </script>
 
-<div class="esp-card">
+<div class="esp-card-space-y">
 	<h3 class="font-bold">Camera API Test</h3>
 	<section class="">
 		<p class="text-slate-400 italic">

@@ -7,8 +7,8 @@
 	<Quotes quote={data.quote} />
 {/if}
 
-<div class="esp-card">
-	<h1>CaseManager Home</h1>
+<div class="esp-card-space-y">
+	<h1 class="h1">CaseManager Home</h1>
 
 	<ul>
 		<li>

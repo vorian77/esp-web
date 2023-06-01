@@ -118,7 +118,7 @@
 		{#if pageCurrent == form.id}
 			<Form
 				{form}
-				surface="esp-card-modal"
+				surface="esp-card-space-y"
 				on:formSubmitted={onFormSubmitted}
 				on:form-link={onFormLink}
 			/>

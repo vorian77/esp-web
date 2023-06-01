@@ -22,3 +22,15 @@ export function getArrayOfModels(clazz, objs) {
 	}
 	return arr
 }
+
+export function getArrayItemFirst(val, dflt) {
+	if (val == null) {
+		return dflt
+	} else if (Array.isArray(val)) {
+		if (val.length == 0) {
+			return dflt
+		} else {
+			return val[0]
+		}
+	}
+}
