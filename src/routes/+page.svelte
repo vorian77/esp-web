@@ -11,16 +11,10 @@
 
 	<ul>
 		<li>
-			<a class="anchor" href="/welcome">Welcome</a>
-		</li>
-		<li>
-			<a class="anchor" href="/home">Home</a>
-		</li>
-		<li>
-			<a class="anchor" href="/home/cm">Case Manager (Placeholders)</a>
-		</li>
-		<li>
 			<a class="anchor" href="/dev/demo">Native API Demo</a>
+		</li>
+		<li>
+			<a class="anchor" href="/apps/cm">Case Manager</a>
 		</li>
 	</ul>
 </div>

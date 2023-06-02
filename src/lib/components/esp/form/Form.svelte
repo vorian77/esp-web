@@ -83,7 +83,7 @@
 	}
 </script>
 
-<div class={surface}>
+<div class="{surface} ">
 	{#if form.header}
 		<h1 class="h1 {form.subHeader ? '' : 'mb-5'}">{form.header}</h1>
 	{/if}

@@ -1,10 +1,10 @@
 <script>
 	import { onMount } from 'svelte'
-	import Icon from '$assets/icons/Icon.svelte'
+	import Icon from '$comps/Icon.svelte'
 	export let quote
 </script>
 
-<div class="rounded-lg p-3 mb-3 bg-green-200">
+<div class="rounded-lg p-3 mb-3 bg-neutral-100">
 	<div class="flex flex-col items-center">
 		<div>
 			<Icon name="quote-enclosed" width="3.5rem" height="3.5rem" fill={quote.color} />

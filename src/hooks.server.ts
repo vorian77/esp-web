@@ -15,7 +15,7 @@ export async function handle({ event, resolve }) {
 		throw redirect(303, '/welcome')
 	}
 
-	if (event.url.pathname.startsWith('/home/cm')) {
+	if (event.url.pathname.startsWith('/apps/cm')) {
 		async function fetchUser() {
 			const response = await fetchESPAPI('GET', 'ws_cm_ssr_user', { userId: sessionId })
 			const resp = getResponseObj(await response.json(), {})

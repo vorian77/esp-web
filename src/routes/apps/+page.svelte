@@ -3,10 +3,10 @@
 
 	<ul>
 		<li>
-			<a class="anchor" href="/home/cm/">Case Manager</a>
+			<a class="anchor" href="/apps/cm/">Case Manager</a>
 		</li>
 		<li>
-			<a class="anchor" href="/home/app2">App 2</a>
+			<a class="anchor" href="/apps/app2">App 2</a>
 		</li>
 	</ul>
 </div>

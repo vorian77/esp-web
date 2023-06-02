@@ -12,19 +12,19 @@
 
 	<ul>
 		<li>
-			<a class="anchor" href="/home/cm/profile">Profile</a>
+			<a class="anchor" href="/apps/cm/profile">Profile</a>
 		</li>
 		<li>
-			<a class="anchor" href="/home/cm/docs">Docs</a>
+			<a class="anchor" href="/apps/cm/docs">Docs</a>
 		</li>
 		<li>
-			<a class="anchor" href="/home/cm/message">Message Us</a>
+			<a class="anchor" href="/apps/cm/message">Message Us</a>
 		</li>
 		<li>
-			<a class="anchor" href="/home/cm/temp/apiTest">ESP API Test</a>
+			<a class="anchor" href="/apps/cm/apiTest">ESP API Test</a>
 		</li>
 		<li>
-			<a class="anchor" href="/home/cm/temp/example">Example Form</a>
+			<a class="anchor" href="/apps/cm/example">Example Form</a>
 		</li>
 		<li>
 			<a class="anchor" href="/logout">Log out</a>

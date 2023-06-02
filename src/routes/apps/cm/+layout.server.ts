@@ -1,8 +1,8 @@
 import { fetchQuote } from '$server/quotes'
 
-const FILENAME = '/routes/home/cm/+layout.server.ts'
+const FILENAME = '/routes/apps/cm/+layout.server.ts'
 
-export async function load({ cookies, locals }) {
+export async function load({ locals }) {
 	return {
 		quote: await fetchQuote(),
 		user: locals.user

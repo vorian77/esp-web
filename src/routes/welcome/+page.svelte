@@ -78,7 +78,7 @@
 		function launch() {
 			pageCurrent = ''
 			drawerStore.close()
-			goto('/home/cm')
+			goto('/apps/cm')
 		}
 	}
 
