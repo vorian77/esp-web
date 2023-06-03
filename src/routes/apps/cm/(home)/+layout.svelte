@@ -7,7 +7,7 @@
 
 <AppShell>
 	<svelte:fragment slot="lead">
-		<p class="text-green-600 font-semibold">{data.user.app_name}</p>
+		<p class="text-blue-500 font-semibold">{data.user.app_name}</p>
 	</svelte:fragment>
 
 	<svelte:fragment slot="body">

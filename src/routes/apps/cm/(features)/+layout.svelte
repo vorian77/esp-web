@@ -22,7 +22,7 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="center">
-		<div class="text-green-600 font-semibold" on:click={goHome} on:keypress={goHome}>
+		<div class="text-blue-500 font-semibold" on:click={goHome} on:keypress={goHome}>
 			{data.user.app_name}
 		</div>
 	</svelte:fragment>

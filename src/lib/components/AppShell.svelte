@@ -10,7 +10,7 @@
 <!-- justify-self-end -->
 <AppShell>
 	<svelte:fragment slot="header">
-		<div class="bg-neutral-50 p-2 w-full flex flex-row justify-between">
+		<div class="bg-neutral-50 p-4 w-full flex flex-row justify-between">
 			<div class="">
 				<slot name="lead" />
 			</div>

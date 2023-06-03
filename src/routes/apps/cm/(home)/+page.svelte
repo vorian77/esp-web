@@ -18,7 +18,7 @@
 			<a class="anchor" href="/apps/cm/docs">Docs</a>
 		</li>
 		<li>
-			<a class="anchor" href="/apps/cm/message">Message Us</a>
+			<a class="anchor" href="/apps/cm/message">Listbox/Message Us</a>
 		</li>
 		<li>
 			<a class="anchor" href="/apps/cm/apiTest">ESP API Test</a>
