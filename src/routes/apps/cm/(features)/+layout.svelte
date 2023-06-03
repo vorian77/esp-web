@@ -4,7 +4,6 @@
 	import { goto } from '$app/navigation'
 
 	export let data
-	const appName = data.user.app_name
 
 	function goBack() {
 		history.back()
@@ -23,8 +22,8 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="center">
-		<div class="" on:click={goHome} on:keypress={goHome}>
-			{appName}
+		<div class="text-green-600 font-semibold" on:click={goHome} on:keypress={goHome}>
+			{data.user.app_name}
 		</div>
 	</svelte:fragment>
 

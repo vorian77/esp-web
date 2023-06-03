@@ -3,14 +3,11 @@
 	import User from '$routes/apps/cm/(home)/User.svelte'
 
 	export let data
-
-	const user = data.user.per_name_full
-	const appName = data.user.app_name
 </script>
 
-<AppShell slotSpanLead="4" slotSpanDefault="1">
+<AppShell>
 	<svelte:fragment slot="lead">
-		<p class="text-green-600 font-semibold">{appName}</p>
+		<p class="text-green-600 font-semibold">{data.user.app_name}</p>
 	</svelte:fragment>
 
 	<svelte:fragment slot="body">
