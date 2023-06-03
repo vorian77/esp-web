@@ -5,7 +5,7 @@
 	export let data
 </script>
 
-<AppShell div1Span="4" div2Start="5" div2Span="1">
+<AppShell>
 	<svelte:fragment slot="lead">
 		<p class="text-green-600 font-semibold">{data.user.app_name}</p>
 	</svelte:fragment>
