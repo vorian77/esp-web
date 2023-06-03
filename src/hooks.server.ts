@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit'
 import { fetchESPAPI } from '$server/esp'
+import { getEnvVar } from '$server/env'
 import { getResponseObj } from '$utils/utils'
 
 const unProtectedRoutes = ['/', '/welcome']
@@ -17,14 +18,24 @@ export async function handle({ event, resolve }) {
 
 	if (event.url.pathname.startsWith('/apps/cm')) {
 		async function fetchUser() {
-			const response = await fetchESPAPI('GET', 'ws_cm_ssr_user', { userId: sessionId })
+			const response = await fetchESPAPI('GET', 'ws_cm_ssr_user', {
+				userId: sessionId,
+				orgId: getEnvVar('ESP_ORG_ID')
+			})
 			const resp = getResponseObj(await response.json(), {})
 			if (!resp.user_id) {
 				throw redirect(303, '/welcome')
 			}
 			return resp
 		}
-		event.locals.user = await fetchUser()
+		let user = await fetchUser()
+		user['referrals'] = user['referrals'].split(';')
+		user['referrals'] = user['referrals'].map((ref) => ref.split(','))
+		user['referrals'] = user['referrals'].map((ref) => new Object({ id: ref[0], site: ref[1] }))
+
+		event.locals.user = user
+		console.log('hooks...')
+		console.log(event.locals.user)
 	}
 	return resolve(event)
 }

@@ -1,3 +1,8 @@
+<script lang="ts">
+	export let data
+	const docsStatus = data.docsStatus
+</script>
+
 <h1 class="h1 mb-5">Proofs of Eligibility</h1>
 <p>
 	You can speed up the processing of your application by submitting digital images of documents that
@@ -14,6 +19,10 @@
 <div>
 	<h2 class="h2">Requirement</h2>
 </div>
+
+{#if { docsStatus }}
+	<pre>{JSON.stringify(docsStatus, null, 2)}</pre>
+{/if}
 
 <style>
 	p {

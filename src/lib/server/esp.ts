@@ -26,9 +26,9 @@ export async function fetchESPAPI(method, url, parms) {
 	}
 
 	try {
-		console.log('Axios.options:', options)
+		// console.log('Axios.options:', options)
 		const resp = await axios(options)
-		console.log('Axios.resp: ', resp.data)
+		// console.log('Axios.resp: ', resp.data)
 		return new Response(JSON.stringify(resp.data))
 	} catch (err: any) {
 		throw error(500, {

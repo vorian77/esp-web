@@ -2,21 +2,21 @@
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton'
 	import Icon from '$comps/Icon.svelte'
 
+	export let slotSpanLead = '1'
+	export let slotSpanDefault = '4'
+
 	function menu() {
 		alert('Open menu...')
 	}
 </script>
 
-<!-- slotDefault="place-self-center" -->
-<!-- slotTrail="place-content-end" -->
-
 <AppShell>
 	<svelte:fragment slot="header">
 		<AppBar
-			gridColumns="grid-cols-3"
-			slotLead="col-span-2"
-			slotDefault=""
-			slotTrail="col-start-4"
+			gridColumns="grid-cols-6 place-items-center"
+			slotLead="col-span-{slotSpanLead} place-self-start"
+			slotDefault="col-span-{slotSpanDefault} place-self-center text-green-600 font-semibold"
+			slotTrail="col-span-1 place-self-end"
 			background="bg-neutral-100"
 		>
 			<svelte:fragment slot="lead">

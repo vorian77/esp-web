@@ -137,7 +137,7 @@
 				class="btn variant-filled-primary w-full mt-10"
 				on:click={() => openPage('auth_signup')}
 			>
-				Sign up
+				Get Started!
 			</button>
 			<button
 				type="button"

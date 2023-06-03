@@ -1,5 +1,5 @@
 <script>
-	import Quotes from '$comps/quotes/quotes.svelte'
+	import Quotes from '$comps/Quotes.svelte'
 	export let data
 </script>
 
