@@ -11,10 +11,10 @@
 
 	<ul>
 		<li>
-			<a class="anchor" href="/dev/demo">Native API Demo</a>
+			<a class="anchor" href="/apps/cm">Case Manager</a>
 		</li>
 		<li>
-			<a class="anchor" href="/apps/cm">Case Manager</a>
+			<a class="anchor" href="/dev/demo">Native API Demo</a>
 		</li>
 	</ul>
 </div>

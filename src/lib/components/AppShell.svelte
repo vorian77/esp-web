@@ -13,7 +13,7 @@
 <AppShell>
 	<svelte:fragment slot="header">
 		<AppBar
-			gridColumns="grid-cols-6 place-items-center"
+			gridColumns="w-full grid grid-cols-6 place-items-center"
 			slotLead="bg-white col-span-{slotSpanLead} place-self-start"
 			slotDefault="bg-white col-span-{slotSpanDefault} place-self-center text-green-600 font-semibold"
 			slotTrail="bg-white col-span-1 place-self-end"
