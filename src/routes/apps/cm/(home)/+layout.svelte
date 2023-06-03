@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AppShell from '$comps/AppShell.svelte'
+	import User from '$routes/apps/cm/(home)/User.svelte'
 
 	export let data
 
@@ -13,7 +14,7 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="body">
-		Welcome, {user}
+		<User user={data.user} />
 		<slot />
 	</svelte:fragment>
 </AppShell>

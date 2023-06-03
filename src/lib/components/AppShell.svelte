@@ -14,9 +14,9 @@
 	<svelte:fragment slot="header">
 		<AppBar
 			gridColumns="grid-cols-6 place-items-center"
-			slotLead="col-span-{slotSpanLead} place-self-start"
-			slotDefault="col-span-{slotSpanDefault} place-self-center text-green-600 font-semibold"
-			slotTrail="col-span-1 place-self-end"
+			slotLead="bg-white col-span-{slotSpanLead} place-self-start"
+			slotDefault="bg-white col-span-{slotSpanDefault} place-self-center text-green-600 font-semibold"
+			slotTrail="bg-white col-span-1 place-self-end"
 			background="bg-neutral-100"
 		>
 			<svelte:fragment slot="lead">
