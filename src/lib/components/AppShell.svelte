@@ -19,7 +19,7 @@
 				<slot name="center" />
 			</div>
 
-			<div class="" on:click={menu} on:keypress={menu}>
+			<div class="" on:click={menu} on:keyup={menu}>
 				<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill="#3b79e1" />
 			</div>
 		</div>

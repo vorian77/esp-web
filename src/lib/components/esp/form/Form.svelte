@@ -54,19 +54,20 @@
 		DATABUS.upsert('form', form.id, form.data)
 
 		// post form to server
-		if (form.submitAction) {
-			const url = form.submitAction.processLocally ? '' : '/api/formFetch'
+		if (form.sourceSave) {
+			const url = form.sourceSave.processLocally ? '' : '/api/formFetch'
 			console.log('Form...')
 			console.log(form.id)
 			console.log(form.data)
-			console.log(form.submitAction)
+			console.log(form.sourceSave)
+			console.log(url)
 
 			const response = await fetch(url, {
 				method: 'POST',
 				body: JSON.stringify({
 					action: 'form_submit',
 					formId: form.id,
-					submitAction: form.submitAction,
+					source: form.sourceSave,
 					data: form.data
 				})
 			})
@@ -74,7 +75,7 @@
 			// process response
 			responseData = await response.json()
 			if (responseData.success == false) {
-				alert(form.submitAction.messageFailure)
+				alert(form.sourceSave.messageFailure)
 				return
 			}
 		}

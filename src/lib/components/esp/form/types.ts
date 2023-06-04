@@ -18,7 +18,8 @@ export class DataValue {
 		this.value = value
 	}
 }
-export class SubmitAction {
+
+export class FormSource {
 	processLocally: boolean
 	target: SubmitActionTarget
 	messageFailure: string

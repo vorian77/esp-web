@@ -16,13 +16,13 @@
 
 <AppShell>
 	<svelte:fragment slot="lead">
-		<div on:click={goBack} on:keypress={goBack}>
+		<div on:click={goBack} on:keyup={goBack}>
 			<Icon name="back" width="1.5rem" height="1.5rem" fill="#3b79e1" />
 		</div>
 	</svelte:fragment>
 
 	<svelte:fragment slot="center">
-		<div class="text-blue-500 font-semibold" on:click={goHome} on:keypress={goHome}>
+		<div class="text-blue-500 font-semibold" on:click={goHome} on:keyup={goHome}>
 			{data.user.app_name}
 		</div>
 	</svelte:fragment>

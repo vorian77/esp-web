@@ -16,13 +16,13 @@ export async function POST({ request, cookies, locals }) {
 			break
 
 		case 'form_submit':
-			const { formId, submitAction, data } = requestData
+			const { formId, source, data } = requestData
 
 			switch (formId) {
 				case 'auth_login':
 				case 'auth_reset_password':
 				case 'auth_signup':
-					const response = await formFetch(submitAction, data)
+					const response = await formFetch(source, data)
 					const responseData = getResponseObj(await response.json(), {})
 
 					const userId = responseData.applicantId

@@ -1,17 +1,13 @@
 import { getArrayOfModels, memberOfEnum, strLower, strRqd, valueOrDefault } from '$lib/utils/utils'
-
 import type { Field } from '$comps/esp/form/field'
 import { FieldCheckbox } from '$comps/esp/form/fieldCheckbox'
 import { FieldInput } from '$comps/esp/form/fieldInput'
 import { FieldRadio } from '$comps/esp/form/fieldRadio'
 import { FieldSelect } from '$comps/esp/form/fieldSelect'
 import { FieldTextarea } from '$comps/esp/form/fieldTextarea'
-
 import {
 	FieldElement,
-	SubmitAction,
-	SubmitActionParmType,
-	SubmitActionTarget,
+	FormSource,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -28,7 +24,8 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
-	submitAction: SubmitAction | undefined
+	sourceRetrieve: FormSource | undefined
+	sourceSave: FormSource | undefined
 	height: string
 	fields: Array<Field>
 	footerText: Array<FooterText>
@@ -42,7 +39,8 @@ export class Form {
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, 'Submit')
-		this.submitAction = obj.submitAction ? new SubmitAction(obj.submitAction) : undefined
+		this.sourceRetrieve = obj.sourceRetrieve ? new FormSource(obj.sourceRetrieve) : undefined
+		this.sourceSave = obj.sourceSave ? new FormSource(obj.sourceSave) : undefined
 		this.height = valueOrDefault(obj.height, '')
 		this.fields = this.initFields(obj.fields)
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)

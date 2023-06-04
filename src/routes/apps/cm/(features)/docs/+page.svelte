@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation'
+
 	export let data
 	const docsStatus = data.docsStatus
 	docsStatus[0].uploaded = true
 	docsStatus[2].uploaded = true
 
-	function setDoc(id) {
-		alert(`Set doc ${id}`)
+	function setDoc(id, eligibility) {
+		goto(`/apps/cm/docs/${id}`)
 	}
 
 	function submitRegistration() {
@@ -29,7 +31,7 @@
 </div>
 
 <div>
-	<h2 class="h2 text-center bg-slate-100 mt-5">Requirement</h2>
+	<h2 class="h2 text-center bg-slate-100 mt-5">Document Categories</h2>
 </div>
 
 {#each docsStatus as { id, ct_col_ext, eligibility, uploaded }, index (id)}
@@ -39,9 +41,13 @@
 		</div>
 		<div class="self-center my-4">
 			{#if uploaded}
-				<button class="btn variant-filled-secondary" on:click={setDoc(id)}>Update...</button>
+				<button class="btn variant-filled-secondary" on:click={() => setDoc(id, eligibility)}
+					>Update...</button
+				>
 			{:else}
-				<button class="btn variant-filled-primary" on:click={setDoc(id)}>Upload...</button>
+				<button class="btn variant-filled-primary" on:click={() => setDoc(id, eligibility)}
+					>Upload...</button
+				>
 			{/if}
 		</div>
 	</div>

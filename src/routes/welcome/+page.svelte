@@ -55,13 +55,13 @@
 					body: JSON.stringify({
 						action: 'form_submit',
 						formId: forms[verifyFrom].id,
-						submitAction: forms[verifyFrom].submitAction,
+						source: forms[verifyFrom].sourceSave,
 						data: forms[verifyFrom].data
 					})
 				})
 				const responseData = await response.json()
 				if (!responseData.success) {
-					alert(forms[verifyFrom].submitAction.messageFailure)
+					alert(forms[verifyFrom].sourceSave.messageFailure)
 					return
 				}
 				launch()
@@ -101,17 +101,18 @@
 		const min = 100000
 		const max = 999999
 		securityCode = Math.floor(Math.random() * (max - min + 1)) + min
-		await fetch('', {
-			method: 'POST',
-			body: JSON.stringify({
-				action: 'sms_send',
-				phoneMobile: forms[verifyFrom].data.phoneMobile,
-				message: `Mobile phone number verification code: ${securityCode}`
-			})
-		})
+		// await fetch('', {
+		// 	method: 'POST',
+		// 	body: JSON.stringify({
+		// 		action: 'sms_send',
+		// 		phoneMobile: forms[verifyFrom].data.phoneMobile,
+		// 		message: `Mobile phone number verification code: ${securityCode}`
+		// 	})
+		// })
 	}
 </script>
 
+{securityCode}
 <Drawer>
 	{#each Object.entries(forms) as [key, value], index}
 		{@const form = value}

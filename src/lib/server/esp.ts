@@ -1,13 +1,13 @@
 import axios from 'axios'
-import { SubmitAction, SubmitActionTarget } from '$comps/esp/form/types'
+import { FormSource, SubmitActionTarget } from '$comps/esp/form/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/server/esp.ts'
 
-export async function fetchESP(submitAction: SubmitAction, parms: {}) {
-	switch (submitAction.target) {
+export async function fetchESP(source: FormSource, parms: {}) {
+	switch (source.target) {
 		case SubmitActionTarget.esp_api:
-			return await fetchESPAPI(submitAction.method, submitAction.url, parms)
+			return await fetchESPAPI(source.method, source.url, parms)
 			break
 
 		case SubmitActionTarget.esp_sql:

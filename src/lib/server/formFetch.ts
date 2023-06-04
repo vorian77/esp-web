@@ -1,16 +1,18 @@
-import { SubmitAction, SubmitActionParmType, SubmitActionTarget } from '$comps/esp/form/types'
+import { FormSource, SubmitActionParmType, SubmitActionTarget } from '$comps/esp/form/types'
 import { getEnvVar } from '$server/env'
 import { fetchESP } from '$server/esp'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/api/formFetch.+server.ts'
 
-export async function formFetch(submitAction: SubmitAction, data: {}) {
-	const parms = setSubmitActionParms(submitAction, data)
+export async function formFetch(source: FormSource, data: {}) {
+	console.log('formFetch.ts...')
+	console.log(source)
+	const parms = setSubmitActionParms(source, data)
 
-	switch (submitAction.target) {
+	switch (source.target) {
 		case SubmitActionTarget.esp_api:
-			return await fetchESP(submitAction, parms)
+			return await fetchESP(source, parms)
 			break
 
 		case SubmitActionTarget.esp_sql:
@@ -20,16 +22,16 @@ export async function formFetch(submitAction: SubmitAction, data: {}) {
 			throw error(500, {
 				file: FILENAME,
 				function: 'POST',
-				message: `No case defined for SubmitAction.target: ${submitAction.target}`
+				message: `No case defined for source.target: ${source.target}`
 			})
 	}
 }
 
-function setSubmitActionParms(submitAction: SubmitAction, data: {}) {
-	switch (submitAction.target) {
+function setSubmitActionParms(source: FormSource, data: {}) {
+	switch (source.target) {
 		case SubmitActionTarget.esp_api:
 			let parms = {}
-			submitAction.parms.forEach(({ name, type, source }) => {
+			source.parms.forEach(({ name, type, source }) => {
 				switch (type) {
 					case SubmitActionParmType.clone:
 						parms[name] = data[name]
@@ -43,8 +45,8 @@ function setSubmitActionParms(submitAction: SubmitAction, data: {}) {
 					default:
 						throw error(500, {
 							file: FILENAME,
-							function: 'submitActionData',
-							message: `No case defined for Form.SubmitAction.parms.type: "${type}".`
+							function: 'setSubmitActionParms',
+							message: `No case defined for Form.source.parms.type: "${type}".`
 						})
 				}
 			})
@@ -55,7 +57,7 @@ function setSubmitActionParms(submitAction: SubmitAction, data: {}) {
 			throw error(500, {
 				file: FILENAME,
 				function: 'setSubmitActionParms',
-				message: `No case defined for Form.submitAction.target: "${submitAction.target}".`
+				message: `No case defined for Form.source.target: "${source.target}".`
 			})
 	}
 }
