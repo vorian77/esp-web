@@ -32,7 +32,7 @@
 		drawerStore.open(s)
 	}
 	async function onFormSubmitted(event) {
-		const formId = event.detail
+		const { formId } = event.detail
 
 		switch (formId) {
 			case 'auth_login':

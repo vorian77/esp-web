@@ -3,8 +3,6 @@
 
 	export let data
 	const docsStatus = data.docsStatus
-	docsStatus[0].uploaded = true
-	docsStatus[2].uploaded = true
 
 	function setDoc(id, eligibility) {
 		goto(`/apps/cm/docs/${id}`)

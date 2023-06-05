@@ -19,8 +19,8 @@
 	import { createEventDispatcher } from 'svelte'
 
 	export let form: Form
-	export let responseData = {}
 	export let surface = ''
+	$: responseData = {}
 
 	const dispatch = createEventDispatcher()
 
@@ -77,13 +77,18 @@
 
 			// process response
 			responseData = await response.json()
+			console.log('responseData:', responseData)
 			if (responseData.success == false) {
 				alert(form.sourceSave.messageFailure)
 				return
 			}
 		}
 		// alert parent
-		dispatch('formSubmitted', form.id)
+
+		dispatch('formSubmitted', {
+			formId: form.id,
+			responseData
+		})
 	}
 </script>
 
@@ -143,6 +148,3 @@
 		<FormLink footerLink={link} on:form-link />
 	{/each}
 </div>
-
-<!-- Form Definition:
-<pre>{JSON.stringify(form, null, 2)}</pre> -->

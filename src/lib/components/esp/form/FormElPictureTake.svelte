@@ -6,20 +6,23 @@
 
 	const FILENAME = 'FormElPictureTake.svelte'
 
-	$: currentPict = ''
+	$: webPath = ''
+	$: imgPath = ''
+	$: image = {}
 
 	const takePicture = async () => {
-		const image = await Camera.getPhoto({
+		image = await Camera.getPhoto({
 			quality: 90,
 			allowEditing: true,
 			resultType: CameraResultType.Uri
 		})
-		currentPict = image.webPath
+		webPath = image.webPath
+		imgPath = image.path
 	}
 </script>
 
 <label class="label" for={field.name}>
-	<img class="mx-auto mt-2" src={currentPict} alt={field.imageAltText} width={field.imageWidth} />
+	<img class="mx-auto mt-2" src={webPath} alt={field.imageAltText} width={field.imageWidth} />
 	<button type="button" class="btn variant-filled-primary w-full mt-2" on:click={takePicture}
 		>{field.buttonLabel}</button
 	>
@@ -28,7 +31,7 @@
 	<input
 		id={field.name}
 		name={field.name}
-		value={currentPict}
+		value={imgPath}
 		class="input bg-white text-black"
 		class:input-warning={field.validity.level == ValidityLevel.warning}
 		class:input-error={field.validity.level == ValidityLevel.error}
@@ -36,6 +39,7 @@
 	/>
 </label>
 
+{JSON.stringify(image, null, 2)}
 <!-- <label class="label" for={field.name}1>
 	<span>{field.label}</span>
 	<input
