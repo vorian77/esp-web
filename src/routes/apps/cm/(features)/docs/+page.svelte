@@ -27,7 +27,11 @@
 		Click the button next to each requirement to see if you have a document that satisfies the
 		eligibility.
 	</p>
-	<p>When you're done, click the Submit Registration button at the bottom of this page.</p>
+	<p>
+		When you're done, click the <span class="text-primary-500 font-semibold"
+			>Submit Registration</span
+		> button at the bottom of this page.
+	</p>
 </div>
 
 <div>

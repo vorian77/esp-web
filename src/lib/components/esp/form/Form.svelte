@@ -1,8 +1,16 @@
 <script lang="ts">
 	import type { Form } from '$comps/esp/form/form'
-	import { Validation, ValidityField, ValidityLevel, ValidationStatus } from '$comps/esp/form/types'
+	import {
+		FieldElement,
+		Validation,
+		ValidityField,
+		ValidityLevel,
+		ValidationStatus
+	} from '$comps/esp/form/types'
+	import FormElHeader from '$comps/esp/form/FormElHeader.svelte'
 	import FormElInp from '$comps/esp/form/FormElInp.svelte'
 	import FormElInpCheckbox from '$comps/esp/form/FormElInpCheckbox.svelte'
+	import FormElPictureTake from '$comps/esp/form/FormElPictureTake.svelte'
 	import FormElInpRadio from '$comps/esp/form/FormElInpRadio.svelte'
 	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
@@ -56,11 +64,6 @@
 		// post form to server
 		if (form.sourceSave) {
 			const url = form.sourceSave.processLocally ? '' : '/api/formFetch'
-			console.log('Form...')
-			console.log(form.id)
-			console.log(form.data)
-			console.log(form.sourceSave)
-			console.log(url)
 
 			const response = await fetch(url, {
 				method: 'POST',
@@ -68,7 +71,7 @@
 					action: 'form_submit',
 					formId: form.id,
 					source: form.sourceSave,
-					data: form.data
+					data: { ...form.data, ...form.pageData }
 				})
 			})
 
@@ -103,9 +106,13 @@
 					<FormElInpCheckbox {field} on:click={validateFieldCheckbox} />
 				{:else if field.type === 'radio'}
 					<FormElInpRadio {field} on:change={validateFieldBase} />
-				{:else if field.element === 'select'}
-					<FormElSelect {field} on:change={validateFieldBase} />
-				{:else if field.element === 'textarea'}
+				{:else if field.element === FieldElement.header}
+					<FormElHeader {field} pageData={form.pageData} values={form.values} />
+				{:else if field.element === FieldElement.pictureTake}
+					<FormElPictureTake {field} on:change={validateFieldBase} />
+				{:else if field.element === FieldElement.select}
+					<FormElSelect {field} formName={form.id} on:change={validateFieldBase} />
+				{:else if field.element === FieldElement.textarea}
 					<FormElTextarea {field} on:change={validateFieldBase} />
 				{:else}
 					<FormElInp {field} on:change={validateFieldBase} />

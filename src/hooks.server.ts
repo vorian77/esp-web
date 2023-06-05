@@ -31,11 +31,12 @@ export async function handle({ event, resolve }) {
 		let user = await fetchUser()
 		user['referrals'] = user['referrals'].split(';')
 		user['referrals'] = user['referrals'].map((ref) => ref.split(','))
-		user['referrals'] = user['referrals'].map((ref) => new Object({ id: ref[0], site: ref[1] }))
+		;(user['referrals'] = user['referrals'].map((ref) => new Object({ id: ref[0], site: ref[1] }))),
+			(user['referral_id'] = user['referrals'][0].id)
 
 		event.locals.user = user
-		console.log('hooks...')
-		console.log(event.locals.user)
+		// console.log('hooks...')
+		// console.log(event.locals.user)
 	}
 	return resolve(event)
 }

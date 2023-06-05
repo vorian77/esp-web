@@ -1,28 +1,16 @@
 import axios from 'axios'
-import { FormSource, SubmitActionTarget } from '$comps/esp/form/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/server/esp.ts'
 
-export async function fetchESP(source: FormSource, parms: {}) {
-	switch (source.target) {
-		case SubmitActionTarget.esp_api:
-			return await fetchESPAPI(source.method, source.url, parms)
-			break
-
-		case SubmitActionTarget.esp_sql:
-			break
-	}
-}
-
-export async function fetchESPAPI(method, url, parms) {
+export async function fetchESPAPI(method, url, data) {
 	let options = { method, url: 'https://esp1.kssc.com:3000/esp/' + url }
 	switch (method.toLowerCase()) {
 		case 'get':
-			options.params = parms
+			options.params = data
 			break
 		default:
-			options.data = parms
+			options.data = data
 	}
 
 	try {

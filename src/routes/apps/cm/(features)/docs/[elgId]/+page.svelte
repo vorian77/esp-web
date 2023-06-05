@@ -10,7 +10,17 @@
 
 <Form {form} bind:responseData />
 
-{#if { responseData }}
-	<h3>Response Data</h3>
-	<pre>{JSON.stringify(responseData, null, 2)}</pre>
-{/if}
+FORM DEFN:
+<pre>{JSON.stringify(formDefn, null, 2)}</pre>
+
+FORM:
+<pre>{JSON.stringify(form, null, 2)}</pre>
+
+<!-- PAGE DATA:
+<pre>{JSON.stringify(form.pageData, null, 2)}</pre>
+
+VALUES:
+<pre>{JSON.stringify(form.values, null, 2)}</pre> -->
+
+RESPONSE DATA:
+<pre>{JSON.stringify(responseData, null, 2)}</pre>

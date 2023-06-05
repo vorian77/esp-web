@@ -1,7 +1,7 @@
-import { dbGetDoc } from '$server/dbFauna'
+import { getForm } from '$server/formFetch'
 
-export async function load() {
+export async function load({ locals, params }) {
 	return {
-		formDefn: await dbGetDoc('forms', '366595468511150153')
+		formDefn: await getForm('366595468511150153', { ...locals.user, ...params })
 	}
 }

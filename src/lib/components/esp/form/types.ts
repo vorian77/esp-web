@@ -19,6 +19,18 @@ export class DataValue {
 	}
 }
 
+export class FieldItem {
+	id: number
+	label: string
+	selected: boolean
+
+	constructor(id: number, label: string, selected = false) {
+		this.id = id
+		this.label = label
+		this.selected = selected
+	}
+}
+
 export class FormSource {
 	processLocally: boolean
 	target: SubmitActionTarget
@@ -26,8 +38,9 @@ export class FormSource {
 	messageSuccess: string
 	method: SubmitActionMethod
 	url: string
-	statement: string
+	sql: string
 	parms: Array<SubmitActionParm>
+	values: {} | undefined
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
@@ -44,10 +57,9 @@ export class FormSource {
 		this.url = [SubmitActionTarget.esp_api].includes(this.target)
 			? strRqd(obj.url, FILENAME + 'SubmitAction.url')
 			: ''
-		this.statement = [SubmitActionTarget.esp_sql].includes(this.target)
-			? strRqd(obj.statement, FILENAME + 'SubmitAction.statement')
+		this.sql = [SubmitActionTarget.esp_sql].includes(this.target)
+			? strRqd(obj.sql, FILENAME + 'SubmitAction.sql')
 			: ''
-
 		// parms
 		this.parms = getArrayOfModels(SubmitActionParm, obj.parms)
 	}
@@ -61,7 +73,7 @@ export class SubmitActionParm {
 		obj = valueOrDefault(obj, {})
 		this.name = strRqd(obj.name, FILENAME + 'SubmitActionParm.name')
 		this.type = memberOfEnum(
-			valueOrDefault(obj.type, SubmitActionParmType.clone),
+			valueOrDefault(obj.type, SubmitActionParmType.form),
 			'SubmitActionParmType',
 			SubmitActionParmType
 		)
@@ -112,8 +124,16 @@ export class ValidityField {
 	}
 }
 
+export enum FieldAccess {
+	required = 'required',
+	optional = 'optional',
+	displayOnly = 'displayonly'
+}
+
 export enum FieldElement {
+	header = 'header',
 	input = 'input',
+	pictureTake = 'picturetake',
 	select = 'select',
 	textarea = 'textarea'
 }
@@ -122,9 +142,11 @@ export enum SubmitActionMethod {
 	POST = 'POST'
 }
 export enum SubmitActionParmType {
-	clone = 'clone',
 	env = 'env',
-	literal = 'literal'
+	form = 'form',
+	literal = 'literal',
+	params = 'params',
+	user = 'user'
 }
 export enum SubmitActionTarget {
 	local = 'local',

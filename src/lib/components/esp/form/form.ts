@@ -1,7 +1,9 @@
 import { getArrayOfModels, memberOfEnum, strLower, strRqd, valueOrDefault } from '$lib/utils/utils'
 import type { Field } from '$comps/esp/form/field'
 import { FieldCheckbox } from '$comps/esp/form/fieldCheckbox'
+import { FieldHeader } from '$comps/esp/form/fieldHeader'
 import { FieldInput } from '$comps/esp/form/fieldInput'
+import { FieldPictureTake } from '$comps/esp/form/fieldPictureTake'
 import { FieldRadio } from '$comps/esp/form/fieldRadio'
 import { FieldSelect } from '$comps/esp/form/fieldSelect'
 import { FieldTextarea } from '$comps/esp/form/fieldTextarea'
@@ -13,7 +15,6 @@ import {
 	ValidationStatus,
 	ValidityField
 } from '$comps/esp/form/types'
-
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/esp/form/form.ts/'
@@ -24,13 +25,14 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
-	sourceRetrieve: FormSource | undefined
 	sourceSave: FormSource | undefined
 	height: string
 	fields: Array<Field>
 	footerText: Array<FooterText>
 	footerLinks: Array<FooterLink>
-	data: {}
+	pageData: {} | undefined
+	values: {} | undefined
+	data: {} | undefined
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
@@ -39,13 +41,13 @@ export class Form {
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, 'Submit')
-		this.sourceRetrieve = obj.sourceRetrieve ? new FormSource(obj.sourceRetrieve) : undefined
 		this.sourceSave = obj.sourceSave ? new FormSource(obj.sourceSave) : undefined
 		this.height = valueOrDefault(obj.height, '')
 		this.fields = this.initFields(obj.fields)
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)
 		this.footerLinks = getArrayOfModels(FooterLink, obj.footerLinks)
-		this.data = {}
+		this.pageData = valueOrDefault(obj.pageData, {})
+		this.values = valueOrDefault(obj.values, {})
 	}
 
 	initFields(fields) {
@@ -74,6 +76,13 @@ export class Form {
 					}
 					break
 
+				case FieldElement.header:
+					newField = new FieldHeader(field, index)
+					break
+				case FieldElement.pictureTake:
+					newField = new FieldPictureTake(field, index)
+					break
+
 				case FieldElement.select:
 					newField = new FieldSelect(field, index)
 					break
@@ -81,6 +90,12 @@ export class Form {
 				case FieldElement.textarea:
 					newField = new FieldTextarea(field, index)
 					break
+				default:
+					throw error(500, {
+						file: FILENAME,
+						function: 'initFields',
+						message: `No case defined for field element: ${element} in form: ${this.id}.`
+					})
 			}
 			newFields.push(newField)
 		})

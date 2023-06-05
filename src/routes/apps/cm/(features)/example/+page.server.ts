@@ -1,7 +1,7 @@
-import { dbGetDoc } from '$server/dbFauna'
+import { getForm } from '$server/formFetch'
 
 export async function load() {
 	return {
-		formDefn: await dbGetDoc('forms', '365620784541990989')
+		formDefn: await getForm('365620784541990989')
 	}
 }

@@ -1,6 +1,8 @@
 import { memberOfEnum, strRqd, strLower, valueOrDefault } from '$utils/utils'
 import {
+	FieldAccess,
 	FieldElement,
+	FieldItem,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -99,21 +101,4 @@ export class Field {
 			new ValidityField(index, new Validity(type, message, level))
 		])
 	}
-}
-
-export class FieldItem {
-	id: number
-	label: string
-	selected: boolean
-
-	constructor(id: number, label: string, selected = false) {
-		this.id = id
-		this.label = label
-		this.selected = selected
-	}
-}
-export enum FieldAccess {
-	required = 'required',
-	optional = 'optional',
-	displayOnly = 'displayonly'
 }

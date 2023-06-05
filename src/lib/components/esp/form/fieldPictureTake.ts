@@ -1,16 +1,21 @@
 import { Field } from '$comps/esp/form/field'
-import { valueOrDefault } from '$utils/utils'
+import { strRqd, valueOrDefault } from '$utils/utils'
 import { Validation, ValidationStatus } from '$comps/esp/form/types'
 
-export class FieldSelect extends Field {
-	items: []
+const FILENAME = 'fieldPictureTake.ts'
+
+export class FieldPictureTake extends Field {
+	buttonLabel: string
+	imageWidth: number
+	imageAltText: string
+
 	constructor(obj: {}, index: number) {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-
-		this.items = valueOrDefault(obj.items, [])
-		this.items = this.initItems(this.items)
+		this.buttonLabel = valueOrDefault(obj.buttonLabel, 'Take Picture')
+		this.imageWidth = valueOrDefault(obj.imageWidth, 300)
+		this.imageAltText = strRqd(obj.imageAltText, FILENAME + '.imageAltText')
 	}
 	validate(formData): Validation {
 		const v = super.validate(formData)
