@@ -10,7 +10,7 @@
 	<select class="select" name={field.name} form={formName} on:change>
 		<option disabled selected value>Select an option</option>
 		{#each field.items as { id, label }, index (id)}
-			<option value={id}>{label}</option>
+			<option value={id} selected={id == field.value}>{label} </option>
 		{/each}
 	</select>
 </label>

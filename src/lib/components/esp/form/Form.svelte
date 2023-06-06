@@ -20,6 +20,8 @@
 
 	export let form: Form
 	export let surface = ''
+
+	let pictBlob
 	$: responseData = {}
 
 	const dispatch = createEventDispatcher()
@@ -108,19 +110,22 @@
 		{#each form.fields as field, index (field.name)}
 			<div class:mt-3={index}>
 				{#if field.type === 'checkbox'}
-					<FormElInpCheckbox {field} on:click={validateFieldCheckbox} />
+					<FormElInpCheckbox bind:field on:click={validateFieldCheckbox} />
 				{:else if field.type === 'radio'}
-					<FormElInpRadio {field} on:change={validateFieldBase} />
+					<FormElInpRadio bind:field on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.header}
-					<FormElHeader {field} pageData={form.pageData} values={form.values} />
+					<FormElHeader bind:field pageData={form.pageData} values={form.values} />
 				{:else if field.element === FieldElement.pictureTake}
-					<FormElPictureTake {field} on:change={validateFieldBase} />
+					<FormElPictureTake bind:field bind:blob={pictBlob} on:change={validateFieldBase} />
+					{#if field.pictBlob}
+						blob: {field.pictBlob}
+					{/if}
 				{:else if field.element === FieldElement.select}
-					<FormElSelect {field} formName={form.id} on:change={validateFieldBase} />
+					<FormElSelect bind:field formName={form.id} on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.textarea}
-					<FormElTextarea {field} on:change={validateFieldBase} />
+					<FormElTextarea bind:field on:change={validateFieldBase} />
 				{:else}
-					<FormElInp {field} on:change={validateFieldBase} />
+					<FormElInp bind:field on:change={validateFieldBase} />
 				{/if}
 			</div>
 

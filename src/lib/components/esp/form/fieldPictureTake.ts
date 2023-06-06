@@ -8,6 +8,7 @@ export class FieldPictureTake extends Field {
 	buttonLabel: string
 	imageWidth: number
 	imageAltText: string
+	pictBlob: Blob
 
 	constructor(obj: {}, index: number) {
 		super(obj, index)

@@ -24,5 +24,3 @@
 </script>
 
 <slot />
-
-<Modal components={modalComponentRegistry} />
