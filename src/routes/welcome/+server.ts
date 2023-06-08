@@ -1,11 +1,17 @@
 import { sendText } from '$server/twilio'
-import { getResponseObj } from '$utils/utils'
-import { formFetch } from '$server/formFetch'
+import { processForm } from '$server/dbForm'
 import { error } from '@sveltejs/kit'
+import {
+	FormSourceDBAction,
+	FormSourceResponse,
+	type FormSourceResponseType
+} from '$comps/esp/form/types'
 
 const FILENAME = '/routes/welcome/+server.ts'
 
-export async function POST({ request, cookies, locals }) {
+let rtnData = {}
+
+export async function POST({ request, cookies }) {
 	const requestData = await request.json()
 	const { action } = requestData
 
@@ -22,10 +28,17 @@ export async function POST({ request, cookies, locals }) {
 				case 'auth_login':
 				case 'auth_reset_password':
 				case 'auth_signup':
-					const response = await formFetch(source, data)
-					const responseData = getResponseObj(await response.json(), {})
+					console.log('/ROUTES/WELCOME/+server.ts...')
+					console.log('formId:', formId)
+					const responsePromise = await processForm(
+						source.actions[FormSourceDBAction.update],
+						FormSourceDBAction.update,
+						data
+					)
+					const response: FormSourceResponseType = await responsePromise.json()
+					console.log('response.data:', response.data)
 
-					const userId = responseData.applicantId
+					const userId = response.data.applicantId
 					if (!userId) {
 						throw error(500, {
 							file: FILENAME,
@@ -41,11 +54,11 @@ export async function POST({ request, cookies, locals }) {
 						secure: true,
 						maxAge: 60 * 60 * 24 * 7 // one week
 					})
-					return new Response(JSON.stringify({ success: true, data: responseData }))
+					rtnData = response.data
 					break
 
 				case 'auth_verify_phone_mobile':
-					return new Response(JSON.stringify({ success: true, data }))
+					rtnData = data
 					break
 				default:
 					throw error(500, {
@@ -56,4 +69,5 @@ export async function POST({ request, cookies, locals }) {
 			}
 			break
 	}
+	return FormSourceResponse(rtnData)
 }

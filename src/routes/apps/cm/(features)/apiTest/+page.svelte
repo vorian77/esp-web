@@ -1,22 +1,24 @@
 <script lang="ts">
 	import { Form as FormDefn } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
+	import type { FormSourceResponseType } from '$comps/esp/form/types'
+
 	export let data
-	$: responseData = {}
 
 	const formDefn = data.formDefn
-	const form = new FormDefn(formDefn)
+	let formObj = new FormDefn(formDefn)
 </script>
 
-<Form {form} bind:responseData />
+<Form bind:formObj />
 
-{#if { responseData }}
-	<h3>Response Data</h3>
-	<pre>{JSON.stringify(responseData, null, 2)}</pre>
-{/if}
+formObj.data
+<pre>{JSON.stringify(formObj.data, null, 2)}</pre>
+
+<h3>formObj.submitResponse</h3>
+<pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre>
 
 Form Object:
-<pre>{JSON.stringify(form, null, 2)}</pre>
+<pre>{JSON.stringify(formObj, null, 2)}</pre>
 
 Form Definition:
 <pre>{JSON.stringify(formDefn, null, 2)}</pre>

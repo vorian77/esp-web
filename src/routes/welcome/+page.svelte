@@ -4,6 +4,7 @@
 	import logo from '$assets/YO-Baltimore-logo.png'
 	import { Drawer, drawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import Form from '$comps/esp/form/Form.svelte'
+	import type { FormSourceResponseType } from '$comps/esp/form/types'
 
 	const FILENAME = 'routes/welcome/+page.svelte'
 
@@ -55,13 +56,13 @@
 					body: JSON.stringify({
 						action: 'form_submit',
 						formId: forms[verifyFrom].id,
-						source: forms[verifyFrom].sourceSave,
+						source: forms[verifyFrom].source,
 						data: forms[verifyFrom].data
 					})
 				})
-				const responseData = await response.json()
+				const responseData: FormSourceResponseType = await response.json()
 				if (!responseData.success) {
-					alert(forms[verifyFrom].sourceSave.messageFailure)
+					alert(forms[verifyFrom].source.msgFailure)
 					return
 				}
 				launch()
@@ -115,10 +116,9 @@
 {securityCode}
 <Drawer>
 	{#each Object.entries(forms) as [key, value], index}
-		{@const form = value}
-		{#if pageCurrent == form.id}
+		{#if pageCurrent == value.id}
 			<Form
-				{form}
+				bind:formObj={value}
 				surface="esp-card-space-y"
 				on:formSubmitted={onFormSubmitted}
 				on:form-link={onFormLink}

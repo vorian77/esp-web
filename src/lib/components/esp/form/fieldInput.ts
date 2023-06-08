@@ -29,7 +29,7 @@ export class FieldInput extends Field {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-		this.type = memberOfEnum(obj.type, 'FieldType', FieldType)
+		this.type = memberOfEnum(obj.type, 'FieldInput.type', FieldType)
 		this.placeHolder = valueOrDefault(obj.placeHolder, '')
 
 		// validators
@@ -190,7 +190,10 @@ export class FieldInput extends Field {
 			// set validiities
 			let validityFields: [ValidityField] = [new ValidityField(this.index, validity)]
 			validityFields.push(new ValidityField(this.matchColumn.index, validity))
-			return new Validation(ValidationType.field, validationStatus, validityFields)
+			const r = new Validation(ValidationType.field, validationStatus, validityFields, data)
+			console.log('set validities...')
+			console.log(r)
+			return r
 		}
 		// default
 		return this.fieldValid(this.index, fieldValue)

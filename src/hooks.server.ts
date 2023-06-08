@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit'
-import { fetchESPAPI } from '$server/esp'
+import { dbESPAPI } from '$server/dbESP'
 import { getEnvVar } from '$server/env'
-import { getResponseObj } from '$utils/utils'
+import type { FormSourceResponseType } from '$comps/esp/form/types'
 
 const unProtectedRoutes = ['/', '/welcome']
 
@@ -18,15 +18,16 @@ export async function handle({ event, resolve }) {
 
 	if (event.url.pathname.startsWith('/apps/cm')) {
 		async function fetchUser() {
-			const response = await fetchESPAPI('GET', 'ws_cm_ssr_user', {
+			const responsePromise = await dbESPAPI('GET', 'ws_cm_ssr_user', {
 				userId: sessionId,
 				orgId: getEnvVar('ESP_ORG_ID')
 			})
-			const resp = getResponseObj(await response.json(), {})
-			if (!resp.user_id) {
+			const response: FormSourceResponseType = await responsePromise.json()
+
+			if (!response.data.user_id) {
 				throw redirect(303, '/welcome')
 			}
-			return resp
+			return response.data
 		}
 		let user = await fetchUser()
 		user['referrals'] = user['referrals'].split(';')

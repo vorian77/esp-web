@@ -7,10 +7,13 @@
 	<Quotes quote={data.quote} />
 {/if}
 
-<div class="esp-card-space-y">
-	<h1 class="h1">CaseManager Home</h1>
+<div class="esp-card-space-y text-lg">
+	<h1 class="h1">CaseManager Mobile</h1>
 
 	<ul>
+		<li>
+			<a class="anchor" href="/apps/cm/registration">Registration</a>
+		</li>
 		<li>
 			<a class="anchor" href="/apps/cm/profile">Profile</a>
 		</li>
@@ -31,3 +34,9 @@
 		</li>
 	</ul>
 </div>
+
+<style>
+	li {
+		margin-bottom: 10px;
+	}
+</style>

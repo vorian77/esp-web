@@ -1,4 +1,4 @@
-import { getForm } from '$server/formFetch'
+import { getForm } from '$server/dbForm'
 
 export async function load({ locals, params }) {
 	return {

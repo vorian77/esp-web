@@ -1,5 +1,5 @@
 import { Field } from '$comps/esp/form/field'
-import { strRqd, valueOrDefault } from '$utils/utils'
+import { strRequired, valueOrDefault } from '$utils/utils'
 import { Validation, ValidationStatus } from '$comps/esp/form/types'
 
 const FILENAME = 'fieldPictureTake.ts'
@@ -16,7 +16,9 @@ export class FieldPictureTake extends Field {
 		obj = valueOrDefault(obj, {})
 		this.buttonLabel = valueOrDefault(obj.buttonLabel, 'Take Picture')
 		this.imageWidth = valueOrDefault(obj.imageWidth, 300)
-		this.imageAltText = strRqd(obj.imageAltText, FILENAME + '.imageAltText')
+		this.imageAltText = strRequired(obj.imageAltText, FILENAME + '.imageAltText')
+
+		console.log('FieldPictureTake:', this)
 	}
 	validate(formData): Validation {
 		const v = super.validate(formData)

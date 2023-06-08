@@ -1,8 +1,7 @@
-import { memberOfEnum, strRqd, strLower, valueOrDefault } from '$utils/utils'
+import { memberOfEnum, memberOfEnumOrDefault, strRequired, valueOrDefault } from '$utils/utils'
 import {
 	FieldAccess,
 	FieldElement,
-	FieldItem,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -27,18 +26,15 @@ export class Field {
 	constructor(obj: {}, index: number) {
 		obj = valueOrDefault(obj, {})
 		this.index = index
-		this.element = memberOfEnum(
-			strLower(strRqd(obj.element, COMPONENT + 'Field.element')),
-			'FieldElement',
-			FieldElement
+		this.element = memberOfEnum(obj.element, 'Field.element', FieldElement)
+		this.name = strRequired(obj.name, COMPONENT + 'Field.name')
+		this.access = memberOfEnumOrDefault(
+			obj.access,
+			'Field.access',
+			FieldAccess,
+			FieldAccess.required
 		)
-		this.name = strRqd(obj.name, COMPONENT + 'Field.name')
-		this.access = memberOfEnum(
-			valueOrDefault(obj.access, FieldAccess.required),
-			'FieldAccess',
-			FieldAccess
-		)
-		this.label = strRqd(obj.label, COMPONENT + 'Field.label')
+		this.label = strRequired(obj.label, COMPONENT + 'Field.label')
 		if (this.access == FieldAccess.optional) {
 			this.label += ' (optional)'
 		}
@@ -100,5 +96,17 @@ export class Field {
 		return new Validation(ValidationType.field, ValidationStatus.invalid, [
 			new ValidityField(index, new Validity(type, message, level))
 		])
+	}
+}
+
+export class FieldItem {
+	id: number
+	label: string
+	selected: boolean
+
+	constructor(id: number, label: string, selected = false) {
+		this.id = id
+		this.label = label
+		this.selected = selected
 	}
 }

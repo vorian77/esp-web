@@ -11,7 +11,7 @@ export class FieldHeader extends Field {
 
 		obj = valueOrDefault(obj, {})
 		this.label = valueOrDefault(obj.label, '')
-		this.value = valueOrDefault(obj.value, '')
+		this.value = valueOrDefault(obj.value.toLowerCase(), '')
 		this.access = FieldAccess.displayOnly
 	}
 }

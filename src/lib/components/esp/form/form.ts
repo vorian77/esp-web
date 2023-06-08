@@ -1,4 +1,10 @@
-import { getArrayOfModels, memberOfEnum, strLower, strRqd, valueOrDefault } from '$lib/utils/utils'
+import {
+	getArrayOfModels,
+	memberOfEnum,
+	strLower,
+	strRequired,
+	valueOrDefault
+} from '$lib/utils/utils'
 import type { Field } from '$comps/esp/form/field'
 import { FieldCheckbox } from '$comps/esp/form/fieldCheckbox'
 import { FieldHeader } from '$comps/esp/form/fieldHeader'
@@ -25,7 +31,7 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
-	sourceSave: FormSource | undefined
+	source: FormSource | undefined
 	height: string
 	fields: Array<Field>
 	footerText: Array<FooterText>
@@ -33,15 +39,16 @@ export class Form {
 	pageData: {} | undefined
 	values: {} | undefined
 	data: {} | undefined
+	submitResponse: {} | undefined
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.id = strRqd(obj.id, FILENAME + 'Form.id')
+		this.id = strRequired(obj.id, FILENAME + 'Form.id')
 		this.header = valueOrDefault(obj.header, '')
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, 'Submit')
-		this.sourceSave = obj.sourceSave ? new FormSource(obj.sourceSave) : undefined
+		this.source = obj.source ? new FormSource(obj.source) : undefined
 		this.height = valueOrDefault(obj.height, '')
 		this.fields = this.initFields(obj.fields)
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)
@@ -55,14 +62,10 @@ export class Form {
 		let newFields: Array<Field> = []
 		fields.forEach((field, index: number) => {
 			let newField: Field
-			const element = memberOfEnum(
-				strLower(strRqd(field.element, 'Form.Field.element')),
-				'FieldElement',
-				FieldElement
-			)
+			const element = memberOfEnum(field.element, 'Form.Field.element', FieldElement)
 			switch (element) {
 				case FieldElement.input:
-					const type = strRqd(field.type, FILENAME + 'Form.Field.type')
+					const type = strRequired(field.type, FILENAME + 'Form.Field.type')
 					switch (type) {
 						case 'checkbox':
 							newField = new FieldCheckbox(field, index)
@@ -80,6 +83,8 @@ export class Form {
 					newField = new FieldHeader(field, index)
 					break
 				case FieldElement.pictureTake:
+					console.log('FieldElement.pictureupload...')
+					console.log('field:', field)
 					newField = new FieldPictureTake(field, index)
 					break
 
@@ -158,8 +163,8 @@ export class FooterLink {
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
 		this.prefix = valueOrDefault(obj.prefix, '')
-		this.label = strRqd(obj.label, FILENAME + 'FooterLink.label')
-		this.action = strRqd(obj.action, FILENAME + 'FooterLink.action')
+		this.label = strRequired(obj.label, FILENAME + 'FooterLink.label')
+		this.action = strRequired(obj.action, FILENAME + 'FooterLink.action')
 	}
 }
 export class FooterText {
@@ -167,7 +172,7 @@ export class FooterText {
 	fontSize: string
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.label = strRqd(obj.label, FILENAME + 'FooterText.label')
+		this.label = strRequired(obj.label, FILENAME + 'FooterText.label')
 		this.fontSize = valueOrDefault(obj.fontSize, 'text-base')
 	}
 }

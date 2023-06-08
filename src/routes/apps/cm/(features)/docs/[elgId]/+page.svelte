@@ -4,28 +4,24 @@
 	export let data
 
 	const formDefn = data.formDefn
-	const form = new FormDefn(formDefn)
+	let formObj = new FormDefn(formDefn)
 
 	async function onFormSubmitted(event) {
 		console.log('ONFORMSUBMITTED...')
+		console.log('event.detail:', event.detail)
 		// data
-		const imgStorageKey = event.detail.responseData.storageKey
-		console.log('imgStorageKey:', imgStorageKey)
-
-		const field = form.fields.find((f) => f.name == 'pictObj')
-		console.log('field:', field.name)
+		const imgStorageKey = event.detail.storageKey
+		console.log('storageKey:', imgStorageKey)
+		const field = formObj.fields.find((f) => f.name == 'pictObj')
 		const imgBlob = field.pictBlob
-		console.log('blob:', imgBlob)
 		const imgType = imgBlob.type
-		console.log('imgType:', imgType)
 
 		// processing
 		const url = await getUploadURL(imgType, imgStorageKey)
+		console.log('uploadURL:', url)
 		await uploadImg(url, imgBlob)
 
 		async function getUploadURL(imgType, imgStorageKey) {
-			console.log('imgStorageKey:', imgStorageKey)
-
 			// generate URL
 			let api = 'https://moed-yo-api.theappfactory.com'
 			api += '/storage/img_url_upload'
@@ -33,23 +29,11 @@
 			const response = await fetch(api, { method: 'GET' })
 			const respData = await response.json()
 			let url = respData.url
-			console.log('uploadURL:', url)
-			// console.log('form.data:', form.data)
-
 			return url
 		}
 
 		async function uploadImg(url, imgBlob) {
-			// upload image
 			try {
-				// const result = await fetch(url, {
-				// 	method: 'PUT',
-				// 	body: dataUrl,
-				// 	headers: {
-				// 		'Content-Type': `image/png`
-				// 	}
-				// })
-				// Upload file
 				const reader = new FileReader()
 				reader.onloadend = async () => {
 					const resp = await fetch(url, {
@@ -63,7 +47,6 @@
 					console.log('reader response:', respData)
 				}
 				reader.readAsArrayBuffer(imgBlob)
-				// reader.readAsDataURL(dataUrl)
 			} catch (error) {
 				console.log(`Error in handleSubmit on / route: ${error}`)
 			}
@@ -71,32 +54,12 @@
 	}
 </script>
 
-<Form {form} on:formSubmitted={onFormSubmitted} />
+<Form bind:formObj on:formSubmitted={onFormSubmitted} />
 
-<!-- FORM DEFN:
-<pre>{JSON.stringify(formDefn, null, 2)}</pre> -->
-
-<!-- FORM:
-<pre>{JSON.stringify(form, null, 2)}</pre> -->
-
-<!-- PAGE DATA:
-<pre>{JSON.stringify(form.pageData, null, 2)}</pre>
-
-VALUES:
-<pre>{JSON.stringify(form.values, null, 2)}</pre> -->
-
-<!-- RESPONSE DATA:
-<pre>{JSON.stringify(responseData, null, 2)}</pre> -->
+<h3>formObj.submitResponse</h3>
+<pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre>
 
 <!-- console.log('GENERATE AWS S3 URL...')
-	let api = 'https://moed-yo-api.theappfactory.com'
-	api += '/storage/img_url_upload'
-	api += `?storageKey=${imgStorageName}&storageContentType=image/jpeg`
-	response = await fetch(api, { method: 'GET' })
-	const respData = await response.json()
-	const urlS3 = respData.url
-	console.log('S3 url:', urlS3)
-
 	return new Response(JSON.stringify({ success: true }))
 
 	console.log('AWS_KEY_ACCESS:', AWS_KEY_ACCESS)

@@ -26,7 +26,7 @@
 			return ''
 		}
 		const parms = valueSource.split('.')
-		switch (parms[0].toLowerCase()) {
+		switch (parms[0]) {
 			case 'pagedata':
 				return setValueData(parms.slice(1), pageData)
 				break

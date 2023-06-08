@@ -9,14 +9,13 @@ export class FieldCheckbox extends Field {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-		this.type = memberOfEnum(obj.type, 'FieldType', FieldType)
+		this.type = memberOfEnum(obj.type, 'FieldCheckbox.type', FieldType)
 
 		this.items = valueOrDefault(obj.items, [])
 		this.items = this.initItems(this.items)
 	}
 	validate(formData): Validation {
 		const v = super.validate(formData)
-		console.log('fieldCheckbox:', formData)
 
 		if (v.status == ValidationStatus.valid || v.status == ValidationStatus.invalid) {
 			return v
