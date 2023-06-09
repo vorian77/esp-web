@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { FieldInput } from '$comps/esp/form/fieldInput'
-	import { ValidityLevel } from '$comps/esp/form/types'
+	import { ValidityErrorLevel } from '$comps/esp/form/types'
 
 	export let field: FieldInput
 </script>
@@ -15,13 +15,14 @@
 		placeholder={field.placeHolder}
 		value={field.value}
 		disabled={field.disabled}
-		class:input-warning={field.validity.level == ValidityLevel.warning}
-		class:input-error={field.validity.level == ValidityLevel.error}
+		class:input-warning={field.validity.level == ValidityErrorLevel.warning}
+		class:input-error={field.validity.level == ValidityErrorLevel.error}
 		on:change
 	/>
 </label>
 
 <style>
+	/* turn off spinner */
 	/* Chrome, Safari, Edge, Opera */
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {

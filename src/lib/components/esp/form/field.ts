@@ -7,8 +7,8 @@ import {
 	ValidationStatus,
 	Validity,
 	ValidityField,
-	ValidityType,
-	ValidityLevel
+	ValidityError,
+	ValidityErrorLevel
 } from '$comps/esp/form/types'
 
 const COMPONENT = '/$comps/esp/form/field.ts/'
@@ -63,12 +63,12 @@ export class Field {
 			return this.fieldValid(this.index, fieldValue)
 		}
 		// required
-		if (this.access == FieldAccess.required && !fieldValue) {
+		if (!fieldValue) {
 			return this.fieldInvalid(
 				this.index,
-				ValidityType.required,
-				`"${this.label}" is required.`,
-				ValidityLevel.warning
+				ValidityError.required,
+				ValidityErrorLevel.warning,
+				`"${this.label}" is required.`
 			)
 		}
 		return this.fieldNotInvalid(this.index, fieldValue)
@@ -87,14 +87,19 @@ export class Field {
 	fieldNotInvalid(index: number, fieldValue: any) {
 		return new Validation(
 			ValidationType.field,
-			ValidationStatus.notinvalid,
+			ValidationStatus.notInvalid,
 			[new ValidityField(index, new Validity())],
 			fieldValue
 		)
 	}
-	fieldInvalid(index: number, type: ValidityType, message: string, level: ValidityLevel) {
+	fieldMissingData(index: number) {
 		return new Validation(ValidationType.field, ValidationStatus.invalid, [
-			new ValidityField(index, new Validity(type, message, level))
+			new ValidityField(index, new Validity(ValidityError.missingData, ValidityErrorLevel.none, ''))
+		])
+	}
+	fieldInvalid(index: number, error: ValidityError, level: ValidityErrorLevel, message: string) {
+		return new Validation(ValidationType.field, ValidationStatus.invalid, [
+			new ValidityField(index, new Validity(error, level, message))
 		])
 	}
 }

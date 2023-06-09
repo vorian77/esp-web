@@ -4,8 +4,8 @@ import {
 	ValidationType,
 	Validity,
 	ValidityField,
-	ValidityType,
-	ValidityLevel
+	ValidityError,
+	ValidityErrorLevel
 } from '$comps/esp/form/types'
 import { Field } from '$comps/esp/form/field'
 import { memberOfEnum, valueOrDefault } from '$utils/utils'
@@ -107,9 +107,9 @@ export class FieldInput extends Field {
 			if (fieldValue.length < this.minLength) {
 				return this.fieldInvalid(
 					this.index,
-					ValidityType.minLength,
+					ValidityError.minLength,
 					`"${this.label}" must be at least ${this.minLength} character(s). It is currently ${fieldValue.length} character(s).`,
-					ValidityLevel.error
+					ValidityErrorLevel.error
 				)
 			}
 		}
@@ -118,9 +118,9 @@ export class FieldInput extends Field {
 			if (fieldValue.length > this.maxLength) {
 				return this.fieldInvalid(
 					this.index,
-					ValidityType.maxLength,
+					ValidityError.maxLength,
 					`"${this.label}" cannot exceed ${this.maxLength} character(s). It is currently ${fieldValue.length} character(s).`,
-					ValidityLevel.error
+					ValidityErrorLevel.error
 				)
 			}
 		}
@@ -129,9 +129,9 @@ export class FieldInput extends Field {
 			if (nbrValue < this.minValue) {
 				return this.fieldInvalid(
 					this.index,
-					ValidityType.minValue,
+					ValidityError.minValue,
 					`"${this.label}" must be at least ${this.minValue}.`,
-					ValidityLevel.error
+					ValidityErrorLevel.error
 				)
 			}
 		}
@@ -140,9 +140,9 @@ export class FieldInput extends Field {
 			if (nbrValue > this.maxValue) {
 				return this.fieldInvalid(
 					this.index,
-					ValidityType.maxValue,
+					ValidityError.maxValue,
 					`"${this.label}" cannot exceed ${this.maxValue}.`,
-					ValidityLevel.error
+					ValidityErrorLevel.error
 				)
 			}
 		}
@@ -151,7 +151,12 @@ export class FieldInput extends Field {
 			const regex = new RegExp(this.pattern)
 			if (!regex.test(fieldValue)) {
 				const errorMsg = this.patternMsg || `The value you entered is not a valid "${this.label}".`
-				return this.fieldInvalid(this.index, ValidityType.pattern, errorMsg, ValidityLevel.error)
+				return this.fieldInvalid(
+					this.index,
+					ValidityError.pattern,
+					errorMsg,
+					ValidityErrorLevel.error
+				)
 			}
 		}
 		// matchColumn
@@ -174,26 +179,23 @@ export class FieldInput extends Field {
 				if (!fieldValue || !matchColumnValue) {
 					// one blank field - warning
 					validity = new Validity(
-						ValidityType.matchColumn,
+						ValidityError.matchColumn,
 						this.matchColumn.message,
-						ValidityLevel.warning
+						ValidityErrorLevel.warning
 					)
 				} else {
 					// both entered and unequal - error
 					validity = new Validity(
-						ValidityType.matchColumn,
+						ValidityError.matchColumn,
 						this.matchColumn.message,
-						ValidityLevel.error
+						ValidityErrorLevel.error
 					)
 				}
 			}
 			// set validiities
 			let validityFields: [ValidityField] = [new ValidityField(this.index, validity)]
 			validityFields.push(new ValidityField(this.matchColumn.index, validity))
-			const r = new Validation(ValidationType.field, validationStatus, validityFields, data)
-			console.log('set validities...')
-			console.log(r)
-			return r
+			return new Validation(ValidationType.field, validationStatus, validityFields, data)
 		}
 		// default
 		return this.fieldValid(this.index, fieldValue)

@@ -2,11 +2,11 @@
 	import type { Form } from '$comps/esp/form/form'
 	import {
 		FieldElement,
-		type FormSourceResponseType,
 		Validation,
 		ValidityField,
-		ValidityLevel,
-		ValidationStatus
+		ValidityErrorLevel,
+		ValidationStatus,
+		ValidityError
 	} from '$comps/esp/form/types'
 	import FormElHeader from '$comps/esp/form/FormElHeader.svelte'
 	import FormElInp from '$comps/esp/form/FormElInp.svelte'
@@ -18,13 +18,27 @@
 	import FormLink from '$comps/esp/form/FormLink.svelte'
 	import DATABUS from '$lib/utils/databus.utils'
 	import { createEventDispatcher } from 'svelte'
+	import { onMount } from 'svelte'
 
 	export let formObj: Form
 	export let surface = ''
-
 	let pictBlob
 
 	const dispatch = createEventDispatcher()
+	const submitButtonName = 'submitButton'
+
+	onMount(() => {
+		formObj.elForm = document.getElementById(formObj.id)
+		formObj.elSubmitButton = document.getElementById(submitButtonName)
+
+		// pre-validate form
+		const v: Validation = formObj.loadValidateForm()
+		console.log('onMount', v)
+		if (v.status == ValidationStatus.invalid) {
+			setValidities(v.validityFields)
+			setValidToSubmit(false)
+		}
+	})
 
 	function validateFieldBase(event) {
 		const fieldName = event.target.name
@@ -43,55 +57,40 @@
 		const v: Validation = formObj.fields[idx].validate(formData)
 		setValidities(v.validityFields)
 	}
-	function setValidities(newValidities: [ValidityField]) {
+	function setValidities(newValidities: Array<ValidityField>) {
+		let formStatus = ValidationStatus.valid
 		newValidities.forEach(({ index, validity }) => {
 			formObj.fields[index].validity = validity
 		})
+		setValidToSubmit(formObj.fields.every(({ validity }) => validity.error == ValidityError.none))
 	}
 
-	async function submitForm(event: Event) {
+	export async function submitForm() {
+		console.log('SUBMIT FORM...')
 		console.log('formObj.SUBMITFORM...')
-		// validate form
-		const formEl = event.target as HTMLFormElement
-		const formData = new FormData(formEl)
 
-		const v: Validation = formObj.validateForm(formData)
+		// validate form
+		const v: Validation = formObj.validateForm()
 		if (v.status != ValidationStatus.valid) {
 			setValidities(v.validityFields)
 			return v
 		}
+		setValidToSubmit(true)
 
 		// save form data to bus
 		DATABUS.upsert('form', formObj.id, formObj.data)
 		console.log('formObj.data:', formObj.data)
 
 		// post form to server
-		if (formObj.source) {
-			const url = formObj.source.processLocally ? '' : '/api/form'
+		await formObj.submitForm()
 
-			const responsePromise = await fetch(url, {
-				method: 'POST',
-				body: JSON.stringify({
-					action: 'form_submit',
-					formId: formObj.id,
-					source: formObj.source,
-					data: { ...formObj.pageData, ...formObj.data }
-				})
-			})
-			const response: FormSourceResponseType = await responsePromise.json()
-			console.log('response:', response)
-
-			// process response
-			if (!response.success) {
-				alert(response.message)
-				return
-			}
-			formObj.submitResponse = response.data
-		} else {
-			formObj.submitResponse = formObj.data
-		}
 		// alert parent
 		dispatch('formSubmitted', { formId: formObj.id, ...formObj.submitResponse })
+	}
+
+	function setValidToSubmit(status: boolean) {
+		formObj.validToSubmit = status
+		if (status) formObj.elSubmitButton.focus()
 	}
 </script>
 
@@ -106,6 +105,8 @@
 			</p>
 		</div>
 	{/if}
+
+	Valid To Submit: {formObj.validToSubmit}
 
 	<form id={formObj.id} on:submit|preventDefault={submitForm}>
 		{#each formObj.fields as field, index (field.name)}
@@ -130,20 +131,25 @@
 				{/if}
 			</div>
 
-			{#if formObj.fields[index].validity.level == ValidityLevel.error}
+			{#if formObj.fields[index].validity.level == ValidityErrorLevel.error}
 				<div class="text-error-500 mb-3">
 					<p class="">{formObj.fields[index].validity.message}</p>
 				</div>
-			{:else if formObj.fields[index].validity.level == ValidityLevel.warning}
+			{:else if formObj.fields[index].validity.level == ValidityErrorLevel.warning}
 				<div class="text-warning-500 mb-3">
 					<p class="">{formObj.fields[index].validity.message}</p>
 				</div>
 			{/if}
 		{/each}
 
-		<button type="submit" class="btn variant-filled-primary w-full mt-2"
-			>{formObj.submitButtonLabel}</button
+		<button
+			id={submitButtonName}
+			type="submit"
+			class="btn variant-filled-primary w-full mt-2"
+			disabled={!formObj.validToSubmit}
 		>
+			{formObj.submitButtonLabel}
+		</button>
 	</form>
 	{#each formObj.footerText as txt}
 		<div class="text-center {txt.fontSize}">
@@ -154,3 +160,5 @@
 		<FormLink footerLink={link} on:form-link />
 	{/each}
 </div>
+
+<pre>{JSON.stringify(formObj.fields, null, 2)}</pre>

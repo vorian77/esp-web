@@ -91,7 +91,7 @@ export async function getForm(id: string, pageData = {}) {
 				form.pageData
 			)
 			const response: FormSourceResponseType = await responsePromise.json()
-			console.log('response:', response)
+			console.log('getValues.response:', response)
 			return response.data
 		} else {
 			return {}

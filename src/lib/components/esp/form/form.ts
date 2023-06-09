@@ -14,7 +14,9 @@ import { FieldRadio } from '$comps/esp/form/fieldRadio'
 import { FieldSelect } from '$comps/esp/form/fieldSelect'
 import { FieldTextarea } from '$comps/esp/form/fieldTextarea'
 import {
+	FieldAccess,
 	FieldElement,
+	type FormSourceResponseType,
 	FormSource,
 	Validation,
 	ValidationType,
@@ -39,11 +41,14 @@ export class Form {
 	pageData: {} | undefined
 	values: {} | undefined
 	data: {} | undefined
+	elForm: HTMLFormElement
+	elSubmitButton: HTMLElement
 	submitResponse: {} | undefined
+	validToSubmit: boolean
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.id = strRequired(obj.id, FILENAME + 'Form.id')
+		this.id = strRequired(obj.id, FILENAME + 'id')
 		this.header = valueOrDefault(obj.header, '')
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
@@ -55,6 +60,7 @@ export class Form {
 		this.footerLinks = getArrayOfModels(FooterLink, obj.footerLinks)
 		this.pageData = valueOrDefault(obj.pageData, {})
 		this.values = valueOrDefault(obj.values, {})
+		this.validToSubmit = true
 	}
 
 	initFields(fields) {
@@ -107,7 +113,9 @@ export class Form {
 		return newFields
 	}
 
-	validateForm(formData: FormData): Validation {
+	validateForm(): Validation {
+		const formData = new FormData(this.elForm)
+
 		// set formData
 		let validityFields: Array<ValidityField> = []
 		let values = {}
@@ -126,6 +134,61 @@ export class Form {
 		}
 		this.data = values
 		return new Validation(ValidationType.form, ValidationStatus.valid, validityFields, values)
+	}
+
+	loadValidateForm(): Validation {
+		const formData = new FormData(this.elForm)
+
+		// set formData
+		let validityFields: Array<ValidityField> = []
+		let formStatus = ValidationStatus.valid
+		let values = {}
+
+		// process each field
+		this.fields.forEach((field) => {
+			if (field.value) {
+				const v: Validation = field.validate(formData)
+				if (v.status == ValidationStatus.invalid) {
+					validityFields = [...validityFields, ...v.validityFields]
+					formStatus = ValidationStatus.invalid
+				}
+			} else if (field.access == FieldAccess.required) {
+				console.log('required field w/o value:', field.name)
+				const v = field.fieldMissingData(field.index)
+				validityFields = [...validityFields, ...v.validityFields]
+				if (formStatus != ValidationStatus.invalid) {
+					formStatus = ValidationStatus.invalid
+				}
+			}
+		})
+		return new Validation(ValidationType.form, formStatus, validityFields)
+	}
+	async submitForm() {
+		console.log('SUBMIT FORM!!!!!')
+		if (this.source) {
+			const url = this.source.processLocally ? '' : '/api/form'
+
+			const responsePromise = await fetch(url, {
+				method: 'POST',
+				body: JSON.stringify({
+					action: 'form_submit',
+					formId: this.id,
+					source: this.source,
+					data: { ...this.pageData, ...this.data }
+				})
+			})
+			const response: FormSourceResponseType = await responsePromise.json()
+			console.log('response:', response)
+
+			// process response
+			if (!response.success) {
+				alert(response.message)
+				return response
+			}
+			this.submitResponse = response.data
+		} else {
+			this.submitResponse = this.data
+		}
 	}
 
 	getFieldValue(fieldName: string) {

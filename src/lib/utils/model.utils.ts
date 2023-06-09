@@ -11,7 +11,7 @@ export function booleanOrFalse(val, name) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'booleanOrFalse',
-			message: `Value: "${val} for Field: "${name}" is expected to be typeof "boolean" but is typeof "${typeof val}".`
+			message: `Value: (${val}) for Field: (${name}) is expected to be typeof "boolean" but is typeof (${typeof val}).`
 		})
 	}
 }
@@ -55,7 +55,7 @@ export function memberOfEnum(val: string, enumName: string, enumObj) {
 	throw error(500, {
 		file: FILENAME,
 		function: `memberofEnum`,
-		message: `"${val}" is not member of enum ${JSON.stringify(enumObj)}.`
+		message: `(${val}) is not member of enum: ${JSON.stringify(enumObj)}.`
 	})
 }
 export function memberOfEnumOrDefault(val: string, enumName: string, enumObj, defaultVal: string) {
@@ -77,7 +77,7 @@ export function nbrRequired(val, name) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'nbrRqd',
-			message: `Required value: "${name}" - is undefined or has an invlid value: "${val}".`
+			message: `Required value: (${name}) - is undefined or has an invlid value: (${val}).`
 		})
 	}
 }
@@ -105,7 +105,7 @@ export function strRequired(val, name) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'strRqd',
-			message: `Required value: "${name}" - is undefined or has an invlid value: "${val}".`
+			message: `Required value: (${name}) - is undefined or has an invlid value: (${val}).`
 		})
 	}
 }

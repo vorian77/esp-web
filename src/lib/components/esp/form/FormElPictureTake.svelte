@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Camera, CameraResultType } from '@capacitor/camera'
 	import type { FieldPictureTake } from '$comps/esp/form/fieldPictureTake'
-	import { ValidityLevel } from '$comps/esp/form/types'
+	import { ValidityErrorLevel } from '$comps/esp/form/types'
 
 	// aws setup
 
@@ -78,8 +78,8 @@
 		name={field.name}
 		value={JSON.stringify({ imgType, imgURL })}
 		class="input bg-white text-black"
-		class:input-warning={field.validity.level == ValidityLevel.warning}
-		class:input-error={field.validity.level == ValidityLevel.error}
+		class:input-warning={field.validity.level == ValidityErrorLevel.warning}
+		class:input-error={field.validity.level == ValidityErrorLevel.error}
 		on:change
 	/>
 </label>

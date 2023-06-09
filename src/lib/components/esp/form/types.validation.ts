@@ -29,18 +29,18 @@ export class Validation {
 	}
 }
 export class Validity {
-	type: ValidityType
+	error: ValidityError
+	level: ValidityErrorLevel
 	message: string
-	level: ValidityLevel
 
 	constructor(
-		type: ValidityType = ValidityType.valid,
-		message: string = '',
-		level: ValidityLevel = ValidityLevel.none
+		error: ValidityError = ValidityError.none,
+		level: ValidityErrorLevel = ValidityErrorLevel.none,
+		message: string = ''
 	) {
-		this.type = type
-		this.message = message
+		this.error = error
 		this.level = level
+		this.message = message
 	}
 }
 export class ValidityField {
@@ -54,21 +54,17 @@ export class ValidityField {
 }
 
 export enum ValidationStatus {
-	valid = 'valid',
-	notinvalid = 'notinvalid',
-	invalid = 'invalid'
+	invalid = 'invalid',
+	notInvalid = 'notInvalid',
+	valid = 'valid'
 }
 export enum ValidationType {
 	field = 'field',
 	form = 'form'
 }
-export enum ValidityLevel {
+export enum ValidityError {
 	none = 'none',
-	warning = 'warning',
-	error = 'error'
-}
-export enum ValidityType {
-	valid = 'valid',
+	missingData = 'missingData',
 	required = 'required',
 	minLength = 'minlength',
 	maxLength = 'maxlength',
@@ -76,4 +72,9 @@ export enum ValidityType {
 	maxValue = 'maxvalue',
 	pattern = 'pattern',
 	matchColumn = 'matchcolumn'
+}
+export enum ValidityErrorLevel {
+	none = 'none',
+	warning = 'warning',
+	error = 'error'
 }

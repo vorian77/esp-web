@@ -13,15 +13,22 @@
 	$: pageCurrent = ''
 	$: securityCode = 0
 	$: verifyFrom = ''
-	const forms = initForms()
+	const forms = initForms([
+		'auth_login',
+		'auth_signup',
+		'auth_verify_phone_mobile',
+		'auth_reset_password'
+	])
 
-	function initForms() {
-		let forms = []
-		for (const [key, value] of Object.entries(data)) {
-			forms[key] = new FormDefn(value)
-		}
+	function initForms(list) {
+		let forms = {}
+		list.forEach((f) => {
+			forms[f] = new FormDefn(data[f])
+		})
+		console.log('forms:', forms)
 		return forms
 	}
+
 	function openPage(page: string) {
 		pageCurrent = page
 		const s: DrawerSettings = {
