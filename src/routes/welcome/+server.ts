@@ -22,14 +22,14 @@ export async function POST({ request, cookies }) {
 			break
 
 		case 'form_submit':
-			const { formId, source, data } = requestData
+			const { formName, source, data } = requestData
 
-			switch (formId) {
+			switch (formName) {
 				case 'auth_login':
 				case 'auth_reset_password':
 				case 'auth_signup':
 					console.log('/ROUTES/WELCOME/+server.ts...')
-					console.log('formId:', formId)
+					console.log('formName:', formName)
 					const responsePromise = await processForm(
 						source.actions[FormSourceDBAction.update],
 						FormSourceDBAction.update,
@@ -42,7 +42,7 @@ export async function POST({ request, cookies }) {
 					if (!userId) {
 						throw error(500, {
 							file: FILENAME,
-							function: `POST.form_submit: ${formId}`,
+							function: `POST.form_submit: ${formName}`,
 							message: `Invalid userId returned. Parms: ${JSON.stringify(data)}`
 						})
 					}
@@ -64,7 +64,7 @@ export async function POST({ request, cookies }) {
 					throw error(500, {
 						file: FILENAME,
 						function: 'POST',
-						message: `No case defined for formId: ${formId}`
+						message: `No case defined for formName: ${formName}`
 					})
 			}
 			break

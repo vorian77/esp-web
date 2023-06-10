@@ -7,7 +7,8 @@ import {
 	FormSourceTarget
 } from '$comps/esp/form/types'
 
-import { dbGetDoc } from '$server/dbFauna'
+import { dbGetForm } from '$server/dbMongo'
+// import { dbGetForm } from '$server/dbFauna'
 import { getEnvVar } from '$server/env'
 import { dbESP } from '$server/dbESP'
 import { error } from '@sveltejs/kit'
@@ -39,8 +40,8 @@ export async function processForm(
 	}
 
 	function setParmVals(sourceAction: FormSourceAction, data: {}) {
-		console.log('setParmVals...')
-		console.log('sourceAction:', sourceAction)
+		// console.log('setParmVals...')
+		// console.log('sourceAction:', sourceAction)
 		let parms = {}
 		sourceAction.parms.forEach(({ name, type, source }) => {
 			switch (type) {
@@ -67,22 +68,25 @@ export async function processForm(
 	}
 }
 
-export async function getForm(id: string, pageData = {}) {
-	const form = await dbGetDoc('forms', id)
+export async function getForm(name: string, pageData = {}) {
+	// console.log('dbForm.getForm...')
+	// console.log('formName:', name)
+	const form = await dbGetForm(name)
+	// console.log('form', form)
+
 	form.pageData = pageData
-	console.log('formFetch.getForm...')
-	console.log('form.id:', id)
-	console.log('form.header:', form.header)
-	console.log('pageData:', form.pageData)
+	// console.log('form.name:', name)
+	// console.log('form.header:', form.header)
+	// console.log('pageData:', form.pageData)
 
 	async function getValues(sourceDefn: {}) {
 		const source = new FormSource(sourceDefn)
-		console.log('getValues...')
-		console.log('source.defn:', sourceDefn)
-		console.log('source.class:', source)
+		// console.log('getValues...')
+		// console.log('source.defn:', sourceDefn)
+		// console.log('source.class:', source)
 
 		const sourceTypeSelect = source.actions[FormSourceDBAction.select]
-		console.log('sourceTypeSelect:', sourceTypeSelect)
+		// console.log('sourceTypeSelect:', sourceTypeSelect)
 
 		if (sourceTypeSelect) {
 			const responsePromise = await processForm(
@@ -91,7 +95,7 @@ export async function getForm(id: string, pageData = {}) {
 				form.pageData
 			)
 			const response: FormSourceResponseType = await responsePromise.json()
-			console.log('getValues.response:', response)
+			// console.log('getValues.response:', response)
 			return response.data
 		} else {
 			return {}
@@ -101,15 +105,15 @@ export async function getForm(id: string, pageData = {}) {
 	// set values for form
 	if (form.source) {
 		form.values = await getValues(form.source)
-		console.log('values.select:', form.values)
+		// console.log('values.select:', form.values)
 	}
 
 	// set values for form - fields
 	for (let i = 0; i < form.fields.length; i++) {
 		if (form.fields[i].hasOwnProperty('source')) {
 			form.fields[i].items = await getValues(form.fields[i].source)
-			console.log('field:', form.fields[i].name)
-			console.log('items:', form.fields[i].items)
+			// console.log('field:', form.fields[i].name)
+			// console.log('items:', form.fields[i].items)
 		}
 	}
 

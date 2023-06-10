@@ -18,6 +18,7 @@
 		class:input-warning={field.validity.level == ValidityErrorLevel.warning}
 		class:input-error={field.validity.level == ValidityErrorLevel.error}
 		on:change
+		on:keyup|preventDefault
 	/>
 </label>
 

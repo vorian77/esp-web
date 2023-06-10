@@ -40,3 +40,19 @@ export async function dbGetDoc(collection: string, id: string) {
 		rtnError(err, 'dbGetDoc')
 	}
 }
+
+export async function dbGetForm(formName: string) {
+	try {
+		// const res = await client.query(q.Get(q.Ref(q.Collection(collection), id)))
+		const query = await client.query(
+			q.Map(
+				q.Paginate(q.Match(q.Index('forms_by_name'), formName)),
+				q.Lambda('doc', q.Select('data', q.Get(q.Var('doc'))))
+			)
+		)
+		const result = await query.data
+		return result[0]
+	} catch (err) {
+		rtnError(err, 'dbGetDoc')
+	}
+}

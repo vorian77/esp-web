@@ -16,7 +16,6 @@
 	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
 	import FormLink from '$comps/esp/form/FormLink.svelte'
-	import DATABUS from '$lib/utils/databus.utils'
 	import { createEventDispatcher } from 'svelte'
 	import { onMount } from 'svelte'
 
@@ -28,12 +27,11 @@
 	const submitButtonName = 'submitButton'
 
 	onMount(() => {
-		formObj.elForm = document.getElementById(formObj.id)
+		formObj.elForm = document.getElementById(formObj.name)
 		formObj.elSubmitButton = document.getElementById(submitButtonName)
 
 		// pre-validate form
 		const v: Validation = formObj.loadValidateForm()
-		console.log('onMount', v)
 		if (v.status == ValidationStatus.invalid) {
 			setValidities(v.validityFields)
 			setValidToSubmit(false)
@@ -64,7 +62,14 @@
 		})
 		setValidToSubmit(formObj.fields.every(({ validity }) => validity.error == ValidityError.none))
 	}
-
+	function setValidToSubmit(status: boolean) {
+		formObj.validToSubmit = status
+		// if (status) formObj.elSubmitButton.focus()
+	}
+	function keyUp(event: KeyboardEvent) {
+		const fieldName = event.target.name
+		validateField(event, fieldName)
+	}
 	export async function submitForm() {
 		console.log('SUBMIT FORM...')
 		console.log('formObj.SUBMITFORM...')
@@ -77,20 +82,11 @@
 		}
 		setValidToSubmit(true)
 
-		// save form data to bus
-		DATABUS.upsert('form', formObj.id, formObj.data)
-		console.log('formObj.data:', formObj.data)
-
 		// post form to server
 		await formObj.submitForm()
 
 		// alert parent
-		dispatch('formSubmitted', { formId: formObj.id, ...formObj.submitResponse })
-	}
-
-	function setValidToSubmit(status: boolean) {
-		formObj.validToSubmit = status
-		if (status) formObj.elSubmitButton.focus()
+		dispatch('formSubmitted', { formName: formObj.name, ...formObj.submitResponse })
 	}
 </script>
 
@@ -108,7 +104,7 @@
 
 	Valid To Submit: {formObj.validToSubmit}
 
-	<form id={formObj.id} on:submit|preventDefault={submitForm}>
+	<form id={formObj.name} on:submit|preventDefault={submitForm}>
 		{#each formObj.fields as field, index (field.name)}
 			<div class:mt-3={index}>
 				{#if field.type === 'checkbox'}
@@ -123,11 +119,11 @@
 						blob: {field.pictBlob}
 					{/if}
 				{:else if field.element === FieldElement.select}
-					<FormElSelect bind:field formName={formObj.id} on:change={validateFieldBase} />
+					<FormElSelect bind:field formName={formObj.name} on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.textarea}
 					<FormElTextarea bind:field on:change={validateFieldBase} />
 				{:else}
-					<FormElInp bind:field on:change={validateFieldBase} />
+					<FormElInp bind:field on:change={validateFieldBase} on:keyup={keyUp} />
 				{/if}
 			</div>
 

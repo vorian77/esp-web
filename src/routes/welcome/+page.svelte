@@ -25,7 +25,6 @@
 		list.forEach((f) => {
 			forms[f] = new FormDefn(data[f])
 		})
-		console.log('forms:', forms)
 		return forms
 	}
 
@@ -40,16 +39,16 @@
 		drawerStore.open(s)
 	}
 	async function onFormSubmitted(event) {
-		const { formId } = event.detail
+		const { formName } = event.detail
 
-		switch (formId) {
+		switch (formName) {
 			case 'auth_login':
 				launch()
 				break
 
 			case 'auth_verify_phone_mobile':
 				// verify security code
-				const userSecurityCode = forms[formId].data.securityCode
+				const userSecurityCode = forms[formName].data.securityCode
 				if (userSecurityCode != securityCode) {
 					alert(
 						'The security code you entered does not match the security we sent. Please try again.'
@@ -62,7 +61,7 @@
 					method: 'POST',
 					body: JSON.stringify({
 						action: 'form_submit',
-						formId: forms[verifyFrom].id,
+						formName: forms[verifyFrom].name,
 						source: forms[verifyFrom].source,
 						data: forms[verifyFrom].data
 					})
@@ -77,7 +76,7 @@
 
 			case 'auth_signup':
 			case 'auth_reset_password':
-				verifyFrom = formId
+				verifyFrom = formName
 				sendCode()
 				openPage('auth_verify_phone_mobile')
 				break
@@ -123,7 +122,7 @@
 {securityCode}
 <Drawer>
 	{#each Object.entries(forms) as [key, value], index}
-		{#if pageCurrent == value.id}
+		{#if pageCurrent == value.name}
 			<Form
 				bind:formObj={value}
 				surface="esp-card-space-y"

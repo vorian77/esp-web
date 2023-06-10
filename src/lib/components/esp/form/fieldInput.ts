@@ -16,7 +16,7 @@ const FILENAME = '$comps/esp/form/fieldInput.ts'
 export class FieldInput extends Field {
 	type: FieldType
 	placeHolder: string
-	matchColumn: MatchColumn | string
+	matchColumn: MatchColumn | ''
 	minLength: number
 	maxLength: number
 	minValue: number
@@ -108,8 +108,8 @@ export class FieldInput extends Field {
 				return this.fieldInvalid(
 					this.index,
 					ValidityError.minLength,
-					`"${this.label}" must be at least ${this.minLength} character(s). It is currently ${fieldValue.length} character(s).`,
-					ValidityErrorLevel.error
+					ValidityErrorLevel.error,
+					`"${this.label}" must be at least ${this.minLength} character(s). It is currently ${fieldValue.length} character(s).`
 				)
 			}
 		}
@@ -119,8 +119,8 @@ export class FieldInput extends Field {
 				return this.fieldInvalid(
 					this.index,
 					ValidityError.maxLength,
-					`"${this.label}" cannot exceed ${this.maxLength} character(s). It is currently ${fieldValue.length} character(s).`,
-					ValidityErrorLevel.error
+					ValidityErrorLevel.error,
+					`"${this.label}" cannot exceed ${this.maxLength} character(s). It is currently ${fieldValue.length} character(s).`
 				)
 			}
 		}
@@ -130,8 +130,8 @@ export class FieldInput extends Field {
 				return this.fieldInvalid(
 					this.index,
 					ValidityError.minValue,
-					`"${this.label}" must be at least ${this.minValue}.`,
-					ValidityErrorLevel.error
+					ValidityErrorLevel.error,
+					`"${this.label}" must be at least ${this.minValue}.`
 				)
 			}
 		}
@@ -141,8 +141,8 @@ export class FieldInput extends Field {
 				return this.fieldInvalid(
 					this.index,
 					ValidityError.maxValue,
-					`"${this.label}" cannot exceed ${this.maxValue}.`,
-					ValidityErrorLevel.error
+					ValidityErrorLevel.error,
+					`"${this.label}" cannot exceed ${this.maxValue}.`
 				)
 			}
 		}
@@ -154,8 +154,8 @@ export class FieldInput extends Field {
 				return this.fieldInvalid(
 					this.index,
 					ValidityError.pattern,
-					errorMsg,
-					ValidityErrorLevel.error
+					ValidityErrorLevel.error,
+					errorMsg
 				)
 			}
 		}
@@ -180,15 +180,15 @@ export class FieldInput extends Field {
 					// one blank field - warning
 					validity = new Validity(
 						ValidityError.matchColumn,
-						this.matchColumn.message,
-						ValidityErrorLevel.warning
+						ValidityErrorLevel.warning,
+						this.matchColumn.message
 					)
 				} else {
 					// both entered and unequal - error
 					validity = new Validity(
 						ValidityError.matchColumn,
-						this.matchColumn.message,
-						ValidityErrorLevel.error
+						ValidityErrorLevel.error,
+						this.matchColumn.message
 					)
 				}
 			}

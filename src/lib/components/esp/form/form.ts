@@ -28,7 +28,7 @@ import { error } from '@sveltejs/kit'
 const FILENAME = '/$comps/esp/form/form.ts/'
 
 export class Form {
-	id: string
+	name: string
 	header: string
 	subHeader: string
 	description: string
@@ -48,7 +48,7 @@ export class Form {
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.id = strRequired(obj.id, FILENAME + 'id')
+		this.name = strRequired(obj.name, FILENAME + 'name')
 		this.header = valueOrDefault(obj.header, '')
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
@@ -105,7 +105,7 @@ export class Form {
 					throw error(500, {
 						file: FILENAME,
 						function: 'initFields',
-						message: `No case defined for field element: ${element} in form: ${this.id}.`
+						message: `No case defined for field element: ${element} in form: ${this.name}.`
 					})
 			}
 			newFields.push(newField)
@@ -172,7 +172,7 @@ export class Form {
 				method: 'POST',
 				body: JSON.stringify({
 					action: 'form_submit',
-					formId: this.id,
+					formName: this.name,
 					source: this.source,
 					data: { ...this.pageData, ...this.data }
 				})
@@ -203,7 +203,7 @@ export class Form {
 			throw error(500, {
 				file: FILENAME,
 				function: 'setFieldValue',
-				message: `Unable to find field: ${fieldName} in form: ${this.id}.`
+				message: `Unable to find field: ${fieldName} in form: ${this.name}.`
 			})
 		}
 	}

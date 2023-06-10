@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FieldHeader } from '$comps/esp/form/fieldHeader'
+	import type { FieldHeader, DynamicLabel } from '$comps/esp/form/fieldHeader'
 	export let field: FieldHeader
 	export let pageData: {} | undefined
 	export let values: {} | undefined
@@ -7,7 +7,11 @@
 
 	const FILENAME = 'FormElHeader.svelte'
 
-	function setValue(valueSource) {
+	function getDynamicLabel(dynamicLabel: DynamicLabel) {
+		if (!dynamicLabel) {
+			return ''
+		}
+
 		function setValueData(parms: [], data: {}) {
 			if (!data.hasOwnProperty(parms[0])) {
 				throw error(500, {
@@ -22,27 +26,24 @@
 				return setValueData(parms.slice(1), data[parms[0]])
 			}
 		}
-		if (!valueSource) {
-			return ''
-		}
-		const parms = valueSource.split('.')
-		switch (parms[0]) {
+
+		switch (dynamicLabel.source) {
 			case 'pagedata':
-				return setValueData(parms.slice(1), pageData)
+				return setValueData(dynamicLabel.path, pageData)
 				break
 			case 'values':
-				return setValueData(parms.slice(1), values)
+				return setValueData(dynamicLabel.path, values)
 				break
 			default:
 				throw error(500, {
 					file: FILENAME,
 					function: 'setValue',
-					message: `No case defined for value data source: ${parms[0]}.`
+					message: `No case defined for dynamic label source: ${dynamicLabel.source}.`
 				})
 		}
 	}
 
-	const val = setValue(field.value)
+	const dynamicLabel = getDynamicLabel(field.dynamicLabel)
 </script>
 
-<h3 class="h3 mb-6"><span class="font-semibold">{field.label}</span>{val}</h3>
+<h3 class="h3 mb-6"><span class="font-semibold">{field.label}</span>{dynamicLabel}</h3>
