@@ -61,7 +61,6 @@
 
 		// convert binary into url
 		imgURL = URL.createObjectURL(field.pictBlob)
-		// console.log('imgURL:', imgURL)
 
 		//on:dismount revokeObjectURL(imgUrl)
 		// axios can return blob by adding resposneType: 'blob' - saves converting anything
