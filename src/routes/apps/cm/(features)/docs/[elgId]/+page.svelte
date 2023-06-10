@@ -56,8 +56,9 @@
 
 <Form bind:formObj on:formSubmitted={onFormSubmitted} />
 
+{formObj.fields}
 <h3>formObj.submitResponse</h3>
-<pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre>
+<!-- <pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre> -->
 
 <!-- console.log('GENERATE AWS S3 URL...')
 	return new Response(JSON.stringify({ success: true }))

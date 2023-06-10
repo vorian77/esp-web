@@ -88,6 +88,11 @@
 		// alert parent
 		dispatch('formSubmitted', { formName: formObj.name, ...formObj.submitResponse })
 	}
+
+	function pictureTaken(fieldIdx: number, fieldName: string) {
+		const v: Validation = formObj.fields[fieldIdx].fieldValid(fieldIdx, '')
+		setValidities(v.validityFields)
+	}
 </script>
 
 <div class="{surface} ">
@@ -114,7 +119,11 @@
 				{:else if field.element === FieldElement.header}
 					<FormElHeader bind:field pageData={formObj.pageData} values={formObj.values} />
 				{:else if field.element === FieldElement.pictureTake}
-					<FormElPictureTake bind:field bind:blob={pictBlob} on:change={validateFieldBase} />
+					<FormElPictureTake
+						bind:field
+						bind:blob={pictBlob}
+						on:pictureTaken={() => pictureTaken(index, field.name)}
+					/>
 					{#if field.pictBlob}
 						blob: {field.pictBlob}
 					{/if}

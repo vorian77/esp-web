@@ -2,12 +2,15 @@
 	import { Camera, CameraResultType } from '@capacitor/camera'
 	import type { FieldPictureTake } from '$comps/esp/form/fieldPictureTake'
 	import { ValidityErrorLevel } from '$comps/esp/form/types'
+	import { createEventDispatcher } from 'svelte'
 
 	// aws setup
 
 	const FILENAME = 'FormElPictureTake.svelte'
 
 	export let field: FieldPictureTake
+
+	const dispatch = createEventDispatcher()
 
 	// if (field.value) {
 	// 	format = field.value?.format
@@ -62,6 +65,7 @@
 
 		//on:dismount revokeObjectURL(imgUrl)
 		// axios can return blob by adding resposneType: 'blob' - saves converting anything
+		dispatch('pictureTaken')
 	}
 </script>
 

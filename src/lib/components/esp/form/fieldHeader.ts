@@ -1,4 +1,6 @@
 import { Field } from '$comps/esp/form/field'
+import { FieldAccess } from '$comps/esp/form/types'
+
 import { strRequired, valueOrDefault, getArray } from '$utils/utils'
 
 const COMPONENT = '/$comps/esp/form/fieldHeader.ts/'
@@ -15,6 +17,7 @@ export class FieldHeader extends Field {
 		obj = valueOrDefault(obj, {})
 		this.staticLabel = valueOrDefault(obj.label, '')
 		this.dynamicLabel = obj.value ? new DynamicLabel(obj.value) : undefined
+		this.access = FieldAccess.displayOnly
 	}
 }
 
