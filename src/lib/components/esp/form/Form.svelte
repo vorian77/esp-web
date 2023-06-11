@@ -70,9 +70,6 @@
 		validateField(event, fieldName)
 	}
 	export async function submitForm() {
-		console.log('SUBMIT FORM...')
-		console.log('formObj.SUBMITFORM...')
-
 		// validate form
 		const v: Validation = formObj.validateForm()
 		if (v.status != ValidationStatus.valid) {

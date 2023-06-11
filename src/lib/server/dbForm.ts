@@ -69,8 +69,8 @@ export async function processForm(
 }
 
 export async function getForm(name: string, pageData = {}) {
-	console.log('dbForm.getForm...')
-	console.log('formName:', name)
+	// console.log('dbForm.getForm...')
+	// console.log('formName:', name)
 	const form = await dbGetForm(name)
 	// console.log('form', form)
 
@@ -82,7 +82,7 @@ export async function getForm(name: string, pageData = {}) {
 	// set values for form
 	if (form.source) {
 		form.values = await getValues(form.source)
-		console.log('values.select:', form.values)
+		// console.log('values.select:', form.values)
 
 		// set form field values
 		// console.log('form.fields:', form.fields)

@@ -99,7 +99,6 @@ export class Field {
 		])
 	}
 	fieldInvalid(index: number, error: ValidityError, level: ValidityErrorLevel, message: string) {
-		console.log('fieldInvalid:', this.name)
 		return new Validation(ValidationType.field, ValidationStatus.invalid, [
 			new ValidityField(index, new Validity(error, level, message))
 		])

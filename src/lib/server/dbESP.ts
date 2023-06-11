@@ -22,13 +22,13 @@ export async function dbESP(sourceAction: FormSourceAction, action: FormSourceDB
 					break
 
 				case FormSourceDBAction.select:
-					console.log('dbESP.db.select...')
+					// console.log('dbESP.db.select...')
 					let sql = sourceAction.statement
-					console.log('sql - before parms:', sql)
+					// console.log('sql - before parms:', sql)
 					for (const [key, value] of Object.entries(parms)) {
 						sql = sql.replace(key, value)
 					}
-					console.log('sql - after parms:', sql)
+					// console.log('sql - after parms:', sql)
 					return await dbESPSQL(sql)
 					break
 
@@ -53,7 +53,7 @@ export async function dbESP(sourceAction: FormSourceAction, action: FormSourceDB
 }
 
 export async function dbESPAPI(method: HTMLMETHOD, url: string, parms: {}) {
-	console.log('dbESPAPI...')
+	// console.log('dbESPAPI...')
 	let options = { method, url: 'https://esp1.kssc.com:3000/esp/' + url }
 	switch (method) {
 		case HTMLMETHOD.GET:
@@ -64,10 +64,10 @@ export async function dbESPAPI(method: HTMLMETHOD, url: string, parms: {}) {
 	}
 
 	try {
-		console.log('Axios.options:', options)
+		// console.log('Axios.options:', options)
 		const resp = await axios(options)
 		const data = resp.data
-		console.log('Axios.result:', data)
+		// console.log('Axios.result:', data)
 		return FormSourceResponse(data)
 	} catch (err: any) {
 		throw error(500, {

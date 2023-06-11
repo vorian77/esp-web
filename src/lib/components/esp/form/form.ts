@@ -162,7 +162,6 @@ export class Form {
 		return new Validation(ValidationType.form, formStatus, validityFields)
 	}
 	async submitForm() {
-		console.log('SUBMIT FORM!!!!!')
 		if (this.source) {
 			const url = this.source.processLocally ? '' : '/api/form'
 
@@ -176,7 +175,6 @@ export class Form {
 				})
 			})
 			const response: FormSourceResponseType = await responsePromise.json()
-			console.log('response:', response)
 
 			// process response
 			if (!response.success) {

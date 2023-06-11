@@ -1,19 +1,17 @@
 <script lang="ts">
 	import { Camera, CameraResultType } from '@capacitor/camera'
 	import type { FieldPictureTake } from '$comps/esp/form/fieldPictureTake'
+	import type { FormSourceResponseType } from '$comps/esp/form/types'
 	import { getContext, tick } from 'svelte'
-
-	const pageData = getContext('pageData')
-	console.log('FormElPicture.pageData:', pageData)
-	const referralId = pageData.referral_id
-	const elgId = pageData.elgId
+	import { onMount } from 'svelte'
+	import DATABUS from '$lib/utils/databus.utils'
 
 	const FILENAME = 'FormElPictureTake.svelte'
 
 	export let field: FieldPictureTake
+	const pageData = getContext('pageData')
 
-	let imgURL = '/src/lib/assets/cup.jpg'
-	// let uploadImgName = ''
+	let imgURL = pageData.imgStorageUrl
 
 	const takePicture = async () => {
 		const image = await Camera.getPhoto({
@@ -46,6 +44,10 @@
 		// field.value = crypto.randomUUID()
 		field.value = uploadImgType
 
+		// parentImg.setImage = { type: uploadImgType }
+		DATABUS.upsert('image', 'type', uploadImgType)
+		DATABUS.upsert('image', 'blob', uploadImgBlob)
+
 		// dispatch change event
 		await tick()
 		const elem = document.getElementById(field.name)
@@ -67,11 +69,10 @@
 		id={field.name}
 		name={field.name}
 		value={field.value}
-		hidden={true}
 		on:change
 	/>
 
-	<div>
+	<!-- <div>
 		<label for="profile_pic">Choose file to upload</label>
 		<input
 			type="file"
@@ -80,7 +81,7 @@
 			multiple={false}
 			accept=".jpg, .jpeg, .png"
 		/>
-	</div>
+	</div> -->
 
 	<div>Field: {field.name}</div>
 	{JSON.stringify(field.validity)}
