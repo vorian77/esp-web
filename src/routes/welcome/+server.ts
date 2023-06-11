@@ -1,4 +1,4 @@
-import { sendText } from '$server/twilio'
+import { sendText } from '$server/apiTwilio'
 import { processForm } from '$server/dbForm'
 import { error } from '@sveltejs/kit'
 import {
@@ -18,7 +18,7 @@ export async function POST({ request, cookies }) {
 	switch (action) {
 		case 'sms_send':
 			const { phoneMobile, message } = requestData
-			return sendText(phoneMobile, message)
+			// return sendText(phoneMobile, message)
 			break
 
 		case 'form_submit':
@@ -28,15 +28,12 @@ export async function POST({ request, cookies }) {
 				case 'auth_login':
 				case 'auth_reset_password':
 				case 'auth_signup':
-					console.log('/ROUTES/WELCOME/+server.ts...')
-					console.log('formName:', formName)
 					const responsePromise = await processForm(
 						source.actions[FormSourceDBAction.update],
 						FormSourceDBAction.update,
 						data
 					)
 					const response: FormSourceResponseType = await responsePromise.json()
-					console.log('response.data:', response.data)
 
 					const userId = response.data.applicantId
 					if (!userId) {

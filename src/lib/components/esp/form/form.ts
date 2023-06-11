@@ -89,8 +89,6 @@ export class Form {
 					newField = new FieldHeader(field, index)
 					break
 				case FieldElement.pictureTake:
-					console.log('FieldElement.pictureupload...')
-					console.log('field:', field)
 					newField = new FieldPictureTake(field, index)
 					break
 
@@ -153,7 +151,7 @@ export class Form {
 					formStatus = ValidationStatus.invalid
 				}
 			} else if (field.access == FieldAccess.required) {
-				console.log('required field w/o value:', field.name)
+				// required field/no value
 				const v = field.fieldMissingData(field.index)
 				validityFields = [...validityFields, ...v.validityFields]
 				if (formStatus != ValidationStatus.invalid) {
@@ -185,7 +183,7 @@ export class Form {
 				alert(response.message)
 				return response
 			}
-			this.submitResponse = response.data
+			this.submitResponse = { ...this.data, ...response.data }
 		} else {
 			this.submitResponse = this.data
 		}

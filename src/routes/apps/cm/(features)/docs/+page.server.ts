@@ -1,5 +1,5 @@
 import { dbESPAPI } from '$server/dbESP'
-import type { FormSourceResponseType } from '$utils/utils'
+import type { FormSourceResponseType } from '$comps/esp/form/types'
 import { getEnvVar } from '$server/env'
 
 export async function load({ locals }) {

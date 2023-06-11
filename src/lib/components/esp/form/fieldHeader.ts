@@ -10,8 +10,6 @@ export class FieldHeader extends Field {
 	dynamicLabel: DynamicLabel | undefined
 
 	constructor(obj: {}, index: number) {
-		console.log('fieldHeader...')
-		console.log('field:', obj)
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})

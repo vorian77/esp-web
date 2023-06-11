@@ -51,7 +51,7 @@ export class Field {
 		return items
 	}
 	validate(formData): Validation {
-		const fieldValue = this.validateFieldValue(formData)
+		const fieldValue = this.validateGetValue(formData)
 
 		// only validate access types that require validation
 		const evalutedAccessTypes = new Set([FieldAccess.required, FieldAccess.optional])
@@ -73,7 +73,8 @@ export class Field {
 		}
 		return this.fieldNotInvalid(this.index, fieldValue)
 	}
-	validateFieldValue(formData) {
+	validateGetValue(formData) {
+		// overridden for checkBox
 		return formData.get(this.name)
 	}
 	fieldValid(index: number, fieldValue: any) {
@@ -98,6 +99,7 @@ export class Field {
 		])
 	}
 	fieldInvalid(index: number, error: ValidityError, level: ValidityErrorLevel, message: string) {
+		console.log('fieldInvalid:', this.name)
 		return new Validation(ValidationType.field, ValidationStatus.invalid, [
 			new ValidityField(index, new Validity(error, level, message))
 		])

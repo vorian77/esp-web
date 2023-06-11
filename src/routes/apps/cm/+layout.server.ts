@@ -1,4 +1,4 @@
-import { fetchQuote } from '$server/quotes'
+import { fetchQuote } from '$server/apiQuotes'
 
 const FILENAME = '/routes/apps/cm/+layout.server.ts'
 

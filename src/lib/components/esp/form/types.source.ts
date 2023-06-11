@@ -30,8 +30,6 @@ export class FormSource {
 		// db
 		const db = obj.db ? new FormSourceActionDB(obj.db) : undefined
 		if (db) {
-			console.log('types.source.ts...')
-			console.log('db:', db)
 			this.actions[FormSourceDBAction.select] = db
 			if (this.db?.updateTable) {
 				this.actions[FormSourceDBAction.update] = db

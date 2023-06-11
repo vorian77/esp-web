@@ -1,113 +1,87 @@
 <script lang="ts">
 	import { Camera, CameraResultType } from '@capacitor/camera'
 	import type { FieldPictureTake } from '$comps/esp/form/fieldPictureTake'
-	import { ValidityErrorLevel } from '$comps/esp/form/types'
-	import { createEventDispatcher } from 'svelte'
+	import { getContext, tick } from 'svelte'
 
-	// aws setup
+	const pageData = getContext('pageData')
+	console.log('FormElPicture.pageData:', pageData)
+	const referralId = pageData.referral_id
+	const elgId = pageData.elgId
 
 	const FILENAME = 'FormElPictureTake.svelte'
 
 	export let field: FieldPictureTake
 
-	const dispatch = createEventDispatcher()
-
-	// if (field.value) {
-	// 	format = field.value?.format
-	// 	dataUrl = field.value?.dataUrl
-	// }
-
-	$: format = ''
-	$: imgData = ''
-	$: imgURL = '/src/lib/assets/cup.jpg'
-	$: imgType = ''
-	$: imgWebPath = ''
+	let imgURL = '/src/lib/assets/cup.jpg'
+	// let uploadImgName = ''
 
 	const takePicture = async () => {
 		const image = await Camera.getPhoto({
 			// ImageOptions
 			quality: 90,
 			allowEditing: true,
-			//resultType: CameraResultType.Uri
 			resultType: CameraResultType.Base64
-			//resultType: CameraResultType.DataUrl
 		})
-		// console.log('TAKE PICTURE...')
-		format = image.format
-		imgType = 'image/' + image.format
-		// console.log('imgType:', imgType)
-
-		//dataUrl = image.dataUrl
-		// imgData = image.dataUrl
-
-		// console.log('imgType:', imgType)
-		// console.log(imgData)
-
-		//imgWebPath = image.webPath
-		//console.log(imgWebPath)
+		const uploadImgType = 'image/' + image.format
 
 		// convert Base64 into binary
 		// https://stackoverflow.com/a/62144916/473881
-		imgData = image.base64String
-		const rawData = atob(imgData)
-		// console.log('rawData length:', rawData.length)
+		const rawData = atob(image.base64String)
 		const bytes = new Array(rawData.length)
 		for (let i = 0; i < rawData.length; i++) {
 			bytes[i] = rawData.charCodeAt(i)
 		}
 		const arr = new Uint8Array(bytes)
-		field.pictBlob = new Blob([arr], { type: imgType })
-		// imgBlob = blob
+
+		const uploadImgBlob = new Blob([arr], { type: uploadImgType })
 
 		// convert binary into url
-		imgURL = URL.createObjectURL(field.pictBlob)
+		imgURL = URL.createObjectURL(uploadImgBlob)
 
+		// uploadImgName = crypto.randomUUID()
 		//on:dismount revokeObjectURL(imgUrl)
 		// axios can return blob by adding resposneType: 'blob' - saves converting anything
-		dispatch('pictureTaken')
+
+		// trigger validity change on parent
+		// field.value = crypto.randomUUID()
+		field.value = uploadImgType
+
+		// dispatch change event
+		await tick()
+		const elem = document.getElementById(field.name)
+		elem.dispatchEvent(new Event('change'))
 	}
 </script>
 
 <label class="label" for={field.name}>
 	<img class="mx-auto mt-2" src={imgURL} alt={field.imageAltText} width={field.imageWidth} />
-	<button type="button" class="btn variant-filled-primary w-full mt-2" on:click={takePicture}
-		>{field.buttonLabel}</button
+
+	<button
+		type="button"
+		class="btn variant-filled-primary w-full mt-2"
+		on:click={() => takePicture()}>{field.buttonLabel}</button
 	>
-
-	<!-- type="hidden" -->
-
 	<input
+		class="input"
+		type="text"
 		id={field.name}
 		name={field.name}
-		value={JSON.stringify({ imgType, imgURL })}
-		class="input bg-white text-black"
-		class:input-warning={field.validity.level == ValidityErrorLevel.warning}
-		class:input-error={field.validity.level == ValidityErrorLevel.error}
-		on:change
-	/>
-</label>
-
-<!-- <div>
-	FORMAT:
-	{format}
-</div>
-<div>
-	DATA URL:
-	{dataUrl}
-</div> -->
-
-<!-- <label class="label" for={field.name}1>
-	<span>{field.label}</span>
-	<input
-		class="input bg-white text-black"
-		type={field.type}
-		id={field.name}
-		name={field.name}
-		placeholder={field.placeHolder}
 		value={field.value}
-		disabled={field.disabled}
-		class:input-warning={field.validity.level == ValidityLevel.warning}
-		class:input-error={field.validity.level == ValidityLevel.error}
+		hidden={true}
 		on:change
 	/>
-</label> -->
+
+	<div>
+		<label for="profile_pic">Choose file to upload</label>
+		<input
+			type="file"
+			id="profile_pic"
+			name="profile_pic"
+			multiple={false}
+			accept=".jpg, .jpeg, .png"
+		/>
+	</div>
+
+	<div>Field: {field.name}</div>
+	{JSON.stringify(field.validity)}
+</label>

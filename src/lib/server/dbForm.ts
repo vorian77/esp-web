@@ -69,8 +69,8 @@ export async function processForm(
 }
 
 export async function getForm(name: string, pageData = {}) {
-	// console.log('dbForm.getForm...')
-	// console.log('formName:', name)
+	console.log('dbForm.getForm...')
+	console.log('formName:', name)
 	const form = await dbGetForm(name)
 	// console.log('form', form)
 
@@ -78,6 +78,26 @@ export async function getForm(name: string, pageData = {}) {
 	// console.log('form.name:', name)
 	// console.log('form.header:', form.header)
 	// console.log('pageData:', form.pageData)
+
+	// set values for form
+	if (form.source) {
+		form.values = await getValues(form.source)
+		console.log('values.select:', form.values)
+
+		// set form field values
+		// console.log('form.fields:', form.fields)
+	}
+
+	// set values for form - fields
+	for (let i = 0; i < form.fields.length; i++) {
+		if (form.fields[i].hasOwnProperty('source')) {
+			form.fields[i].items = await getValues(form.fields[i].source)
+			// console.log('field:', form.fields[i].name)
+			// console.log('items:', form.fields[i].items)
+		}
+	}
+
+	return form
 
 	async function getValues(sourceDefn: {}) {
 		const source = new FormSource(sourceDefn)
@@ -101,21 +121,4 @@ export async function getForm(name: string, pageData = {}) {
 			return {}
 		}
 	}
-
-	// set values for form
-	if (form.source) {
-		form.values = await getValues(form.source)
-		// console.log('values.select:', form.values)
-	}
-
-	// set values for form - fields
-	for (let i = 0; i < form.fields.length; i++) {
-		if (form.fields[i].hasOwnProperty('source')) {
-			form.fields[i].items = await getValues(form.fields[i].source)
-			// console.log('field:', form.fields[i].name)
-			// console.log('items:', form.fields[i].items)
-		}
-	}
-
-	return form
 }

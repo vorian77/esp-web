@@ -4,7 +4,7 @@
 	export let data
 	const docsStatus = data.docsStatus
 
-	function setDoc(id, eligibility) {
+	function setDoc(id) {
 		goto(`/apps/cm/docs/${id}`)
 	}
 
@@ -43,13 +43,9 @@
 		</div>
 		<div class="self-center my-4">
 			{#if uploaded}
-				<button class="btn variant-filled-secondary" on:click={() => setDoc(id, eligibility)}
-					>Update...</button
-				>
+				<button class="btn variant-filled-secondary" on:click={() => setDoc(id)}>Update...</button>
 			{:else}
-				<button class="btn variant-filled-primary" on:click={() => setDoc(id, eligibility)}
-					>Upload...</button
-				>
+				<button class="btn variant-filled-primary" on:click={() => setDoc(id)}>Upload...</button>
 			{/if}
 		</div>
 	</div>

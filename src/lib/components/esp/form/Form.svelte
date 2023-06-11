@@ -16,14 +16,13 @@
 	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
 	import FormLink from '$comps/esp/form/FormLink.svelte'
-	import { createEventDispatcher } from 'svelte'
-	import { onMount } from 'svelte'
+	import { createEventDispatcher, onMount } from 'svelte'
+
+	const dispatch = createEventDispatcher()
 
 	export let formObj: Form
 	export let surface = ''
-	let pictBlob
 
-	const dispatch = createEventDispatcher()
 	const submitButtonName = 'submitButton'
 
 	onMount(() => {
@@ -88,11 +87,6 @@
 		// alert parent
 		dispatch('formSubmitted', { formName: formObj.name, ...formObj.submitResponse })
 	}
-
-	function pictureTaken(fieldIdx: number, fieldName: string) {
-		const v: Validation = formObj.fields[fieldIdx].fieldValid(fieldIdx, '')
-		setValidities(v.validityFields)
-	}
 </script>
 
 <div class="{surface} ">
@@ -119,14 +113,8 @@
 				{:else if field.element === FieldElement.header}
 					<FormElHeader bind:field pageData={formObj.pageData} values={formObj.values} />
 				{:else if field.element === FieldElement.pictureTake}
-					<FormElPictureTake
-						bind:field
-						bind:blob={pictBlob}
-						on:pictureTaken={() => pictureTaken(index, field.name)}
-					/>
-					{#if field.pictBlob}
-						blob: {field.pictBlob}
-					{/if}
+					<FormElPictureTake bind:field on:change={validateFieldBase} />
+					Form Field.value: {field.value}
 				{:else if field.element === FieldElement.select}
 					<FormElSelect bind:field formName={formObj.name} on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.textarea}
@@ -165,5 +153,3 @@
 		<FormLink footerLink={link} on:form-link />
 	{/each}
 </div>
-
-<pre>{JSON.stringify(formObj.fields, null, 2)}</pre>

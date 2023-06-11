@@ -8,7 +8,6 @@ export class FieldPictureTake extends Field {
 	buttonLabel: string
 	imageWidth: number
 	imageAltText: string
-	pictBlob: Blob
 
 	constructor(obj: {}, index: number) {
 		super(obj, index)
@@ -17,8 +16,6 @@ export class FieldPictureTake extends Field {
 		this.buttonLabel = valueOrDefault(obj.buttonLabel, 'Take Picture')
 		this.imageWidth = valueOrDefault(obj.imageWidth, 300)
 		this.imageAltText = strRequired(obj.imageAltText, FILENAME + '.imageAltText')
-
-		console.log('FieldPictureTake:', this)
 	}
 	validate(formData): Validation {
 		const v = super.validate(formData)

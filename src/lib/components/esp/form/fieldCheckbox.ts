@@ -22,7 +22,7 @@ export class FieldCheckbox extends Field {
 		}
 		return this.fieldValid(this.index, v.data)
 	}
-	validateFieldValue(formData) {
+	validateGetValue(formData) {
 		let values = []
 		this.items.forEach((i) => {
 			const itemId = this.name + '.' + i.id

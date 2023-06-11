@@ -1,52 +1,55 @@
 <script lang="ts">
+	import { getContext, setContext } from 'svelte'
 	import { Form as FormDefn } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
-	export let data
+	import type { FormSourceResponseType } from '$comps/esp/form/types'
 
+	export let data
 	const formDefn = data.formDefn
 	let formObj = new FormDefn(formDefn)
+	setContext('pageData', formDefn.pageData)
 
 	async function onFormSubmitted(event) {
 		console.log('ONFORMSUBMITTED...')
 		console.log('event.detail:', event.detail)
-		// data
+		// data - response from api submit and pagedata
 		const imgStorageKey = event.detail.storageKey
-		console.log('storageKey:', imgStorageKey)
-		const field = formObj.fields.find((f) => f.name == 'pictObj')
-		const imgBlob = field.pictBlob
-		const imgType = imgBlob.type
+		//console.log('storageKey:', imgStorageKey)
+
+		// const imgBlob = getContext('uploadImgBlob')
+		// const imgType = getContext('uploadImgType')
 
 		// processing
-		const url = await getUploadURL(imgType, imgStorageKey)
-		console.log('uploadURL:', url)
-		await uploadImg(url, imgBlob)
+		// const url = await getUploadURL(imgType, imgStorageKey)
+		// console.log('uploadURL:', url)
+		//await uploadImg(url, imgBlob)
 
 		async function getUploadURL(imgType, imgStorageKey) {
-			// generate URL
-			let api = 'https://moed-yo-api.theappfactory.com'
-			api += '/storage/img_url_upload'
-			api += `?storageKey=${imgStorageKey}&storageContentType=${imgType}`
-			const response = await fetch(api, { method: 'GET' })
-			const respData = await response.json()
-			let url = respData.url
+			const responsePromise = await fetch('/api/aws', {
+				method: 'POST',
+				body: { action: 'url_upload', imgType, imgStorageKey }
+			})
+			const response: FormSourceResponseType = await responsePromise.json()
+			console.log('response:', response)
+			let url = response.data.url
 			return url
 		}
 
 		async function uploadImg(url, imgBlob) {
 			try {
-				const reader = new FileReader()
-				reader.onloadend = async () => {
-					const resp = await fetch(url, {
-						method: 'PUT',
-						body: reader.result,
-						headers: {
-							'Content-Type': imgBlob.type
-						}
-					})
-					const respData = await resp.text()
-					console.log('reader response:', respData)
-				}
-				reader.readAsArrayBuffer(imgBlob)
+				// const reader = new FileReader()
+				// reader.onloadend = async () => {
+				// 	const resp = await fetch(url, {
+				// 		method: 'PUT',
+				// 		body: reader.result,
+				// 		headers: {
+				// 			'Content-Type': imgBlob.type
+				// 		}
+				// 	})
+				// 	const respData = await resp.text()
+				// 	console.log('reader response:', respData)
+				// }
+				// reader.readAsArrayBuffer(imgBlob)
 			} catch (error) {
 				console.log(`Error in handleSubmit on / route: ${error}`)
 			}
@@ -56,9 +59,11 @@
 
 <Form bind:formObj on:formSubmitted={onFormSubmitted} />
 
-{formObj.fields}
 <h3>formObj.submitResponse</h3>
-<!-- <pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre> -->
+<pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre>
+
+<h3>formObj.fields</h3>
+<pre>{JSON.stringify(formObj.fields, null, 2)}</pre>
 
 <!-- console.log('GENERATE AWS S3 URL...')
 	return new Response(JSON.stringify({ success: true }))

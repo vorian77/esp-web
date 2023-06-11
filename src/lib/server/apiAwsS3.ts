@@ -1,4 +1,4 @@
-export async function getS3UploadURL(storageKey: string) {
+export async function getURLUpload(storageKey: string) {
 	let api = 'https://moed-yo-api.theappfactory.com'
 	api += '/storage/img_url_upload'
 	api += `?storageKey=${storageKey}&storageContentType=image/jpeg`
