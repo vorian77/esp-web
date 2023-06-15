@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { Camera, CameraResultType } from '@capacitor/camera'
 	import type { FieldPictureTake } from '$comps/esp/form/fieldPictureTake'
-	import type { FormSourceResponseType } from '$comps/esp/form/types'
 	import { getContext, tick } from 'svelte'
-	import { onMount } from 'svelte'
 	import DATABUS from '$lib/utils/databus.utils'
 
 	const FILENAME = 'FormElPictureTake.svelte'
@@ -36,12 +34,6 @@
 		// convert binary into url
 		imgURL = URL.createObjectURL(uploadImgBlob)
 
-		// uploadImgName = crypto.randomUUID()
-		//on:dismount revokeObjectURL(imgUrl)
-		// axios can return blob by adding resposneType: 'blob' - saves converting anything
-
-		// trigger validity change on parent
-		// field.value = crypto.randomUUID()
 		field.value = uploadImgType
 
 		// parentImg.setImage = { type: uploadImgType }
@@ -71,17 +63,6 @@
 		value={field.value}
 		on:change
 	/>
-
-	<!-- <div>
-		<label for="profile_pic">Choose file to upload</label>
-		<input
-			type="file"
-			id="profile_pic"
-			name="profile_pic"
-			multiple={false}
-			accept=".jpg, .jpeg, .png"
-		/>
-	</div> -->
 
 	<div>Field: {field.name}</div>
 	{JSON.stringify(field.validity)}

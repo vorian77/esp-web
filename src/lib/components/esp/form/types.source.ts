@@ -1,63 +1,84 @@
 import {
+	arrayOfEnums,
 	booleanOrFalse,
+	getArray,
 	getArrayOfModels,
 	memberOfEnum,
 	memberOfEnumOrDefault,
-	nbrOptional,
 	strOptional,
 	strRequired,
 	valueOrDefault
 } from '$utils/utils'
+import type { V } from 'drizzle-orm/column.d-66a08b85'
 
 const FILENAME = '$comps/esp/form/types.source.ts'
 
 export class FormSource {
 	processLocally: boolean
-	actions: {} = {}
+	actionsMap: Record<FormSourceDBAction, number> = {
+		delete: -1,
+		insert: -1,
+		select: -1,
+		update: -1,
+		upsert: -1
+	}
+	actions: Array<FormSourceActionAPI | FormSourceActionDirect> = []
 
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
 		this.processLocally = booleanOrFalse(obj.processLocally, 'FormSource.processLocally')
 
 		// apis
-		const apis = obj.apis ? getArrayOfModels(FormSourceActionAPI, obj.apis) : undefined
-		if (apis) {
-			apis.forEach((api) => {
-				this.actions[api.dbAction] = api
+		if (obj.apis) {
+			this.actions = getArrayOfModels(FormSourceActionAPI, obj.apis)
+			this.actions.forEach((a, i) => {
+				this.actionsMap[a.dbAction] = i
 			})
 		}
 
 		// db
-		const db = obj.db ? new FormSourceActionDB(obj.db) : undefined
-		if (db) {
-			this.actions[FormSourceDBAction.select] = db
-			if (this.db?.updateTable) {
-				this.actions[FormSourceDBAction.update] = db
-			}
-			if (this.db?.elements.some((e) => e.identity)) {
-				this.actions[FormSourceDBAction.delete] = db
-			}
+		if (obj.directs) {
+			const directs = getArrayOfModels(FormSourceActionDirect, obj.directs)
+			directs.forEach((d) => {
+				const i = this.actions.push(d)
+				d.dbActions.forEach((action) => {
+					this.actionsMap[action] = i - 1
+				})
+			})
 		}
 	}
 }
 
 export class FormSourceAction {
 	target: FormSourceTarget
-	type: FormSourceType | undefined
-	msgSuccess: string | undefined
-	msgFail: string | undefined
-	parms: Array<FormSourceParm>
+	type: FormSourceActionType
+	items: Array<FormSourceItem>
+	msgSuccess?: string
+	msgFail?: string
 
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
-		this.target = memberOfEnum(obj.target, 'FormSourceAction.target', FormSourceTarget)
-		this.msgSuccess = strOptional(obj.msgSuccess, 'FormSourceAction.msgSuccess')
-		this.msgFail = strOptional(obj.msgFail, 'FormSourceAction.msgFail')
-		this.parms = getArrayOfModels(FormSourceParm, obj.parms)
+		this.target = memberOfEnum(
+			obj.target,
+			'FormSourceAction',
+			'target',
+			'FormSourceTarget',
+			FormSourceTarget
+		)
+		this.type = this.type = memberOfEnum(
+			obj.type,
+			'FormSourceAction',
+			'type',
+			'FormSourceActionType',
+			FormSourceActionType
+		)
+		this.items = getArrayOfModels(FormSourceItem, obj.items)
+		this.msgSuccess = strOptional(obj.msgSuccess, 'FormSourceAction', 'msgSuccess')
+		this.msgFail = strOptional(obj.msgFail, 'FormSourceAction', 'msgFail')
 	}
 }
 
-export class FormSourceActionAPI extends FormSourceAction {
+export class FormSourceActionAPI extends FormSourceAction implements FormSourceAction {
 	method: HTMLMETHOD
 	url: string
 	dbAction: FormSourceDBAction
@@ -66,88 +87,109 @@ export class FormSourceActionAPI extends FormSourceAction {
 		super(obj)
 
 		obj = valueOrDefault(obj, {})
-		this.type = FormSourceType.api
-		this.method = memberOfEnum(obj.method, 'FormSourceActionAPI.method', HTMLMETHOD)
-		this.url = strRequired(obj.url, FILENAME + 'FormSourceActionAPI.url')
-		this.dbAction = memberOfEnum(obj.dbAction, 'FormSourceActionAPI.dbAction', FormSourceDBAction)
+		this.method = memberOfEnum(
+			obj.method,
+			'FormSourceActionAPI',
+			'method',
+			'HTMLMETHOD',
+			HTMLMETHOD
+		)
+		this.url = strRequired(obj.url, 'FormSourceActionAPI', 'url')
+		this.dbAction = memberOfEnum(
+			obj.dbAction,
+			'FormSourceActionAPI',
+			'dbAction',
+			'FormSourceDBAction',
+			FormSourceDBAction
+		)
 	}
 }
 
-export class FormSourceActionDB extends FormSourceAction {
-	statement: string
-	elements: Array<FormSourceElement>
-	updateTable: string | undefined
+export class FormSourceActionDirect extends FormSourceAction implements FormSourceAction {
+	dbActions: Array<FormSourceDBAction>
+	statement?: string
+	singleTable?: string
 
 	constructor(obj: any) {
 		super(obj)
 
 		obj = valueOrDefault(obj, {})
-		this.type = FormSourceType.db
-		this.statement = strRequired(obj.statement, FILENAME + 'FormSourceTypeDB.statement')
-		this.elements = getArrayOfModels(FormSourceElement, obj.elements)
-		this.updateTable = strOptional(obj.updateTable, 'FormSourceTypeDB.updateTable')
+		this.dbActions = arrayOfEnums(
+			obj.dbActions,
+			'FormSourceActionDirect',
+			'dbActions',
+			'FormSourceDBAction',
+			FormSourceDBAction
+		)
+		this.statement = strOptional(obj.statement, 'FormSourceActionDirect', 'statement')
+		this.singleTable = strOptional(obj.singleTable, 'FormSourceActionDirect', 'singleTable')
 	}
 }
 
-export class FormSourceParm {
-	name: string
-	type: FormSourceParmType
-	source: string
+export class FormSourceItem {
+	dbName: string
+	fieldName?: string
+	source: FormSourceItemSource
+	sourceKey: string
+	dbDataType: FormSourceItemDataType
+	dbAllowNull: boolean
+	dbPk: boolean
+	dbIdentity: boolean
+	dbInsert: boolean
+	dbUpdate: boolean
+	dbArg?: string
+	value?: any
 
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
-		this.name = strRequired(obj.name, 'FormSourceParm.name')
-		this.type = memberOfEnumOrDefault(
-			obj.type,
-			'FormSourceParm.type',
-			FormSourceParmType,
-			FormSourceParmType.form
+		this.dbName = strRequired(obj.dbName, 'FormSourceItem', 'name')
+		this.fieldName = strOptional(obj.fieldName, 'FormSourceItem', 'fieldName')
+		this.source = memberOfEnumOrDefault(
+			obj.source,
+			'FormSourceItem',
+			'source',
+			'FormSourceItemSource',
+			FormSourceItemSource,
+			FormSourceItemSource.form
 		)
-		this.source = valueOrDefault(obj.source, obj.name)
-	}
-}
-export class FormSourceElement {
-	type: FormSourceElementType
-	value: number | undefined
-	nameForm: string
-	nameCollection: string
-	identity: boolean
-	update: boolean
-
-	constructor(obj: any) {
-		obj = valueOrDefault(obj, {})
-		this.type = memberOfEnum(obj.type, 'FormSourceElement.type', FormSourceElementType)
-		this.value = nbrOptional(obj.value, 'FormSourceElement.value')
-		this.nameForm = strRequired(obj.nameForm, FILENAME + 'FormSourceElement.nameForm')
-		this.nameCollection = strRequired(
-			obj.nameCollection,
-			FILENAME + 'FormSourceElement.nameCollection'
+		this.sourceKey = valueOrDefault(obj.sourceKey, this.dbName)
+		this.dbDataType = memberOfEnum(
+			obj.dbDataType,
+			'FormSourceItem',
+			'dbDataType',
+			'FormSourceItemDataType',
+			FormSourceItemDataType
 		)
-		this.identity = booleanOrFalse(obj.identity, 'FormSourceElement.identity')
-		this.update = booleanOrFalse(obj.update, 'FormSourceElement.update')
+		this.dbAllowNull = booleanOrFalse(obj.dbAllowNull, 'FormSourceItem.dbAllowNull')
+		this.dbPk = booleanOrFalse(obj.dbPk, 'FormSourceItem.dbPk')
+		this.dbIdentity = booleanOrFalse(obj.dbIdentity, 'FormSourceItem.dbIdentity')
+		this.dbInsert = booleanOrFalse(obj.dbInsert, 'FormSourceItem.dbInsert')
+		this.dbUpdate = booleanOrFalse(obj.dbUpdate, 'FormSourceItem.dbUpdate')
+		this.dbArg = valueOrDefault(obj.dbNameArg, '')
 	}
 }
 
 export function FormSourceResponse(sourceData: any) {
 	const response: FormSourceResponseType = {
 		success: true,
+		type: 'unknown',
 		message: '',
-		data: sourceData,
-		type: 'unknown'
+		data: sourceData
 	}
 
-	if (Array.isArray(response.data)) {
+	if (Array.isArray(sourceData)) {
 		response.type = 'array'
-	} else if (typeof response.data == 'object') {
+	} else if (typeof sourceData == 'object') {
 		response.type = 'object'
-		if (response.data.hasOwnProperty('success')) {
-			response.success = response.data.success
-			delete response.data.success
+		if (sourceData.hasOwnProperty('success')) {
+			response.success = sourceData.success
+			delete sourceData.success
 		}
-		if (response.data.hasOwnProperty('message')) {
-			response.message = response.data.message
-			delete response.data.message
+		if (sourceData.hasOwnProperty('message')) {
+			response.message = sourceData.message
+			delete sourceData.message
 		}
+		response.data = sourceData
 	}
 	return new Response(JSON.stringify(response))
 }
@@ -157,35 +199,35 @@ export type FormSourceResponseType = {
 	data: any
 	type: 'array' | 'object' | 'unknown'
 }
+
 export enum FormSourceDBAction {
 	delete = 'delete',
+	insert = 'insert',
 	select = 'select',
-	update = 'update'
+	update = 'update',
+	upsert = 'upsert'
 }
-
-export enum FormSourceParmType {
+export enum FormSourceItemSource {
 	env = 'env',
+	data = 'data',
 	form = 'form',
 	literal = 'literal',
-	params = 'params',
-	user = 'user'
+	subquery = 'subquery',
+	system = 'system'
 }
 export enum FormSourceTarget {
-	esp = 'esp',
-	fauna = 'fauna'
+	esp = 'esp'
 }
-
-export enum FormSourceType {
+export enum FormSourceActionType {
 	api = 'api',
-	db = 'db'
+	direct = 'direct'
 }
-export enum FormSourceElementType {
-	boolean = 'boolean',
-	char = 'char',
+export enum FormSourceItemDataType {
 	date = 'date',
 	datetime = 'datetime',
-	decimal = 'decimal',
-	long = 'long'
+	dec = 'dec',
+	int = 'int',
+	string = 'string'
 }
 export enum HTMLMETHOD {
 	GET = 'GET',

@@ -2,6 +2,7 @@
 	import type { Form } from '$comps/esp/form/form'
 	import {
 		FieldElement,
+		FieldElementInputType,
 		Validation,
 		ValidityField,
 		ValidityErrorLevel,
@@ -19,16 +20,17 @@
 	import { createEventDispatcher, onMount } from 'svelte'
 
 	const dispatch = createEventDispatcher()
+	const FORM_NAME = ''
+	const SUBMIT_BUTTON_NAME = 'SUBMIT_BUTTON_NAME'
 
 	export let formObj: Form
 	export let surface = ''
 
-	const submitButtonName = 'submitButton'
-
 	onMount(() => {
 		formObj.elForm = document.getElementById(formObj.name)
-		formObj.elSubmitButton = document.getElementById(submitButtonName)
-
+		if (formObj.submitButtonName) {
+			formObj.elSubmitButton = document.getElementById(formObj.name)
+		}
 		// pre-validate form
 		const v: Validation = formObj.loadValidateForm()
 		if (v.status == ValidationStatus.invalid) {
@@ -86,7 +88,7 @@
 	}
 </script>
 
-<div class="{surface} ">
+<div class={surface}>
 	{#if formObj.header}
 		<h1 class="h1 {formObj.subHeader ? '' : 'mb-5'}">{formObj.header}</h1>
 	{/if}
@@ -98,20 +100,19 @@
 		</div>
 	{/if}
 
-	Valid To Submit: {formObj.validToSubmit}
+	<!-- Valid To Submit: {formObj.validToSubmit} -->
 
 	<form id={formObj.name} on:submit|preventDefault={submitForm}>
 		{#each formObj.fields as field, index (field.name)}
 			<div class:mt-3={index}>
-				{#if field.type === 'checkbox'}
+				{#if field.type === FieldElementInputType.checkbox}
 					<FormElInpCheckbox bind:field on:click={validateFieldCheckbox} />
-				{:else if field.type === 'radio'}
+				{:else if field.type === FieldElementInputType.radio}
 					<FormElInpRadio bind:field on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.header}
 					<FormElHeader bind:field pageData={formObj.pageData} values={formObj.values} />
 				{:else if field.element === FieldElement.pictureTake}
 					<FormElPictureTake bind:field on:change={validateFieldBase} />
-					Form Field.value: {field.value}
 				{:else if field.element === FieldElement.select}
 					<FormElSelect bind:field formName={formObj.name} on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.textarea}
@@ -119,6 +120,7 @@
 				{:else}
 					<FormElInp bind:field on:change={validateFieldBase} on:keyup={keyUp} />
 				{/if}
+				<p class="text-red-600 text-sm text-end">Value: {field.value}</p>
 			</div>
 
 			{#if formObj.fields[index].validity.level == ValidityErrorLevel.error}
@@ -132,14 +134,16 @@
 			{/if}
 		{/each}
 
-		<button
-			id={submitButtonName}
-			type="submit"
-			class="btn variant-filled-primary w-full mt-2"
-			disabled={!formObj.validToSubmit}
-		>
-			{formObj.submitButtonLabel}
-		</button>
+		{#if formObj.submitButtonLabel}
+			<button
+				id={formObj.name}
+				type="submit"
+				class="btn variant-filled-primary w-full mt-2"
+				disabled={!formObj.validToSubmit}
+			>
+				{formObj.submitButtonLabel}
+			</button>
+		{/if}
 	</form>
 	{#each formObj.footerText as txt}
 		<div class="text-center {txt.fontSize}">

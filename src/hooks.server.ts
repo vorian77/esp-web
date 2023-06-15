@@ -41,3 +41,12 @@ export async function handle({ event, resolve }) {
 	}
 	return resolve(event)
 }
+
+export const handleError = ({ error, event }) => {
+	console.log(error)
+	return {
+		file: 'my file',
+		function: 'my function',
+		message: 'Something unexpected happend. Please try again, or report the problem.'
+	}
+}

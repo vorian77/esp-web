@@ -15,7 +15,7 @@ export class FieldPictureTake extends Field {
 		obj = valueOrDefault(obj, {})
 		this.buttonLabel = valueOrDefault(obj.buttonLabel, 'Take Picture')
 		this.imageWidth = valueOrDefault(obj.imageWidth, 300)
-		this.imageAltText = strRequired(obj.imageAltText, FILENAME + '.imageAltText')
+		this.imageAltText = strRequired(obj.imageAltText, 'FieldPictureTake', 'imageAltText')
 	}
 	validate(formData): Validation {
 		const v = super.validate(formData)

@@ -9,7 +9,7 @@ export class FieldCheckbox extends Field {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-		this.type = memberOfEnum(obj.type, 'FieldCheckbox.type', FieldType)
+		this.type = memberOfEnum(obj.type, 'FieldCheckBox', 'type', 'FieldTpe', FieldType)
 
 		this.items = valueOrDefault(obj.items, [])
 		this.items = this.initItems(this.items)

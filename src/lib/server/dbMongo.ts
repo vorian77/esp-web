@@ -35,6 +35,8 @@ onMount(() => {
 export async function dbGetForm(formName: string) {
 	const forms = client.db('ESP').collection('forms')
 	const result = await forms.findOne({ name: formName }, { projection: { _id: 0 } })
+	console.log('dbGetForm:', formName)
+
 	if (!result) {
 		throw error(500, {
 			file: FILENAME,
@@ -42,6 +44,7 @@ export async function dbGetForm(formName: string) {
 			message: `Unable to retrieve form (${formName}).`
 		})
 	}
+
 	return result
 }
 

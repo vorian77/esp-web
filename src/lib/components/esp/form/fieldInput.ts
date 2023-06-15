@@ -8,7 +8,7 @@ import {
 	ValidityErrorLevel
 } from '$comps/esp/form/types'
 import { Field } from '$comps/esp/form/field'
-import { memberOfEnum, valueOrDefault } from '$utils/utils'
+import { memberOfEnum, memberOfEnumOrDefault, valueOrDefault } from '$utils/utils'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '$comps/esp/form/fieldInput.ts'
@@ -16,7 +16,7 @@ const FILENAME = '$comps/esp/form/fieldInput.ts'
 export class FieldInput extends Field {
 	type: FieldType
 	placeHolder: string
-	matchColumn: MatchColumn | ''
+	matchColumn: MatchColumn
 	minLength: number
 	maxLength: number
 	minValue: number
@@ -29,7 +29,7 @@ export class FieldInput extends Field {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-		this.type = memberOfEnum(obj.type, 'FieldInput.type', FieldType)
+		this.type = memberOfEnumOrDefault(obj.type, 'FieldInput', 'type', 'FieldType', FieldType, '')
 		this.placeHolder = valueOrDefault(obj.placeHolder, '')
 
 		// validators

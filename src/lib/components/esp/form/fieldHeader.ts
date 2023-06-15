@@ -25,7 +25,7 @@ export class DynamicLabel {
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.source = strRequired(obj.source, COMPONENT + 'DynamicLabel.source')
+		this.source = strRequired(obj.source, 'DynamicLabel', 'source')
 		this.path = getArray(obj.path)
 	}
 }

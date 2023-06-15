@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { setContext } from 'svelte'
+	import { setContext, onMount } from 'svelte'
+	import { invalidate } from '$app/navigation'
 	import { Form as FormDefn } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
 	import type { FormSourceResponseType } from '$comps/esp/form/types'
@@ -10,6 +11,10 @@
 	const formDefn = data.formDefn
 	let formObj = new FormDefn(formDefn)
 	setContext('pageData', data)
+
+	onMount(() => {
+		invalidate('/api/aws')
+	})
 
 	async function onFormSubmitted(event) {
 		// data

@@ -8,8 +8,6 @@ export async function POST({ request }) {
 
 	const requestData = await request.json()
 	const { action } = requestData
-	console.log('aws...')
-	console.log('requestData:', requestData)
 
 	switch (action) {
 		case 'get_url_upload':

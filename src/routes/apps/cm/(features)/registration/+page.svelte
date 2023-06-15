@@ -2,27 +2,32 @@
 	import { Stepper, Step } from '@skeletonlabs/skeleton'
 	import { Form as FormDefn } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
+	import { onMount } from 'svelte'
 
 	export let data
-	let submitForm = async () => {}
+
 	let lockedState: boolean = false
 
-	const forms = initForms(['reg_personal'])
+	const forms = initForms(data.formDefns)
 
 	function initForms(list: []) {
-		let forms = {}
-		list.forEach((f) => {
-			forms[f] = new FormDefn(data[f])
+		let forms = []
+		list.forEach((defn) => {
+			forms.push([defn, new FormDefn(defn)])
 		})
 		return forms
 	}
 
-	async function onNextHandler(e: {
-		step: number
-		state: { current: number; total: number }
-	}): void {
-		console.log('event:next', e)
-		await forms['reg_personal'].submitForm()
+	async function onCompleteHandler(e): void {
+		const currentStep = e.detail.step
+		console.log('event:step:', currentStep)
+		await forms[currentStep][1].submitForm()
+	}
+
+	async function onNextHandler(e) {
+		const currentStep = e.detail.step
+		console.log('event:step:', currentStep)
+		await forms[currentStep][1].submitForm()
 	}
 </script>
 
@@ -34,17 +39,16 @@
 	active="variant-filled-primary"
 	buttonNext="variant-filled-primary"
 	on:next={onNextHandler}
+	on:complete={onCompleteHandler}
 >
-	<Step locked={!forms['reg_personal'].validToSubmit}>
-		<svelte:fragment slot="header">About Me</svelte:fragment>
-		<Form bind:formObj={forms['reg_personal']} />
-	</Step>
-	<Step>
-		<svelte:fragment slot="header">(header)</svelte:fragment>
-		Step 2
-	</Step>
-	<Step>
-		<svelte:fragment slot="header">(header)</svelte:fragment>
-		Step 3
-	</Step>
+	{#each forms as f, i}
+		<Step locked={!forms[i][1].validToSubmit}>
+			<!-- Valid To Submit: {forms[i][1].validToSubmit} -->
+			<svelte:fragment slot="header">{forms[i][0].description}</svelte:fragment>
+			<Form bind:formObj={forms[i][1]} />
+		</Step>
+	{/each}
 </Stepper>
+
+<!-- Form[0]
+<pre>{JSON.stringify(forms[0][1], null, 2)}</pre> -->

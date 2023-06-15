@@ -1,3 +1,4 @@
+import { getArray } from '$utils/array.utils'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/utils/model.utils.js'
@@ -39,12 +40,21 @@ export function isInstanceOf(clazz, obj) {
 	}
 	return true
 }
-export function memberOfEnum(val: string, enumName: string, enumObj) {
+export function memberOfEnum(
+	val: string,
+	className: string,
+	fieldName: string,
+	enumName: string,
+	enumObj: object
+) {
 	if (!val) {
 		throw error(500, {
-			file: FILENAME,
+			file: className,
 			function: `memberOfEnum`,
-			message: `No value supplied for ${enumName}.`
+			message: `No value supplied for enum...
+			Field: ${fieldName}
+			Enum: ${enumName}
+			Elements:${Object.values(enumObj).toString()}`
 		})
 	}
 	for (const value of Object.values(enumObj)) {
@@ -53,16 +63,27 @@ export function memberOfEnum(val: string, enumName: string, enumObj) {
 		}
 	}
 	throw error(500, {
-		file: FILENAME,
+		file: className,
 		function: `memberofEnum`,
-		message: `(${val}) is not member of enum: ${JSON.stringify(enumObj)}.`
+		message: `Invalid enum value...
+		Value: (${val})
+		Field: ${fieldName}
+		Enum: ${enumName}
+		Elements:${Object.values(enumObj).toString()}`
 	})
 }
-export function memberOfEnumOrDefault(val: string, enumName: string, enumObj, defaultVal: string) {
+export function memberOfEnumOrDefault(
+	val: string,
+	fieldName: string,
+	className: string,
+	enumName: string,
+	enumObj: object,
+	defaultVal: any
+) {
 	if (!val) {
 		return defaultVal
 	}
-	return memberOfEnum(val, enumName, enumObj)
+	return memberOfEnum(val, fieldName, className, enumName, enumObj)
 }
 export function nbrOptional(val, name) {
 	if (!val) {
@@ -70,50 +91,87 @@ export function nbrOptional(val, name) {
 	}
 	return nbrRequired(val, name)
 }
-export function nbrRequired(val, name) {
+export function arrayOfEnums(
+	vals: string,
+	fieldName: string,
+	className: string,
+	enumName: string,
+	enumObj: object
+) {
+	if (!vals) {
+		throw error(500, {
+			file: className,
+			function: 'arrayOfEnums',
+			message: `No value(s) supplied...
+Field: ${fieldName}
+Enum: ${enumName}
+Elements:${Object.values(enumObj).toString()}`
+		})
+	}
+	let arrVals = getArray(vals)
+	let enums = new Set()
+
+	for (let i = 0; i < arrVals.length; i++) {
+		enums.add(memberOfEnum(arrVals[i], fieldName, className, enumName, enumObj))
+	}
+	return Array.from(enums)
+}
+
+export function nbrRequired(val: number, name: string) {
 	if (typeof val === 'number') {
 		return val
 	} else {
 		throw error(500, {
 			file: FILENAME,
-			function: 'nbrRqd',
+			function: 'nbrRequired',
 			message: `Required value: (${name}) - is undefined or has an invlid value: (${val}).`
 		})
 	}
 }
-export function strAppend(currentVal, newVal, separator = ' ') {
+export function required(val: any, className: string, fieldName: string) {
+	if (val) {
+		return val
+	} else {
+		throw error(500, {
+			file: FILENAME,
+			function: 'required',
+			message: `Class: ${className} Field: ${fieldName} required value is undefined.`
+		})
+	}
+}
+export function strAppend(currentVal: string, newVal: string, separator = ' ') {
 	if (currentVal) {
 		currentVal += separator
 	}
 	return currentVal + newVal
 }
-export function strLower(val) {
+export function strLower(val: string) {
 	if (val) {
 		return val.toLowerCase()
 	}
 }
-export function strOptional(val, name) {
+export function strOptional(val: string, className: string, field: string) {
 	if (!val) {
 		return undefined
 	}
-	return strRequired(val, name)
+	return strRequired(val, className, field)
 }
-export function strRequired(val, name) {
+export function strRequired(val: string, className: string, field: string) {
 	if (typeof val === 'string') {
 		return val
 	} else {
 		throw error(500, {
-			file: FILENAME,
-			function: 'strRqd',
-			message: `Required value: (${name}) - is undefined or has an invlid value: (${val}).`
+			file: className,
+			function: 'strRequired',
+			message: `Value: (${val}) for field: ${field} is invalid.`
 		})
 	}
 }
-export function strUpper(val) {
+export function strUpper(val: string) {
 	if (val) {
 		return val.toUpperCase()
 	}
 }
-export function valueOrDefault(val, defaultVal) {
+export function valueOrDefault(val: any, defaultVal: any) {
 	return val != null ? val : defaultVal
 }

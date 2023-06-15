@@ -2,6 +2,7 @@ import { memberOfEnum, memberOfEnumOrDefault, strRequired, valueOrDefault } from
 import {
 	FieldAccess,
 	FieldElement,
+	FieldElementInputType,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -16,32 +17,51 @@ const COMPONENT = '/$comps/esp/form/field.ts/'
 export class Field {
 	index: number
 	element: FieldElement
+	inputElementType: FieldElementInputType
 	name: string
 	access: FieldAccess
 	label: string
 	disabled: boolean
 	validity: Validity
-	value: string
+	value?: string
 
 	constructor(obj: {}, index: number) {
 		obj = valueOrDefault(obj, {})
 		this.index = index
-		this.element = memberOfEnum(obj.element, 'Field.element', FieldElement)
-		this.name = strRequired(obj.name, COMPONENT + 'Field.name')
+		this.element = memberOfEnumOrDefault(
+			obj.element,
+			'Field',
+			'element',
+			'FieldElement',
+			FieldElement,
+			FieldElement.input
+		)
+		this.inputElementType = memberOfEnumOrDefault(
+			obj.inputElementType,
+			'Field',
+			'imputElementType',
+			'FieldElementInputType',
+			FieldElementInputType,
+			''
+		)
+		this.name = strRequired(obj.name, 'Field', 'name')
 		this.access = memberOfEnumOrDefault(
 			obj.access,
-			'Field.access',
+			'Field',
+			'access',
+			'FieldAccess',
 			FieldAccess,
 			FieldAccess.required
 		)
-		this.label = strRequired(obj.label, COMPONENT + 'Field.label')
+		this.label = strRequired(obj.label, 'Field', 'label')
 		if (this.access == FieldAccess.optional) {
 			this.label += ' (optional)'
 		}
 		this.disabled = this.access == FieldAccess.displayOnly
 		this.validity = new Validity()
-		this.value = valueOrDefault(obj.value, '')
+		this.value = obj.value
 	}
+
 	// UTILITY METHODS
 	initItems(itemsDefn) {
 		let items = []

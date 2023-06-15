@@ -1,5 +1,4 @@
 <script>
-	import { onMount } from 'svelte'
 	import Icon from '$comps/Icon.svelte'
 	export let quote
 </script>

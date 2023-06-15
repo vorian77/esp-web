@@ -10,7 +10,7 @@ export class FieldRadio extends Field {
 
 		obj = valueOrDefault(obj, {})
 		// this.type = (defn.type, 'FieldType', FieldType)
-		this.type = memberOfEnum(obj.type, 'FieldRadio.type', FieldType)
+		this.type = memberOfEnum(obj.type, 'FieldRadio', 'type', 'FieldType', FieldType)
 
 		this.items = valueOrDefault(obj.items, [])
 		this.items = this.initItems(this.items)

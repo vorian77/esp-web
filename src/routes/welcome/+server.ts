@@ -29,11 +29,16 @@ export async function POST({ request, cookies }) {
 				case 'auth_reset_password':
 				case 'auth_signup':
 					const responsePromise = await processForm(
-						source.actions[FormSourceDBAction.update],
-						FormSourceDBAction.update,
+						formName,
+						source,
+						FormSourceDBAction.upsert,
 						data
 					)
 					const response: FormSourceResponseType = await responsePromise.json()
+					if (!response.success) {
+						throw error(400, response.message)
+						break
+					}
 
 					const userId = response.data.applicantId
 					if (!userId) {

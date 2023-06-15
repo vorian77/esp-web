@@ -1,7 +1,7 @@
 import {
 	getArrayOfModels,
 	memberOfEnum,
-	strLower,
+	memberOfEnumOrDefault,
 	strRequired,
 	valueOrDefault
 } from '$lib/utils/utils'
@@ -16,6 +16,7 @@ import { FieldTextarea } from '$comps/esp/form/fieldTextarea'
 import {
 	FieldAccess,
 	FieldElement,
+	FieldElementInputType,
 	type FormSourceResponseType,
 	FormSource,
 	Validation,
@@ -33,9 +34,9 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
+	fields: Array<Field>
 	source: FormSource | undefined
 	height: string
-	fields: Array<Field>
 	footerText: Array<FooterText>
 	footerLinks: Array<FooterLink>
 	pageData: {} | undefined
@@ -48,14 +49,14 @@ export class Form {
 
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.name = strRequired(obj.name, FILENAME + 'name')
+		this.name = strRequired(obj.name, 'Form', 'name')
 		this.header = valueOrDefault(obj.header, '')
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
-		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, 'Submit')
+		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, '')
+		this.fields = this.initFields(obj.fields)
 		this.source = obj.source ? new FormSource(obj.source) : undefined
 		this.height = valueOrDefault(obj.height, '')
-		this.fields = this.initFields(obj.fields)
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)
 		this.footerLinks = getArrayOfModels(FooterLink, obj.footerLinks)
 		this.pageData = valueOrDefault(obj.pageData, {})
@@ -66,17 +67,32 @@ export class Form {
 	initFields(fields) {
 		fields = valueOrDefault(fields, [])
 		let newFields: Array<Field> = []
-		fields.forEach((field, index: number) => {
+		fields.forEach((field: {}, index: number) => {
 			let newField: Field
-			const element = memberOfEnum(field.element, 'Form.Field.element', FieldElement)
+			const element = memberOfEnumOrDefault(
+				field.element,
+				'Form',
+				'element',
+				'FieldElement',
+				FieldElement,
+				FieldElement.input
+			)
 			switch (element) {
 				case FieldElement.input:
-					const type = strRequired(field.type, FILENAME + 'Form.Field.type')
+					const type = field.type
+						? memberOfEnum(
+								field.type,
+								'Form',
+								'field.element.input.type',
+								'FieldElementInputType',
+								FieldElementInputType
+						  )
+						: ''
 					switch (type) {
-						case 'checkbox':
+						case FieldElementInputType.checkbox:
 							newField = new FieldCheckbox(field, index)
 							break
-						case 'radio':
+						case FieldElementInputType.radio:
 							newField = new FieldRadio(field, index)
 							break
 						default:
@@ -163,6 +179,13 @@ export class Form {
 	}
 	async submitForm() {
 		if (this.source) {
+			const formData = new FormData(this.elForm)
+
+			let formValues = {}
+			this.fields.forEach((f) => {
+				formValues[f.name] = f.validateGetValue(formData)
+			})
+
 			const url = this.source.processLocally ? '' : '/api/form'
 
 			const responsePromise = await fetch(url, {
@@ -171,7 +194,7 @@ export class Form {
 					action: 'form_submit',
 					formName: this.name,
 					source: this.source,
-					data: { ...this.pageData, ...this.data }
+					data: { ...this.pageData, ...this.data, ...formValues }
 				})
 			})
 			const response: FormSourceResponseType = await responsePromise.json()
@@ -222,8 +245,8 @@ export class FooterLink {
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
 		this.prefix = valueOrDefault(obj.prefix, '')
-		this.label = strRequired(obj.label, FILENAME + 'FooterLink.label')
-		this.action = strRequired(obj.action, FILENAME + 'FooterLink.action')
+		this.label = strRequired(obj.label, 'FooterLink', 'label')
+		this.action = strRequired(obj.action, 'FooterLink', 'action')
 	}
 }
 export class FooterText {
@@ -231,7 +254,7 @@ export class FooterText {
 	fontSize: string
 	constructor(obj) {
 		obj = valueOrDefault(obj, {})
-		this.label = strRequired(obj.label, FILENAME + 'FooterText.label')
+		this.label = strRequired(obj.label, 'FooterText', 'label')
 		this.fontSize = valueOrDefault(obj.fontSize, 'text-base')
 	}
 }

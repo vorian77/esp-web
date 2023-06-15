@@ -1,9 +1,10 @@
 const FILENAME = '$comps/esp/form/types.form.field.ts'
 
 export enum FieldAccess {
-	required = 'required',
+	displayOnly = 'displayOnly',
+	hidden = 'hidden',
 	optional = 'optional',
-	displayOnly = 'displayOnly'
+	required = 'required'
 }
 
 export enum FieldElement {
@@ -12,4 +13,15 @@ export enum FieldElement {
 	pictureTake = 'pictureTake',
 	select = 'select',
 	textarea = 'textarea'
+}
+
+export enum FieldElementInputType {
+	checkbox = 'checkbox',
+	date = 'date',
+	email = 'email',
+	number = 'number',
+	password = 'password',
+	radio = 'radio',
+	tel = 'tel',
+	text = 'text'
 }

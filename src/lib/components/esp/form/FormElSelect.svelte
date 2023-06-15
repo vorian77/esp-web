@@ -1,13 +1,19 @@
 <script lang="ts">
 	import type { FieldSelect } from '$comps/esp/form/fieldSelect'
+	import { onMount } from 'svelte'
 	export let field: FieldSelect
-	export let formName = ''
+
+	const fieldId = 'field' + field.index
+
+	onMount(() => {
+		document.getElementById(fieldId).selectedIndex =
+			field.items.findIndex((i) => i.id == field.value) + 1
+	})
 </script>
 
-<label class="label">
-	<span>{field.label}</span>
-
-	<select class="select" name={field.name} form={formName} on:change>
+<label for={field.name} class="label">
+	<span>{field.label} - val: {field.value}</span>
+	<select class="select" name={field.name} id={fieldId} on:change>
 		<option disabled selected value>Select an option</option>
 		{#each field.items as { id, label }, index (id)}
 			<option value={id} selected={id == field.value}>{label} </option>

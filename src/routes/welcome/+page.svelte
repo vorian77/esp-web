@@ -5,6 +5,7 @@
 	import { Drawer, drawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import Form from '$comps/esp/form/Form.svelte'
 	import type { FormSourceResponseType } from '$comps/esp/form/types'
+	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/welcome/+page.svelte'
 
@@ -20,11 +21,19 @@
 		'auth_reset_password'
 	])
 
-	function initForms(list) {
-		let forms = {}
-		list.forEach((f) => {
-			forms[f] = new FormDefn(data[f])
-		})
+	function initForms(formList: Array<string>) {
+		let forms = []
+		for (let i = 0; i < formList.length; i++) {
+			if (data.hasOwnProperty(formList[i])) {
+				forms[formList[i]] = new FormDefn(data[formList[i]])
+			} else {
+				throw error(500, {
+					file: FILENAME,
+					function: 'constructor',
+					message: `PageData missing form: formList[i]`
+				})
+			}
+		}
 		return forms
 	}
 
@@ -51,7 +60,7 @@
 				const userSecurityCode = forms[formName].data.securityCode
 				if (userSecurityCode != securityCode) {
 					alert(
-						'The security code you entered does not match the security we sent. Please try again.'
+						'The security code you entered does not match the security code we sent. Please try again.'
 					)
 					return
 				}
@@ -83,6 +92,7 @@
 		}
 
 		function launch() {
+			console.log('Launch...')
 			pageCurrent = ''
 			drawerStore.close()
 			goto('/apps/cm')
