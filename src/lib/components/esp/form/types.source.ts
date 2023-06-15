@@ -170,7 +170,7 @@ export class FormSourceItem {
 }
 
 export function FormSourceResponse(sourceData: any) {
-	const response: FormSourceResponseType = {
+	const response = {
 		success: true,
 		type: 'unknown',
 		message: '',

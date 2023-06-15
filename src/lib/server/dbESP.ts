@@ -106,25 +106,6 @@ export async function dbESPAPI(method: HTMLMETHOD, url: string, data: {}) {
 	}
 }
 
-export async function dbESPSQL(sql: string, dbAction: FormSourceDBAction) {
-	switch (dbAction) {
-		case FormSourceDBAction.delete:
-		case FormSourceDBAction.insert:
-
-		case FormSourceDBAction.select:
-
-		case FormSourceDBAction.update:
-
-		case FormSourceDBAction.upsert:
-		default:
-			throw error(500, {
-				file: FILENAME,
-				function: 'dbESPSQL',
-				message: `No case defined for DB Action: ${dbAction}`
-			})
-	}
-}
-
 async function getSQLExecute(method: HTMLMETHOD, sql: string) {
 	console.log('getSQLExecute.sql:', sql)
 	return await dbESPAPI(method, 'ws_sql_execute_' + method.toLowerCase(), { sql })
@@ -155,26 +136,26 @@ function getSqlUpdate(sourceAction: FormSourceActionDirect) {
 	let cols = ''
 
 	sourceAction.items.forEach((i) => {
-		if (!i.dbUpdate && !i.dbIdentity) {
+		if (i.dbUpdate && !i.dbIdentity) {
 			if (cols) {
 				cols += ', '
 			}
-			cols += '(' + i.dbName + ' = ' + getSQLColValue(i) + ')'
+			cols += i.dbName + ' = ' + getSQLColValue(i)
 		}
 	})
-	// if (cols == '') {
-	// 	throw error(500, {
-	// 		file: FILENAME,
-	// 		function: 'getSqlUpdate',
-	// 		message: `No columns defined for update to table: ${sourceAction.singleTable}`
-	// 	})
-	// }
+	if (cols == '') {
+		throw error(500, {
+			file: FILENAME,
+			function: 'getSqlUpdate',
+			message: `No updatabled columns defined for update to table: ${sourceAction.singleTable}`
+		})
+	}
 
 	let sql = 'UPDATE ' + sourceAction.singleTable + ' SET ' + cols + getSqlWhere(sourceAction)
 
 	console.log('getSqlUpdate:', sql)
-	//return getSQLExecute(HTMLMETHOD.POST, sql)
-	return FormSourceResponse({})
+	return getSQLExecute(HTMLMETHOD.POST, sql)
+	// return FormSourceResponse({})
 }
 
 function getSqlWhere(sourceAction: FormSourceActionDirect) {
@@ -207,20 +188,29 @@ function getSQLColValue(item: FormSourceItem) {
 			})
 		}
 	}
-
-	let val = undefined
+	console.log('col:', item.dbName, item.dbDataType)
+	let val = item.value
 	switch (item.dbDataType) {
 		case FormSourceItemDataType.date:
+			val = quoteVal(val)
+			break
 		case FormSourceItemDataType.datetime:
+			val = 'DATETIME(' + quoteVal(val) + ')'
+			break
 		case FormSourceItemDataType.dec:
 		case FormSourceItemDataType.int:
 			val = item.value
 			break
 
-		case FormSourceItemDataType.date:
 		case FormSourceItemDataType.string:
-			val = item.value
+			val = quoteVal(val)
 			break
+		default:
+			throw error(500, {
+				file: FILENAME,
+				function: 'getSQLColValue',
+				message: `No case defined for data type: ${item.dbDataType}.`
+			})
 	}
 
 	if (val) {
@@ -231,5 +221,8 @@ function getSQLColValue(item: FormSourceItem) {
 			function: 'getSQLColValue',
 			message: `Get value failed for field: ${item.dbName}.`
 		})
+	}
+	function quoteVal(val) {
+		return "'" + val + "'"
 	}
 }

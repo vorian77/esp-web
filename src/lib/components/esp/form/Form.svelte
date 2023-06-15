@@ -3,6 +3,7 @@
 	import {
 		FieldElement,
 		FieldElementInputType,
+		type FormSourceResponseType,
 		Validation,
 		ValidityField,
 		ValidityErrorLevel,
@@ -81,10 +82,11 @@
 		setValidToSubmit(true)
 
 		// post form to server
-		await formObj.submitForm()
+		const responsePromise = await formObj.submitForm()
+		const response = await responsePromise.json()
 
 		// alert parent
-		dispatch('formSubmitted', { formName: formObj.name, ...formObj.submitResponse })
+		dispatch('formSubmitted', { formName: formObj.name, ...response.data })
 	}
 </script>
 
@@ -114,7 +116,7 @@
 				{:else if field.element === FieldElement.pictureTake}
 					<FormElPictureTake bind:field on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.select}
-					<FormElSelect bind:field formName={formObj.name} on:change={validateFieldBase} />
+					<FormElSelect bind:field on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.textarea}
 					<FormElTextarea bind:field on:change={validateFieldBase} />
 				{:else}

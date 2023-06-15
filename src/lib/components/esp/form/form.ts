@@ -17,13 +17,14 @@ import {
 	FieldAccess,
 	FieldElement,
 	FieldElementInputType,
-	type FormSourceResponseType,
+	FormSourceResponse,
 	FormSource,
 	Validation,
 	ValidationType,
 	ValidationStatus,
 	ValidityField
 } from '$comps/esp/form/types'
+
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/esp/form/form.ts/'
@@ -177,37 +178,39 @@ export class Form {
 		})
 		return new Validation(ValidationType.form, formStatus, validityFields)
 	}
-	async submitForm() {
-		if (this.source) {
-			const formData = new FormData(this.elForm)
+	async submitForm(): Promise<FormSourceResponseType> {
+		if (!this.source) {
+			return FormSourceResponse({})
+		}
 
-			let formValues = {}
-			this.fields.forEach((f) => {
-				formValues[f.name] = f.validateGetValue(formData)
+		const formData = new FormData(this.elForm)
+		let formValues = {}
+		this.fields.forEach((f) => {
+			formValues[f.name] = f.validateGetValue(formData)
+		})
+
+		const url = this.source.processLocally ? '' : '/api/form'
+
+		const responsePromise = await fetch(url, {
+			method: 'POST',
+			body: JSON.stringify({
+				action: 'form_submit',
+				formName: this.name,
+				source: this.source,
+				data: { ...this.pageData, ...this.data, ...formValues }
 			})
+		})
+		const response = await responsePromise.json()
 
-			const url = this.source.processLocally ? '' : '/api/form'
-
-			const responsePromise = await fetch(url, {
-				method: 'POST',
-				body: JSON.stringify({
-					action: 'form_submit',
-					formName: this.name,
-					source: this.source,
-					data: { ...this.pageData, ...this.data, ...formValues }
-				})
-			})
-			const response: FormSourceResponseType = await responsePromise.json()
-
-			// process response
-			if (!response.success) {
-				alert(response.message)
-				return response
-			}
+		// process response
+		if (response.success) {
 			this.submitResponse = { ...this.data, ...response.data }
 		} else {
-			this.submitResponse = this.data
+			this.submitResponse = {}
+			alert(response.message)
 		}
+
+		return FormSourceResponse(response)
 	}
 
 	getFieldValue(fieldName: string) {

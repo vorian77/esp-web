@@ -99,7 +99,6 @@ export async function processForm(
 
 	// place parm values into items
 	sourceAction.items = setParmVals(sourceAction, data)
-	console.log('ProcessForm.items:', sourceAction.items)
 
 	// execute sourceAction
 	switch (sourceAction.target) {
@@ -116,7 +115,6 @@ export async function processForm(
 	}
 
 	function setParmVals(sourceAction: FormSourceAction, data: Record<string, any>) {
-		console.log('setParmVals.data:', data)
 		sourceAction.items.forEach(({ source, sourceKey }, i) => {
 			switch (source) {
 				case FormSourceItemSource.data:
@@ -133,10 +131,25 @@ export async function processForm(
 				case FormSourceItemSource.system:
 					switch (sourceKey) {
 						case 'date':
-							sourceAction.items[i].value = new Date().toDateString()
+							sourceAction.items[i].value = new Date().toLocaleDateString()
 							break
 						case 'datetime':
-							sourceAction.items[i].value = new Date().toString()
+							// 6/15/2023 8:23:27 AM'
+							let dt = new Date().toLocaleString()
+							dt = dt.replace(',', '')
+							const arrDateTime = dt.split(' ')
+							const arrDate = arrDateTime[0].split('/')
+							const dateStr =
+								arrDate[2] +
+								'-' +
+								String(arrDate[0]).padStart(2, '0') +
+								'-' +
+								String(arrDate[1]).padStart(2, '0') +
+								' ' +
+								arrDateTime[1] +
+								' ' +
+								arrDateTime[2]
+							sourceAction.items[i].value = dateStr
 							break
 						default:
 							throw error(500, {

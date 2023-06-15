@@ -12,7 +12,7 @@
 </script>
 
 <label for={field.name} class="label">
-	<span>{field.label} - val: {field.value}</span>
+	<span>{field.label}</span>
 	<select class="select" name={field.name} id={fieldId} on:change>
 		<option disabled selected value>Select an option</option>
 		{#each field.items as { id, label }, index (id)}
