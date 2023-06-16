@@ -7,25 +7,14 @@ const COMPONENT = '/$comps/esp/form/fieldHeader.ts/'
 
 export class FieldHeader extends Field {
 	staticLabel: string
-	dynamicLabel: DynamicLabel | undefined
+	dynamicLabelKey: string
 
 	constructor(obj: {}, index: number) {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-		this.staticLabel = valueOrDefault(obj.label, '')
-		this.dynamicLabel = obj.value ? new DynamicLabel(obj.value) : undefined
+		this.staticLabel = valueOrDefault(obj.staticLabel, '')
+		this.dynamicLabelKey = valueOrDefault(obj.dynamicLabelKey, '')
 		this.access = FieldAccess.displayOnly
-	}
-}
-
-export class DynamicLabel {
-	source: string
-	path: Array<string>
-
-	constructor(obj) {
-		obj = valueOrDefault(obj, {})
-		this.source = strRequired(obj.source, 'DynamicLabel', 'source')
-		this.path = getArray(obj.path)
 	}
 }

@@ -7,9 +7,16 @@
 	const FILENAME = 'FormElPictureTake.svelte'
 
 	export let field: FieldPictureTake
-	const pageData = getContext('pageData')
+	const pageData: {} = getContext('pageData')
 
 	let imgURL = pageData.imgStorageUrl
+
+	// $: imageValid = !(imgURL == null)
+	$: imageValid = !(imgURL == null)
+
+	function onImageError(event) {
+		imgURL = null
+	}
 
 	const takePicture = async () => {
 		const image = await Camera.getPhoto({
@@ -34,9 +41,8 @@
 		// convert binary into url
 		imgURL = URL.createObjectURL(uploadImgBlob)
 
-		field.value = uploadImgType
+		field.value = imgURL
 
-		// parentImg.setImage = { type: uploadImgType }
 		DATABUS.upsert('image', 'type', uploadImgType)
 		DATABUS.upsert('image', 'blob', uploadImgBlob)
 
@@ -48,7 +54,13 @@
 </script>
 
 <label class="label" for={field.name}>
-	<img class="mx-auto mt-2" src={imgURL} alt={field.imageAltText} width={field.imageWidth} />
+	<img
+		class="mx-auto mt-2"
+		src={imgURL}
+		alt={field.imageAltText}
+		width={field.imageWidth}
+		on:error={onImageError}
+	/>
 
 	<button
 		type="button"
@@ -59,11 +71,9 @@
 		class="input"
 		type="text"
 		id={field.name}
+		hidden={true}
 		name={field.name}
-		value={field.value}
+		bind:value={field.value}
 		on:change
 	/>
-
-	<div>Field: {field.name}</div>
-	{JSON.stringify(field.validity)}
 </label>

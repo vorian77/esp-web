@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { Form } from '$comps/esp/form/form'
 	export let formObj: Form
-	export let currentValue = formObj.pageData.cm_ssr_site
+	export let currentSite = 0
 
 	function onSelect(ent_id) {
-		currentValue = ent_id
+		currentSite = ent_id
 	}
 </script>
 
@@ -30,7 +30,7 @@
 		<div><a href="mailto:{v.rec_email}">{v.rec_email}</a></div>
 
 		<div class="mt-2">
-			{#if v.ent_id == currentValue}
+			{#if v.ent_id == currentSite}
 				<button class="btn variant-filled-primary w-full">Selected</button>
 			{:else}
 				<button class="btn variant-filled-secondary w-full" on:click={() => onSelect(v.ent_id)}

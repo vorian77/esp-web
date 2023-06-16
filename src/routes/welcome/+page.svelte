@@ -30,7 +30,7 @@
 				throw error(500, {
 					file: FILENAME,
 					function: 'constructor',
-					message: `PageData missing form: formList[i]`
+					message: `Definition missing for form: ${formList[i]}`
 				})
 			}
 		}
@@ -92,7 +92,6 @@
 		}
 
 		function launch() {
-			console.log('Launch...')
 			pageCurrent = ''
 			drawerStore.close()
 			goto('/apps/cm')
@@ -129,7 +128,6 @@
 	}
 </script>
 
-{securityCode}
 <Drawer>
 	{#each Object.entries(forms) as [key, value], index}
 		{#if pageCurrent == value.name}

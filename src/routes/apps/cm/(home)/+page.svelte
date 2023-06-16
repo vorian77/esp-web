@@ -15,20 +15,52 @@
 			<a class="anchor" href="/apps/cm/registration">Registration</a>
 		</li>
 		<li>
-			<a class="anchor" href="/apps/cm/profile">Profile</a>
+			<a class="anchor" href="/apps/cm/docs">Eligibility Documents</a>
 		</li>
+
 		<li>
-			<a class="anchor" href="/apps/cm/docs">Docs</a>
+			<button class="anchor" on:click={() => alert('My Profile page comming soon!')}
+				>My Profile</button
+			>
 		</li>
+
 		<li>
-			<a class="anchor" href="/apps/cm/message">Listbox/Message Us</a>
+			<button class="anchor" on:click={() => alert('Contact Us page comming soon!')}
+				>Contact Us</button
+			>
 		</li>
+
 		<li>
+			<button class="anchor" on:click={() => alert('Legal Disclosure page comming soon!')}
+				>Legal Disclosure</button
+			>
+		</li>
+
+		<li>
+			<button class="anchor" on:click={() => alert('My Goals feature comming soon!')}
+				>My Goals</button
+			>
+		</li>
+
+		<li>
+			<button class="anchor" on:click={() => alert('My Messages feature comming soon!')}
+				>My Messages</button
+			>
+		</li>
+
+		<!-- <li>
+			<a class="anchor" href="/apps/cm/profile">My Profile</a>
+		</li> -->
+
+		<!-- <li>
+			<button class="anchor" href="/apps/cm/message">Listbox/Message Us</button>
+		</li> -->
+		<!-- <li>
 			<a class="anchor" href="/apps/cm/apiTest">ESP API Test</a>
 		</li>
 		<li>
 			<a class="anchor" href="/apps/cm/example">Example Form</a>
-		</li>
+		</li> -->
 		<li>
 			<a class="anchor" href="/logout">Log out</a>
 		</li>

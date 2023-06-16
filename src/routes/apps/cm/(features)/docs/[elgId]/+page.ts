@@ -2,9 +2,11 @@ import type { FormSourceResponseType } from '$comps/esp/form/types'
 
 export async function load({ data, parent, fetch }) {
 	const dataParent = await parent()
-	const imgStorageKey = data.formDefn.values.user_document.imgStorageKey
+
+	const imgStorageKey = data.formDefn.values.imgStorageKey
 	let imgStorageUrl = ''
 
+	// add the download url to the page load data
 	if (imgStorageKey) {
 		const responsePromise = await fetch('/api/aws', {
 			method: 'POST',

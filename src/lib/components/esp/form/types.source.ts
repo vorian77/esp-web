@@ -128,44 +128,49 @@ export class FormSourceActionDirect extends FormSourceAction implements FormSour
 
 export class FormSourceItem {
 	dbName: string
-	fieldName?: string
 	source: FormSourceItemSource
 	sourceKey: string
 	dbDataType: FormSourceItemDataType
-	dbAllowNull: boolean
-	dbPk: boolean
 	dbIdentity: boolean
+	dbAllowNull: boolean
+	dbDelete: boolean
 	dbInsert: boolean
+	dbSelect: boolean
 	dbUpdate: boolean
-	dbArg?: string
+	dbWhere: boolean
+	apiArg: boolean
+	fieldName?: string
 	value?: any
 
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
-		this.dbName = strRequired(obj.dbName, 'FormSourceItem', 'name')
-		this.fieldName = strOptional(obj.fieldName, 'FormSourceItem', 'fieldName')
+		this.dbName = strRequired(obj.dbName, 'FormSourceItem', 'dbName')
 		this.source = memberOfEnumOrDefault(
 			obj.source,
 			'FormSourceItem',
 			'source',
 			'FormSourceItemSource',
 			FormSourceItemSource,
-			FormSourceItemSource.form
+			FormSourceItemSource.none
 		)
-		this.sourceKey = valueOrDefault(obj.sourceKey, this.dbName)
-		this.dbDataType = memberOfEnum(
+		this.sourceKey = this.source ? valueOrDefault(obj.sourceKey, this.dbName) : ''
+		this.dbDataType = memberOfEnumOrDefault(
 			obj.dbDataType,
 			'FormSourceItem',
 			'dbDataType',
 			'FormSourceItemDataType',
-			FormSourceItemDataType
+			FormSourceItemDataType,
+			''
 		)
-		this.dbAllowNull = booleanOrFalse(obj.dbAllowNull, 'FormSourceItem.dbAllowNull')
-		this.dbPk = booleanOrFalse(obj.dbPk, 'FormSourceItem.dbPk')
 		this.dbIdentity = booleanOrFalse(obj.dbIdentity, 'FormSourceItem.dbIdentity')
+		this.dbAllowNull = booleanOrFalse(obj.dbAllowNull, 'FormSourceItem.dbAllowNull')
+		this.dbDelete = booleanOrFalse(obj.dbDelete, 'FormSourceItem.dbDelete')
 		this.dbInsert = booleanOrFalse(obj.dbInsert, 'FormSourceItem.dbInsert')
+		this.dbSelect = booleanOrFalse(obj.dbSelect, 'FormSourceItem.dbSelect')
 		this.dbUpdate = booleanOrFalse(obj.dbUpdate, 'FormSourceItem.dbUpdate')
-		this.dbArg = valueOrDefault(obj.dbNameArg, '')
+		this.dbWhere = booleanOrFalse(obj.dbWhere, 'FormSourceItem.dbWhere')
+		this.apiArg = booleanOrFalse(obj.apiArg, 'FormSourceItem.apiArg')
+		this.fieldName = valueOrDefault(obj.fieldName, '')
 	}
 }
 
@@ -212,6 +217,7 @@ export enum FormSourceItemSource {
 	data = 'data',
 	form = 'form',
 	literal = 'literal',
+	none = 'none',
 	subquery = 'subquery',
 	system = 'system'
 }
@@ -230,6 +236,8 @@ export enum FormSourceItemDataType {
 	string = 'string'
 }
 export enum HTMLMETHOD {
+	DELETE = 'DELETE',
 	GET = 'GET',
-	POST = 'POST'
+	POST = 'POST',
+	PUT = 'PUT'
 }

@@ -6,9 +6,11 @@
 	import { onMount } from 'svelte'
 
 	export let data
-	let site = data.formDefns[2].pageData.cm_ssr_site
+	let cm_ssr_site: number = 0
 
-	let saveValidated = true
+	onMount(() => {
+		cm_ssr_site = data.formDefns[2].pageData.cm_ssr_site
+	})
 
 	const forms = initForms(data.formDefns)
 	function initForms(list: []) {
@@ -33,12 +35,13 @@
 
 	async function onCompleteHandler(e): void {
 		const currentStep = e.detail.step
-		console.log('event:step:', currentStep)
+		// console.log('event:step:', currentStep)
+		forms[currentStep][1].pageData.cm_ssr_site = cm_ssr_site
 		await forms[currentStep][1].submitForm()
 		alert(
 			'Great job completing your application. New opportunity begins today! We will review your information and get back with you soon!'
 		)
-		// history.back()
+		history.back()
 	}
 </script>
 
@@ -60,9 +63,8 @@
 		</Step>
 	{/each}
 
-	<Step locked={!site > 0}>
+	<Step locked={!(cm_ssr_site > 0)}>
 		<svelte:fragment slot="header">{forms[2][0].description}</svelte:fragment>
-		<AddressSelect bind:formObj={forms[2][1]} bind:currentValue={site} />
-		{site}
+		<AddressSelect bind:formObj={forms[2][1]} bind:currentSite={cm_ssr_site} />
 	</Step>
 </Stepper>

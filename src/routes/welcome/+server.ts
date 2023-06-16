@@ -18,7 +18,7 @@ export async function POST({ request, cookies }) {
 	switch (action) {
 		case 'sms_send':
 			const { phoneMobile, message } = requestData
-			// return sendText(phoneMobile, message)
+			return sendText(phoneMobile, message)
 			break
 
 		case 'form_submit':

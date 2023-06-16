@@ -31,13 +31,17 @@ export async function getForm(formName: string, pageData = {}) {
 	// attempt to retrieve form data
 	form.values = await getValues(formName, form.source, pageData)
 
-	// check for content
-	if (JSON.stringify(form.values) === '{}') {
-		return form
+	// retrieve drop-down-list field items
+	if (form.fields) {
+		for (let i = 0; i < form.fields.length; i++) {
+			if (form.fields[i].hasOwnProperty('source')) {
+				form.fields[i].items = await getValues(form.fields[i].name, form.fields[i].source, pageData)
+			}
+		}
 	}
 
-	// check for form fields
-	if (!form.hasOwnProperty('fields')) {
+	// set field values
+	if (JSON.stringify(form.values) === '{}' || !form.hasOwnProperty('fields')) {
 		return form
 	}
 
@@ -48,19 +52,12 @@ export async function getForm(formName: string, pageData = {}) {
 
 	// set form field values
 	for (const [key, value] of Object.entries(form.values)) {
-		const item = sourceSelect.items.find((i: FormSourceItem) => i.dbName == key)
+		const item = sourceSelect.items.find((i: FormSourceItem) => i.dbSelect && i.dbName == key)
 		if (item) {
 			const fieldIdx = form.fields.findIndex((f: Field) => f.name == item.fieldName)
 			if (fieldIdx >= 0) {
 				form.fields[fieldIdx].value = value
 			}
-		}
-	}
-
-	// retrieve drop-down-list field items
-	for (let i = 0; i < form.fields.length; i++) {
-		if (form.fields[i].hasOwnProperty('source')) {
-			form.fields[i].items = await getValues(form.fields[i].name, form.fields[i].source, pageData)
 		}
 	}
 
@@ -75,7 +72,7 @@ async function getValues(sourceName: string, formSource: {}, data: {}) {
 }
 
 export async function processForm(
-	formName: string,
+	sourceName: string,
 	source: FormSource,
 	dbAction: FormSourceDBAction,
 	data: {},
@@ -83,6 +80,7 @@ export async function processForm(
 ) {
 	// get source
 	const actionIdx = source.actionsMap[dbAction]
+
 	if (actionIdx < 0) {
 		if (optional) {
 			// return []
@@ -91,7 +89,7 @@ export async function processForm(
 			throw error(500, {
 				file: FILENAME,
 				function: 'processForm',
-				message: `Form ${formName} does not contain source with dbAction: ${dbAction}.`
+				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}.`
 			})
 		}
 	}
@@ -159,6 +157,8 @@ export async function processForm(
 							})
 					}
 					break // nested case
+				case FormSourceItemSource.none:
+					break
 				default:
 					throw error(500, {
 						file: FILENAME,

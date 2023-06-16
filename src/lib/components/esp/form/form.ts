@@ -178,7 +178,7 @@ export class Form {
 		})
 		return new Validation(ValidationType.form, formStatus, validityFields)
 	}
-	async submitForm(): Promise<FormSourceResponseType> {
+	async submitForm() {
 		if (!this.source) {
 			return FormSourceResponse({})
 		}
@@ -188,6 +188,7 @@ export class Form {
 		this.fields.forEach((f) => {
 			formValues[f.name] = f.validateGetValue(formData)
 		})
+		console.log('form.FormValues:', formValues)
 
 		const url = this.source.processLocally ? '' : '/api/form'
 

@@ -3,7 +3,7 @@
 	import Icon from '$comps/Icon.svelte'
 
 	function menu() {
-		alert('Open menu...')
+		alert('Menu drawer coming soon!')
 	}
 </script>
 

@@ -11,7 +11,7 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="body">
-		<User user={data.user} />
+		<User bind:user={data.user} />
 		<slot />
 	</svelte:fragment>
 </AppShell>

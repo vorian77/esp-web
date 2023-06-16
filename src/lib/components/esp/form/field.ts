@@ -23,7 +23,7 @@ export class Field {
 	label: string
 	disabled: boolean
 	validity: Validity
-	value?: string
+	value: string
 
 	constructor(obj: {}, index: number) {
 		obj = valueOrDefault(obj, {})
@@ -59,7 +59,7 @@ export class Field {
 		}
 		this.disabled = this.access == FieldAccess.displayOnly
 		this.validity = new Validity()
-		this.value = obj.value
+		this.value = valueOrDefault(obj.value, '')
 	}
 
 	// UTILITY METHODS

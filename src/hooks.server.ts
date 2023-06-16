@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit'
 import { dbESPAPI } from '$server/dbESP'
 import { getEnvVar } from '$server/env'
-import type { FormSourceResponseType } from '$comps/esp/form/types'
+import { HTMLMETHOD, type FormSourceResponseType } from '$comps/esp/form/types'
 
 const unProtectedRoutes = ['/', '/welcome']
 
@@ -18,7 +18,7 @@ export async function handle({ event, resolve }) {
 
 	if (event.url.pathname.startsWith('/apps/cm')) {
 		async function fetchUser() {
-			const responsePromise = await dbESPAPI('GET', 'ws_cm_ssr_user', {
+			const responsePromise = await dbESPAPI(HTMLMETHOD.GET, 'ws_cm_ssr_user', {
 				userId: sessionId,
 				orgId: getEnvVar('ESP_ORG_ID')
 			})
@@ -36,8 +36,6 @@ export async function handle({ event, resolve }) {
 			(user['referral_id'] = user['referrals'][0].id)
 
 		event.locals.user = user
-		// console.log('hooks...')
-		// console.log(event.locals.user)
 	}
 	return resolve(event)
 }

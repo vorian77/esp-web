@@ -112,7 +112,7 @@
 				{:else if field.type === FieldElementInputType.radio}
 					<FormElInpRadio bind:field on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.header}
-					<FormElHeader bind:field pageData={formObj.pageData} values={formObj.values} />
+					<FormElHeader bind:field formValues={formObj.values} />
 				{:else if field.element === FieldElement.pictureTake}
 					<FormElPictureTake bind:field on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.select}
@@ -122,7 +122,6 @@
 				{:else}
 					<FormElInp bind:field on:change={validateFieldBase} on:keyup={keyUp} />
 				{/if}
-				<p class="text-red-600 text-sm text-end">Value: {field.value}</p>
 			</div>
 
 			{#if formObj.fields[index].validity.level == ValidityErrorLevel.error}

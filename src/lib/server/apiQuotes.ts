@@ -1,5 +1,5 @@
 import { API_NINJAS_SECRET } from '$env/static/private'
-import { getResponseObj } from '$utils/utils'
+import { valueOrDefault, getResponseObj } from '$utils/utils'
 const CATEGORIES = ['inspirational', 'courage']
 // const categories = [
 // 	'amazing',
@@ -49,6 +49,9 @@ const COLORS = [
 ]
 
 export async function fetchQuote() {
+	const productionMode = true
+	let quotes = []
+
 	const categoryIdx = Math.floor(Math.random() * (CATEGORIES.length + 1))
 	const api = 'https://api.api-ninjas.com/v1/quotes?limit=1&category=' + CATEGORIES[categoryIdx]
 	const demoQuote = {
@@ -58,18 +61,21 @@ export async function fetchQuote() {
 		category: 'inspirational'
 	}
 
-	// const quotesRes = await fetch(api, {
-	// 	method: 'GET',
-	// 	headers: {
-	// 		'X-API-KEY': API_NINJAS_SECRET,
-	// 		contentType: 'application/json'
-	// 	}
-	// })
-	// const quotes = await quotesRes.json()
+	async function getQuote() {
+		const quotesRes = await fetch(api, {
+			method: 'GET',
+			headers: {
+				'X-API-KEY': API_NINJAS_SECRET,
+				contentType: 'application/json'
+			}
+		})
+		quotes = await quotesRes.json()
+		const quote = quotes.length > 0 ? quotes[0] : demoQuote
+		// quotes = [...quotes, demoQuote]
+		return quote
+	}
 
-	const quotes = []
-
-	const quote = getResponseObj(quotes, demoQuote)
+	const quote = await getQuote()
 	const color = { color: COLORS[Math.floor(Math.random() * COLORS.length)] }
 
 	return { ...quote, ...color }

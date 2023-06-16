@@ -23,17 +23,29 @@ export async function dbESP(
 		case FormSourceActionType.api:
 			// build data from source items
 			let data: Record<string, any> = {}
-			sourceAction.items.forEach(({ dbName, value }) => {
-				data[dbName] = value
+			sourceAction.items.forEach((i) => {
+				if (i.apiArg) {
+					if (i.value) {
+						data[i.dbName] = i.value
+					} else {
+						throw error(500, {
+							file: FILENAME,
+							function: 'dbESP',
+							message: `No value derived for required apiArg: ${i.dbName}.`
+						})
+					}
+				}
 			})
 			return await dbESPAPI(sourceAction.method, sourceAction.url, data)
 			break
 
 		case FormSourceActionType.direct:
 			if (sourceAction.statement) {
-				// execute sql statement
-				console.log('dbESP - statement...')
+				// SQL statement
+				return getSqlStatement(sourceAction)
+				break
 			} else {
+				// construct SQL
 				if (!sourceAction.singleTable || sourceAction.singleTable == '') {
 					throw error(500, {
 						file: FILENAME,
@@ -75,7 +87,6 @@ export async function dbESP(
 				message: `No case defined for sourceAction.type: ${sourceAction.type}`
 			})
 	}
-	return FormSourceResponse
 }
 
 export async function dbESPAPI(method: HTMLMETHOD, url: string, data: {}) {
@@ -92,6 +103,7 @@ export async function dbESPAPI(method: HTMLMETHOD, url: string, data: {}) {
 	}
 
 	try {
+		console.log()
 		console.log('Axios.options:', options)
 		const resp = await axios(options)
 		const data = resp.data
@@ -107,8 +119,40 @@ export async function dbESPAPI(method: HTMLMETHOD, url: string, data: {}) {
 }
 
 async function getSQLExecute(method: HTMLMETHOD, sql: string) {
-	console.log('getSQLExecute.sql:', sql)
 	return await dbESPAPI(method, 'ws_sql_execute_' + method.toLowerCase(), { sql })
+}
+
+function getSQLDelete(sourceAction: FormSourceActionDirect) {
+	let cols = ''
+	sourceAction.items.forEach((i) => {
+		if (i.dbDelete) {
+			if (cols) {
+				cols += ', '
+			}
+			cols += i.dbName + ' = ' + getSQLColValue(i, false)
+		}
+	})
+	let sql = 'DELETE FROM ' + sourceAction.singleTable + getSqlWhere(sourceAction)
+	return getSQLExecute(HTMLMETHOD.DELETE, sql)
+}
+
+function getSQLInsert(sourceAction: FormSourceActionDirect) {
+	let cols = ''
+	let vals = ''
+	sourceAction.items.forEach((i) => {
+		if (i.dbInsert) {
+			// cols
+			if (cols) {
+				cols += ', '
+				vals += ', '
+			}
+			cols += i.dbName
+			vals += getSQLColValue(i, i.dbAllowNull)
+		}
+	})
+
+	let sql = 'INSERT INTO ' + sourceAction.singleTable + ' ' + cols + ' VALUES ' + vals
+	return getSQLExecute(HTMLMETHOD.PUT, sql)
 }
 
 function getSqlSelect(sourceAction: FormSourceActionDirect) {
@@ -117,15 +161,17 @@ function getSqlSelect(sourceAction: FormSourceActionDirect) {
 	let newCol = ''
 
 	sourceAction.items.forEach((i) => {
-		if (cols) {
-			cols += ', '
+		if (i.dbSelect) {
+			if (cols) {
+				cols += ', '
+			}
+			if (i.source == FormSourceItemSource.subquery) {
+				newCol = i.dbName + ' = (' + i.sourceKey + ')'
+			} else {
+				newCol = i.dbName
+			}
+			cols += newCol
 		}
-		if (i.source == FormSourceItemSource.subquery) {
-			newCol = i.dbName + ' = (' + i.sourceKey + ')'
-		} else {
-			newCol = i.dbName
-		}
-		cols += newCol
 	})
 	let sql = 'SELECT ' + cols + ' FROM ' + sourceAction.singleTable + getSqlWhere(sourceAction)
 	return getSQLExecute(HTMLMETHOD.GET, sql)
@@ -136,11 +182,11 @@ function getSqlUpdate(sourceAction: FormSourceActionDirect) {
 	let cols = ''
 
 	sourceAction.items.forEach((i) => {
-		if (i.dbUpdate && !i.dbIdentity) {
+		if (i.dbUpdate) {
 			if (cols) {
 				cols += ', '
 			}
-			cols += i.dbName + ' = ' + getSQLColValue(i)
+			cols += i.dbName + ' = ' + getSQLColValue(i, i.dbAllowNull)
 		}
 	})
 	if (cols == '') {
@@ -153,33 +199,29 @@ function getSqlUpdate(sourceAction: FormSourceActionDirect) {
 
 	let sql = 'UPDATE ' + sourceAction.singleTable + ' SET ' + cols + getSqlWhere(sourceAction)
 
-	console.log('getSqlUpdate:', sql)
 	return getSQLExecute(HTMLMETHOD.POST, sql)
-	// return FormSourceResponse({})
 }
 
 function getSqlWhere(sourceAction: FormSourceActionDirect) {
-	const idItem = getIdentityItem(sourceAction)
-	return ' WHERE ' + idItem.dbName + ' = ' + idItem.value
+	// get identity item
+	let cols = ''
+
+	sourceAction.items.forEach((i) => {
+		if (i.dbWhere) {
+			if (cols) {
+				cols += ', '
+			}
+			cols += i.dbName + ' = ' + getSQLColValue(i, false)
+		}
+	})
+	return ' WHERE ' + cols
 }
 
-function getIdentityItem(sourceAction: FormSourceActionDirect) {
-	const idItem = sourceAction.items.filter((i) => i.dbIdentity)[0]
-	if (idItem) {
-		return idItem
-	} else {
-		throw error(500, {
-			file: FILENAME,
-			function: 'getIdentityItem',
-			message: `Cannot determine identity column for form source action: ${sourceAction.singleTable}`
-		})
-	}
-}
-
-function getSQLColValue(item: FormSourceItem) {
-	if (item.value == null) {
-		if (item.dbAllowNull) {
-			return item.value
+function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
+	console.log('getSQLColValue:', item.dbName, item.value)
+	if (!item.value || item.value == null) {
+		if (allowNull) {
+			return null
 		} else {
 			throw error(500, {
 				file: FILENAME,
@@ -188,7 +230,6 @@ function getSQLColValue(item: FormSourceItem) {
 			})
 		}
 	}
-	console.log('col:', item.dbName, item.dbDataType)
 	let val = item.value
 	switch (item.dbDataType) {
 		case FormSourceItemDataType.date:
@@ -209,7 +250,7 @@ function getSQLColValue(item: FormSourceItem) {
 			throw error(500, {
 				file: FILENAME,
 				function: 'getSQLColValue',
-				message: `No case defined for data type: ${item.dbDataType}.`
+				message: `No case defined for item: ${item.dbName} data type: ${item.dbDataType}.`
 			})
 	}
 
@@ -225,4 +266,21 @@ function getSQLColValue(item: FormSourceItem) {
 	function quoteVal(val) {
 		return "'" + val + "'"
 	}
+}
+
+function getSqlStatement(sourceAction: FormSourceActionDirect) {
+	let sql = sourceAction.statement
+	sourceAction.items.forEach((i) => {
+		const dbName = i.dbName
+		const value = i.value
+		if (value == null || value == undefined) {
+			throw error(500, {
+				file: FILENAME,
+				function: 'getSqlStatement',
+				message: `Cannnot retrieve source. Value for db argument: ${dbName} is null or undefined.`
+			})
+		}
+		sql = sql?.replace(dbName, value)
+	})
+	return getSQLExecute(HTMLMETHOD.GET, sql)
 }

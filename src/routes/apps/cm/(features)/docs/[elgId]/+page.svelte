@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { setContext, onMount } from 'svelte'
-	import { invalidate } from '$app/navigation'
 	import { Form as FormDefn } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
 	import type { FormSourceResponseType } from '$comps/esp/form/types'
@@ -12,15 +11,11 @@
 	let formObj = new FormDefn(formDefn)
 	setContext('pageData', data)
 
-	onMount(() => {
-		invalidate('/api/aws')
-	})
-
 	async function onFormSubmitted(event) {
 		// data
 		const imgType = DATABUS.get('image', 'type')
 		const imgBlob = DATABUS.get('image', 'blob')
-		const imgStorageKey = event.detail.storageKey
+		const imgStorageKey = event.detail.data.storageKey
 
 		// process
 		const url = await getUploadURL(imgType, imgStorageKey)
@@ -29,6 +24,7 @@
 		history.back()
 
 		async function getUploadURL(imgType, imgStorageKey) {
+			console.log('getUploadURL:', imgType, imgStorageKey)
 			const responsePromise = await fetch('/api/aws', {
 				method: 'POST',
 				body: JSON.stringify({ action: 'get_url_upload', imgType, imgStorageKey })
@@ -60,5 +56,5 @@
 <!-- Shared Image Type: {JSON.stringify($img)} -->
 <Form bind:formObj on:formSubmitted={onFormSubmitted} />
 
-<h3>formObj.fields</h3>
-<pre>{JSON.stringify(formObj.fields, null, 2)}</pre>
+<!-- <h3>formObj.fields</h3>
+<pre>{JSON.stringify(formObj.fields, null, 2)}</pre> -->
