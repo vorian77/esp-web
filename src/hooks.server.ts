@@ -6,6 +6,8 @@ import { HTMLMETHOD, type FormSourceResponseType } from '$comps/esp/form/types'
 const unProtectedRoutes = ['/', '/welcome']
 
 export async function handle({ event, resolve }) {
+	console.log('hooks.handle.url:', event.url.pathname)
+
 	const sessionId = event.cookies.get('session_id')
 	if (!sessionId && !unProtectedRoutes.includes(event.url.pathname)) {
 		throw redirect(303, '/welcome')

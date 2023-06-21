@@ -84,7 +84,7 @@ export class Form {
 						? memberOfEnum(
 								field.type,
 								'Form',
-								'field.element.input.type',
+								'field.type',
 								'FieldElementInputType',
 								FieldElementInputType
 						  )
@@ -113,7 +113,7 @@ export class Form {
 					newField = new FieldSelect(field, index)
 					break
 
-				case FieldElement.textarea:
+				case FieldElement.textArea:
 					newField = new FieldTextarea(field, index)
 					break
 				default:

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Stepper, Step } from '@skeletonlabs/skeleton'
-	import { Form as FormDefn } from '$comps/esp/form/form'
+	import { Form as FormClass } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
 	import AddressSelect from '$comps/AddressSelect.svelte'
 	import { onMount } from 'svelte'
@@ -16,7 +16,7 @@
 	function initForms(list: []) {
 		let forms = []
 		list.forEach((defn) => {
-			forms.push([defn, new FormDefn(defn)])
+			forms.push([defn, new FormClass(defn)])
 		})
 		return forms
 	}

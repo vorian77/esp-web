@@ -12,7 +12,7 @@ export enum FieldElement {
 	input = 'input',
 	pictureTake = 'pictureTake',
 	select = 'select',
-	textarea = 'textarea'
+	textArea = 'textArea'
 }
 
 export enum FieldElementInputType {

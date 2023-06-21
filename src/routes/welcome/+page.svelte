@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Form as FormDefn } from '$comps/esp/form/form'
+	import { Form as FormClass } from '$comps/esp/form/form'
 	import { goto } from '$app/navigation'
 	import logo from '$assets/YO-Baltimore-logo.png'
 	import { Drawer, drawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
@@ -25,7 +25,7 @@
 		let forms = []
 		for (let i = 0; i < formList.length; i++) {
 			if (data.hasOwnProperty(formList[i])) {
-				forms[formList[i]] = new FormDefn(data[formList[i]])
+				forms[formList[i]] = new FormClass(data[formList[i]])
 			} else {
 				throw error(500, {
 					file: FILENAME,

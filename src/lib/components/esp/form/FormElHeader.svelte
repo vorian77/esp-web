@@ -8,4 +8,4 @@
 	const dynamicLabel = formValues[field.dynamicLabelKey]
 </script>
 
-<h3 class="h3 mb-6"><span class="font-semibold">{field.label}</span>{dynamicLabel}</h3>
+<h3 class="h3 mb-6"><span class="font-semibold">{field.staticLabel}</span>{dynamicLabel}</h3>

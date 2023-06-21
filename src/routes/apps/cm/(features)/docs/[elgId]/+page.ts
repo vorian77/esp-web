@@ -10,7 +10,7 @@ export async function load({ data, parent, fetch }) {
 	if (imgStorageKey) {
 		const responsePromise = await fetch('/api/aws', {
 			method: 'POST',
-			body: JSON.stringify({ action: 'get_url_download', imgStorageKey })
+			body: JSON.stringify({ action: 'get_url_download', parms: { imgStorageKey } })
 		})
 		const response: FormSourceResponseType = await responsePromise.json()
 		imgStorageUrl = response.data.url

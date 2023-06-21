@@ -1,7 +1,6 @@
 import {
 	arrayOfEnums,
 	booleanOrFalse,
-	getArray,
 	getArrayOfModels,
 	memberOfEnum,
 	memberOfEnumOrDefault,

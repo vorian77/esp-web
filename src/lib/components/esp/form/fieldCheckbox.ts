@@ -1,15 +1,21 @@
 import { Field } from '$comps/esp/form/field'
 import { memberOfEnum, valueOrDefault } from '$utils/utils'
-import { Validation, ValidationStatus } from '$comps/esp/form/types'
+import { FieldElementInputType, Validation, ValidationStatus } from '$comps/esp/form/types'
 
 export class FieldCheckbox extends Field {
-	type: FieldType
+	type: FieldElementInputType
 	items: []
 	constructor(obj: {}, index: number) {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-		this.type = memberOfEnum(obj.type, 'FieldCheckBox', 'type', 'FieldTpe', FieldType)
+		this.type = memberOfEnum(
+			obj.type,
+			'FieldCheckBox',
+			'type',
+			'FieldElementInputType',
+			FieldElementInputType
+		)
 
 		this.items = valueOrDefault(obj.items, [])
 		this.items = this.initItems(this.items)
@@ -33,8 +39,4 @@ export class FieldCheckbox extends Field {
 		})
 		return values.length ? values : null
 	}
-}
-
-export enum FieldType {
-	checkbox = 'checkbox'
 }

@@ -2,7 +2,6 @@
 	import type { Form } from '$comps/esp/form/form'
 	import {
 		FieldElement,
-		FieldElementInputType,
 		type FormSourceResponseType,
 		Validation,
 		ValidityField,
@@ -19,13 +18,20 @@
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
 	import FormLink from '$comps/esp/form/FormLink.svelte'
 	import { createEventDispatcher, onMount } from 'svelte'
+	import { error } from '@sveltejs/kit'
 
 	const dispatch = createEventDispatcher()
+	const FILENAME = '$comps/esp/form/Form.svelte'
 	const FORM_NAME = ''
 	const SUBMIT_BUTTON_NAME = 'SUBMIT_BUTTON_NAME'
 
 	export let formObj: Form
 	export let surface = ''
+
+	let fieldElements = []
+
+	$: if (formObj.fields) {
+	}
 
 	onMount(() => {
 		formObj.elForm = document.getElementById(formObj.name)
@@ -66,7 +72,6 @@
 	}
 	function setValidToSubmit(status: boolean) {
 		formObj.validToSubmit = status
-		// if (status) formObj.elSubmitButton.focus()
 	}
 	function keyUp(event: KeyboardEvent) {
 		const fieldName = event.target.name
@@ -88,6 +93,18 @@
 		// alert parent
 		dispatch('formSubmitted', { formName: formObj.name, ...response.data })
 	}
+
+	export function getField(fieldName: string) {
+		const field = formObj.fields.find((f) => f.name == fieldName)
+		if (!field) {
+			throw error(500, {
+				file: FILENAME,
+				function: 'getField',
+				message: `Unable to find field: ${fieldName}.`
+			})
+		}
+		return fieldElements[field.index]
+	}
 </script>
 
 <div class={surface}>
@@ -105,32 +122,51 @@
 	<!-- Valid To Submit: {formObj.validToSubmit} -->
 
 	<form id={formObj.name} on:submit|preventDefault={submitForm}>
-		{#each formObj.fields as field, index (field.name)}
-			<div class:mt-3={index}>
-				{#if field.type === FieldElementInputType.checkbox}
-					<FormElInpCheckbox bind:field on:click={validateFieldCheckbox} />
-				{:else if field.type === FieldElementInputType.radio}
-					<FormElInpRadio bind:field on:change={validateFieldBase} />
-				{:else if field.element === FieldElement.header}
-					<FormElHeader bind:field formValues={formObj.values} />
+		{#each formObj.fields as field, idx (field.name)}
+			<div class:mt-3={idx}>
+				{#if field.element === FieldElement.header}
+					<FormElHeader bind:field bind:this={fieldElements[idx]} formValues={formObj.values} />
+				{:else if field.element === FieldElement.input}
+					{#if field.type === 'checkbox'}
+						<FormElInpCheckbox
+							bind:field
+							bind:this={fieldElements[idx]}
+							on:click={validateFieldCheckbox}
+						/>
+					{:else if field.type === 'radio'}
+						<FormElInpRadio
+							bind:field
+							bind:this={fieldElements[idx]}
+							on:change={validateFieldBase}
+						/>
+					{:else}
+						<FormElInp
+							bind:field
+							bind:this={fieldElements[idx]}
+							on:change={validateFieldBase}
+							on:keyup={keyUp}
+						/>
+					{/if}
 				{:else if field.element === FieldElement.pictureTake}
-					<FormElPictureTake bind:field on:change={validateFieldBase} />
+					<FormElPictureTake
+						bind:field
+						bind:this={fieldElements[idx]}
+						on:change={validateFieldBase}
+					/>
 				{:else if field.element === FieldElement.select}
-					<FormElSelect bind:field on:change={validateFieldBase} />
-				{:else if field.element === FieldElement.textarea}
-					<FormElTextarea bind:field on:change={validateFieldBase} />
-				{:else}
-					<FormElInp bind:field on:change={validateFieldBase} on:keyup={keyUp} />
+					<FormElSelect bind:field bind:this={fieldElements[idx]} on:change={validateFieldBase} />
+				{:else if field.element === FieldElement.textArea}
+					<FormElTextarea bind:field bind:this={fieldElements[idx]} on:change={validateFieldBase} />
 				{/if}
 			</div>
 
-			{#if formObj.fields[index].validity.level == ValidityErrorLevel.error}
+			{#if formObj.fields[idx].validity.level == ValidityErrorLevel.error}
 				<div class="text-error-500 mb-3">
-					<p class="">{formObj.fields[index].validity.message}</p>
+					<p class="">{formObj.fields[idx].validity.message}</p>
 				</div>
-			{:else if formObj.fields[index].validity.level == ValidityErrorLevel.warning}
+			{:else if formObj.fields[idx].validity.level == ValidityErrorLevel.warning}
 				<div class="text-warning-500 mb-3">
-					<p class="">{formObj.fields[index].validity.message}</p>
+					<p class="">{formObj.fields[idx].validity.message}</p>
 				</div>
 			{/if}
 		{/each}

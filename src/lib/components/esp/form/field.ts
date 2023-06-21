@@ -2,7 +2,6 @@ import { memberOfEnum, memberOfEnumOrDefault, strRequired, valueOrDefault } from
 import {
 	FieldAccess,
 	FieldElement,
-	FieldElementInputType,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -17,7 +16,6 @@ const COMPONENT = '/$comps/esp/form/field.ts/'
 export class Field {
 	index: number
 	element: FieldElement
-	inputElementType: FieldElementInputType
 	name: string
 	access: FieldAccess
 	label: string
@@ -36,14 +34,6 @@ export class Field {
 			FieldElement,
 			FieldElement.input
 		)
-		this.inputElementType = memberOfEnumOrDefault(
-			obj.inputElementType,
-			'Field',
-			'imputElementType',
-			'FieldElementInputType',
-			FieldElementInputType,
-			''
-		)
 		this.name = strRequired(obj.name, 'Field', 'name')
 		this.access = memberOfEnumOrDefault(
 			obj.access,
@@ -53,8 +43,8 @@ export class Field {
 			FieldAccess,
 			FieldAccess.required
 		)
-		this.label = strRequired(obj.label, 'Field', 'label')
-		if (this.access == FieldAccess.optional) {
+		this.label = valueOrDefault(obj.label, '')
+		if (this.label.length > 0 && this.access == FieldAccess.optional) {
 			this.label += ' (optional)'
 		}
 		this.disabled = this.access == FieldAccess.displayOnly

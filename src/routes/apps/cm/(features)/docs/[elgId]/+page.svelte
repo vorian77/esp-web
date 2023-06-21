@@ -1,60 +1,85 @@
 <script lang="ts">
 	import { setContext, onMount } from 'svelte'
-	import { Form as FormDefn } from '$comps/esp/form/form'
+	import { Form as FormClass } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
 	import type { FormSourceResponseType } from '$comps/esp/form/types'
 	import DATABUS from '$lib/utils/databus.utils'
+	import { error } from '@sveltejs/kit'
+
+	const FILENAME = '/routes/apps/cm/(features)/docs/[elgId]/page.svelte'
 
 	export let data
 
 	const formDefn = data.formDefn
-	let formObj = new FormDefn(formDefn)
+	let formObj = new FormClass(formDefn)
+	let formElement: Form
 	setContext('pageData', data)
 
 	async function onFormSubmitted(event) {
 		// data
-		const imgType = DATABUS.get('image', 'type')
-		const imgBlob = DATABUS.get('image', 'blob')
-		const imgStorageKey = event.detail.data.storageKey
+		const imgFile = DATABUS.get('image', 'file')
+		const imgType = imgFile.type
+		const imgStorageKey = 'raw/' + event.detail.data.storageKey
+
+		console.log('imgType:', imgType)
+		console.log('imgFile:', imgFile)
 
 		// process
-		const url = await getUploadURL(imgType, imgStorageKey)
-		await uploadImg(url, imgBlob)
-		alert('Image uploaded successfully!')
-		history.back()
+		let resp
 
-		async function getUploadURL(imgType, imgStorageKey) {
-			console.log('getUploadURL:', imgType, imgStorageKey)
+		// get upload url
+		let urlUpload = await getURL('get_url_upload', { imgType, imgStorageKey })
+		console.log('urlUpload:', urlUpload)
+
+		// upload image
+		const response = await uploadImage(urlUpload, imgFile)
+		console.log('upload.response:', response)
+
+		// alert('Image uploaded successfully!')
+		// history.back()
+
+		async function getURL(action: string, parms: {}) {
 			const responsePromise = await fetch('/api/aws', {
 				method: 'POST',
-				body: JSON.stringify({ action: 'get_url_upload', imgType, imgStorageKey })
+				body: JSON.stringify({ action, parms })
 			})
 			const response: FormSourceResponseType = await responsePromise.json()
+
+			if (!response.data.url) {
+				throw error(500, {
+					file: FILENAME,
+					function: 'getURL',
+					message: `Unable to retrieve URL for ${action} - storage key: ${imgStorageKey}.`
+				})
+			}
 			return response.data.url
 		}
 
-		async function uploadImg(url, imgBlob) {
+		async function uploadImage(url, imgFile) {
 			try {
-				const reader = new FileReader()
-				reader.onloadend = async () => {
-					const resp = await fetch(url, {
-						method: 'PUT',
-						body: reader.result,
-						headers: {
-							'Content-Type': imgBlob.type
-						}
-					})
-				}
-				reader.readAsArrayBuffer(imgBlob)
-			} catch (error) {
-				console.log(`Unable to upload img: ${imgStorageKey} Error: ${error}`)
+				const resp = await fetch(url, {
+					method: 'PUT',
+					body: imgFile,
+					headers: {
+						'Content-Type': imgFile.type
+					}
+				})
+				const respData = resp.statusText
+				console.log('uploadImage.resp', respData)
+				return respData
+			} catch (err) {
+				throw error(500, {
+					file: FILENAME,
+					function: 'uploadImage',
+					message: `Unable to upload img: ${imgFile.name} Error: ${err}`
+				})
 			}
 		}
 	}
 </script>
 
 <!-- Shared Image Type: {JSON.stringify($img)} -->
-<Form bind:formObj on:formSubmitted={onFormSubmitted} />
+<Form bind:formObj bind:this={formElement} on:formSubmitted={onFormSubmitted} />
 
 <!-- <h3>formObj.fields</h3>
 <pre>{JSON.stringify(formObj.fields, null, 2)}</pre> -->

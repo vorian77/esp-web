@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Form as FormDefn } from '$comps/esp/form/form'
+	import { Form as FormClass } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
 	import type { FormSourceResponseType } from '$comps/esp/form/types'
 
 	export let data
 
 	const formDefn = data.formDefn
-	let formObj = new FormDefn(formDefn)
+	let formObj = new FormClass(formDefn)
 </script>
 
 <Form bind:formObj />

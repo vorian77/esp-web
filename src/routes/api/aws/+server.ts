@@ -3,32 +3,41 @@ import { error } from '@sveltejs/kit'
 const FILENAME = '/routes/api/aws/server.ts'
 
 export async function POST({ request }) {
+	const FILENAME = '/routes/api/aws/+server.ts'
+
 	let imgStorageKey
 	let imgType
 
 	const requestData = await request.json()
-	const { action } = requestData
+	const { action, parms } = requestData
 
 	switch (action) {
 		case 'get_url_upload':
-			imgStorageKey = requestData.imgStorageKey
-			imgType = requestData.imgType
+			// data
+			imgStorageKey = parms.imgStorageKey
+			imgType = parms.imgType
 
-			let uploadApi = 'https://moed-yo-api.theappfactory.com'
-			uploadApi += '/storage/img_url_upload'
-			uploadApi += `?storageKey=${imgStorageKey}&storageContentType=${imgType}`
-
-			return getUrl(uploadApi)
+			// upload
+			let urlUpload = 'https://moed-yo-api.theappfactory.com'
+			urlUpload += '/storage/img_url_upload'
+			urlUpload += `?storageKey=${imgStorageKey}&storageContentType=${imgType}`
+			return processURL(urlUpload)
 			break
 
 		case 'get_url_download':
-			imgStorageKey = requestData.imgStorageKey
+			imgStorageKey = parms.imgStorageKey
 
-			let downloadApi = 'https://moed-yo-api.theappfactory.com'
-			downloadApi += '/storage/img_url_download'
-			downloadApi += `?storageKey=${imgStorageKey}`
+			let urlDownload = 'https://moed-yo-api.theappfactory.com'
+			urlDownload += '/storage/img_url_download'
+			urlDownload += `?storageKey=${imgStorageKey}`
 
-			return getUrl(downloadApi)
+			return processURL(urlDownload)
+			break
+
+		case 'resize_image':
+			let urlResize = 'https://us-east-1.aws.data.mongodb-api.com/app/application-0-splax/endpoint/'
+			urlResize += 'AWSs3ImgResize?key=' + imgStorageKey
+			return processURL(urlResize)
 			break
 
 		default:
@@ -40,9 +49,8 @@ export async function POST({ request }) {
 	}
 }
 
-async function getUrl(api) {
+async function processURL(api: string) {
 	const respPromise = await fetch(api, { method: 'GET' })
 	const respData = await respPromise.json()
-	const url = respData.url
-	return new Response(JSON.stringify({ success: true, data: { url } }))
+	return new Response(JSON.stringify({ success: true, data: respData }))
 }

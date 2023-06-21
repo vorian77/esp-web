@@ -1,4 +1,5 @@
 import {
+	FieldElementInputType,
 	Validation,
 	ValidationStatus,
 	ValidationType,
@@ -8,28 +9,35 @@ import {
 	ValidityErrorLevel
 } from '$comps/esp/form/types'
 import { Field } from '$comps/esp/form/field'
-import { memberOfEnum, memberOfEnumOrDefault, valueOrDefault } from '$utils/utils'
+import { memberOfEnumOrDefault, valueOrDefault } from '$utils/utils'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '$comps/esp/form/fieldInput.ts'
 
 export class FieldInput extends Field {
-	type: FieldType
-	placeHolder: string
-	matchColumn: MatchColumn
-	minLength: number
-	maxLength: number
-	minValue: number
-	maxValue: number
-	pattern: string
-	patternMsg: string
-	patternReplacement: string
+	type: FieldElementInputType
+	placeHolder?: string
+	matchColumn?: MatchColumn
+	minLength?: number
+	maxLength?: number
+	minValue?: number
+	maxValue?: number
+	pattern?: string
+	patternMsg?: string
+	patternReplacement?: string
 
 	constructor(obj: {}, index: number, fields: Array<FieldInput>) {
 		super(obj, index)
 
 		obj = valueOrDefault(obj, {})
-		this.type = memberOfEnumOrDefault(obj.type, 'FieldInput', 'type', 'FieldType', FieldType, '')
+		this.type = memberOfEnumOrDefault(
+			obj.type,
+			'FieldInput',
+			'type',
+			'FieldElementInputType',
+			FieldElementInputType,
+			''
+		)
 		this.placeHolder = valueOrDefault(obj.placeHolder, '')
 
 		// validators
@@ -44,19 +52,19 @@ export class FieldInput extends Field {
 
 		// set field type defaults
 		switch (this.type) {
-			case FieldType.email:
+			case FieldElementInputType.email:
 				if (!this.pattern) {
 					this.pattern = '^[A-Za-z0-9+_.-]+@(.+)$'
 				}
 				break
-			case FieldType.password:
+			case FieldElementInputType.password:
 				if (!this.pattern) {
 					this.pattern = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$!%*?&])[A-Za-z\\d@#$!%*?&]{8,}$'
 					this.patternMsg =
 						'Your password must be at least 8 characters long, and must contain at least 1 uppercase character, at least 1 lowercase character, at least 1 number, and at least 1 special character (@$!%*#?&).'
 				}
 				break
-			case FieldType.tel:
+			case FieldElementInputType.tel:
 				if (!this.pattern) {
 					this.pattern = '^(1\\s?)?(\\d{3}|\\(\\d{3}\\))[\\s\\-]?\\d{3}[\\s\\-]?\\d{4}$'
 					this.patternReplacement = '($1) $2-$3'
@@ -202,14 +210,6 @@ export class FieldInput extends Field {
 	}
 }
 
-export enum FieldType {
-	date = 'date',
-	email = 'email',
-	number = 'number',
-	password = 'password',
-	tel = 'tel',
-	text = 'text'
-}
 export class MatchColumn {
 	name: string
 	index: number | undefined

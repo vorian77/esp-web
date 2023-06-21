@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Form as FormDefn } from '$comps/esp/form/form'
+	import { Form as FormClass } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/Form.svelte'
 	import FormBuilderColumn from '$routes/admin/formBuilder/FormBuilderColumn.svelte'
 
 	export let data
 
-	let form = new FormDefn(data.defnForm)
-	let formCol = new FormDefn(data.defnFormCol)
+	let form = new FormClass(data.defnForm)
+	let formCol = new FormClass(data.defnFormCol)
 	let columns = [0, 1]
 
 	function onFormSubmitted() {}
