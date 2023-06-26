@@ -1,6 +1,6 @@
 import { Field } from '$comps/esp/form/field'
 import { memberOfEnum, valueOrDefault } from '$utils/utils'
-import { FieldElementInputType, Validation, ValidationStatus } from '$comps/esp/form/types'
+import { FieldElementInputType, Validation, ValidationStatus } from '$comps/types'
 
 export class FieldCheckbox extends Field {
 	type: FieldElementInputType

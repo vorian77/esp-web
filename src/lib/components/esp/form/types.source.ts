@@ -174,26 +174,16 @@ export class FormSourceItem {
 }
 
 export function FormSourceResponse(sourceData: any) {
+	if (sourceData.hasOwnProperty('success')) {
+		sourceData.type = Array.isArray(sourceData.data) ? 'array' : 'object'
+		return new Response(JSON.stringify(sourceData))
+	}
+	// construct response
 	const response = {
 		success: true,
-		type: 'unknown',
+		type: Array.isArray(sourceData) ? 'array' : 'object',
 		message: '',
 		data: sourceData
-	}
-
-	if (Array.isArray(sourceData)) {
-		response.type = 'array'
-	} else if (typeof sourceData == 'object') {
-		response.type = 'object'
-		if (sourceData.hasOwnProperty('success')) {
-			response.success = sourceData.success
-			delete sourceData.success
-		}
-		if (sourceData.hasOwnProperty('message')) {
-			response.message = sourceData.message
-			delete sourceData.message
-		}
-		response.data = sourceData
 	}
 	return new Response(JSON.stringify(response))
 }
@@ -217,7 +207,6 @@ export enum FormSourceItemSource {
 	form = 'form',
 	literal = 'literal',
 	none = 'none',
-	subquery = 'subquery',
 	system = 'system'
 }
 export enum FormSourceTarget {
@@ -232,7 +221,9 @@ export enum FormSourceItemDataType {
 	datetime = 'datetime',
 	dec = 'dec',
 	int = 'int',
-	string = 'string'
+	raw = 'raw',
+	string = 'string',
+	subquery = 'subquery'
 }
 export enum HTMLMETHOD {
 	DELETE = 'DELETE',

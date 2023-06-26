@@ -7,7 +7,7 @@ import {
 	ValidityField,
 	ValidityError,
 	ValidityErrorLevel
-} from '$comps/esp/form/types'
+} from '$comps/types'
 import { Field } from '$comps/esp/form/field'
 import { memberOfEnumOrDefault, valueOrDefault } from '$utils/utils'
 import { error } from '@sveltejs/kit'

@@ -69,10 +69,11 @@ export async function fetchQuote() {
 				contentType: 'application/json'
 			}
 		})
-		quotes = await quotesRes.json()
-		const quote = quotes.length > 0 ? quotes[0] : demoQuote
+		//quotes = await quotesRes.json()
+		//const quote = quotes.length > 0 ? quotes[0] : demoQuote
 		// quotes = [...quotes, demoQuote]
-		return quote
+		//return quote
+		return demoQuote
 	}
 
 	const quote = await getQuote()

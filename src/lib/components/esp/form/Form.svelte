@@ -2,13 +2,12 @@
 	import type { Form } from '$comps/esp/form/form'
 	import {
 		FieldElement,
-		type FormSourceResponseType,
 		Validation,
 		ValidityField,
 		ValidityErrorLevel,
 		ValidationStatus,
 		ValidityError
-	} from '$comps/esp/form/types'
+	} from '$comps/types'
 	import FormElHeader from '$comps/esp/form/FormElHeader.svelte'
 	import FormElInp from '$comps/esp/form/FormElInp.svelte'
 	import FormElInpCheckbox from '$comps/esp/form/FormElInpCheckbox.svelte'
@@ -34,7 +33,7 @@
 	}
 
 	onMount(() => {
-		formObj.elForm = document.getElementById(formObj.name)
+		formObj.elForm = document.getElementById(getFormName())
 		if (formObj.submitButtonName) {
 			formObj.elSubmitButton = document.getElementById(formObj.name)
 		}
@@ -45,6 +44,10 @@
 			setValidToSubmit(false)
 		}
 	})
+
+	function getFormName() {
+		return 'form-' + formObj.name
+	}
 
 	function validateFieldBase(event) {
 		const fieldName = event.target.name
@@ -119,13 +122,13 @@
 		</div>
 	{/if}
 
-	<!-- Valid To Submit: {formObj.validToSubmit} -->
-
-	<form id={formObj.name} on:submit|preventDefault={submitForm}>
+	<form id={getFormName()} on:submit|preventDefault={submitForm}>
 		{#each formObj.fields as field, idx (field.name)}
 			<div class:mt-3={idx}>
 				{#if field.element === FieldElement.header}
-					<FormElHeader bind:field bind:this={fieldElements[idx]} formValues={formObj.values} />
+					<div class:mt-9={idx}>
+						<FormElHeader bind:field bind:this={fieldElements[idx]} formValues={formObj.values} />
+					</div>
 				{:else if field.element === FieldElement.input}
 					{#if field.type === 'checkbox'}
 						<FormElInpCheckbox
@@ -156,7 +159,12 @@
 				{:else if field.element === FieldElement.select}
 					<FormElSelect bind:field bind:this={fieldElements[idx]} on:change={validateFieldBase} />
 				{:else if field.element === FieldElement.textArea}
-					<FormElTextarea bind:field bind:this={fieldElements[idx]} on:change={validateFieldBase} />
+					<FormElTextarea
+						bind:field
+						bind:this={fieldElements[idx]}
+						on:change={validateFieldBase}
+						on:keyup={keyUp}
+					/>
 				{/if}
 			</div>
 

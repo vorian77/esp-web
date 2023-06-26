@@ -10,5 +10,5 @@
 	<div>
 		<h3 class="h3">Message:</h3>
 	</div>
-	<textarea rows="10" cols="30">{$page.error.message}</textarea>
+	<textarea class="w-full" rows="5">{$page.error.message}</textarea>
 </div>

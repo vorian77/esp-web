@@ -6,7 +6,7 @@ import {
 	FormSourceItemSource,
 	FormSourceResponse,
 	FormSourceTarget
-} from '$comps/esp/form/types'
+} from '$comps/types'
 import type { Field } from '$comps/esp/form/field'
 
 import { dbGetForm } from '$server/dbMongo'
@@ -78,12 +78,12 @@ export async function processForm(
 	data: {},
 	optional = false
 ) {
+	console.log('processForm:', sourceName)
 	// get source
 	const actionIdx = source.actionsMap[dbAction]
 
 	if (actionIdx < 0) {
 		if (optional) {
-			// return []
 			return FormSourceResponse({})
 		} else {
 			throw error(500, {
@@ -123,7 +123,6 @@ export async function processForm(
 					sourceAction.items[i].value = getEnvVar(sourceKey)
 					break
 				case FormSourceItemSource.literal:
-				case FormSourceItemSource.subquery:
 					sourceAction.items[i].value = sourceKey
 					break
 				case FormSourceItemSource.system:

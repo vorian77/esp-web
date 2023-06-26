@@ -1,5 +1,5 @@
 import { processForm } from '$server/dbForm'
-import { FormSourceDBAction } from '$comps/esp/form/types'
+import { FormSourceDBAction } from '$comps/types'
 
 export async function POST({ request }) {
 	const { formName, source, data } = await request.json()

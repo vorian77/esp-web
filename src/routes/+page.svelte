@@ -1,28 +1,189 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { Form as FormClass } from '$comps/esp/form/form'
 	import { goto } from '$app/navigation'
-	onMount(async () => {
-		goto('/welcome')
-	})
+	import logo from '$assets/YO-Baltimore-logo.png'
+	import { Drawer, drawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
+	import Form from '$comps/esp/form/Form.svelte'
+	import type { FormSourceResponseType } from '$comps/types.js'
+	import { error } from '@sveltejs/kit'
+
+	const FILENAME = 'routes/welcome/+page.svelte'
+
+	export let data
+
+	$: pageCurrent = ''
+	$: securityCode = 0
+	$: verifyFrom = ''
+	const forms = initForms([
+		'auth_login',
+		'auth_signup',
+		'auth_verify_phone_mobile',
+		'auth_reset_password'
+	])
+
+	function initForms(formList: Array<string>) {
+		let forms = []
+		for (let i = 0; i < formList.length; i++) {
+			if (data.hasOwnProperty(formList[i])) {
+				forms[formList[i]] = new FormClass(data[formList[i]])
+			} else {
+				throw error(500, {
+					file: FILENAME,
+					function: 'constructor',
+					message: `Definition missing for form: ${formList[i]}`
+				})
+			}
+		}
+		return forms
+	}
+
+	function openPage(page: string) {
+		pageCurrent = page
+		const settings: DrawerSettings = {
+			id: 'welcome',
+			position: 'bottom',
+			height: 'h-[75%]'
+		}
+		drawerStore.open(settings)
+	}
+	async function onFormSubmitted(event) {
+		const { formName } = event.detail
+
+		switch (formName) {
+			case 'auth_login':
+				launch()
+				break
+
+			case 'auth_verify_phone_mobile':
+				// verify security code
+				const userSecurityCode = forms[formName].data.securityCode
+				if (userSecurityCode != securityCode) {
+					alert(
+						'The security code you entered does not match the security code we sent. Please try again.'
+					)
+					return
+				}
+
+				// process verify-from form
+				const response = await fetch('', {
+					method: 'POST',
+					body: JSON.stringify({
+						action: 'form_submit',
+						formName: forms[verifyFrom].name,
+						source: forms[verifyFrom].source,
+						data: forms[verifyFrom].data
+					})
+				})
+				const responseData: FormSourceResponseType = await response.json()
+				if (!responseData.success) {
+					return
+				}
+				launch()
+				break
+
+			case 'auth_signup':
+			case 'auth_reset_password':
+				verifyFrom = formName
+				sendCode()
+				openPage('auth_verify_phone_mobile')
+				break
+		}
+
+		async function launch() {
+			pageCurrent = ''
+			drawerStore.close()
+			goto('/apps')
+		}
+	}
+
+	async function onFormLink(event) {
+		// switch page
+		if (Object.keys(forms).some((key) => key === event.detail)) {
+			openPage(event.detail)
+			return
+		}
+
+		// other functions
+		switch (event.detail) {
+			case 'resend_security_code':
+				await sendCode()
+				break
+		}
+	}
+
+	async function sendCode() {
+		const min = 100000
+		const max = 999999
+		securityCode = Math.floor(Math.random() * (max - min + 1)) + min
+		await fetch('', {
+			method: 'POST',
+			body: JSON.stringify({
+				action: 'sms_send',
+				phoneMobile: forms[verifyFrom].data.phoneMobile,
+				message: `Mobile phone number verification code: ${securityCode}`
+			})
+		})
+	}
 </script>
 
-<div class="esp-card-space-y text-lg">
-	<h1 class="h1">Root Menu</h1>
-	<ul>
-		<li>
-			<a class="anchor" href="/apps/cm">Case Manager</a>
-		</li>
-		<li>
-			<a class="anchor" href="/dev/demo">Native API Demo</a>
-		</li>
-		<li>
-			<a class="anchor" href="/admin">Administration</a>
-		</li>
-	</ul>
+<Drawer>
+	{#each Object.entries(forms) as [key, value], index}
+		{#if pageCurrent == value.name}
+			<Form
+				bind:formObj={value}
+				surface="esp-card-space-y"
+				on:formSubmitted={onFormSubmitted}
+				on:form-link={onFormLink}
+			/>
+		{/if}
+	{/each}
+</Drawer>
+
+<div id="full-screen" class="container">
+	<div class="content">
+		<img class="mx-auto" src={logo} width="260" alt="YO logo" />
+
+		<!-- button group -->
+		<div class="flex-box">
+			<button
+				type="button"
+				class="btn variant-filled-primary w-full mt-10"
+				on:click={() => openPage('auth_signup')}
+			>
+				Get Started!
+			</button>
+			<button
+				type="button"
+				class="btn variant-ringed-primary w-full mt-1"
+				on:click={() => openPage('auth_login')}
+			>
+				Log in
+			</button>
+		</div>
+	</div>
 </div>
 
 <style>
-	li {
-		margin-bottom: 10px;
+	#full-screen {
+		height: 100vh;
+		overflow: hidden; /* Hide scrollbars */
+		background-image: url('$assets/moed2.jpg');
+		background-size: cover;
+	}
+	img {
+		height: 100%;
+	}
+	.container {
+		position: relative;
+		text-align: center;
+		color: whitesmoke;
+	}
+
+	.content {
+		position: fixed;
+		top: 72%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 90%;
 	}
 </style>

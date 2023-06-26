@@ -23,7 +23,7 @@ import {
 	ValidationType,
 	ValidationStatus,
 	ValidityField
-} from '$comps/esp/form/types'
+} from '$comps/types'
 
 import { error } from '@sveltejs/kit'
 
@@ -202,15 +202,17 @@ export class Form {
 			})
 		})
 		const response = await responsePromise.json()
+		console.log('form.formProcess.response:', response)
 
 		// process response
+		if (response.message) {
+			alert(response.message)
+		}
 		if (response.success) {
 			this.submitResponse = { ...this.data, ...response.data }
 		} else {
 			this.submitResponse = {}
-			alert(response.message)
 		}
-
 		return FormSourceResponse(response)
 	}
 

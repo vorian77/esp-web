@@ -13,7 +13,7 @@
 	{@const exchange = v.rec_contact1_ph_off.slice(3, 6)}
 	{@const extension = v.rec_contact1_ph_off.slice(6, 10)}
 	<div class="card bg-gray-100 rounded-lg p-4 mb-4">
-		<h1>{v.rec_id}</h1>
+		<h2 class="h2 font-semibold">{v.rec_id}</h2>
 		<div>{v.rec_addr_line1}</div>
 		{#if v.rec_addr_line2}
 			<div>{v.rec_addr_line2}</div>

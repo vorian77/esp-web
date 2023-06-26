@@ -11,8 +11,7 @@
 
 	function onFormSubmitted() {}
 
-	let newDefn =
-		'At w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.'
+	let newDefn = 'Sample defn.'
 </script>
 
 <Form bind:formObj={form} on:formSubmitted={onFormSubmitted} />

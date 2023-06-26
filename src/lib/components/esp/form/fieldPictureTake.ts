@@ -1,6 +1,6 @@
 import { Field } from '$comps/esp/form/field'
 import { strRequired, valueOrDefault } from '$utils/utils'
-import { Validation, ValidationStatus } from '$comps/esp/form/types'
+import { Validation, ValidationStatus } from '$comps/types'
 
 const FILENAME = 'fieldPictureTake.ts'
 

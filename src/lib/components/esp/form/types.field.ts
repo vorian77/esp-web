@@ -1,7 +1,7 @@
 const FILENAME = '$comps/esp/form/types.form.field.ts'
 
 export enum FieldAccess {
-	displayOnly = 'displayOnly',
+	readonly = 'readonly',
 	hidden = 'hidden',
 	optional = 'optional',
 	required = 'required'

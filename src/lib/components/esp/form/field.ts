@@ -9,7 +9,7 @@ import {
 	ValidityField,
 	ValidityError,
 	ValidityErrorLevel
-} from '$comps/esp/form/types'
+} from '$comps/types'
 
 const COMPONENT = '/$comps/esp/form/field.ts/'
 
@@ -19,7 +19,6 @@ export class Field {
 	name: string
 	access: FieldAccess
 	label: string
-	disabled: boolean
 	validity: Validity
 	value: string
 
@@ -44,10 +43,9 @@ export class Field {
 			FieldAccess.required
 		)
 		this.label = valueOrDefault(obj.label, '')
-		if (this.label.length > 0 && this.access == FieldAccess.optional) {
+		if (this.label && this.access == FieldAccess.optional) {
 			this.label += ' (optional)'
 		}
-		this.disabled = this.access == FieldAccess.displayOnly
 		this.validity = new Validity()
 		this.value = valueOrDefault(obj.value, '')
 	}

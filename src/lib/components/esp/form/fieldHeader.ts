@@ -1,5 +1,5 @@
 import { Field } from '$comps/esp/form/field'
-import { FieldAccess } from '$comps/esp/form/types'
+import { FieldAccess } from '$comps/types'
 
 import { strRequired, valueOrDefault, getArray } from '$utils/utils'
 
@@ -15,6 +15,6 @@ export class FieldHeader extends Field {
 		obj = valueOrDefault(obj, {})
 		this.staticLabel = valueOrDefault(obj.staticLabel, '')
 		this.dynamicLabelKey = valueOrDefault(obj.dynamicLabelKey, '')
-		this.access = FieldAccess.displayOnly
+		this.access = FieldAccess.readonly
 	}
 }

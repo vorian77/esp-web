@@ -9,7 +9,7 @@ import {
 	FormSourceItemSource,
 	FormSourceResponse,
 	HTMLMETHOD
-} from '$comps/esp/form/types'
+} from '$comps/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$server/dbESP.ts'
@@ -36,7 +36,13 @@ export async function dbESP(
 					}
 				}
 			})
-			return await dbESPAPI(sourceAction.method, sourceAction.url, data)
+			return await dbESPAPI(
+				sourceAction.method,
+				sourceAction.url,
+				data,
+				sourceAction.msgSuccess,
+				sourceAction.msgFail
+			)
 			break
 
 		case FormSourceActionType.direct:
@@ -46,13 +52,6 @@ export async function dbESP(
 				break
 			} else {
 				// construct SQL
-				if (!sourceAction.singleTable || sourceAction.singleTable == '') {
-					throw error(500, {
-						file: FILENAME,
-						function: 'dbESP',
-						message: `Single table not defined for source action.`
-					})
-				}
 
 				// compute sql
 				switch (dbAction) {
@@ -89,10 +88,16 @@ export async function dbESP(
 	}
 }
 
-export async function dbESPAPI(method: HTMLMETHOD, url: string, data: {}) {
+export async function dbESPAPI(
+	method: HTMLMETHOD,
+	procedure: string,
+	data: {},
+	msgSuccess = '',
+	msgFail = ''
+) {
 	let options: { method: string; url: string; params?: {}; data?: {} } = {
 		method: method,
-		url: 'https://esp1.kssc.com:3000/esp/' + url
+		url: 'https://esp1.kssc.com:3000/esp/' + procedure
 	}
 	switch (method) {
 		case HTMLMETHOD.GET:
@@ -107,19 +112,47 @@ export async function dbESPAPI(method: HTMLMETHOD, url: string, data: {}) {
 		console.log('Axios.options:', options)
 		const resp = await axios(options)
 		const data = resp.data
-		console.log('Axios.result:', data)
-		return FormSourceResponse(data)
+		let newData = {}
+
+		// set message
+		if (data.hasOwnProperty('success')) {
+			newData = data
+			if (newData.success) {
+				newData.message = msgSuccess ?? data.message ?? ''
+			} else {
+				newData.message = msgFail ?? data.message ?? ''
+			}
+		} else {
+			// assume success
+			newData = {
+				success: true,
+				message: msgSuccess,
+				data
+			}
+		}
+		console.log('Axios.result:', newData)
+		return FormSourceResponse(newData)
 	} catch (err: any) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'dbESPAPI',
-			message: `Axios status: ${err.response?.status} stautsText: ${err.response?.statusText} message: ${err.message}`
+			message: `Axios status1: ${err.response?.status} stautsText: ${err.response?.statusText} message: ${err.message}`
 		})
 	}
 }
 
-async function getSQLExecute(method: HTMLMETHOD, sql: string) {
-	return await dbESPAPI(method, 'ws_sql_execute_' + method.toLowerCase(), { sql })
+async function getSQLExecute(
+	method: HTMLMETHOD,
+	sql: string,
+	sourceAction: FormSourceActionDirect
+) {
+	return await dbESPAPI(
+		method,
+		'ws_sql_execute_' + method.toLowerCase(),
+		{ sql },
+		sourceAction.msgSuccess,
+		sourceAction.msgFail
+	)
 }
 
 function getSQLDelete(sourceAction: FormSourceActionDirect) {
@@ -132,8 +165,8 @@ function getSQLDelete(sourceAction: FormSourceActionDirect) {
 			cols += i.dbName + ' = ' + getSQLColValue(i, false)
 		}
 	})
-	let sql = 'DELETE FROM ' + sourceAction.singleTable + getSqlWhere(sourceAction)
-	return getSQLExecute(HTMLMETHOD.DELETE, sql)
+	let sql = 'DELETE FROM ' + getSqlTable(sourceAction) + getSqlWhere(sourceAction)
+	return getSQLExecute(HTMLMETHOD.DELETE, sql, sourceAction)
 }
 
 function getSQLInsert(sourceAction: FormSourceActionDirect) {
@@ -151,8 +184,8 @@ function getSQLInsert(sourceAction: FormSourceActionDirect) {
 		}
 	})
 
-	let sql = 'INSERT INTO ' + sourceAction.singleTable + ' ' + cols + ' VALUES ' + vals
-	return getSQLExecute(HTMLMETHOD.PUT, sql)
+	let sql = 'INSERT INTO ' + getSqlTable(sourceAction) + ' ' + cols + ' VALUES ' + vals
+	return getSQLExecute(HTMLMETHOD.PUT, sql, sourceAction)
 }
 
 function getSqlSelect(sourceAction: FormSourceActionDirect) {
@@ -165,16 +198,24 @@ function getSqlSelect(sourceAction: FormSourceActionDirect) {
 			if (cols) {
 				cols += ', '
 			}
-			if (i.source == FormSourceItemSource.subquery) {
-				newCol = i.dbName + ' = (' + i.sourceKey + ')'
+			if (i.source != FormSourceItemSource.none) {
+				newCol = i.dbName + ' = ' + getSQLColValue(i, false)
 			} else {
 				newCol = i.dbName
 			}
 			cols += newCol
 		}
 	})
-	let sql = 'SELECT ' + cols + ' FROM ' + sourceAction.singleTable + getSqlWhere(sourceAction)
-	return getSQLExecute(HTMLMETHOD.GET, sql)
+
+	if (cols.length > 0) {
+		let sql = 'SELECT ' + cols
+		if (sourceAction.singleTable) {
+			sql += ' FROM ' + sourceAction.singleTable + getSqlWhere(sourceAction)
+		}
+		return getSQLExecute(HTMLMETHOD.GET, sql, sourceAction)
+	} else {
+		return FormSourceResponse({})
+	}
 }
 
 function getSqlUpdate(sourceAction: FormSourceActionDirect) {
@@ -199,7 +240,7 @@ function getSqlUpdate(sourceAction: FormSourceActionDirect) {
 
 	let sql = 'UPDATE ' + sourceAction.singleTable + ' SET ' + cols + getSqlWhere(sourceAction)
 
-	return getSQLExecute(HTMLMETHOD.POST, sql)
+	return getSQLExecute(HTMLMETHOD.POST, sql, sourceAction)
 }
 
 function getSqlWhere(sourceAction: FormSourceActionDirect) {
@@ -208,6 +249,7 @@ function getSqlWhere(sourceAction: FormSourceActionDirect) {
 
 	sourceAction.items.forEach((i) => {
 		if (i.dbWhere) {
+			console.log('dbESP.where.item:', i)
 			if (cols) {
 				cols += ', '
 			}
@@ -218,7 +260,6 @@ function getSqlWhere(sourceAction: FormSourceActionDirect) {
 }
 
 function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
-	console.log('getSQLColValue:', item.dbName, item.value)
 	if (!item.value || item.value == null) {
 		if (allowNull) {
 			return null
@@ -226,7 +267,7 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 			throw error(500, {
 				file: FILENAME,
 				function: 'getSQLColValue',
-				message: `Null value submitted for required field: ${item.dbName}.`
+				message: `Null value submitted for required field: (${item.dbName}).`
 			})
 		}
 	}
@@ -240,17 +281,21 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 			break
 		case FormSourceItemDataType.dec:
 		case FormSourceItemDataType.int:
+		case FormSourceItemDataType.raw:
 			val = item.value
 			break
 
 		case FormSourceItemDataType.string:
 			val = quoteVal(val)
 			break
+		case FormSourceItemDataType.subquery:
+			val = '(' + val + ')'
+			break
 		default:
 			throw error(500, {
 				file: FILENAME,
 				function: 'getSQLColValue',
-				message: `No case defined for item: ${item.dbName} data type: ${item.dbDataType}.`
+				message: `No case defined for item: (${item.dbName}) data type: (${item.dbDataType}).`
 			})
 	}
 
@@ -268,8 +313,20 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 	}
 }
 
+function getSqlTable(sourceAction: FormSourceActionDirect) {
+	if (sourceAction.singleTable && sourceAction.singleTable.length > 0) {
+		return sourceAction.singleTable
+	} else {
+		throw error(500, {
+			file: FILENAME,
+			function: 'getSqlTable',
+			message: `Single table not defined for source action.`
+		})
+	}
+}
+
 function getSqlStatement(sourceAction: FormSourceActionDirect) {
-	let sql = sourceAction.statement
+	let sql = sourceAction.statement || ''
 	sourceAction.items.forEach((i) => {
 		const dbName = i.dbName
 		const value = i.value
@@ -282,5 +339,5 @@ function getSqlStatement(sourceAction: FormSourceActionDirect) {
 		}
 		sql = sql?.replace(dbName, value)
 	})
-	return getSQLExecute(HTMLMETHOD.GET, sql)
+	return getSQLExecute(HTMLMETHOD.GET, sql, sourceAction)
 }
