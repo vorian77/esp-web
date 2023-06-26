@@ -136,7 +136,7 @@ export async function dbESPAPI(
 		throw error(500, {
 			file: FILENAME,
 			function: 'dbESPAPI',
-			message: `Axios status1: ${err.response?.status} stautsText: ${err.response?.statusText} message: ${err.message}`
+			message: `Axios status: ${err.response?.status} stautsText: ${err.response?.statusText} message: ${err.message}`
 		})
 	}
 }

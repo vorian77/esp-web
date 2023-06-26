@@ -44,9 +44,19 @@
 	async function onCompleteHandler(e): void {
 		const currentStep = e.detail.step
 		const siteFormIdx = 2
-		// alert(`completeHandler.event:step: ${currentStep}`)
+
+		// submit site
 		forms[siteFormIdx][1].pageData.cm_ssr_site = cm_ssr_site
 		await forms[siteFormIdx][1].submitForm()
+
+		// update status
+		const responsePromise = await fetch('/apps/cm/registration', {
+			method: 'POST'
+		})
+		const response = await responsePromise.json()
+		alert(
+			'Great job completing your application. New opportunity begins today! We will review your information and get back with you soon!'
+		)
 		history.back()
 	}
 </script>
