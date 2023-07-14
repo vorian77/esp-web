@@ -18,5 +18,3 @@
 		</span>
 	</p>
 </div>
-
-<!-- <pre>{JSON.stringify(footerLink, null, 2)}</pre> -->

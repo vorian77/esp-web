@@ -7,13 +7,5 @@
 		<div class="text-lg font-semibold">
 			Welcome, {user.per_name_full}
 		</div>
-		<div class="text-sm text-center">
-			{#if user.site}
-				{user.site}
-			{/if}
-			{#if user.cm_ssr_status}
-				Registration Status: {user.cm_ssr_status}
-			{/if}
-		</div>
 	</div>
 </div>

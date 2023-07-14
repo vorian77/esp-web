@@ -29,14 +29,10 @@
 
 	let fieldElements = []
 
-	$: if (formObj.fields) {
-	}
+	const classPopup = formObj.popup ? 'grid grid-cols-10 gap-4' : ''
+	const classPopupHeader = formObj.popup ? 'col-span-9' : ''
 
 	onMount(() => {
-		formObj.elForm = document.getElementById(getFormName())
-		if (formObj.submitButtonName) {
-			formObj.elSubmitButton = document.getElementById(formObj.name)
-		}
 		// pre-validate form
 		const v: Validation = formObj.loadValidateForm()
 		if (v.status == ValidationStatus.invalid) {
@@ -44,10 +40,6 @@
 			setValidToSubmit(false)
 		}
 	})
-
-	function getFormName() {
-		return 'form-' + formObj.name
-	}
 
 	function validateFieldBase(event) {
 		const fieldName = event.target.name
@@ -108,11 +100,27 @@
 		}
 		return fieldElements[field.index]
 	}
+	function cancelForm(event: MouseEvent) {
+		dispatch('formCancelled')
+	}
 </script>
 
 <div class={surface}>
 	{#if formObj.header}
-		<h1 class="h1 {formObj.subHeader ? '' : 'mb-5'}">{formObj.header}</h1>
+		<div class={classPopup}>
+			<div class={classPopupHeader}>
+				<h1 class="h1 {formObj.subHeader ? '' : 'mb-5'}">{formObj.header}</h1>
+			</div>
+			{#if formObj.popup}
+				<div class="justify-self-end">
+					<button
+						type="button"
+						class="btn-icon btn-icon-sm variant-filled-error"
+						on:click={cancelForm}>X</button
+					>
+				</div>
+			{/if}
+		</div>
 	{/if}
 	{#if formObj.subHeader}
 		<div class="mb-5">
@@ -122,7 +130,7 @@
 		</div>
 	{/if}
 
-	<form id={getFormName()} on:submit|preventDefault={submitForm}>
+	<form id={'form_' + formObj.name} on:submit|preventDefault={submitForm}>
 		{#each formObj.fields as field, idx (field.name)}
 			<div class:mt-3={idx}>
 				{#if field.element === FieldElement.header}

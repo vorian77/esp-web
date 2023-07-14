@@ -35,8 +35,6 @@
 
 		// upload image
 		const response = await uploadImage(urlUpload, imgFile)
-		console.log('upload.response:', response)
-
 		alert('Image uploaded successfully!')
 		history.back()
 
@@ -67,7 +65,6 @@
 					}
 				})
 				const respData = resp.statusText
-				console.log('uploadImage.resp', respData)
 				return respData
 			} catch (err) {
 				throw error(500, {

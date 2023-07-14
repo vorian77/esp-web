@@ -57,17 +57,13 @@
 		You can speed up the processing of your application by submitting digital images of documents
 		that prove your eligibility for services.
 	</p>
-	<p>Don't worry if you don't have all or any of the documents, you can still register.</p>
 
 	<p>
-		Click the button next to each requirement to see if you have a document that satisfies the
-		eligibility.
+		Click the button next to each requirement to see if you have a document that satisfies that
+		particular requirement.
 	</p>
-	<p>
-		When you're done, click the <span class="text-primary-500 font-semibold"
-			>Submit Registration</span
-		> button at the bottom of this page.
-	</p>
+
+	<p>Don't worry if you don't have all or any of the documents.</p>
 </div>
 
 <div>

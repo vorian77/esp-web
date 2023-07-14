@@ -26,7 +26,6 @@
 	async function onStepHandler(e) {
 		const currentStep = e.detail.step
 		const nextStep = e.detail.state.current
-		// alert(`current: ${currentStep} - next: ${nextStep}`)
 
 		switch (currentStep) {
 			case 0:

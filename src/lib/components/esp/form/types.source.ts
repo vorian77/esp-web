@@ -13,7 +13,7 @@ import type { V } from 'drizzle-orm/column.d-66a08b85'
 const FILENAME = '$comps/esp/form/types.source.ts'
 
 export class FormSource {
-	processLocally: boolean
+	processURL: string
 	actionsMap: Record<FormSourceDBAction, number> = {
 		delete: -1,
 		insert: -1,
@@ -25,7 +25,7 @@ export class FormSource {
 
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
-		this.processLocally = booleanOrFalse(obj.processLocally, 'FormSource.processLocally')
+		this.processURL = valueOrDefault(obj.processURL, '/api/form')
 
 		// apis
 		if (obj.apis) {

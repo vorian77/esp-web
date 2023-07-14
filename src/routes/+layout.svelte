@@ -1,11 +1,19 @@
 <script lang="ts">
 	/* custom esp theme that rather than a Skeleton theme*/
 	import '../theme.postcss'
-
 	import '@skeletonlabs/skeleton/styles/skeleton.css'
 	import '../app.postcss'
 
-	// MODAL REGISTRY
+	// overlay - drawer
+	import OverlayDrawer from '$comps/OverlayDrawer.svelte'
+
+	// overlay - popup
+	//shared - popus/floating ui
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom'
+	import { storePopup } from '@skeletonlabs/skeleton'
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
+
+	// ovelay - modal
 	import { Modal, modalStore } from '@skeletonlabs/skeleton'
 	import type { ModalComponent } from '@skeletonlabs/skeleton'
 
@@ -22,16 +30,14 @@
 	// 	}
 	// }
 
-	// DRAWER REGISTRY
-	// import { Drawer, drawerStore } from '@skeletonlabs/skeleton'
-	// import type { DrawerSettings } from '@skeletonlabs/skeleton'
-
 	function onBackdrop(): void {
 		if ($modalStore[0]?.response) $modalStore[0].response(false)
 		modalStore.close()
 	}
 </script>
 
-<!-- <Modal /> -->
-<Modal on:backdrop={onBackdrop} />
+<!-- Overlays -->
+<OverlayDrawer />
+<!-- <Modal on:backdrop={onBackdrop} /> -->
+
 <slot />

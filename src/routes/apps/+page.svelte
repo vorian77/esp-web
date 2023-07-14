@@ -1,12 +1,9 @@
-<div class="esp-card-space-y">
-	<h1 class="h1">Apps</h1>
+<script lang="ts">
+	import Navigation from '$comps/Navigation.svelte'
+	import User from '$routes/apps/User.svelte'
+	export let data
+</script>
 
-	<ul>
-		<li>
-			<a class="anchor" href="/apps/cm/">Case Manager</a>
-		</li>
-		<li>
-			<a class="anchor" href="/apps/app2">App 2</a>
-		</li>
-	</ul>
-</div>
+<User user={data.user} />
+
+<Navigation user={data.user} mode="page" />

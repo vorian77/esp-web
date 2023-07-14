@@ -24,7 +24,6 @@ import {
 	ValidationStatus,
 	ValidityField
 } from '$comps/types'
-
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/esp/form/form.ts/'
@@ -35,6 +34,7 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
+	popup: boolean
 	fields: Array<Field>
 	source: FormSource | undefined
 	height: string
@@ -42,9 +42,6 @@ export class Form {
 	footerLinks: Array<FooterLink>
 	pageData: {} | undefined
 	values: {} | undefined
-	data: {} | undefined
-	elForm: HTMLFormElement
-	elSubmitButton: HTMLElement
 	submitResponse: {} | undefined
 	validToSubmit: boolean
 
@@ -55,6 +52,7 @@ export class Form {
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, '')
+		this.popup = valueOrDefault(obj.popup, false)
 		this.fields = this.initFields(obj.fields)
 		this.source = obj.source ? new FormSource(obj.source) : undefined
 		this.height = valueOrDefault(obj.height, '')
@@ -128,8 +126,16 @@ export class Form {
 		return newFields
 	}
 
+	getFormElement(): HTMLFormElement | undefined {
+		const formName = 'form_' + this.name
+		const formEl = document.getElementById(formName)
+		return formEl ? formEl : undefined
+	}
+
 	validateForm(): Validation {
-		const formData = new FormData(this.elForm)
+		const formEl = this.getFormElement()
+		const formData = new FormData(formEl)
+		const fieldValue = this.fields[0].validateGetValue(formData)
 
 		// set formData
 		let validityFields: Array<ValidityField> = []
@@ -147,12 +153,13 @@ export class Form {
 				return v
 			}
 		}
-		this.data = values
+		this.values = values
 		return new Validation(ValidationType.form, ValidationStatus.valid, validityFields, values)
 	}
 
 	loadValidateForm(): Validation {
-		const formData = new FormData(this.elForm)
+		const formEl = this.getFormElement()
+		const formData = new FormData(formEl)
 
 		// set formData
 		let validityFields: Array<ValidityField> = []
@@ -182,34 +189,30 @@ export class Form {
 		if (!this.source) {
 			return FormSourceResponse({})
 		}
-
-		const formData = new FormData(this.elForm)
+		const formEl = this.getFormElement()
+		const formData = new FormData(formEl)
 		let formValues = {}
 		this.fields.forEach((f) => {
 			formValues[f.name] = f.validateGetValue(formData)
 		})
-		console.log('form.FormValues:', formValues)
 
-		const url = this.source.processLocally ? '' : '/api/form'
-
-		const responsePromise = await fetch(url, {
+		const responsePromise = await fetch(this.source.processURL, {
 			method: 'POST',
 			body: JSON.stringify({
 				action: 'form_submit',
 				formName: this.name,
 				source: this.source,
-				data: { ...this.pageData, ...this.data, ...formValues }
+				data: { ...formValues, ...this.pageData }
 			})
 		})
 		const response = await responsePromise.json()
-		console.log('form.formProcess.response:', response)
 
 		// process response
 		if (response.message) {
 			alert(response.message)
 		}
 		if (response.success) {
-			this.submitResponse = { ...this.data, ...response.data }
+			this.submitResponse = { ...this.values, ...response.data }
 		} else {
 			this.submitResponse = {}
 		}

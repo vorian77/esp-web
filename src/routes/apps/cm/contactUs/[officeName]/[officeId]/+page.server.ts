@@ -1,7 +1,6 @@
 import { getForm } from '$server/dbForm'
 
 export async function load({ locals, params }) {
-	console.log('contactUs+page.server.params:', params)
 	return {
 		user: locals.user,
 		officeName: params.officeName,

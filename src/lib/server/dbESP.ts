@@ -108,8 +108,6 @@ export async function dbESPAPI(
 	}
 
 	try {
-		console.log()
-		console.log('Axios.options:', options)
 		const resp = await axios(options)
 		const data = resp.data
 		let newData = {}
@@ -130,7 +128,6 @@ export async function dbESPAPI(
 				data
 			}
 		}
-		console.log('Axios.result:', newData)
 		return FormSourceResponse(newData)
 	} catch (err: any) {
 		throw error(500, {
@@ -249,7 +246,6 @@ function getSqlWhere(sourceAction: FormSourceActionDirect) {
 
 	sourceAction.items.forEach((i) => {
 		if (i.dbWhere) {
-			console.log('dbESP.where.item:', i)
 			if (cols) {
 				cols += ', '
 			}

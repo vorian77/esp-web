@@ -10,8 +10,8 @@
 
 <Form bind:formObj />
 
-formObj.data
-<pre>{JSON.stringify(formObj.data, null, 2)}</pre>
+formObj.values
+<pre>{JSON.stringify(formObj.values, null, 2)}</pre>
 
 <h3>formObj.submitResponse</h3>
 <pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre>

@@ -1,4 +1,5 @@
 import {
+	FieldAccess,
 	FieldElementInputType,
 	Validation,
 	ValidationStatus,
@@ -41,7 +42,7 @@ export class FieldInput extends Field {
 		this.placeHolder = valueOrDefault(obj.placeHolder, '')
 
 		// validators
-		this.matchColumn = initMatchColumn(obj.matchColumn, this.name, this.index, this.label, fields)
+		this.matchColumn = initMatchColumn(obj.matchColumn, this, fields)
 		this.minLength = obj.minLength
 		this.maxLength = obj.maxLength
 		this.minValue = obj.minValue
@@ -74,9 +75,7 @@ export class FieldInput extends Field {
 
 		function initMatchColumn(
 			parentMatchColumn: string,
-			thisName: string,
-			thisIndex: number,
-			thisLabel: string,
+			thisField: FieldInput,
 			fields: Array<FieldInput>
 		) {
 			if (!parentMatchColumn) {
@@ -84,10 +83,13 @@ export class FieldInput extends Field {
 			}
 			const idxParent = fields.map((f) => f.name).indexOf(parentMatchColumn)
 			if (idxParent >= 0) {
-				const message = `Fields "${fields[idxParent].label}" and "${thisLabel}" must match.`
+				const message =
+					thisField.access !== FieldAccess.hidden
+						? `Fields "${fields[idxParent].label}" and "${thisField.label}" must match.`
+						: ''
 
 				// set parent
-				fields[idxParent].matchColumn = new MatchColumn(thisName, thisIndex, message)
+				fields[idxParent].matchColumn = new MatchColumn(thisField.name, thisField.index, message)
 
 				// return this field's match column
 				return new MatchColumn(parentMatchColumn, fields[idxParent].index, message)
@@ -95,7 +97,7 @@ export class FieldInput extends Field {
 				throw error(500, {
 					file: FILENAME,
 					function: 'constructor.initMatchColumn',
-					message: `For column: "${thisName}", can not find parent matchColumn: "${parentMatchColumn}".`
+					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}".`
 				})
 			}
 		}

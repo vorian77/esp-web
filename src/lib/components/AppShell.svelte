@@ -1,42 +1,77 @@
 <script lang="ts">
-	import { AppShell, Drawer, drawerStore } from '@skeletonlabs/skeleton'
-	import type { DrawerSettings } from '@skeletonlabs/skeleton'
+	import { AppShell, Drawer, drawerStore, popup } from '@skeletonlabs/skeleton'
+	import type { DrawerSettings, PopupSettings } from '@skeletonlabs/skeleton'
 	import Navigation from '$comps/Navigation.svelte'
 	import Icon from '$comps/Icon.svelte'
+	import { goto } from '$app/navigation'
 
-	export let user
+	export let user = {}
+	export let routeId = '/'
 
-	function drawerOpen(): void {
-		drawerStore.open()
+	const footerLinks = [user.root, '/apps/cm/contactUs', '/apps/account']
+
+	$: onFooterLink = footerLinks.includes(routeId)
+
+	const navColor = '#3b79e1'
+
+	function menuHamburger(): void {
+		const settings: DrawerSettings = {
+			id: 'navSide',
+			position: 'left'
+		}
+		drawerStore.open(settings)
+	}
+	function goBack() {
+		history.back()
+	}
+	function goHome() {
+		goto(user.root)
 	}
 </script>
 
-<Drawer>
-	<Navigation {user} />
-</Drawer>
-
-<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
+<AppShell>
 	<svelte:fragment slot="header">
 		<div class="bg-neutral-50 p-4 w-full flex flex-row justify-between">
-			<div class="">
-				<slot name="lead" />
+			<div>
+				{#if !onFooterLink}
+					<div class="back-arrow -ml-2" on:click={goBack} on:keyup={goBack}>
+						<span style:cursor="pointer">
+							<Icon
+								name="arrow-left"
+								marginRight="-7"
+								width="1.5rem"
+								height="1.5rem"
+								fill={navColor}
+							/>
+							Back
+						</span>
+					</div>
+				{:else}
+					<div class="text-black" on:click={goHome} on:keyup={goHome}>
+						{user.app_name}
+					</div>
+				{/if}
 			</div>
 
-			<div class="">
-				<slot name="center" />
-			</div>
-
-			<div class="" on:click={drawerOpen} on:keyup={drawerOpen}>
-				<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill="#3b79e1" />
+			<div on:click={menuHamburger} on:keyup={menuHamburger}>
+				<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill={navColor} />
 			</div>
 		</div>
-	</svelte:fragment>
-
-	<svelte:fragment slot="sidebarLeft">
-		<Navigation {user} />
 	</svelte:fragment>
 
 	<div class="container mx-auto p-4">
 		<slot name="body" />
 	</div>
+
+	<svelte:fragment slot="footer">
+		<div style="border-top: 1px solid #f5f5f5;">
+			<Navigation {user} mode="footer" />
+		</div>
+	</svelte:fragment>
 </AppShell>
+
+<style>
+	.back-arrow {
+		color: #3b79e1;
+	}
+</style>

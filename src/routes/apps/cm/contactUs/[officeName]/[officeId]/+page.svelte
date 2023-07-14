@@ -10,7 +10,6 @@
 
 	async function onFormSubmitted(event) {
 		const respData = event.detail
-		console.log('onFormSubmit.data:', respData)
 		if (respData.hasOwnProperty('cssm_date_received')) {
 			alert('We received your message and will get back with you soon!')
 			goto('/apps')

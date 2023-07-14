@@ -2,8 +2,11 @@ import { redirect } from '@sveltejs/kit'
 import { dbESPAPI } from '$server/dbESP'
 import { getEnvVar } from '$server/env'
 import { HTMLMETHOD, type FormSourceResponseType } from '$comps/types'
+import { error } from '@sveltejs/kit'
 
-const routesUnprotected = ['/about']
+const FILENAME = 'hooks.server.ts'
+
+const routesUnprotected = ['/about', '/auth']
 const routesSession = ['/api', '/legalDisclosure', '/profile']
 
 export async function handle({ event, resolve }) {
@@ -11,33 +14,39 @@ export async function handle({ event, resolve }) {
 	console.log('hooks.handle.url:', event.url.pathname)
 
 	if (event.url.pathname == '/') {
+		console.log(FILENAME, 'deleting cookie - home path...')
 		event.cookies.delete('session_id', { path: '/' })
 		return resolve(event)
 	}
 
 	if (event.url.pathname.startsWith('/logout')) {
+		console.log(FILENAME, 'deleting cookie - logout...')
 		event.cookies.delete('session_id', { path: '/' })
 		throw redirect(303, '/')
 	}
 
 	if (routesUnprotected.includes(event.url.pathname)) {
+		console.log(FILENAME, 'unprotected route...')
 		return resolve(event)
 	}
 
 	// remaining routes require sessionId
 	const sessionId = event.cookies.get('session_id')
 	if (!sessionId) {
+		console.log(FILENAME, 'redirect - no sessionid...')
 		throw redirect(303, '/')
 	}
 
 	// get user info
 	event.locals.user = await fetchUser(sessionId)
 	if (!event.locals.user) {
+		console.log(FILENAME, 'redirect - no locals.user...')
 		throw redirect(303, '/')
 	}
 
 	// allow session routes
 	if (routesSession.includes(event.url.pathname)) {
+		console.log(FILENAME, 'session route...')
 		return resolve(event)
 	}
 
@@ -70,19 +79,35 @@ async function fetchUser(sessionId: string) {
 	const response: FormSourceResponseType = await responsePromise.json()
 
 	if (!response.data.user_id) {
+		console.log(FILENAME, 'redirect - fetchUser.no user_id...')
 		throw redirect(303, '/')
 	}
 
 	// set user
-	const user = response.data
+	let user = response.data
+
+	// array user types
+	user.user_types = user.user_types.split(',')
 
 	// transpose referrals
-	user['referrals'] = user['referrals'].split(';')
-	user['referrals'] = user['referrals'].map((ref: string) => ref.split(','))
-	user['referrals'] = user['referrals'].map(
+	user.referrals = user.referrals.split(';')
+	user.referrals = user.referrals.map((ref: string) => ref.split(','))
+	user.referrals = user.referrals.map(
 		(ref: Array<{ id: number; site: string }>) => new Object({ id: ref[0], site: ref[1] })
 	)
-	user['referral_id'] = user['referrals'][0].id
+	user.referral_id = user.referrals[0].id
+
+	// apps
+	if (user.apps === '') {
+		throw error(500, {
+			file: FILENAME,
+			function: 'fetchUser',
+			message: `No apps defined for user: ${user.per_name_full} id: ${user.user_id}.`
+		})
+	}
+	const appsList = user.apps.split(',')
+	user.apps = appsList.map((app: string) => '/apps/' + app)
+	user.root = user.user_types.includes('admin') ? '/apps' : user.apps[0]
 
 	console.log('hooks.server.fetchUser:', user)
 

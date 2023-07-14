@@ -1,6 +1,8 @@
 import { redirect } from '@sveltejs/kit'
 
-export const load = ({}) => {
-	// temp: defaulting to cm until other "apps" are deployed
-	throw redirect(307, '/apps/cm')
+export async function load({ route, parent }) {
+	const dataParent = await parent()
+	if (route.id != dataParent.user.root) {
+		throw redirect(303, dataParent.user.root)
+	}
 }

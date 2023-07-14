@@ -78,7 +78,6 @@ export async function processForm(
 	data: {},
 	optional = false
 ) {
-	console.log('processForm:', sourceName)
 	// get source
 	const actionIdx = source.actionsMap[dbAction]
 

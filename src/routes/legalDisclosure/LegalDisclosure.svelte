@@ -16,7 +16,6 @@
 		})
 		const response = await responsePromise.json()
 		if (response.success && response.data.disclosure == 1) {
-			console.log('legal.element.accept...')
 			goto('/apps')
 		}
 	}
