@@ -106,14 +106,14 @@
 			`
 			styleItem += `
 				display: flex;
-				align-items: center;		
+				align-items: top;		
 				font-size: 10px;
 				color: ${navColor};
 				flex-direction: row;
 				justify-content: center;
 				gap: 2px;
 				width: 80px;
-				height: 30px;`
+				height: 40px;`
 			styleItemHover =
 				styleItem +
 				`
@@ -121,7 +121,7 @@
 			styleItemActive =
 				styleItem +
 				`
-				border-bottom: 1px solid ${navColor};`
+				border-top: 1px solid ${navColor};`
 			marginTopLabel = 'mt-1'
 			break
 
