@@ -3,6 +3,7 @@
 
 	import { goto } from '$app/navigation'
 	import { drawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
+	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/authPage.svelte'
@@ -11,6 +12,7 @@
 	export let pageCurrent = ''
 
 	let verifyFrom = ''
+	let securityCodePhone = ''
 	let securityCode = 0
 
 	const authForms = ['auth_login', 'auth_signup', 'auth_verify_phone_mobile', 'auth_reset_password']
@@ -52,17 +54,19 @@
 			case 'auth_login':
 			case 'auth_verify_phone_mobile':
 				drawerStore.close()
-				if (verifyFrom != 'auth_account') {
-					// if (authForms.includes(verifyFrom)) {
-					// launch only from auth forms. eg. not form auth_account
+				if (verifyFrom === 'auth_account') {
+					const t: ToastSettings = {
+						message: 'Your account has been updated!'
+					}
+					toastStore.trigger(t)
+				} else {
 					goto('/apps')
 				}
 				break
 
-			case 'auth_account':
 			case 'auth_signup':
 			case 'auth_reset_password':
-				await submitForm(formName, forms[formName])
+				await submitForm(formName, forms[formName], forms[formName].values)
 				break
 		}
 	}
@@ -71,14 +75,17 @@
 		verifyFrom = formName
 		pageCurrent = 'auth_verify_phone_mobile'
 		forms[pageCurrent].source = verifyFormObj.source
+
+		// add data from source form to supplemental data auth_verify_phone_mobile form
 		forms[pageCurrent].pageData = { ...verifyFormObj.pageData, ...verifyFormObj.values }
-		sendCode()
+		sendCode(verifyFormObj.values.phoneMobile)
 	}
 
-	async function sendCode() {
+	async function sendCode(phoneMobile: string) {
 		const min = 100000
 		const max = 999999
 		securityCode = Math.floor(Math.random() * (max - min + 1)) + min
+		securityCodePhone = phoneMobile
 
 		// set match value
 		const idx = forms[pageCurrent].fields.findIndex((f) => f.name === 'securityCodeVerify')
@@ -95,7 +102,7 @@
 			method: 'POST',
 			body: JSON.stringify({
 				action: 'sms_send',
-				phoneMobile: forms[verifyFrom].values.phoneMobile,
+				phoneMobile: securityCodePhone,
 				message: `Mobile phone number verification code: ${securityCode}`
 			})
 		})
@@ -111,7 +118,7 @@
 		// other functions
 		switch (event.detail) {
 			case 'resend_security_code':
-				await sendCode()
+				await sendCode(securityCodePhone)
 				break
 		}
 	}

@@ -17,7 +17,8 @@
 	function menuHamburger(): void {
 		const settings: DrawerSettings = {
 			id: 'navSide',
-			position: 'left'
+			position: 'left',
+			width: 'w-[50%]'
 		}
 		drawerStore.open(settings)
 	}

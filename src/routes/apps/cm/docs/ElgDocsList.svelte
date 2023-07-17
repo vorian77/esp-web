@@ -2,7 +2,6 @@
 	import { modalStore } from '@skeletonlabs/skeleton'
 	import type { ModalSettings, ModalComponent } from '@skeletonlabs/skeleton'
 	import ElgDocRec from './ElgDocRec.svelte'
-	import { goto } from '$app/navigation'
 
 	export let docsStatus: Array<{}> = []
 
@@ -77,12 +76,8 @@
 		</div>
 		<div class="self-center my-4">
 			{#if uploaded}
-				<!-- <button class="btn variant-filled-secondary" on:click={() => setDoc(id)}>Update...</button> -->
-				<button class="btn variant-filled-secondary" on:click={() => setDocModal(id)}
-					>Update...</button
-				>
+				<button class="btn variant-soft-primary" on:click={() => setDocModal(id)}>Update...</button>
 			{:else}
-				<!-- <button class="btn variant-filled-primary" on:click={() => setDoc(id)}>Upload...</button> -->
 				<button class="btn variant-filled-primary" on:click={() => setDocModal(id)}
 					>Upload...</button
 				>

@@ -15,7 +15,6 @@ let rtnData = {}
 export async function POST({ request, cookies }) {
 	const requestData = await request.json()
 	const { action } = requestData
-	console.log(FILENAME + '.POST:', action)
 
 	switch (action) {
 		case 'sms_send':

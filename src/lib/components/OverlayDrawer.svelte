@@ -5,11 +5,12 @@
 
 	const user = {}
 
+	function onformCancelled() {
+		$drawerStore.meta.onCloseDrawer()
+		closeDrawer()
+	}
+
 	function closeDrawer() {
-		$drawerStore.id = ''
-		if ($drawerStore.meta.onCloseDrawer) {
-			$drawerStore.meta.onCloseDrawer()
-		}
 		drawerStore.close()
 	}
 	function handleKeydown(event: KeyboardEvent) {
@@ -27,7 +28,7 @@
 			<Form
 				surface="esp-card-space-y"
 				bind:formObj={$drawerStore.meta.formObj}
-				on:formCancelled={closeDrawer}
+				on:formCancelled={onformCancelled}
 				on:formSubmitted={$drawerStore.meta.onFormSubmitted}
 				on:form-link={$drawerStore.meta.onFormLink}
 			/>

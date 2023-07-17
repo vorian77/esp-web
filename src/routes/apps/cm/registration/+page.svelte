@@ -4,6 +4,7 @@
 	import Form from '$comps/esp/form/Form.svelte'
 	import ElgDocsList from '$routes/apps/cm/docs/ElgDocsList.svelte'
 	import AddressSelect from '$comps/AddressSelect.svelte'
+	import { toastStore } from '@skeletonlabs/skeleton'
 	import { onMount } from 'svelte'
 
 	export let data
@@ -53,9 +54,10 @@
 			method: 'POST'
 		})
 		const response = await responsePromise.json()
-		alert(
-			'Great job completing your application. New opportunity begins today! We will review your information and get back with you soon!'
-		)
+		toastStore.trigger({
+			message:
+				'Great job completing your application. New opportunity begins today! We will review your information and get back with you soon!'
+		})
 		history.back()
 	}
 </script>

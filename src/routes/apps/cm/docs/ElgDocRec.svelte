@@ -4,6 +4,7 @@
 	import Form from '$comps/esp/form/Form.svelte'
 	import type { FormSourceResponseType } from '$comps/types.js'
 	import { asDelete, asGet } from '$lib/utils/utils'
+	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { onDestroy } from 'svelte'
 	import { error } from '@sveltejs/kit'
 
@@ -22,7 +23,10 @@
 		// data
 		const imgFile = asGet('image', 'file')
 		if (!imgFile.name) {
-			alert('No change made to uploaded image.')
+			toastStore.trigger({
+				message: 'No change made to uploaded image.',
+				background: 'variant-filled-warning'
+			})
 			if ($modalStore[0].response) $modalStore[0].response(false)
 			modalStore.close()
 			return
@@ -38,8 +42,9 @@
 
 		// upload image
 		const response = await uploadImage(urlUpload, imgFile)
-
-		alert('Image uploaded successfully!')
+		toastStore.trigger({
+			message: 'Document uploaded successfully!'
+		})
 		if ($modalStore[0].response) $modalStore[0].response(true)
 		modalStore.close()
 
@@ -80,8 +85,17 @@
 			}
 		}
 	}
+
+	function onformCancelled() {
+		modalStore.close()
+	}
 </script>
 
 <div class="esp-card-space-y">
-	<Form bind:formObj bind:this={formElement} on:formSubmitted={onFormSubmitted} />
+	<Form
+		bind:formObj
+		bind:this={formElement}
+		on:formSubmitted={onFormSubmitted}
+		on:formCancelled={onformCancelled}
+	/>
 </div>

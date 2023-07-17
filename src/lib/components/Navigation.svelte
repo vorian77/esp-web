@@ -3,6 +3,7 @@
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 	import { error } from '@sveltejs/kit'
+	import { drawerStore } from '@skeletonlabs/skeleton'
 
 	export let mode: 'page' | 'footer' | 'sidebar' | 'popup'
 	export let user = {}
@@ -42,6 +43,8 @@
 			// links
 			user.user_types.forEach((ut: string) => {
 				if (ut === UserType.student) {
+					// links = addLinks(links, linksStudentRegPending)
+					// links = addLinks(links, linksStudentRegSubmitted)
 					user.cm_ssr_status == 'Pending'
 						? (links = addLinks(links, linksStudentRegPending))
 						: (links = addLinks(links, linksStudentRegSubmitted))
@@ -155,12 +158,17 @@
 		})
 		return linksList
 	}
+	function drawerClose() {
+		if (mode === 'sidebar') {
+			drawerStore.close()
+		}
+	}
 </script>
 
 <div id="container" style={styleContainer}>
 	{#each links as link, i}
 		{@const icon = link.icon ? link.icon : 'hamburger-menu'}
-		<a id="link-{i}" href={link.link}>
+		<a id="link-{i}" href={link.link} on:click={drawerClose}>
 			<div style={link.link == $page.url.pathname ? styleItemActive : styleItem}>
 				<div class="mt-2">
 					<Icon name={icon} width="1.0rem" height="1.0rem" fill={navColor} />
