@@ -17,9 +17,8 @@
 	// }
 
 	function onBackdrop(): void {
-		// if ($modalStore[0]?.response) $modalStore[0].response(false)
-		// modalStore.close()
-		alert('onBackdrop...')
+		if ($modalStore[0]?.response) $modalStore[0].response(false)
+		modalStore.close()
 	}
 </script>
 

@@ -30,25 +30,22 @@
 
 		switch (currentStep) {
 			case 0:
+				// about me
 				await forms[0][1].submitForm()
 				break
 			case 1:
+				// contact info
 				await forms[1][1].submitForm()
 				break
 			case 2:
-				// eligibility docs - nothing
+				// office preference
+				forms[2][1].pageData.cm_ssr_site = cm_ssr_site
+				await forms[2][1].submitForm()
 				break
 		}
 	}
 
 	async function onCompleteHandler(e): void {
-		const currentStep = e.detail.step
-		const siteFormIdx = 2
-
-		// submit site
-		forms[siteFormIdx][1].pageData.cm_ssr_site = cm_ssr_site
-		await forms[siteFormIdx][1].submitForm()
-
 		// update status
 		const responsePromise = await fetch('/apps/cm/registration', {
 			method: 'POST'
@@ -64,7 +61,7 @@
 
 <h1 class="h1">MOED Youth Opportunity Program Registration</h1>
 <p class="p mb-10">This wizard walks you though submitting an application to MOED YO-Baltimore.</p>
-
+Site: {cm_ssr_site}
 <Stepper
 	badge="variant-filled-secondary"
 	active="variant-filled-primary"
@@ -79,13 +76,13 @@
 		</Step>
 	{/each}
 
-	<Step>
-		<svelte:fragment slot="header">Proofs of Eligibility</svelte:fragment>
-		<ElgDocsList {docsStatus} />
-	</Step>
-
 	<Step locked={!(cm_ssr_site > 0)}>
 		<svelte:fragment slot="header">{forms[2][0].description}</svelte:fragment>
 		<AddressSelect bind:formObj={forms[2][1]} bind:currentSite={cm_ssr_site} />
+	</Step>
+
+	<Step>
+		<svelte:fragment slot="header">Proofs of Eligibility</svelte:fragment>
+		<ElgDocsList {docsStatus} />
 	</Step>
 </Stepper>
