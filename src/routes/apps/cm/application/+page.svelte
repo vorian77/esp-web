@@ -47,7 +47,7 @@
 
 	async function onCompleteHandler(e): void {
 		// update status
-		const responsePromise = await fetch('/apps/cm/registration', {
+		const responsePromise = await fetch('/apps/cm/application', {
 			method: 'POST'
 		})
 		const response = await responsePromise.json()
@@ -59,9 +59,9 @@
 	}
 </script>
 
-<h1 class="h1">MOED Youth Opportunity Program Registration</h1>
+<h1 class="h1">MOED Youth Opportunity Program Application</h1>
 <p class="p mb-10">This wizard walks you though submitting an application to MOED YO-Baltimore.</p>
-Site: {cm_ssr_site}
+
 <Stepper
 	badge="variant-filled-secondary"
 	active="variant-filled-primary"

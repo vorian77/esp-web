@@ -14,10 +14,10 @@
 
 	// links
 	let links: Array<NavLink> = []
-	const linksStudentRegPending = [new NavLink('Register', '/apps/cm/registration', 'register')]
+	const linksStudentRegPending = [new NavLink('Application', '/apps/cm/application', 'application')]
 	const linksStudentRegSubmitted = [
-		new NavLink('Profile', '/apps/cm/profile', 'profile'),
-		new NavLink('Documents', '/apps/cm/docs', 'document'),
+		new NavLink('Application', '/apps/cm/application', 'application'),
+
 		new NavLink('Goals', '/apps/cm/goals', 'goals'),
 		new NavLink('Messages', '/apps/cm/messages', 'message'),
 		new NavLink('Activities', '/apps/cm/activities', 'activities'),
@@ -43,11 +43,11 @@
 			// links
 			user.user_types.forEach((ut: string) => {
 				if (ut === UserType.student) {
-					// links = addLinks(links, linksStudentRegPending)
-					// links = addLinks(links, linksStudentRegSubmitted)
-					user.cm_ssr_status == 'Pending'
-						? (links = addLinks(links, linksStudentRegPending))
-						: (links = addLinks(links, linksStudentRegSubmitted))
+					links = addLinks(links, linksStudentRegPending)
+					links = addLinks(links, linksStudentRegSubmitted)
+					// user.status == 'Pending'
+					// 	? (links = addLinks(links, linksStudentRegPending))
+					// 	: (links = addLinks(links, linksStudentRegSubmitted))
 				} else if (ut == UserType.staff) {
 					links = addLinks(links, linksStaff)
 				} else if (ut === UserType.admin) {

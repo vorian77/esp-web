@@ -89,14 +89,6 @@ async function fetchUser(sessionId: string) {
 	// array user types
 	user.user_types = user.user_types.split(',')
 
-	// transpose referrals
-	user.referrals = user.referrals.split(';')
-	user.referrals = user.referrals.map((ref: string) => ref.split(','))
-	user.referrals = user.referrals.map(
-		(ref: Array<{ id: number; site: string }>) => new Object({ id: ref[0], site: ref[1] })
-	)
-	user.referral_id = user.referrals[0].id
-
 	// apps
 	if (user.apps === '') {
 		throw error(500, {

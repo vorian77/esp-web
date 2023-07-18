@@ -14,8 +14,8 @@
 				{/if}
 			</div>
 			<div>
-				{#if user.cm_ssr_status}
-					Registration Status: {user.cm_ssr_status}
+				{#if user.status}
+					Registration Status: {user.status}
 				{/if}
 			</div>
 		</div>
