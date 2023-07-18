@@ -15,7 +15,7 @@
 			</div>
 			<div>
 				{#if user.status}
-					Registration Status: {user.status}
+					Application Status: {user.status}
 				{/if}
 			</div>
 		</div>
