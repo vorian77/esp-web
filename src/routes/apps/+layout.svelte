@@ -3,6 +3,8 @@
 	export let data
 </script>
 
+{data.user.host}
+
 <AppShell user={data.user} routeId={data.routeId}>
 	<svelte:fragment slot="body">
 		<slot />
