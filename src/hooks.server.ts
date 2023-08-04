@@ -12,6 +12,7 @@ const routesSession = ['/api', '/legalDisclosure', '/profile']
 export async function handle({ event, resolve }) {
 	console.log()
 	console.log('hooks.handle.url:', event.url.pathname)
+	console.log(`hooks.event.url.hostname: ${event.url.hostname}`)
 
 	if (event.url.pathname == '/') {
 		console.log(FILENAME, 'deleting cookie - home path...')
