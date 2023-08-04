@@ -12,7 +12,6 @@ const routesSession = ['/api', '/legalDisclosure', '/profile']
 export async function handle({ event, resolve }) {
 	console.log()
 	console.log('hooks.handle.url:', event.url.pathname)
-	console.log(`hooks.event.url.hostname: ${event.url.hostname}`)
 
 	if (event.url.pathname == '/') {
 		console.log(FILENAME, 'deleting cookie - home path...')
@@ -39,7 +38,7 @@ export async function handle({ event, resolve }) {
 	}
 
 	// get user info
-	event.locals.user = await fetchUser(sessionId)
+	event.locals.user = await fetchUser(sessionId, event.url.hostname)
 	if (!event.locals.user) {
 		console.log(FILENAME, 'redirect - no locals.user...')
 		throw redirect(303, '/')
@@ -72,7 +71,7 @@ export const handleError = ({ error, event }) => {
 	}
 }
 
-async function fetchUser(sessionId: string) {
+async function fetchUser(sessionId: string, host: string) {
 	const responsePromise = await dbESPAPI(HTMLMETHOD.GET, 'ws_cm_ssr_user', {
 		userId: sessionId,
 		orgId: getEnvVar('ESP_ORG_ID')
@@ -101,6 +100,7 @@ async function fetchUser(sessionId: string) {
 	const appsList = user.apps.split(',')
 	user.apps = appsList.map((app: string) => '/apps/' + app)
 	user.root = user.user_types.includes('admin') ? '/apps' : user.apps[0]
+	user.host = host
 
 	console.log('hooks.server.fetchUser:', user)
 
