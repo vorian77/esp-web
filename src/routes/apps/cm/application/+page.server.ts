@@ -15,8 +15,7 @@ export async function load({ locals, params }) {
 
 	async function getDocsStatus() {
 		const responsePromise = await dbESPAPI(HTMLMETHOD.GET, 'ws_cm_ssr_elg_list', {
-			referralId: locals.user.referral_id,
-			orgId: getEnvVar('ESP_ORG_ID')
+			referralId: locals.user.referral_id
 		})
 		const response = await responsePromise.json()
 		return response.data

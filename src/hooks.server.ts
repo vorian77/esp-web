@@ -73,8 +73,7 @@ export const handleError = ({ error, event }) => {
 
 async function fetchUser(sessionId: string, host: string) {
 	const responsePromise = await dbESPAPI(HTMLMETHOD.GET, 'ws_cm_ssr_user', {
-		userId: sessionId,
-		orgId: getEnvVar('ESP_ORG_ID')
+		userId: sessionId
 	})
 	const response: FormSourceResponseType = await responsePromise.json()
 
@@ -100,7 +99,6 @@ async function fetchUser(sessionId: string, host: string) {
 	const appsList = user.apps.split(',')
 	user.apps = appsList.map((app: string) => '/apps/' + app)
 	user.root = user.user_types.includes('admin') ? '/apps' : user.apps[0]
-	user.host = host
 
 	console.log('hooks.server.fetchUser:', user)
 

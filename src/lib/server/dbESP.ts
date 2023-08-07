@@ -31,7 +31,7 @@ export async function dbESP(
 						throw error(500, {
 							file: FILENAME,
 							function: 'dbESP',
-							message: `No value derived for required apiArg: ${i.dbName}.`
+							message: `No value derived for required apiArg: ${i.dbName}`
 						})
 					}
 				}

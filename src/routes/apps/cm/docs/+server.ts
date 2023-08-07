@@ -36,8 +36,7 @@ export const POST = async ({ request, locals }) => {
 
 export const GET = async ({ locals }) => {
 	const responsePromise = await dbESPAPI(HTMLMETHOD.GET, 'ws_cm_ssr_elg_list', {
-		referralId: locals.user.referral_id,
-		orgId: getEnvVar('ESP_ORG_ID')
+		referralId: locals.user.referral_id
 	})
 	const response = await responsePromise.json()
 	return new Response(JSON.stringify(response.data))

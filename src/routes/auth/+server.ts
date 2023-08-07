@@ -1,5 +1,6 @@
 import { sendText } from '$server/apiTwilio'
 import { processForm } from '$server/dbForm'
+import { getEnvVar } from '$server/env'
 import { error } from '@sveltejs/kit'
 import {
 	FormSource,
@@ -57,6 +58,7 @@ export async function POST({ request, cookies }) {
 	return FormSourceResponse(rtnData)
 
 	async function processAuth(formName: string, source: FormSource, data: {}) {
+		data.orgId = getOrgId(request.url)
 		const responsePromise = await processForm(formName, source, FormSourceDBAction.upsert, data)
 		if (responsePromise) {
 			const response: FormSourceResponseType = await responsePromise.json()
@@ -69,5 +71,12 @@ export async function POST({ request, cookies }) {
 			}
 			return response.data
 		}
+	}
+
+	function getOrgId(url: string) {
+		let host = url.substring(url.indexOf('://') + 3, url.lastIndexOf('/auth'))
+		host = host.startsWith('localhost') ? 'local' : host.split('.')[0]
+		const orgData = JSON.parse(getEnvVar('ESP_ORG_LIST'))
+		return orgData[host]
 	}
 }
