@@ -1,8 +1,6 @@
 import { redirect } from '@sveltejs/kit'
-import { dbESPAPI } from '$server/dbESP'
-import { getEnvVar } from '$server/env'
-import { HTMLMETHOD, type FormSourceResponseType } from '$comps/types'
-import { error } from '@sveltejs/kit'
+import { getUser } from '$server/apiUser'
+import type { FormSourceResponseType } from '$comps/types'
 
 const FILENAME = 'hooks.server.ts'
 
@@ -38,9 +36,9 @@ export async function handle({ event, resolve }) {
 	}
 
 	// get user info
-	event.locals.user = await fetchUser(sessionId, event.url.hostname)
+	event.locals.user = await fetchUser(sessionId)
 	if (!event.locals.user) {
-		console.log(FILENAME, 'redirect - no locals.user...')
+		console.log(FILENAME, `redirect - could not retrieve user: ${sessionId}`)
 		throw redirect(303, '/')
 	}
 
@@ -71,36 +69,10 @@ export const handleError = ({ error, event }) => {
 	}
 }
 
-async function fetchUser(sessionId: string, host: string) {
-	const responsePromise = await dbESPAPI(HTMLMETHOD.GET, 'ws_cm_ssr_user', {
-		userId: sessionId
-	})
+async function fetchUser(sessionId: string) {
+	const RETRIEVE_FROM_STORAGE = true
+	console.log(FILENAME, 'fetchUser...')
+	const responsePromise = await getUser(sessionId, RETRIEVE_FROM_STORAGE)
 	const response: FormSourceResponseType = await responsePromise.json()
-
-	if (!response.data.user_id) {
-		console.log(FILENAME, 'redirect - fetchUser.no user_id...')
-		throw redirect(303, '/')
-	}
-
-	// set user
-	let user = response.data
-
-	// array user types
-	user.user_types = user.user_types.split(',')
-
-	// apps
-	if (user.apps === '') {
-		throw error(500, {
-			file: FILENAME,
-			function: 'fetchUser',
-			message: `No apps defined for user: ${user.per_name_full} id: ${user.user_id}.`
-		})
-	}
-	const appsList = user.apps.split(',')
-	user.apps = appsList.map((app: string) => '/apps/' + app)
-	user.root = user.user_types.includes('admin') ? '/apps' : user.apps[0]
-
-	console.log('hooks.server.fetchUser:', user)
-
-	return user
+	return response.data
 }

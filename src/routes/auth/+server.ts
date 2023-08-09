@@ -1,15 +1,16 @@
 import { sendText } from '$server/apiTwilio'
 import { processForm } from '$server/dbForm'
 import { getEnvVar } from '$server/env'
-import { error } from '@sveltejs/kit'
 import {
 	FormSource,
 	FormSourceDBAction,
 	FormSourceResponse,
 	type FormSourceResponseType
 } from '$comps/types'
+import { asDelete } from '$lib/utils/utils'
+import { error } from '@sveltejs/kit'
 
-const FILENAME = '/routes/welcome/+server.ts'
+const FILENAME = '/routes/auth/+server.ts'
 
 let rtnData = {}
 
@@ -25,10 +26,10 @@ export async function POST({ request, cookies }) {
 
 		case 'form_submit':
 			const { formName, source, data } = requestData
-
 			switch (formName) {
 				case 'auth_login':
 				case 'auth_verify_phone_mobile':
+					asDelete('auth', 'user')
 					rtnData = await processAuth(formName, source, data)
 					if (rtnData.hasOwnProperty('applicantId')) {
 						cookies.set('session_id', rtnData.applicantId, {
@@ -39,6 +40,7 @@ export async function POST({ request, cookies }) {
 							maxAge: 60 * 60 * 24 * 7 // one week
 						})
 					}
+					// set auth
 					break
 
 				case 'auth_account':

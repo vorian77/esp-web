@@ -51,6 +51,6 @@ export default {
 }
 
 // usage
-//import {asGet, asDelete, asUpsert} appStore from '$lib/utils'
-//asUpsert('cookie', 'user', {nameFirst: 'Phyllip', nameLast: 'Hall', phoneMobile: '2487985578', password: 'xxx'})
-//asGet(''phyl') > 'boy'
+//import {asGet, asDelete, asUpsert} from '$lib/utils/utils'
+//asUpsert('auth', 'user', user)
+//asGet('auth', 'user')
