@@ -7,16 +7,16 @@ const client = edgedb.createClient({
 })
 
 export async function dbTest() {
-	const rtn = await client.query('select 1 + 1')
-	console.log('dbEdge.test:', rtn)
+	// const rtn = await client.query('select 1 + 1')
+	// console.log('dbEdge.test:', rtn)
 
 	try {
 		const result = await client.query(`
 	    select default::Movie {
-	      title
+	      *
 	    }
 	  `)
-		console.log('dbEdge.test.Movies:', JSON.stringify(result, null, 2))
+		console.log('dbEdge.test:', JSON.stringify(result, null, 2))
 	} catch (e) {
 		console.log('error:', e)
 	}
