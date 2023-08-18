@@ -1,5 +1,4 @@
 .DS_Store
-.edgeql
 .env
 .env.*
 .vercel
@@ -7,7 +6,6 @@
 /.svelte-kit
 /build
 /package
-dbschema/migrations/*.edgeql
 node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
