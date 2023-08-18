@@ -31,8 +31,16 @@ module sys_app {
     submit_button_label: str;
   }
  
-  function getAppProgram(ownerName: str, programName: str) -> optional SysAppProgram
-      using (select SysAppProgram filter .owner = (select sys_core::getEnt(ownerName)) and .name = programName);
+  # FUNCTIONS
+  function getAppForm(
+    formOwnerName: str, 
+    formName: str, 
+    formObjType: SysAppNodeObjType) -> optional SysForm
+      using (select SysForm filter 
+        .owner = (select sys_core::getEnt(formOwnerName)) and 
+        .name = formName and
+        .obj_type = formObjType
+  );
 
   function getAppNode(
     programOwnerName: str, 
@@ -43,15 +51,8 @@ module sys_app {
         .name = nodeName
   );
 
-  function getAppForm(
-    formOwnerName: str, 
-    formName: str, 
-    formObjType: SysAppNodeObjType) -> optional SysForm
-      using (select SysForm filter 
-        .owner = (select sys_core::getEnt(formOwnerName)) and 
-        .name = formName and
-        .obj_type = formObjType
-  );
+  function getAppProgram(ownerName: str, programName: str) -> optional SysAppProgram
+      using (select SysAppProgram filter .owner = (select sys_core::getEnt(ownerName)) and .name = programName);
 
 }
 
