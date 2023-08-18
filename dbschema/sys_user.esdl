@@ -14,4 +14,7 @@ module sys_user {
     required password: str;
   }
 
+# functions
+function getUser(userName: str) -> optional User
+    using (select sys_user::User filter .username = userName);
 }

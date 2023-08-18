@@ -1,8 +1,0 @@
-module sys_feat {
-  type SysFeat extending default::SysMgmt {
-    required name: default::Name {
-      constraint exclusive;
-    };    
-    required owner: default::SysEnt
-  }
-}

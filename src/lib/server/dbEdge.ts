@@ -12,9 +12,7 @@ export async function dbTest() {
 
 	try {
 		const result = await client.query(`
-	    select default::Movie {
-	      *
-	    }
+	    select global sys_user::SYS_USER {*}
 	  `)
 		console.log('dbEdge.test:', JSON.stringify(result, null, 2))
 	} catch (e) {
