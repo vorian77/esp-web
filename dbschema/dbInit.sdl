@@ -1,114 +1,118 @@
 # RESET DATABASE
-delete sys_app::SysAppNode;
-delete sys_app::SysForm;
-delete sys_app::SysAppProgram;
-delete sys_core::SysCode;
-delete sys_core::SysCodeType;
-delete sys_core::SysEnt;
+delete sys_app::Node;
+delete sys_app::NodeObj;
+delete sys_core::Code;
+delete sys_core::CodeType;
+delete sys_user::UserType;
+delete sys_core::ObjRoot;
+delete sys_core::Obj;
+delete sys_core::Ent;
 delete sys_user::User;
 
 # POPULATE DATABASE
 
-# system user
-insert sys_user::User { 
-  first_name := 'System',
-  last_name := 'User',
-  username := 'sys_user',
-  password := '!8394812kalsdjfa*!@#$$*&' 
-};
+# ObjRoot
+insert sys_core::ObjRoot { name := 'root' };
 
-# entities
-with 
-my_creator := (select sys_user::getUser('sys_user'))
+# User
 for x in {
-  'app_cm',
-  'sys_app', 
-  'sys_user', 
-  'Atlantic Impact',
-  "Baltimore Mayor's Office Of Development",
-  'KidSmart Software Company'
+  ('System', 'User', 'user_sys', '!8394812kalsdjfa*!@#$$*&'),
+  ('Staff', 'Test-User', 'user_cm_test_staff', '123'),
+  ('Student-Applicant', 'Test-User', 'user_cm_test_student_applicant', '123'),
+  ('Student', 'Test-User', 'user_cm_test_student', '123'),
 }
-union (insert sys_core::SysEnt {
+union (insert sys_user::User {
+  first_name := x.0,
+  last_name := x.1,
+  username := x.2,
+  password := x.3
+});
+
+# Ent
+with 
+my_creator := (select sys_user::getUser('user_sys'))
+for x in {
+  'app_sys', 
+  'app_cm',
+}
+union (insert sys_core::Ent {
+  owner := (select sys_core::getRoot()),
   name := x,
   created_by := my_creator,
   modified_by := my_creator
 });
 
-# code_types
+# CodeType
 with 
-my_creator := (select sys_user::getUser('sys_user')),
+my_creator := (select sys_user::getUser('user_sys')),
 for x in {
-  ('sys_app', 'sys_app_node_object_type')
+  ('app_sys', 'ct_sys_icon'),
+  ('app_sys', 'ct_sys_node_obj_type'),
+  ('app_sys', 'ct_sys_node_type'),
 }
-union (insert sys_core::SysCodeType {
+union (insert sys_core::CodeType {
   owner := (select sys_core::getEnt(x.0)),
   name := x.1,
   created_by := my_creator,
   modified_by := my_creator
 });
 
-# codes
+# Code
 with 
-my_creator := (select sys_user::getUser('sys_user')),
+my_creator := (select sys_user::getUser('user_sys')),
 for x in {
-  ('sys_app', ('sys_app', 'sys_app_node_object_type'), 'form_list'),
-  ('sys_app', ('sys_app', 'sys_app_node_object_type'), 'form_detail')
+  # node types
+  ('ct_sys_node_type', 'app_sys', 'custom'),
+  ('ct_sys_node_type', 'app_sys', 'form'),
+  ('ct_sys_node_type', 'app_sys', 'header'),
+  ('ct_sys_node_type', 'app_sys', 'page'),
+  ('ct_sys_node_type', 'app_sys', 'program'),
+  
+  # icons
+  ('ct_sys_icon', 'app_cm', 'application'),
+  ('ct_sys_icon', 'app_cm', 'goals'),
+  ('ct_sys_icon', 'app_cm', 'message'),
+  ('ct_sys_icon', 'app_cm', 'activities'),
+  ('ct_sys_icon', 'app_cm', 'quote-enclosed'),
 }
-union (insert sys_core::SysCode {
-  owner := (select sys_core::getEnt(x.0)),
-  code_type := (select sys_core::getCodeType(x.1.0, x.1.1)),
-  name := x.2,
-  created_by := my_creator,
-  modified_by := my_creator
-});
-
-# app - programs
-with 
-my_creator := (select sys_user::getUser('sys_user')),
-for x in {
-  ('sys_app', 'sys_admin', 'Administration', 0), 
-  ('app_cm', 'app_case_manager', 'Case Manager', 10), 
-}
-union (insert sys_app::SysAppProgram {
-  owner := (select sys_core::getEnt(x.0)),
-  name := x.1,
-  name_display := x.2,
-  order := x.3,
-  created_by := my_creator,
-  modified_by := my_creator
-});
-
-# app - program - nodes
-with 
-my_creator := (select sys_user::getUser('sys_user')),
-for x in {
-  (('sys_app', 'sys_admin'), 'sys_app', 'sys_apps', 'Applications', (), 10),
-  (('sys_app', 'sys_admin'), 'sys_user', 'sys_users', 'Users', (), 20),
-  (('sys_app', 'sys_admin'), 'sys_app', 'sys_entities', 'Entities', (), 30),
-  (('sys_app', 'sys_admin'), 'sys_app', 'sys_utilities', 'Utilities', (), 40),
-}
-union (insert sys_app::SysAppNode {
-  program := (select sys_app::getAppProgram(x.0.0, x.0.1)),
+union (insert sys_core::Code {
+  code_type := (select sys_core::getCodeType(x.0)),
   owner := (select sys_core::getEnt(x.1)),
   name := x.2,
-  name_display := x.3,
-  parent := (select sys_app::getAppProgram(x.0.0, x.0.1)),
-  order := x.5,
   created_by := my_creator,
   modified_by := my_creator
 });
 
-# app - forms
+# Program
 with 
-my_creator := (select sys_user::getUser('sys_user')),
+my_creator := (select sys_user::getUser('user_sys')),
 for x in {
-  ('sys_app', 'sys_app_code_types', 'Code Types', '', '', ''),
-  ('sys_app', 'sys_app_codes', 'Codes', '', '', ''),
+  ('app_sys', 'pgm_sys_admin', 'Administration', 10, ('app_cm', 'application')), 
+  ('app_cm', 'pgm_cm_staff', 'Case Manager', 20, ('app_cm', 'application')), 
+  ('app_cm', 'pgm_cm_student_applicant', 'Case Manager', 30, ('app_cm', 'application')), 
+  ('app_cm', 'pgm_cm_student', 'Case Manager', 40, ('app_cm', 'application')), 
 }
-union (insert sys_app::SysForm {
+union (insert sys_app::Program {
   owner := (select sys_core::getEnt(x.0)),
   name := x.1,
-  name_display := x.2,
+  label := x.2,
+  order := x.3,
+  code_icon := (select sys_core::getCode(x.4.0, x.4.1)),
+  created_by := my_creator,
+  modified_by := my_creator
+});
+
+# NodeObj - forms
+with 
+my_creator := (select sys_user::getUser('user_sys')),
+for x in {
+  ('app_sys', 'form_sys_applications', 'Applications', '', '', ''),
+  ('app_sys', 'form_sys_application', 'Application', '', '', ''),
+}
+union (insert sys_app::Form {
+  owner := (select sys_core::getEnt(x.0)),
+  name := x.1,
+  label := x.2,
   sub_header := x.3,
   description := x.4,
   submit_button_label := x.5,
@@ -116,88 +120,167 @@ union (insert sys_app::SysForm {
   modified_by := my_creator
 });
 
-# app - features
+# NodeObj - pages
 with 
-my_creator := (select sys_user::getUser('sys_user')),
+my_creator := (select sys_user::getUser('user_sys')),
 for x in {
-  (('sys_app', 'sys_admin'), 'sys_app', 'sys_app_code_types', 'Code Types', ('sys_app', 'sys_admin', 'sys_apps'), 10, (('sys_app', 'sys_app_code_types'), ('sys_app', 'sys_app_code_types')))
+  ('app_cm', 'pg_cm_application', 'Application', '', '', '/apps/cm/application'),
+  ('app_cm', 'pg_cm_goals', 'Goals', '', '', '/apps/cm/goals'),
+  ('app_cm', 'pg_cm_messages', 'Messages', '', '', '/apps/cm/messages'),
+  ('app_cm', 'pg_cm_activities', 'Activities', '', '', '/apps/cm/activities'),
+  ('app_cm', 'pg_cm_quotes', 'Quotes', '', '', '/apps/cm/quotes'),
 }
-union (insert sys_app::SysAppNode {
-  program := (select sys_app::getAppProgram(x.0.0, x.0.1)),
-  owner := (select sys_core::getEnt(x.1)),
-  name := x.2,
-  name_display := x.3,
-  parent := (select sys_app::getAppNode(x.4.0, x.4.1, x.4.2)),
-  order := x.5,
-
-  objs := (select( 
-    for y in { (('sys_app', 'sys_app_code_types'), ('sys_app', 'sys_app_code_types')) } 
-    union ( select sys_app::getAppForm(y.0, y.1) )  
-  )),
-  
-
-  #  <tuple<str, str>>x.6
-  # objs := (select sys_app::getAppForm(x.6.0, x.6.1)),
-
-  
-  # objs := (select sys_app::getAppForm(x.6.0, x.6.1) {
-  #   @obj_type := <sys_app::SysAppNodeObjType>x.7
-  # }),
+union (insert sys_app::Page {
+  owner := (select sys_core::getEnt(x.0)),
+  name := x.1,
+  label := x.2,
+  sub_header := x.3,
+  description := x.4,
+  link := x.5,
   created_by := my_creator,
   modified_by := my_creator
-  } 
-);
+});
 
-# # Create a new review and a new user in one step.
-# insert Review {
-#     body := 'Loved it!!!',
-#     rating := 5,
-#     # The movie record already exists, so select it.
-#     movie := (
-#         select Movie
-#         filter
-#             .title = 'Dune'
-#             and
-#             .year = 2020
-#         # the limit is needed to satisfy the single
-#         # link requirement validation
-#         limit 1
-#     ),
+# Node
+with 
+my_creator := (select sys_user::getUser('user_sys')),
+for x in {
+  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_applications', 'Applications', 10, 'application'), 
+  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_users', 'Users', 20, 'application'), 
+  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_organizations', 'Organizations', 30, 'application'), 
+  ('pgm_sys_admin', 'header', 'app_sys', 'pgm_node_sys_utilities', 'Utilities', 40, 'application'), 
 
-#     # This might be a new user or an existing user. Some
-#     # other part of the app handles authentication, this
-#     # endpoint is used as a generic way to post a review.
-#     author := (
-#         # Try to create a new User,
-#         insert User {
-#             name := "dune_fan_2020",
-#             image := "default_avatar.jpg",
-#         }
+  ('pgm_cm_student_applicant', 'page', 'app_cm', 'pgm_cm_student_applicant', 'Application', 10, 'application'), 
 
-#         # but if a User with this name already exists,
-#         unless conflict on .name
-#         # just pick that existing User as the author.
-#         else User
-#     )
-# }
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_application', 'Application', 10, 'application'), 
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_goals', 'Goals', 20, 'application'), 
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_messages', 'Messages', 30, 'application'),
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_activities', 'Activities', 40, 'application'), 
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_quotes', 'Quotes', 50, 'application'), 
+}
+union (insert sys_app::Node {
+  program := (select sys_app::getProgram(x.0)),
+  code_type := (select sys_core::getCode('ct_sys_node_type', x.1)),
+  owner := (select sys_core::getEnt(x.2)),
+  name := x.3,
+  label := x.4,
+  order := x.5,
+  code_icon := (select sys_core::getCode('ct_sys_icon', x.6)),
+  created_by := my_creator,
+  modified_by := my_creator
+});
 
+# Node - NodeObj
+with 
+my_creator := (select sys_user::getUser('user_sys')),
+for x in {
+  ('pgm_sys_admin',  'pgm_node_sys_applications', [('form_sys_applications', 'FORM_LIST')]), 
+  ('pgm_sys_admin',  'pgm_node_sys_users', [('form_sys_applications', 'FORM_LIST')]), 
+  ('pgm_sys_admin',  'pgm_node_sys_organizations', [('form_sys_applications', 'FORM_LIST')]), 
 
-# insert Person {
-#   name := "Bob",
-#   friends := (
-#     select detached Person {
-#       @strength := 3.14
-#     }
-#     filter .name = "Alice"
-#   )
-# }
+  ('pgm_cm_student_applicant', 'pgm_cm_student_applicant', [('pg_cm_application', 'PAGE')]), 
 
-# insert Person {
-#   name := "Bob",
-#   friends := (
-#     insert Person {
-#       name := "Jane",
-#       @strength := 3.14
-#     }
-#   )
-# }
+  ('pgm_cm_student', 'pg_cm_application', [('pg_cm_application', 'PAGE')]), 
+  ('pgm_cm_student', 'pg_cm_goals', [('pg_cm_goals', 'PAGE')]), 
+  ('pgm_cm_student', 'pg_cm_messages', [('pg_cm_messages', 'PAGE')]), 
+  ('pgm_cm_student', 'pg_cm_activities', [('pg_cm_activities', 'PAGE')]), 
+  ('pgm_cm_student', 'pg_cm_quotes', [('pg_cm_quotes', 'PAGE')]), 
+}
+union (update sys_app::Node 
+filter
+  .program = (select sys_app::getProgram(x.0)) and
+  .name = x.1
+set {
+  objs := assert_distinct((
+    for y in array_unpack(x.2) 
+    union (select sys_app::getNodeObj(y.0) { @obj_type := <sys_app::NodeObjType>y.1})
+  )),  
+});
+
+# HomeScreenWidget
+with 
+my_creator := (select sys_user::getUser('user_sys')),
+for x in {
+  ('app_sys', 'hsw_sys_user'),   
+  ('app_cm', 'hsw_cm_user'),
+  ('app_cm', 'hsw_cm_quotes'),
+}
+union (insert sys_core::HomeScreenWidget {
+  owner := (select sys_core::getEnt(x.0)),
+  name := x.1,
+  created_by := my_creator,
+  modified_by := my_creator
+});
+
+# HomeScreen
+with 
+my_creator := (select sys_user::getUser('user_sys')),
+for x in {
+  ('app_sys', 'hs_sys_user', ['hsw_sys_user', 'hsw_cm_user', 'hsw_cm_quotes']),   
+  ('app_cm', 'hs_cm_staff', ['hsw_sys_user', 'hsw_cm_quotes']),   
+  ('app_cm', 'hs_cm_student', ['hsw_cm_user', 'hsw_cm_quotes']),   
+}
+union (insert sys_core::HomeScreen {
+  owner := (select sys_core::getEnt(x.0)),
+  name := x.1,
+  widgets := assert_distinct((
+    for y in array_unpack(x.2) 
+    union (select sys_core::getHomeScreenWidget(y))
+  )),
+  created_by := my_creator,
+  modified_by := my_creator
+});
+
+# UserType
+with 
+my_creator := (select sys_user::getUser('user_sys')),
+for x in {
+  ('app_sys', 'ut_sys_admin'),
+  ('app_cm', 'ut_cm_staff'),
+  ('app_cm', 'ut_cm_student_applicant'),
+  ('app_cm', 'ut_cm_student'),
+}
+union (insert sys_user::UserType {
+  owner := (select sys_core::getEnt(x.0)),
+  name := x.1,
+  created_by := my_creator,
+  modified_by := my_creator
+});
+
+# UserType - resources
+for x in {
+  # PROGRAMS
+  ('ut_sys_admin', 'pgm_sys_admin'),
+  ('ut_sys_admin', 'pgm_cm_staff'),
+  ('ut_sys_admin', 'pgm_cm_student_applicant'),
+  ('ut_sys_admin', 'pgm_cm_student'),
+  ('ut_cm_staff', 'pgm_cm_staff'),
+  ('ut_cm_student_applicant', 'pgm_cm_student_applicant'),
+  ('ut_cm_student', 'pgm_cm_student'),
+
+  # HOME SCREENS
+  ('ut_sys_admin', 'hs_sys_user'),
+  ('ut_cm_staff', 'hs_cm_staff'),
+  ('ut_cm_student_applicant', 'hs_cm_student'),
+  ('ut_cm_student', 'hs_cm_student'),
+}
+union (update sys_user::UserType
+filter
+  .name = x.0
+set {
+  resources += (select sys_core::getEnt(x.1)),
+});
+  
+# UserType - users
+for x in {
+  ('ut_sys_admin', 'user_sys'),
+  ('ut_cm_staff', 'user_cm_test_staff'),
+  ('ut_cm_student_applicant', 'user_cm_test_student_applicant'),
+  ('ut_cm_student', 'user_cm_test_student'),
+}
+union (update sys_user::UserType
+filter
+  .name = x.0
+set {
+    users += (select sys_user::getUser(x.1))
+});

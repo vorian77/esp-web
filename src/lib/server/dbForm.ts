@@ -14,15 +14,9 @@ import { getEnvVar } from '$server/env'
 import { dbESP } from '$server/dbESP'
 import { error } from '@sveltejs/kit'
 
-import { dbTest } from '$server/dbEdge'
-
 const FILENAME = '$server/dbForm.ts'
 
 export async function getForm(formName: string, pageData = {}) {
-	// test
-	console.log()
-	dbTest()
-
 	// retrieve form file
 	console.log()
 	console.log('getForm:', formName)
@@ -38,7 +32,7 @@ export async function getForm(formName: string, pageData = {}) {
 	form.values = await getValues(formName, form.source, pageData)
 
 	if (formName === 'auth_login') {
-		// temp
+		// <temp> 230815: auto login - must be removed prior to production deployment
 		form.fields[0].value = '2489999999'
 		form.fields[1].value = 'JakeDog#1'
 		console.log('form.values:', form.fields)

@@ -8,7 +8,8 @@
 	export let user = {}
 	export let routeId = '/'
 
-	const footerLinks = [user.root, '/apps/cm/contactUs', '/apps/account']
+	const rootLink = '/apps'
+	const footerLinks = [rootLink, '/apps/cm/contactUs', '/apps/account']
 
 	$: onFooterLink = footerLinks.includes(routeId)
 
@@ -26,7 +27,7 @@
 		history.back()
 	}
 	function goHome() {
-		goto(user.root)
+		goto(rootLink)
 	}
 </script>
 

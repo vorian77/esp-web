@@ -1,58 +1,43 @@
 module sys_app {
-  abstract type SysAppNodeType extending default::Mgmt {
-    required owner: sys_core::SysEnt;
-    required name: default::Name;
-    name_display: str;
-  }
-
-   type SysAppProgram extending SysAppNodeType {
+  type Program extending sys_core::Obj {
     required order: default::non_negative;
-    constraint exclusive on ((.owner, .name));
+    code_icon: sys_core::Code;
+    constraint exclusive on (.name);
   }
 
-  type SysAppNode extending SysAppNodeType {
-    required program: SysAppProgram;
-    required parent: SysAppNodeType;
+  type Node extending sys_core::Obj {
+    required program: Program;
+    required code_type: sys_core::Code;
+    parent: Node;
     required order: default::non_negative;
-    multi objs: SysAppNodeObj;
-    constraint exclusive on ((.program, .name ));
+    code_icon: sys_core::Code;
+    multi objs: NodeObj {
+      obj_type: NodeObjType;
+    };
+    constraint exclusive on ((.program, .name));
   }
 
-  scalar type SysAppNodeObjType extending enum<FORM_LIST, FORM_DETAIL, FORM_TEST>;
-  
-  abstract type SysAppNodeObj extending SysAppNodeType {
-    obj_type: SysAppNodeObjType;
+  scalar type NodeObjType extending enum<CUSTOM, FORM_COMPOSITE, FORM_DETAIL, FORM_LIST, PAGE>;
+
+  abstract type NodeObj extending sys_core::Obj {
     sub_header: str;
     description: str;
-    constraint exclusive on ((.owner, .name, .obj_type ));
+    constraint exclusive on ((.name));
   } 
 
-  type SysForm extending SysAppNodeObj {
+  type Form extending NodeObj {
     submit_button_label: str;
   }
- 
+
+  type Page extending NodeObj {
+    required link: default::Name;
+  }
+
   # FUNCTIONS
-  function getAppForm(
-    formOwnerName: str, 
-    formName: str, 
-    formObjType: SysAppNodeObjType) -> optional SysForm
-      using (select SysForm filter 
-        .owner = (select sys_core::getEnt(formOwnerName)) and 
-        .name = formName and
-        .obj_type = formObjType
-  );
+  function getProgram(programName: str) -> optional sys_app::Program
+    using (select sys_app::Program filter .name = programName);
 
-  function getAppNode(
-    programOwnerName: str, 
-    programName: str,
-    nodeName: str) -> optional SysAppNode
-      using (select SysAppNode filter 
-        .program = (select getAppProgram(programOwnerName, programName)) and
-        .name = nodeName
-  );
-
-  function getAppProgram(ownerName: str, programName: str) -> optional SysAppProgram
-      using (select SysAppProgram filter .owner = (select sys_core::getEnt(ownerName)) and .name = programName);
-
+  function getNodeObj(nodeObjName: str) -> optional sys_app::NodeObj
+    using (select sys_app::NodeObj filter .name = nodeObjName);
 }
 

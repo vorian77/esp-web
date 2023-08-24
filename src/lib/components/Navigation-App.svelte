@@ -8,7 +8,9 @@
 
 	export let mode: 'page' | 'footer' | 'sidebar' | 'popup'
 	export let user = {}
-	const userObj = new UserObj(user.edge_temp)
+	const userObj = new UserObj(user.edge_temp.resource_programs)
+
+	console.log('nav-app:', userObj.user)
 
 	// const showSysUser = user.hasResourceWidget('hsw_sys_user')
 
@@ -20,6 +22,7 @@
 
 	// links
 	let links: Array<NavLink> = []
+
 	const linksStudentRegPending = [new NavLink('Application', '/apps/cm/application', 'application')]
 	const linksStudentRegSubmitted = [
 		new NavLink('Application', '/apps/cm/application', 'application'),

@@ -8,7 +8,6 @@ import {
 	strRequired,
 	valueOrDefault
 } from '$utils/utils'
-import type { V } from 'drizzle-orm/column.d-66a08b85'
 
 const FILENAME = '$comps/esp/form/types.source.ts'
 
@@ -187,6 +186,7 @@ export function FormSourceResponse(sourceData: any) {
 	}
 	return new Response(JSON.stringify(response))
 }
+
 export type FormSourceResponseType = {
 	success: boolean
 	message: string
@@ -200,6 +200,15 @@ export enum FormSourceDBAction {
 	select = 'select',
 	update = 'update',
 	upsert = 'upsert'
+}
+export enum FormSourceItemDataType {
+	date = 'date',
+	datetime = 'datetime',
+	dec = 'dec',
+	int = 'int',
+	raw = 'raw',
+	string = 'string',
+	subquery = 'subquery'
 }
 export enum FormSourceItemSource {
 	env = 'env',
@@ -215,15 +224,6 @@ export enum FormSourceTarget {
 export enum FormSourceActionType {
 	api = 'api',
 	direct = 'direct'
-}
-export enum FormSourceItemDataType {
-	date = 'date',
-	datetime = 'datetime',
-	dec = 'dec',
-	int = 'int',
-	raw = 'raw',
-	string = 'string',
-	subquery = 'subquery'
 }
 export enum HTMLMETHOD {
 	DELETE = 'DELETE',

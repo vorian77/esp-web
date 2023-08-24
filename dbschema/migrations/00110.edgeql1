@@ -1,9 +1,0 @@
-CREATE MIGRATION m1hkucfyku35cklmxynlsue66ug4wfsybr2kevepre3ztsuzzmdxna
-    ONTO m1ciiia54xe7f6xfuwlpk3gazyvz4wyk4vvv5nxb4hiezpehllar5a
-{
-  ALTER TYPE sys_app::SysAppNode {
-      CREATE REQUIRED LINK parent: sys_app::SysAppNodeType {
-          SET REQUIRED USING (<sys_app::SysAppNodeType>{});
-      };
-  };
-};

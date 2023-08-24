@@ -71,7 +71,6 @@ export const handleError = ({ error, event }) => {
 
 async function fetchUser(sessionId: string) {
 	const RETRIEVE_FROM_STORAGE = true
-	console.log(FILENAME, 'fetchUser...')
 	const responsePromise = await getUser(sessionId, RETRIEVE_FROM_STORAGE)
 	const response: FormSourceResponseType = await responsePromise.json()
 	return response.data

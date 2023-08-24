@@ -1,34 +1,54 @@
 module sys_core {
-  type SysEnt extending default::Mgmt {
-    required name: default::Name {
-      constraint exclusive;
+  type ObjRoot {
+  required name: default::Name;
+  label: str;
+  }
+
+  abstract type Obj extending sys_core::ObjRoot, default::Mgmt {
+    required owner: sys_core::ObjRoot;   
+  } 
+
+  type Ent extending sys_core::Obj {
+    constraint exclusive on (.name);
+  }
+
+  type CodeType extending sys_core::Obj {
+    constraint exclusive on ((.name));
+  }
+
+  type Code extending sys_core::Obj {
+    required code_type: sys_core::CodeType;
+    constraint exclusive on ((.code_type, .name));
+  }
+
+  type HomeScreenWidget extending sys_core::Obj {
+    constraint exclusive on (.name);
+  }
+
+  type HomeScreen extending sys_core::Obj {
+    multi widgets: HomeScreenWidget {
+      on target delete allow;
     };
+    constraint exclusive on (.name);
   }
 
-  abstract type SysObj extending default::Mgmt {
-    required owner: sys_core::SysEnt;
-    required name: default::Name;
-    name_display: str;
-    constraint exclusive on ((.owner, .name));
-  }
+  # FUNCTIONS
+  function getRoot() -> optional sys_core::ObjRoot
+    using (select assert_single((select sys_core::ObjRoot filter .name = 'root')));
 
-  type SysCodeType extending sys_core::SysObj {}
+  function getEnt(entName: str) -> optional sys_core::Ent
+      using (select sys_core::Ent filter .name = entName);
 
-  type SysCode extending sys_core::SysObj {
-    required code_type: sys_core::SysCodeType;
-  }
+  function getCodeType(codeTypeName: str) -> optional sys_core::CodeType
+    using (select sys_core::CodeType filter .name = codeTypeName);
 
-# functions
-function getEnt(entName: str) -> optional SysEnt
-    using (select SysEnt filter .name = entName);
+  function getCode(
+    codeTypeName: str,  
+    codeName: str) -> optional sys_core::Code
+      using (select sys_core::Code filter 
+        .code_type = (select getCodeType(codeTypeName)) and 
+        .name = codeName);
 
-function getSysObj(objOwnerName: str, objName: str) -> optional SysObj
-    using (select SysObj filter .owner = (select getEnt(objOwnerName)) and .name = objName);
-
-function getCodeType(codeTypeOwnerName: str, codeTypeName: str) -> optional SysCodeType
-    using (select SysCodeType filter .owner = (select getEnt(codeTypeOwnerName)) and .name = codeTypeName);
-
-function getCode(codeTypeOwnerName: str, codeTypeName: str, codeOwnerName: str, codeName: str) -> optional SysCode
-    using (select SysCode filter .code_type = (select getCodeType(codeTypeOwnerName, codeTypeName)) and .owner = (select getEnt(codeOwnerName)) and .name = codeName);
-
+  function getHomeScreenWidget(widgetName: str) -> optional sys_core::HomeScreenWidget
+    using (select sys_core::HomeScreenWidget filter .name = widgetName);    
 }
