@@ -9,6 +9,8 @@ export async function load({ locals, route }) {
 	async function otherData() {
 		let otherData = {}
 
+		otherData.appNodes = locals.user.edge_temp.resource_programs
+
 		if (user.hasResourceWidget('hsw_cm_quotes')) {
 			otherData.quote = await fetchQuote()
 		}

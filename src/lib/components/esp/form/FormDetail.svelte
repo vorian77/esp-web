@@ -20,7 +20,7 @@
 	import { error } from '@sveltejs/kit'
 
 	const dispatch = createEventDispatcher()
-	const FILENAME = '$comps/esp/form/Form.svelte'
+	const FILENAME = '$comps/esp/form/FormDetail.svelte'
 	const FORM_NAME = ''
 	const SUBMIT_BUTTON_NAME = 'SUBMIT_BUTTON_NAME'
 

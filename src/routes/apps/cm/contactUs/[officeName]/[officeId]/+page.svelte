@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Form as FormClass } from '$comps/esp/form/form'
-	import Form from '$comps/esp/form/Form.svelte'
+	import Form from '$comps/esp/form/FormDetail.svelte'
 	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { goto } from '$app/navigation'
 

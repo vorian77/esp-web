@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { drawerStore, Drawer } from '@skeletonlabs/skeleton'
-	import Form from '$comps/esp/form/Form.svelte'
+	import Form from '$comps/esp/form/FormDetail.svelte'
 	import Navigation from '$comps/Navigation.svelte'
 
 	const user = {}
+
+	const navMode = 'sidebar'
+	const nodes = [['Logout', 'logout', '/logout']]
 
 	function onformCancelled() {
 		$drawerStore.meta.onCloseDrawer()
@@ -22,7 +25,7 @@
 
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'navSide'}
-		<Navigation {user} mode="sidebar" />
+		<Navigation mode={navMode} {nodes} />
 	{:else if $drawerStore.id === 'auth'}
 		<div>
 			<Form

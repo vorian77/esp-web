@@ -1,38 +1,55 @@
-export class Nav {
-	links: Array<NavLink>
+import { getArray, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 
-	constructor() {
-		this.links = []
-	}
-	addLink(id: string, name: string, label: string, link: string) {
-		// this.filter.push({ name, dataType, val })
-	}
+export class Nav {
+	nodes: Array<NavNode> = []
 }
 
 export class NavNode {
-	id: string
-	name: string
+	type: 'form' | 'header' | 'page' | 'program'
+	id?: string
+	name?: string
 	label: string
-	link: string
 	icon: string
+	obj_id?: string
+	obj_link?: string
 
-	constructor(id: string, name: string, label: string, link: string, icon = '') {
-		this.id = id
-		this.name = name
-		this.label = label
-		this.link = link
-		this.icon = icon
+	constructor(
+		type: string,
+		id: string,
+		name: string,
+		label: string,
+		icon: string,
+		obj_id: string,
+		obj_link: string
+	) {
+		const DEFAULT_ICON = 'hamburger-menu'
+		this.type = strRequired(type, 'NavNode', 'type')
+		this.id = valueOrDefault(strOptional(id, 'NavNode', 'id'), '')
+		this.name = strOptional(name, 'NavNode', 'name')
+		this.label = strRequired(label, 'NavNode', 'label')
+		this.icon = valueOrDefault(strOptional(icon, 'NavNode', 'icon'), DEFAULT_ICON)
+		this.obj_id = strOptional(obj_id, 'NavNode', 'obj_id')
+		this.obj_link = strOptional(obj_link, 'NavNode', 'obj_link')
 	}
 }
 
-export class NavLink {
-	label: string
-	link: string
-	icon: string
+export class NavDB extends Nav {
+	constructor(nodes: any) {
+		super()
+		nodes = getArray(nodes)
+		nodes.forEach((n) => {
+			this.nodes.push(new NavNode(n.type, n.id, n.name, n.label, n.icon, n.obj_id, n.obj_link))
+		})
+	}
+}
 
-	constructor(label: string, link: string, icon = '') {
-		this.label = label
-		this.link = link
-		this.icon = icon
+export class NavPage extends Nav {
+	constructor(nodes: any) {
+		super()
+		nodes = getArray(nodes)
+		const NODE_TYPE = 'page'
+		nodes.forEach((n) => {
+			this.nodes.push(new NavNode(NODE_TYPE, '', '', n[0], n[1], '', n[2]))
+		})
 	}
 }

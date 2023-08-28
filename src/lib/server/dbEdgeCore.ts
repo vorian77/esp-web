@@ -43,27 +43,47 @@ export async function dbSelectSingle(query: EdgeQL) {
 export class EdgeQL {
 	script: string
 	filter: Array<EdgeDBFilterField>
+	order: Array<EdgeDBOrderField>
 
 	constructor(script: string) {
 		this.script = valueOrDefault(script, '')
 		this.filter = []
+		this.order = []
 	}
 
 	addFilter(name: string, dataType: EdgeDBDataType, val: any) {
 		this.filter.push({ name, dataType, val })
 	}
 
-	getScript() {
-		let scriptFilter = ''
+	addOrder(name: string, direction: EdgeDBFilterDirection) {
+		this.order.push({ name, direction })
+	}
 
+	getScript() {
+		let script = this.script
+		let scriptFilter = ''
+		let scriptOrder = ''
+
+		// filter
 		this.filter.forEach((f, i) => {
 			if (i > 0) {
 				scriptFilter += ' and '
 			}
 			scriptFilter += '.' + f.name + ' = ' + this.getValue(f)
 		})
+		script += scriptFilter ? ' FILTER ' + scriptFilter : ''
 
-		return this.script + ' filter ' + scriptFilter
+		// order
+		this.order.forEach((o, i) => {
+			if (i > 0) {
+				scriptOrder += ' then '
+			}
+			scriptOrder += '.' + o.name + ' ' + o.direction
+		})
+		script += scriptOrder ? ' ORDER BY ' + scriptOrder : ''
+
+		console.log('script:', script)
+		return script
 	}
 
 	getValue(field: EdgeDBFilterField) {
@@ -113,8 +133,16 @@ export enum EdgeDBDataType {
 	str = 'str',
 	uuid = 'uuid'
 }
+export enum EdgeDBFilterDirection {
+	asc = 'asc',
+	desc = 'desc'
+}
 export type EdgeDBFilterField = {
 	name: string
 	dataType: EdgeDBDataType
 	val: any
+}
+export type EdgeDBOrderField = {
+	name: string
+	direction: EdgeDBFilterDirection
 }

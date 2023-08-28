@@ -10,6 +10,12 @@
 
 	const rootLink = '/apps'
 	const footerLinks = [rootLink, '/apps/cm/contactUs', '/apps/account']
+	const navMode = 'footer'
+	const nodes = [
+		['Home', 'home', footerLinks[0]],
+		['Contact Us', 'contact-us', footerLinks[1]],
+		['Account', 'profile', footerLinks[2]]
+	]
 
 	$: onFooterLink = footerLinks.includes(routeId)
 
@@ -67,7 +73,7 @@
 
 	<svelte:fragment slot="footer">
 		<div style="border-top: 1px solid #f5f5f5;">
-			<Navigation {user} mode="footer" />
+			<Navigation mode={navMode} {nodes} />
 		</div>
 	</svelte:fragment>
 </AppShell>

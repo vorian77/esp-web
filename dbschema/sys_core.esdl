@@ -21,17 +21,6 @@ module sys_core {
     constraint exclusive on ((.code_type, .name));
   }
 
-  type HomeScreenWidget extending sys_core::Obj {
-    constraint exclusive on (.name);
-  }
-
-  type HomeScreen extending sys_core::Obj {
-    multi widgets: HomeScreenWidget {
-      on target delete allow;
-    };
-    constraint exclusive on (.name);
-  }
-
   # FUNCTIONS
   function getRoot() -> optional sys_core::ObjRoot
     using (select assert_single((select sys_core::ObjRoot filter .name = 'root')));
@@ -48,7 +37,4 @@ module sys_core {
       using (select sys_core::Code filter 
         .code_type = (select getCodeType(codeTypeName)) and 
         .name = codeName);
-
-  function getHomeScreenWidget(widgetName: str) -> optional sys_core::HomeScreenWidget
-    using (select sys_core::HomeScreenWidget filter .name = widgetName);    
 }

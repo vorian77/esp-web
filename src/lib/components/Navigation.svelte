@@ -1,42 +1,22 @@
 <script lang="ts">
-	import { User as UserObj } from '$comps/types'
-	import { NavLink, UserType } from '$comps/types'
+	import { NavDB, NavPage, NavNode } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
-	import { error } from '@sveltejs/kit'
 	import { drawerStore } from '@skeletonlabs/skeleton'
-
-	export let mode: 'page' | 'footer' | 'sidebar' | 'popup'
-	export let user = {}
-	const userObj = new UserObj(user.edge_temp)
-
-	// const showSysUser = user.hasResourceWidget('hsw_sys_user')
+	import { goto } from '$app/navigation'
+	import type { FormSourceResponseType } from '$comps/types'
+	import { error } from '@sveltejs/kit'
 
 	const FILENAME = '/$comps/Navigation.svelte'
 
 	const navColor = '#3b79e1'
 	const itemColors = ['#f5f5f5', '#dedede']
-	const homeLink = '/apps'
 
-	// links
-	let links: Array<NavLink> = []
-	const linksStudentRegPending = [new NavLink('Application', '/apps/cm/application', 'application')]
-	const linksStudentRegSubmitted = [
-		new NavLink('Application', '/apps/cm/application', 'application'),
-		new NavLink('Goals', '/apps/cm/goals', 'goals'),
-		new NavLink('Messages', '/apps/cm/messages', 'message'),
-		new NavLink('Activities', '/apps/cm/activities', 'activities'),
-		new NavLink('Quotes', '/apps/cm/quotes', 'quote-enclosed')
-	]
-	const linksStaff = [new NavLink('Messages', '/apps/cm/messages', 'message')]
-	const linksAdmin = [new NavLink('Admin', '/admin', 'admin'), new NavLink('CM', '/apps/cm')]
-	const linksFooter = [
-		new NavLink('Home', homeLink, 'home'),
-		new NavLink('Contact Us', '/apps/cm/contactUs', 'contact-us'),
-		new NavLink('Account', '/apps/account', 'profile')
-	]
-	const linksPopup = [new NavLink('Logout', '/logout', 'logout')]
+	export let mode: 'page' | 'footer' | 'sidebar' | 'popup'
+	export let nodes = []
 
+	// styling
+	let nav: any
 	let styleContainer = ''
 	let styleItem = ''
 	let styleItemHover = ''
@@ -44,68 +24,8 @@
 	let marginTopLabel = ''
 
 	switch (mode) {
-		case 'page':
-			// links
-			user.user_types.forEach((ut: string) => {
-				if (ut === UserType.student) {
-					// links = addLinks(links, linksStudentRegPending)
-					// links = addLinks(links, linksStudentRegSubmitted)
-					user.status == 'Pending'
-						? (links = addLinks(links, linksStudentRegPending))
-						: (links = addLinks(links, linksStudentRegSubmitted))
-				} else if (ut == UserType.staff) {
-					links = addLinks(links, linksStaff)
-				} else if (ut === UserType.admin) {
-					links = addLinks(links, [
-						...linksStudentRegPending,
-						...linksStudentRegSubmitted,
-						...linksStaff,
-						...linksAdmin
-					])
-				} else {
-					throw error(500, {
-						file: FILENAME,
-						function: 'constructor',
-						message: `No case defined for user_type: ${ut}.`
-					})
-				}
-			})
-
-			// styling
-			styleContainer += `
-				display: flex; 
-				flex-wrap: wrap; 
-				gap: 5px;
-				justify-content: space-between; 
-			`
-			styleItem += `
-				display: flex;
-				align-items: center;		
-				font-size: 10px;
-				color: ${navColor};
-				flex-direction: column;
-				justify-content: center;
-				gap: 0px;
-				background-color: whitesmoke;
-				border-radius: 5px;
-				width: 65px;
-				height: 45px;`
-			styleItemHover =
-				styleItem +
-				`
-			background-color: ${itemColors[1]};`
-			styleItemActive =
-				styleItem +
-				`
-				background-color: ${itemColors[1]};`
-			marginTopLabel = '-mt-3'
-			break
-
 		case 'footer':
-			// links
-			links = linksFooter
-
-			// styling
+			nav = new NavPage(nodes)
 			styleContainer += `
 				display: flex; 
 				flex-wrap: wrap; 
@@ -122,20 +42,54 @@
 				gap: 2px;
 				width: 80px;
 				height: 40px;`
-			styleItemHover =
+			styleItemHover +=
 				styleItem +
 				`
 				background-color: ${itemColors[0]};`
-			styleItemActive =
+			styleItemActive +=
 				styleItem +
 				`
 				border-top: 1px solid ${navColor};`
 			marginTopLabel = 'mt-1'
 			break
 
+		case 'page':
+			nav = new NavDB(nodes)
+
+			styleContainer += `
+				display: flex; 
+				flex-wrap: wrap; 
+				gap: 5px;
+				justify-content: space-between; 
+			`
+			styleItem += `
+				display: flex;
+				align-items: center;		
+				font-size: 10px;
+				color: ${navColor};
+				flex-direction: column;
+				justify-content: center;
+				gap: 0px;
+				background-color: whitesmoke;
+				border-radius: 5px;
+				width: 85px;
+				height: 55px;`
+			styleItemHover +=
+				styleItem +
+				`
+			background-color: ${itemColors[1]};`
+			styleItemActive +=
+				styleItem +
+				`
+				background-color: ${itemColors[1]};`
+			marginTopLabel += '-mt-1'
+			break
+
 		case 'popup':
+			break
+
 		case 'sidebar':
-			links = linksPopup
+			nav = new NavPage(nodes)
 			styleItem += `
 				display: flex;
 				align-items: center;		
@@ -145,43 +99,57 @@
 				gap: 5px;
 				height: 30px;`
 			break
-
-		default:
-			throw error(500, {
-				file: FILENAME,
-				function: 'constructor',
-				message: `No case defined for navigation mode: ${mode}.`
-			})
 	}
+	async function navigate(node: NavNode) {
+		switch (node.type) {
+			case 'form':
+				alert(`form: ${node.label}`)
+				break
 
-	function addLinks(linksList: Array<NavLink>, newLinks: Array<NavLink>): Array<NavLink> {
-		newLinks.forEach((newLink) => {
-			const idx = linksList.findIndex((link) => link.link == newLink.link)
-			if (idx < 0) {
-				linksList.push(newLink)
-			}
-		})
-		return linksList
-	}
-	function drawerClose() {
-		if (mode === 'sidebar') {
-			drawerStore.close()
+			case 'header':
+				alert(`header: ${node.label}`)
+				break
+
+			case 'page':
+				if ((mode = 'sidebar')) {
+					drawerStore.close()
+				}
+				goto(node.obj_link)
+				break
+
+			case 'program':
+				const responsePromise = await fetch('/api/dbEdge', {
+					method: 'POST',
+					body: JSON.stringify({ action: 'getNodesOfProgram', programId: node.id })
+				})
+				const response: FormSourceResponseType = await responsePromise.json()
+				console.log('newNodes:', response.data)
+				nav = new NavDB(response.data)
+				break
+
+			default:
+				throw error(500, {
+					file: FILENAME,
+					function: 'navigate',
+					message: `No case defined for node type: ${node.type}.`
+				})
 		}
 	}
 </script>
 
 <div id="container" style={styleContainer}>
-	{#each links as link, i}
-		{@const icon = link.icon ? link.icon : 'hamburger-menu'}
-		<a id="link-{i}" href={link.link} on:click={drawerClose}>
-			<div style={link.link == $page.url.pathname ? styleItemActive : styleItem}>
-				<div class="mt-2">
-					<Icon name={icon} width="1.0rem" height="1.0rem" fill={navColor} />
-				</div>
-				<div class={marginTopLabel}>
-					{link.label}
-				</div>
+	{#each nav.nodes as node, i}
+		<div
+			style={node.link == $page.url.pathname ? styleItemActive : styleItem}
+			on:click={() => navigate(node)}
+			on:keyup={() => navigate(node)}
+		>
+			<div class="mt-2">
+				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={navColor} />
 			</div>
-		</a>
+			<div class={marginTopLabel}>
+				{node.label}
+			</div>
+		</div>
 	{/each}
 </div>

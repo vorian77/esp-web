@@ -1,6 +1,9 @@
 # RESET DATABASE
+delete sys_app::HomeScreen;
+delete sys_app::HomeScreenWidget;
 delete sys_app::Node;
 delete sys_app::NodeObj;
+delete sys_app::Program;
 delete sys_core::Code;
 delete sys_core::CodeType;
 delete sys_user::UserType;
@@ -46,8 +49,8 @@ union (insert sys_core::Ent {
 with 
 my_creator := (select sys_user::getUser('user_sys')),
 for x in {
+  ('app_sys', 'ct_sys_form_type'),
   ('app_sys', 'ct_sys_icon'),
-  ('app_sys', 'ct_sys_node_obj_type'),
   ('app_sys', 'ct_sys_node_type'),
 }
 union (insert sys_core::CodeType {
@@ -61,12 +64,10 @@ union (insert sys_core::CodeType {
 with 
 my_creator := (select sys_user::getUser('user_sys')),
 for x in {
-  # node types
-  ('ct_sys_node_type', 'app_sys', 'custom'),
-  ('ct_sys_node_type', 'app_sys', 'form'),
-  ('ct_sys_node_type', 'app_sys', 'header'),
-  ('ct_sys_node_type', 'app_sys', 'page'),
-  ('ct_sys_node_type', 'app_sys', 'program'),
+  # form types
+  ('ct_sys_form_type', 'app_sys', 'composite'),
+  ('ct_sys_form_type', 'app_sys', 'detail'),
+  ('ct_sys_form_type', 'app_sys', 'list'),
   
   # icons
   ('ct_sys_icon', 'app_cm', 'application'),
@@ -74,6 +75,13 @@ for x in {
   ('ct_sys_icon', 'app_cm', 'message'),
   ('ct_sys_icon', 'app_cm', 'activities'),
   ('ct_sys_icon', 'app_cm', 'quote-enclosed'),
+
+  # node types
+  ('ct_sys_node_type', 'app_sys', 'form'),
+  ('ct_sys_node_type', 'app_sys', 'header'),
+  ('ct_sys_node_type', 'app_sys', 'page'),
+  ('ct_sys_node_type', 'app_sys', 'program'),
+  
 }
 union (insert sys_core::Code {
   code_type := (select sys_core::getCodeType(x.0)),
@@ -83,44 +91,25 @@ union (insert sys_core::Code {
   modified_by := my_creator
 });
 
-# Program
+# NodeObje-Forms
 with 
 my_creator := (select sys_user::getUser('user_sys')),
 for x in {
-  ('app_sys', 'pgm_sys_admin', 'Administration', 10, ('app_cm', 'application')), 
-  ('app_cm', 'pgm_cm_staff', 'Case Manager', 20, ('app_cm', 'application')), 
-  ('app_cm', 'pgm_cm_student_applicant', 'Case Manager', 30, ('app_cm', 'application')), 
-  ('app_cm', 'pgm_cm_student', 'Case Manager', 40, ('app_cm', 'application')), 
-}
-union (insert sys_app::Program {
-  owner := (select sys_core::getEnt(x.0)),
-  name := x.1,
-  label := x.2,
-  order := x.3,
-  code_icon := (select sys_core::getCode(x.4.0, x.4.1)),
-  created_by := my_creator,
-  modified_by := my_creator
-});
-
-# NodeObj - forms
-with 
-my_creator := (select sys_user::getUser('user_sys')),
-for x in {
-  ('app_sys', 'form_sys_applications', 'Applications', '', '', ''),
-  ('app_sys', 'form_sys_application', 'Application', '', '', ''),
+  ('app_sys', 'form_sys_applications', 'Applications', 'list', '', ''),
+  ('app_sys', 'form_sys_application', 'Application', 'detail', '', ''),
 }
 union (insert sys_app::Form {
   owner := (select sys_core::getEnt(x.0)),
   name := x.1,
   label := x.2,
-  sub_header := x.3,
-  description := x.4,
-  submit_button_label := x.5,
+  code_type := (select sys_core::getCode('ct_sys_form_type', x.3)),
+  sub_header := x.4,
+  description := x.5,
   created_by := my_creator,
   modified_by := my_creator
 });
 
-# NodeObj - pages
+# NodeObj-Pages
 with 
 my_creator := (select sys_user::getUser('user_sys')),
 for x in {
@@ -141,22 +130,41 @@ union (insert sys_app::Page {
   modified_by := my_creator
 });
 
-# Node
+# Program
 with 
 my_creator := (select sys_user::getUser('user_sys')),
 for x in {
-  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_applications', 'Applications', 10, 'application'), 
-  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_users', 'Users', 20, 'application'), 
-  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_organizations', 'Organizations', 30, 'application'), 
-  ('pgm_sys_admin', 'header', 'app_sys', 'pgm_node_sys_utilities', 'Utilities', 40, 'application'), 
+  ('app_sys', 'pgm_sys_admin', 'Administration', 10, 'application'), 
+  ('app_cm', 'pgm_cm_staff', 'CM-Staff', 20, 'application'), 
+  ('app_cm', 'pgm_cm_student_applicant', 'CM-Applicant', 30, 'application'), 
+  ('app_cm', 'pgm_cm_student', 'CM-Student', 40, 'application'), 
+}
+union (insert sys_app::Program {
+  owner := (select sys_core::getEnt(x.0)),
+  name := x.1,
+  label := x.2,
+  order := x.3,
+  code_icon := (select sys_core::getCode('ct_sys_icon', x.4)),
+  created_by := my_creator,
+  modified_by := my_creator
+});
 
-  ('pgm_cm_student_applicant', 'page', 'app_cm', 'pgm_cm_student_applicant', 'Application', 10, 'application'), 
+# Program - Nodes
+with 
+my_creator := (select sys_user::getUser('user_sys')),
+for x in {
+  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_applications', 'Applications', 10, 'application', 'form_sys_applications'), 
+  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_users', 'Users', 20, 'application', ''), 
+  ('pgm_sys_admin', 'form', 'app_sys', 'pgm_node_sys_organizations', 'Organizations', 30, 'application', ''), 
+  ('pgm_sys_admin', 'header', 'app_sys', 'pgm_node_sys_utilities', 'Utilities', 40, 'application', ''), 
 
-  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_application', 'Application', 10, 'application'), 
-  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_goals', 'Goals', 20, 'application'), 
-  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_messages', 'Messages', 30, 'application'),
-  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_activities', 'Activities', 40, 'application'), 
-  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_quotes', 'Quotes', 50, 'application'), 
+  ('pgm_cm_student_applicant', 'page', 'app_cm', 'pgm_cm_student_applicant', 'Application', 10, 'application', 'pg_cm_application'), 
+
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_application', 'Application', 10, 'application', 'pg_cm_application'), 
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_goals', 'Goals', 20, 'application', 'pg_cm_goals'), 
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_messages', 'Messages', 30, 'application', 'pg_cm_messages'),
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_activities', 'Activities', 40, 'application', 'pg_cm_activities'), 
+  ('pgm_cm_student', 'page', 'app_cm', 'pg_cm_quotes', 'Quotes', 50, 'application', 'pg_cm_quotes'), 
 }
 union (insert sys_app::Node {
   program := (select sys_app::getProgram(x.0)),
@@ -166,35 +174,9 @@ union (insert sys_app::Node {
   label := x.4,
   order := x.5,
   code_icon := (select sys_core::getCode('ct_sys_icon', x.6)),
+  obj := (select sys_app::getNodeObj(x.7)),
   created_by := my_creator,
   modified_by := my_creator
-});
-
-# Node - NodeObj
-with 
-my_creator := (select sys_user::getUser('user_sys')),
-for x in {
-  ('pgm_sys_admin',  'pgm_node_sys_applications', [('form_sys_applications', 'FORM_LIST')]), 
-  ('pgm_sys_admin',  'pgm_node_sys_users', [('form_sys_applications', 'FORM_LIST')]), 
-  ('pgm_sys_admin',  'pgm_node_sys_organizations', [('form_sys_applications', 'FORM_LIST')]), 
-
-  ('pgm_cm_student_applicant', 'pgm_cm_student_applicant', [('pg_cm_application', 'PAGE')]), 
-
-  ('pgm_cm_student', 'pg_cm_application', [('pg_cm_application', 'PAGE')]), 
-  ('pgm_cm_student', 'pg_cm_goals', [('pg_cm_goals', 'PAGE')]), 
-  ('pgm_cm_student', 'pg_cm_messages', [('pg_cm_messages', 'PAGE')]), 
-  ('pgm_cm_student', 'pg_cm_activities', [('pg_cm_activities', 'PAGE')]), 
-  ('pgm_cm_student', 'pg_cm_quotes', [('pg_cm_quotes', 'PAGE')]), 
-}
-union (update sys_app::Node 
-filter
-  .program = (select sys_app::getProgram(x.0)) and
-  .name = x.1
-set {
-  objs := assert_distinct((
-    for y in array_unpack(x.2) 
-    union (select sys_app::getNodeObj(y.0) { @obj_type := <sys_app::NodeObjType>y.1})
-  )),  
 });
 
 # HomeScreenWidget
@@ -205,7 +187,7 @@ for x in {
   ('app_cm', 'hsw_cm_user'),
   ('app_cm', 'hsw_cm_quotes'),
 }
-union (insert sys_core::HomeScreenWidget {
+union (insert sys_app::HomeScreenWidget {
   owner := (select sys_core::getEnt(x.0)),
   name := x.1,
   created_by := my_creator,
@@ -220,12 +202,12 @@ for x in {
   ('app_cm', 'hs_cm_staff', ['hsw_sys_user', 'hsw_cm_quotes']),   
   ('app_cm', 'hs_cm_student', ['hsw_cm_user', 'hsw_cm_quotes']),   
 }
-union (insert sys_core::HomeScreen {
+union (insert sys_app::HomeScreen {
   owner := (select sys_core::getEnt(x.0)),
   name := x.1,
   widgets := assert_distinct((
     for y in array_unpack(x.2) 
-    union (select sys_core::getHomeScreenWidget(y))
+    union (select sys_app::getHomeScreenWidget(y))
   )),
   created_by := my_creator,
   modified_by := my_creator
@@ -247,17 +229,8 @@ union (insert sys_user::UserType {
   modified_by := my_creator
 });
 
-# UserType - resources
+# UserType - resources - HomeScreen
 for x in {
-  # PROGRAMS
-  ('ut_sys_admin', 'pgm_sys_admin'),
-  ('ut_sys_admin', 'pgm_cm_staff'),
-  ('ut_sys_admin', 'pgm_cm_student_applicant'),
-  ('ut_sys_admin', 'pgm_cm_student'),
-  ('ut_cm_staff', 'pgm_cm_staff'),
-  ('ut_cm_student_applicant', 'pgm_cm_student_applicant'),
-  ('ut_cm_student', 'pgm_cm_student'),
-
   # HOME SCREENS
   ('ut_sys_admin', 'hs_sys_user'),
   ('ut_cm_staff', 'hs_cm_staff'),
@@ -268,9 +241,27 @@ union (update sys_user::UserType
 filter
   .name = x.0
 set {
-  resources += (select sys_core::getEnt(x.1)),
+  resources += (select sys_app::getHomeScreen(x.1)),
 });
   
+# UserType - resources - Program
+for x in {
+  # PROGRAMS
+  ('ut_sys_admin', 'pgm_sys_admin'),
+  ('ut_sys_admin', 'pgm_cm_staff'),
+  ('ut_sys_admin', 'pgm_cm_student_applicant'),
+  ('ut_sys_admin', 'pgm_cm_student'),
+  ('ut_cm_staff', 'pgm_cm_staff'),
+  ('ut_cm_student_applicant', 'pgm_cm_student_applicant'),
+  ('ut_cm_student', 'pgm_cm_student'),
+}
+union (update sys_user::UserType
+filter
+  .name = x.0
+set {
+  resources += (select sys_app::getProgram(x.1)),
+});
+
 # UserType - users
 for x in {
   ('ut_sys_admin', 'user_sys'),

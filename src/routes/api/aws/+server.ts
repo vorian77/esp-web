@@ -4,8 +4,6 @@ import { error } from '@sveltejs/kit'
 const FILENAME = '/routes/api/aws/server.ts'
 
 export async function POST({ request }) {
-	const FILENAME = '/routes/api/aws/+server.ts'
-
 	let imgStorageKey
 	let imgType
 
