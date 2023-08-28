@@ -14,7 +14,7 @@ const FILENAME = '$server/apiUser.ts'
 export async function getUser(userId: string, retrieveFromStorage: boolean) {
 	let user = {}
 	if (retrieveFromStorage) {
-		user = asGet('auth', 'user')
+		user = asGet('user')
 		if (Object.keys(user).length) {
 			return FormSourceResponse(user)
 		}
@@ -27,7 +27,7 @@ export async function getUser(userId: string, retrieveFromStorage: boolean) {
 	user['edge_temp'] = await getUserEdge()
 	console.log('edgeuser:', user['edge_temp'])
 
-	asUpsert('auth', 'user', user)
+	asUpsert('user', user)
 
 	return FormSourceResponse(user)
 

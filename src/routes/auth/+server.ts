@@ -29,7 +29,7 @@ export async function POST({ request, cookies }) {
 			switch (formName) {
 				case 'auth_login':
 				case 'auth_verify_phone_mobile':
-					asDelete('auth', 'user')
+					asDelete('user')
 					rtnData = await processAuth(formName, source, data)
 					if (rtnData.hasOwnProperty('applicantId')) {
 						cookies.set('session_id', rtnData.applicantId, {

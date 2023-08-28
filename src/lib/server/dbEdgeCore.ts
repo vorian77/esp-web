@@ -82,7 +82,6 @@ export class EdgeQL {
 		})
 		script += scriptOrder ? ' ORDER BY ' + scriptOrder : ''
 
-		console.log('script:', script)
 		return script
 	}
 

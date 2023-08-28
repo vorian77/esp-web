@@ -2,6 +2,25 @@ import { getArray, strOptional, strRequired, valueOrDefault } from '$utils/utils
 
 export class Nav {
 	nodes: Array<NavNode> = []
+
+	constructor(type: NavNodeSource, nodes: any) {
+		switch (type) {
+			case NavNodeSource.DB:
+				nodes = getArray(nodes)
+				nodes.forEach((n) => {
+					this.nodes.push(new NavNode(n.type, n.id, n.name, n.label, n.icon, n.obj_id, n.obj_link))
+				})
+				break
+
+			case NavNodeSource.custom:
+				nodes = getArray(nodes)
+				const NODE_TYPE = 'page'
+				nodes.forEach((n) => {
+					this.nodes.push(new NavNode(NODE_TYPE, '', '', n[0], n[1], '', n[2]))
+				})
+				break
+		}
+	}
 }
 
 export class NavNode {
@@ -14,7 +33,7 @@ export class NavNode {
 	obj_link?: string
 
 	constructor(
-		type: string,
+		type: NaveNodeType,
 		id: string,
 		name: string,
 		label: string,
@@ -33,23 +52,21 @@ export class NavNode {
 	}
 }
 
-export class NavDB extends Nav {
-	constructor(nodes: any) {
-		super()
-		nodes = getArray(nodes)
-		nodes.forEach((n) => {
-			this.nodes.push(new NavNode(n.type, n.id, n.name, n.label, n.icon, n.obj_id, n.obj_link))
-		})
-	}
+export enum NavMode {
+	page = 'page',
+	footer = 'footer',
+	sidebar = 'sidebar',
+	popup = 'popup'
 }
 
-export class NavPage extends Nav {
-	constructor(nodes: any) {
-		super()
-		nodes = getArray(nodes)
-		const NODE_TYPE = 'page'
-		nodes.forEach((n) => {
-			this.nodes.push(new NavNode(NODE_TYPE, '', '', n[0], n[1], '', n[2]))
-		})
-	}
+export enum NavNodeSource {
+	DB = 'DB',
+	custom = 'custom'
+}
+
+export enum NaveNodeType {
+	form = 'form',
+	header = 'header',
+	page = 'page',
+	program = 'program'
 }

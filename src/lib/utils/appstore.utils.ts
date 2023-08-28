@@ -2,18 +2,16 @@ import { writable } from 'svelte/store'
 
 const { subscribe, set, update } = writable([])
 
-export const asDelete = (type, key) => {
-	const dataKey = getDataKey(type, key)
+export const asDelete = (key: string) => {
 	update((bus) => {
-		return bus.filter((i) => i.key !== dataKey)
+		return bus.filter((i) => i.key !== key)
 	})
 }
-export const asGet = (type, key) => {
-	const dataKey = getDataKey(type, key)
+export const asGet = (key: string) => {
 	let item
 	subscribe((value) => {
 		if (value) {
-			item = value.find((i) => i.key === dataKey)
+			item = value.find((i) => i.key === key)
 		}
 	})
 	return item ? item.value : {}
@@ -21,30 +19,18 @@ export const asGet = (type, key) => {
 const reset = () => {
 	set([])
 }
-export const asUpsert = (type, key, value) => {
-	asDelete(type, key)
-	const dataKey = getDataKey(type, key)
-	const newItem = { key: dataKey, value }
+export const asUpsert = (key: string, value: any) => {
+	asDelete(key)
+	const newItem = { key, value }
 	update((bus) => {
 		return [...bus, newItem]
 	})
 	return newItem
 }
-const getDataKey = (type, key) => {
-	return type + '.' + key
-}
-const getItemFieldValue = (type, key, fieldName) => {
-	const formData = asGet(type, key)
-	const field = formData.find((f) => f.name == fieldName)
-	if (field) {
-		return field.value
-	}
-	return undefined
-}
+
 export default {
 	del: asDelete,
 	get: asGet,
-	getItemFieldValue,
 	reset,
 	subscribe,
 	upsert: asUpsert
@@ -52,5 +38,5 @@ export default {
 
 // usage
 //import {asGet, asDelete, asUpsert} from '$lib/utils/utils'
-//asUpsert('auth', 'user', user)
-//asGet('auth', 'user')
+//asUpsert('user', user)
+//asGet('user')

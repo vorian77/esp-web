@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { User as UserObj } from '$comps/types'
+	import { NavMode, User as UserObj } from '$comps/types'
 	import SysUser from '$comps/User.svelte'
 	import CMUser from '$comps/UserCM.svelte'
 	import CMQuotes from '$comps/Quotes.svelte'
 	import Navigation from '$comps/Navigation.svelte'
+	import { NavNode } from '$comps/types'
 
 	const FILENAME = '/routes/apps/+layout.server.ts'
 
@@ -30,4 +31,4 @@
 	<CMQuotes quote={data.otherData.quote} />
 {/if}
 
-<Navigation mode={navMode} {nodes} />
+<Navigation mode={NavMode.page} {nodes} />

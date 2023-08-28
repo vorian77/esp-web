@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NavDB, NavPage, NavNode } from '$comps/types'
+	import { Nav, NavNode, NavMode, NavNodeSource, NaveNodeType } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 	import { drawerStore } from '@skeletonlabs/skeleton'
@@ -12,7 +12,7 @@
 	const navColor = '#3b79e1'
 	const itemColors = ['#f5f5f5', '#dedede']
 
-	export let mode: 'page' | 'footer' | 'sidebar' | 'popup'
+	export let mode: NavMode
 	export let nodes = []
 
 	// styling
@@ -24,8 +24,8 @@
 	let marginTopLabel = ''
 
 	switch (mode) {
-		case 'footer':
-			nav = new NavPage(nodes)
+		case NavMode.footer:
+			nav = new Nav(NavNodeSource.custom, nodes)
 			styleContainer += `
 				display: flex; 
 				flex-wrap: wrap; 
@@ -53,8 +53,8 @@
 			marginTopLabel = 'mt-1'
 			break
 
-		case 'page':
-			nav = new NavDB(nodes)
+		case NavMode.page:
+			nav = new Nav(NavNodeSource.DB, nodes)
 
 			styleContainer += `
 				display: flex; 
@@ -85,11 +85,11 @@
 			marginTopLabel += '-mt-1'
 			break
 
-		case 'popup':
+		case NavMode.popup:
 			break
 
-		case 'sidebar':
-			nav = new NavPage(nodes)
+		case NavMode.sidebar:
+			nav = new Nav(NavNodeSource.custom, nodes)
 			styleItem += `
 				display: flex;
 				align-items: center;		
@@ -102,29 +102,31 @@
 	}
 	async function navigate(node: NavNode) {
 		switch (node.type) {
-			case 'form':
+			case NaveNodeType.form:
 				alert(`form: ${node.label}`)
+				goto(node.obj_link)
+
 				break
 
-			case 'header':
+			case NaveNodeType.header:
 				alert(`header: ${node.label}`)
 				break
 
-			case 'page':
+			case NaveNodeType.page:
 				if ((mode = 'sidebar')) {
 					drawerStore.close()
 				}
 				goto(node.obj_link)
 				break
 
-			case 'program':
+			case NaveNodeType.program:
 				const responsePromise = await fetch('/api/dbEdge', {
 					method: 'POST',
 					body: JSON.stringify({ action: 'getNodesOfProgram', programId: node.id })
 				})
 				const response: FormSourceResponseType = await responsePromise.json()
 				console.log('newNodes:', response.data)
-				nav = new NavDB(response.data)
+				nav = new Nav(NavNodeSource.DB, response.data)
 				break
 
 			default:

@@ -16,12 +16,12 @@
 	let formElement: Form
 
 	onDestroy(() => {
-		asDelete('image', 'file')
+		asDelete('image_file')
 	})
 
 	async function onFormSubmitted(event) {
 		// data
-		const imgFile = asGet('image', 'file')
+		const imgFile = asGet('image_file')
 		if (!imgFile.name) {
 			toastStore.trigger({
 				message: 'No change made to uploaded image.',

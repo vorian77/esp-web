@@ -2,6 +2,7 @@
 	import { AppShell, Drawer, drawerStore, popup } from '@skeletonlabs/skeleton'
 	import type { DrawerSettings, PopupSettings } from '@skeletonlabs/skeleton'
 	import Navigation from '$comps/Navigation.svelte'
+	import { NavMode } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { goto } from '$app/navigation'
 
@@ -10,7 +11,6 @@
 
 	const rootLink = '/apps'
 	const footerLinks = [rootLink, '/apps/cm/contactUs', '/apps/account']
-	const navMode = 'footer'
 	const nodes = [
 		['Home', 'home', footerLinks[0]],
 		['Contact Us', 'contact-us', footerLinks[1]],
@@ -73,7 +73,7 @@
 
 	<svelte:fragment slot="footer">
 		<div style="border-top: 1px solid #f5f5f5;">
-			<Navigation mode={navMode} {nodes} />
+			<Navigation mode={NavMode.footer} {nodes} />
 		</div>
 	</svelte:fragment>
 </AppShell>

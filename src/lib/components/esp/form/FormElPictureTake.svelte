@@ -11,7 +11,7 @@
 	$: if (files) {
 		// file input on:change
 		const file: File = files[0]
-		asUpsert('image', 'file', file)
+		asUpsert('image_file', file)
 		field.value = URL.createObjectURL(file)
 	}
 
