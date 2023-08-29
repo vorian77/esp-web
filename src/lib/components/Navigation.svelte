@@ -5,6 +5,7 @@
 	import { drawerStore } from '@skeletonlabs/skeleton'
 	import { goto } from '$app/navigation'
 	import type { FormSourceResponseType } from '$comps/types'
+	import { asUpsert, asGet } from '$lib/utils/utils'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = '/$comps/Navigation.svelte'
@@ -103,8 +104,8 @@
 	async function navigate(node: NavNode) {
 		switch (node.type) {
 			case NaveNodeType.form:
-				alert(`form: ${node.label}`)
-				goto(node.obj_link)
+				asUpsert('formId', node.obj_id)
+				goto('/apps/form')
 
 				break
 
@@ -113,7 +114,7 @@
 				break
 
 			case NaveNodeType.page:
-				if ((mode = 'sidebar')) {
+				if ((mode = NavMode.sidebar)) {
 					drawerStore.close()
 				}
 				goto(node.obj_link)

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AppShell, Drawer, drawerStore, popup } from '@skeletonlabs/skeleton'
+	import { AppBar, AppShell, Avatar, Drawer, drawerStore, popup } from '@skeletonlabs/skeleton'
 	import type { DrawerSettings, PopupSettings } from '@skeletonlabs/skeleton'
 	import Navigation from '$comps/Navigation.svelte'
 	import { NavMode } from '$comps/types'
@@ -11,7 +11,7 @@
 
 	const rootLink = '/apps'
 	const footerLinks = [rootLink, '/apps/cm/contactUs', '/apps/account']
-	const nodes = [
+	const nodesFooter = [
 		['Home', 'home', footerLinks[0]],
 		['Contact Us', 'contact-us', footerLinks[1]],
 		['Account', 'profile', footerLinks[2]]
@@ -37,33 +37,48 @@
 	}
 </script>
 
-<AppShell>
+<AppShell slotSidebarLeft="w-0 md:w-52">
 	<svelte:fragment slot="header">
-		<div class="bg-neutral-50 p-4 w-full flex flex-row justify-between">
-			<div>
-				{#if !onFooterLink}
-					<div class="back-arrow -ml-2" on:click={goBack} on:keyup={goBack}>
-						<span style:cursor="pointer">
-							<Icon
-								name="arrow-left"
-								marginRight="-7"
-								width="1.5rem"
-								height="1.5rem"
-								fill={navColor}
-							/>
-							Back
-						</span>
-					</div>
-				{:else}
-					<div class="text-black" on:click={goHome} on:keyup={goHome}>
-						{user.app_name}
-					</div>
-				{/if}
-			</div>
+		<AppBar background="bg-neutral-200">
+			<svelte:fragment slot="lead">
+				<div class="md:hidden mr-2" on:click={menuHamburger} on:keyup={menuHamburger}>
+					<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill={navColor} />
+				</div>
 
-			<div on:click={menuHamburger} on:keyup={menuHamburger}>
-				<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill={navColor} />
-			</div>
+				<div>
+					<div>
+						{#if !onFooterLink}
+							<div class="back-arrow -ml-2" on:click={goBack} on:keyup={goBack}>
+								<span style:cursor="pointer">
+									<Icon
+										name="arrow-left"
+										marginRight="-7"
+										width="1.5rem"
+										height="1.5rem"
+										fill={navColor}
+									/>
+									Back
+								</span>
+							</div>
+						{:else}
+							<div class="text-black" on:click={goHome} on:keyup={goHome}>
+								{user.app_name}
+							</div>
+						{/if}
+					</div>
+				</div>
+			</svelte:fragment>
+			<svelte:fragment slot="trail">
+				<div on:click={menuHamburger} on:keyup={menuHamburger}>
+					<Avatar initials="PH" width="w-9" background="bg-primary-500" />
+				</div>
+			</svelte:fragment>
+		</AppBar>
+	</svelte:fragment>
+
+	<svelte:fragment slot="sidebarLeft">
+		<div class="p-2 bg-white">
+			<Navigation mode={NavMode.sidebar} nodes={nodesFooter} />
 		</div>
 	</svelte:fragment>
 
@@ -73,7 +88,7 @@
 
 	<svelte:fragment slot="footer">
 		<div style="border-top: 1px solid #f5f5f5;">
-			<Navigation mode={NavMode.footer} {nodes} />
+			<Navigation mode={NavMode.footer} nodes={nodesFooter} />
 		</div>
 	</svelte:fragment>
 </AppShell>
