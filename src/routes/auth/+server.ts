@@ -76,9 +76,9 @@ export async function POST({ request, cookies }) {
 	}
 
 	function getOrgId(url: string) {
-		let host = url.substring(url.indexOf('://') + 3, url.lastIndexOf('/auth'))
-		host = host.startsWith('localhost') ? 'local' : host.split('.')[0]
 		const orgData = JSON.parse(getEnvVar('ESP_ORG_LIST'))
-		return orgData[host]
+		let host = url.substring(url.indexOf('://') + 3, url.lastIndexOf('/auth'))
+		host = host.split('.')[0]
+		return orgData[host] ? orgData[host] : orgData['default']
 	}
 }
