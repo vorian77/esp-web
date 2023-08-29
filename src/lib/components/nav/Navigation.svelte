@@ -140,8 +140,10 @@
 	}
 </script>
 
+{$page.url.pathname}
 <div id="container" style={styleContainer}>
 	{#each nav.nodes as node, i}
+		Link: {node.link}
 		<div
 			style={node.link == $page.url.pathname ? styleItemActive : styleItem}
 			on:click={() => navigate(node)}

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { AppBar, AppShell, Avatar, Drawer, drawerStore, popup } from '@skeletonlabs/skeleton'
 	import type { DrawerSettings, PopupSettings } from '@skeletonlabs/skeleton'
-	import Navigation from '$comps/Navigation.svelte'
+	import NavFooter from '$comps/nav/NavFooter.svelte'
+	import NavTree from '$comps/nav/NavTree.svelte'
 	import { NavMode } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { goto } from '$app/navigation'
@@ -11,11 +12,6 @@
 
 	const rootLink = '/apps'
 	const footerLinks = [rootLink, '/apps/cm/contactUs', '/apps/account']
-	const nodesFooter = [
-		['Home', 'home', footerLinks[0]],
-		['Contact Us', 'contact-us', footerLinks[1]],
-		['Account', 'profile', footerLinks[2]]
-	]
 
 	$: onFooterLink = footerLinks.includes(routeId)
 
@@ -35,7 +31,17 @@
 	function goHome() {
 		goto(rootLink)
 	}
+	const popupClick: PopupSettings = {
+		event: 'click',
+		target: 'popupClick',
+		placement: 'bottom'
+	}
+	function userPopup(): void {}
 </script>
+
+<div class="card p-4" data-popup="popupClick">
+	<a href="/logout">Logout</a>
+</div>
 
 <AppShell slotSidebarLeft="w-0 md:w-52">
 	<svelte:fragment slot="header">
@@ -69,8 +75,9 @@
 				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<div on:click={menuHamburger} on:keyup={menuHamburger}>
-					<Avatar initials="PH" width="w-9" background="bg-primary-500" />
+				<!-- <button class="btn variant-filled" use:popup={popupClick}>Popup</button> -->
+				<div on:click={userPopup} on:keyup={userPopup} use:popup={popupClick}>
+					<Avatar initials={user.initials} width="w-9" background="bg-primary-400" />
 				</div>
 			</svelte:fragment>
 		</AppBar>
@@ -78,7 +85,7 @@
 
 	<svelte:fragment slot="sidebarLeft">
 		<div class="p-2 bg-white">
-			<Navigation mode={NavMode.sidebar} nodes={nodesFooter} />
+			<NavTree />
 		</div>
 	</svelte:fragment>
 
@@ -88,7 +95,7 @@
 
 	<svelte:fragment slot="footer">
 		<div style="border-top: 1px solid #f5f5f5;">
-			<Navigation mode={NavMode.footer} nodes={nodesFooter} />
+			<NavFooter />
 		</div>
 	</svelte:fragment>
 </AppShell>

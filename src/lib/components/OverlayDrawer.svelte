@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { drawerStore, Drawer } from '@skeletonlabs/skeleton'
 	import Form from '$comps/esp/form/FormDetail.svelte'
-	import Navigation from '$comps/Navigation.svelte'
+	import NavTree from '$comps/nav/NavTree.svelte'
 	import { NavMode, NavNode } from '$comps/types'
 
 	const user = {}
@@ -24,7 +24,7 @@
 
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'navSide'}
-		<Navigation mode={NavMode.sidebar} {nodes} />
+		<NavTree mode={NavMode.sidebar} {nodes} />
 	{:else if $drawerStore.id === 'auth'}
 		<div>
 			<Form

@@ -3,8 +3,14 @@
 	import SysUser from '$comps/User.svelte'
 	import CMUser from '$comps/UserCM.svelte'
 	import CMQuotes from '$comps/Quotes.svelte'
-	import Navigation from '$comps/Navigation.svelte'
+	import NavPage from '$comps/nav/NavPage.svelte'
 	import { NavNode } from '$comps/types'
+	import {
+		navNodesBranch,
+		navNodesTraversal,
+		setBranchByDBNodes,
+		setBranchChildren
+	} from '$comps/nav/navStore'
 
 	const FILENAME = '/routes/apps/+layout.server.ts'
 
@@ -15,8 +21,7 @@
 	const showCMUser = user.hasResourceWidget('hsw_cm_user')
 	const showCMQuotes = user.hasResourceWidget('hsw_cm_quotes')
 
-	const navMode = 'page'
-	const nodes = data.user.edge_temp.resource_programs
+	setBranchByDBNodes(data.user.edge_temp.resource_programs)
 </script>
 
 {#if showSysUser}
@@ -31,4 +36,4 @@
 	<CMQuotes quote={data.otherData.quote} />
 {/if}
 
-<Navigation mode={NavMode.page} {nodes} />
+<NavPage />
