@@ -1,10 +1,12 @@
 <script lang="ts">
 	// ovelay - modal
-	import { Modal, modalStore } from '@skeletonlabs/skeleton'
+	import { Modal, getModalStore } from '@skeletonlabs/skeleton'
 	import type { ModalComponent } from '@skeletonlabs/skeleton'
 
 	// COMPONENTS
 	import ListboxSelectSingle from '$comps/ListboxSelectSingle.svelte'
+
+	const modalStore = getModalStore()
 
 	// const modalComponentRegistry: Record<string, ModalComponent> = {
 	// 	// custom modal 1

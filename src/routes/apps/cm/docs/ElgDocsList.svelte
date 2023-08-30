@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { modalStore } from '@skeletonlabs/skeleton'
+	import { getModalStore } from '@skeletonlabs/skeleton'
 	import type { ModalSettings, ModalComponent } from '@skeletonlabs/skeleton'
 	import ElgDocRec from './ElgDocRec.svelte'
 
 	export let docsStatus: Array<{}> = []
+
+	const modalStore = getModalStore()
 
 	let formDefn = {}
 

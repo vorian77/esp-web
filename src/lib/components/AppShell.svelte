@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AppBar, AppShell, Avatar, Drawer, drawerStore, popup } from '@skeletonlabs/skeleton'
+	import { AppBar, AppShell, Avatar, Drawer, getDrawerStore, popup } from '@skeletonlabs/skeleton'
 	import type { DrawerSettings, PopupSettings } from '@skeletonlabs/skeleton'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
@@ -10,6 +10,7 @@
 	export let user = {}
 	export let routeId = '/'
 
+	const drawerStore = getDrawerStore()
 	const rootLink = '/apps'
 	const footerLinks = [rootLink, '/apps/cm/contactUs', '/apps/account']
 

@@ -2,12 +2,12 @@
 	import AuthPage from '$routes/auth/AuthPage.svelte'
 	import logo from '$assets/YO-Baltimore-logo.png'
 
-	const FILENAME = 'routes/welcome/+page.svelte'
+	const FILENAME = 'routes/+page.svelte'
 
 	export let data
 	let pageCurrent = ''
 </script>
-
+	
 <AuthPage bind:data bind:pageCurrent />
 
 <div id="full-screen" class="container">

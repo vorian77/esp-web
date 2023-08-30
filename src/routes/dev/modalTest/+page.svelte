@@ -1,7 +1,9 @@
 <script lang="ts">
 	import ListboxSelectSingle from '$comps/ListboxSelectSingle.svelte'
-	import { Modal, modalStore } from '@skeletonlabs/skeleton'
+	import { Modal, getModalStore } from '@skeletonlabs/skeleton'
 	import type { ModalSettings, ModalComponent } from '@skeletonlabs/skeleton'
+
+const modalStore = getModalStore()
 
 	function onChange() {
 		alert('changed...')

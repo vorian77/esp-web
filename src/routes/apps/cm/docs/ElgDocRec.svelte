@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { modalStore } from '@skeletonlabs/skeleton'
+	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { Form as FormClass } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/FormDetail.svelte'
 	import type { FormSourceResponseType } from '$comps/types.js'
 	import { asDelete, asGet } from '$lib/utils/utils'
-	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton'
+
 	import { onDestroy } from 'svelte'
 	import { error } from '@sveltejs/kit'
 
@@ -14,6 +14,8 @@
 
 	let formObj = new FormClass(formDefn)
 	let formElement: Form
+	const modalStore = getModalStore()
+	const toastStore = getToastStore()
 
 	onDestroy(() => {
 		asDelete('image_file')

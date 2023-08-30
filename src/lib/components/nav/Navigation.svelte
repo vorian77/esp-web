@@ -2,7 +2,7 @@
 	import { Nav, NavNode, NavMode, NavNodeSource, NaveNodeType } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
-	import { drawerStore } from '@skeletonlabs/skeleton'
+	import { getDrawerStore } from '@skeletonlabs/skeleton'
 	import { goto } from '$app/navigation'
 	import type { FormSourceResponseType } from '$comps/types'
 	import { asUpsert, asGet } from '$lib/utils/utils'
@@ -15,6 +15,7 @@
 
 	export let mode: NavMode
 	export let nodes = []
+	const drawerStore = getDrawerStore()
 
 	// styling
 	let nav: any

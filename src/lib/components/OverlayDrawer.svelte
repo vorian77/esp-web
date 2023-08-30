@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { drawerStore, Drawer } from '@skeletonlabs/skeleton'
+	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
 	import Form from '$comps/esp/form/FormDetail.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
 	import { NavMode, NavNode } from '$comps/types'
 
 	const user = {}
 	const nodes = [['Logout', 'logout', '/logout']]
+	const drawerStore = getDrawerStore()
 
 	function onformCancelled() {
 		$drawerStore.meta.onCloseDrawer()

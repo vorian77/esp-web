@@ -2,8 +2,8 @@
 	import { Form as FormClass } from '$comps/esp/form/form'
 
 	import { goto } from '$app/navigation'
-	import { drawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
-	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton'
+	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/authPage.svelte'
@@ -14,6 +14,8 @@
 	let verifyFrom = ''
 	let securityCodePhone = ''
 	let securityCode = 0
+	const drawerStore = getDrawerStore()
+	const toastStore = getToastStore()
 
 	const authForms = ['auth_login', 'auth_signup', 'auth_verify_phone_mobile', 'auth_reset_password']
 	let forms = initForms(authForms)
