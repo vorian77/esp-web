@@ -4,11 +4,14 @@
 	import Form from '$comps/esp/form/FormDetail.svelte'
 	import ElgDocsList from '$routes/apps/cm/docs/ElgDocsList.svelte'
 	import AddressSelect from '$comps/AddressSelect.svelte'
-	import { toastStore } from '@skeletonlabs/skeleton'
+	import { getToastStore } from '@skeletonlabs/skeleton'
+
 	import { onMount } from 'svelte'
 
 	export let data
 	const docsStatus = data.docsStatus
+	const toastStore = getToastStore()
+
 	let cm_ssr_site: number = 0
 
 	onMount(() => {

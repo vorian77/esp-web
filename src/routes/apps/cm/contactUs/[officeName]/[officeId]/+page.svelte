@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { Form as FormClass } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/FormDetail.svelte'
-	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton'
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { goto } from '$app/navigation'
 
 	export let data
+
+	const toastStore = getToastStore()
 
 	const formDefn = data.formDefn
 	let formObj = new FormClass(formDefn)
