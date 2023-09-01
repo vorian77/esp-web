@@ -1,6 +1,20 @@
-<script>
+<script lang="ts">
+	import { onMount } from 'svelte'
+	import type { FormSourceResponseType } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
-	export let quote
+
+	let quote: any = {}
+
+	onMount(() => {
+		async function getQuote() {
+			const responsePromise = await fetch('/api/quote', {
+				method: 'POST'
+			})
+			const response: FormSourceResponseType = await responsePromise.json()
+			quote = response.data
+		}
+		getQuote()
+	})
 </script>
 
 <div class="rounded-lg p-3 mb-3 bg-neutral-100">

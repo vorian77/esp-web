@@ -21,7 +21,7 @@
 		asDelete('image_file')
 	})
 
-	async function onFormSubmitted(event) {
+	async function onFormSubmitted(event: CustomEvent) {
 		// data
 		const imgFile = asGet('image_file')
 		if (!imgFile.name) {

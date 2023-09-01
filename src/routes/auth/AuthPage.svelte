@@ -49,7 +49,7 @@
 		}
 	}
 
-	async function onFormSubmitted(event) {
+	async function onFormSubmitted(event: CustomEvent) {
 		const { formName } = event.detail
 
 		switch (formName) {
@@ -110,7 +110,7 @@
 		})
 	}
 
-	async function onFormLink(event) {
+	async function onFormLink(event: CustomEvent) {
 		// switch page
 		if (Object.keys(forms).some((key) => key === event.detail)) {
 			pageCurrent = event.detail

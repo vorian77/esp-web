@@ -9,7 +9,7 @@
 
 	let formObjAccount = new FormClass(data.auth_account)
 
-	async function onFormSubmitted(event) {
+	async function onFormSubmitted(event: CustomEvent) {
 		const { formName } = event.detail
 		changeForm(formName, formObjAccount)
 	}

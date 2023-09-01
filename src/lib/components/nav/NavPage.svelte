@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { navNodesBranch, setBranchChildren } from '$comps/nav/navStore'
-	import { NavNode, NaveNodeType } from '$comps/types'
+	import { navNodesBranch, selectNode } from '$comps/nav/navStore'
+	import { NavNode, NavNodeType } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
@@ -43,21 +43,21 @@
 
 	async function navigate(node: NavNode) {
 		switch (node.type) {
-			case NaveNodeType.form:
+			case NavNodeType.form:
 				asUpsert('formId', node.obj_id)
 				goto('/apps/form')
 				break
 
-			case NaveNodeType.header:
+			case NavNodeType.header:
 				alert(`header: ${node.label}`)
 				break
 
-			case NaveNodeType.page:
+			case NavNodeType.page:
 				goto(node.obj_link)
 				break
 
-			case NaveNodeType.program:
-				setBranchChildren(node.id)
+			case NavNodeType.program:
+				selectNode(node)
 				break
 
 			default:
@@ -73,6 +73,8 @@
 <div id="container" style={styleContainer}>
 	{#each $navNodesBranch as node, i}
 		<div
+			role="button"
+			tabindex="0"
 			style={node.link == $page.url.pathname ? styleItemActive : styleItem}
 			on:click={() => navigate(node)}
 			on:keyup={() => navigate(node)}

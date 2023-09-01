@@ -19,6 +19,7 @@ export default {
 		typography,
 		skeleton({
 			themes: {
+				preset: ['skeleton'],
 				custom: [tailwindThemeESP]
 			}
 		})

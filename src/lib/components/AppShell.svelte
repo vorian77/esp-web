@@ -1,22 +1,36 @@
 <script lang="ts">
+	import { onMount } from 'svelte'
 	import { AppBar, AppShell, Avatar, Drawer, getDrawerStore, popup } from '@skeletonlabs/skeleton'
 	import type { DrawerSettings, PopupSettings } from '@skeletonlabs/skeleton'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
-	import { NavMode } from '$comps/types'
+	import { NavMode, NavNode } from '$comps/types'
+	import { navNodesTree, navNodesTraversal, initTree, selectNode } from '$comps/nav/navStore'
 	import Icon from '$comps/Icon.svelte'
 	import { goto } from '$app/navigation'
 
 	export let user = {}
 	export let routeId = '/'
+	let navTree: NavTree
 
 	const drawerStore = getDrawerStore()
 	const rootLink = '/apps'
 	const footerLinks = [rootLink, '/apps/cm/contactUs', '/apps/account']
 
+	onMount(() => {
+		// setBranchByDBNodes(user.edge_temp.resource_programs)
+		// const nodes = $navNodesBranch
+		// navTree.loadBranch(-1, $navNodesBranch)
+	})
+
 	$: onFooterLink = footerLinks.includes(routeId)
 
 	const navColor = '#3b79e1'
+
+	function onTreeNodeSelected(event: CustomEvent) {
+		const node = event.detail
+		alert(`nodeSelected: ${node.label}`)
+	}
 
 	function menuHamburger(): void {
 		const settings: DrawerSettings = {
@@ -48,14 +62,26 @@
 	<svelte:fragment slot="header">
 		<AppBar background="bg-neutral-200">
 			<svelte:fragment slot="lead">
-				<div class="md:hidden mr-2" on:click={menuHamburger} on:keyup={menuHamburger}>
+				<div
+					role="button"
+					tabindex="0"
+					class="md:hidden mr-2"
+					on:click={menuHamburger}
+					on:keyup={menuHamburger}
+				>
 					<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill={navColor} />
 				</div>
 
 				<div>
 					<div>
 						{#if !onFooterLink}
-							<div class="back-arrow -ml-2" on:click={goBack} on:keyup={goBack}>
+							<div
+								role="button"
+								tabindex="0"
+								class="back-arrow -ml-2"
+								on:click={goBack}
+								on:keyup={goBack}
+							>
 								<span style:cursor="pointer">
 									<Icon
 										name="arrow-left"
@@ -68,7 +94,13 @@
 								</span>
 							</div>
 						{:else}
-							<div class="text-black" on:click={goHome} on:keyup={goHome}>
+							<div
+								role="button"
+								tabindex="0"
+								class="text-black"
+								on:click={goHome}
+								on:keyup={goHome}
+							>
 								{user.app_name}
 							</div>
 						{/if}
@@ -76,8 +108,13 @@
 				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<!-- <button class="btn variant-filled" use:popup={popupClick}>Popup</button> -->
-				<div on:click={userPopup} on:keyup={userPopup} use:popup={popupClick}>
+				<div
+					role="button"
+					tabindex="0"
+					on:click={userPopup}
+					on:keyup={userPopup}
+					use:popup={popupClick}
+				>
 					<Avatar initials={user.initials} width="w-9" background="bg-primary-400" />
 				</div>
 			</svelte:fragment>
@@ -86,12 +123,13 @@
 
 	<svelte:fragment slot="sidebarLeft">
 		<div class="p-2 bg-white">
-			<NavTree />
+			<NavTree bind:this={navTree} on:onNodeSelected={onTreeNodeSelected} />
 		</div>
 	</svelte:fragment>
 
 	<div class="container mx-auto p-4">
 		<slot name="body" />
+		<pre>{JSON.stringify($navNodesTree, null, 2)}</pre>
 	</div>
 
 	<svelte:fragment slot="footer">

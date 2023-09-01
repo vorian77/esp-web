@@ -7,7 +7,7 @@
 	export let data
 	let pageCurrent = ''
 </script>
-	
+
 <AuthPage bind:data bind:pageCurrent />
 
 <div id="full-screen" class="container">

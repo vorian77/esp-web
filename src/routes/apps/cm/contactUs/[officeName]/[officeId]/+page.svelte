@@ -9,7 +9,7 @@
 	const formDefn = data.formDefn
 	let formObj = new FormClass(formDefn)
 
-	async function onFormSubmitted(event) {
+	async function onFormSubmitted(event: CustomEvent) {
 		const respData = event.detail
 		if (respData?.statusCode == 202) {
 			toast('We received your message and will get back with you soon!', 'variant-filled-secondary')

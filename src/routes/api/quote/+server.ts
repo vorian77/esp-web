@@ -1,7 +1,9 @@
 import { API_NINJAS_SECRET } from '$env/static/private'
-import { valueOrDefault, getResponseObj } from '$utils/utils'
+import { processForm } from '$server/dbForm'
+import { FormSourceResponse } from '$comps/types'
+
 const CATEGORIES = ['inspirational', 'courage']
-// const categories = [
+// const CATEGORIES = [
 // 	'amazing',
 // 	'art',
 // 	'beauty',
@@ -48,13 +50,13 @@ const COLORS = [
 	'#495a8f'
 ]
 
-export async function fetchQuote() {
-	const productionMode = true
+export async function POST({ request }) {
 	let quotes = []
 
-	const categoryIdx = Math.floor(Math.random() * (CATEGORIES.length + 1))
-	const api = 'https://api.api-ninjas.com/v1/quotes?limit=1&category=' + CATEGORIES[categoryIdx]
-	const demoQuote = {
+	const COLOR = { color: COLORS[Math.floor(Math.random() * COLORS.length)] }
+	const CATEGORY_IDX = Math.floor(Math.random() * (CATEGORIES.length + 1))
+	const API = 'https://api.api-ninjas.com/v1/quotes?limit=1&category=' + CATEGORIES[CATEGORY_IDX]
+	const DEMO_QUOTE = {
 		quote:
 			'If you accept the expectations of others, especially negative ones, then you never will change the outcome.',
 		author: 'Michael Jordon',
@@ -62,7 +64,7 @@ export async function fetchQuote() {
 	}
 
 	async function getQuote() {
-		const quotesRes = await fetch(api, {
+		const quotesRes = await fetch(API, {
 			method: 'GET',
 			headers: {
 				'X-API-KEY': API_NINJAS_SECRET,
@@ -70,14 +72,11 @@ export async function fetchQuote() {
 			}
 		})
 		quotes = await quotesRes.json()
-		const quote = quotes.length > 0 ? quotes[0] : demoQuote
-		//quotes = [...quotes, demoQuote]
+		const quote = quotes.length > 0 ? quotes[0] : DEMO_QUOTE
 		return quote
-		//return demoQuote
+		// return DEMO_QUOTE
 	}
 
 	const quote = await getQuote()
-	const color = { color: COLORS[Math.floor(Math.random() * COLORS.length)] }
-
-	return { ...quote, ...color }
+	return FormSourceResponse({ ...quote, ...COLOR })
 }
