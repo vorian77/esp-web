@@ -18,11 +18,14 @@
 	}
 </script>
 
-<div class="bg-slate-300 p-1 rounded-md">Features:</div>
+<div class="bg-slate-300 p-1">Features:</div>
 
 <div id="container">
 	{#each $navNodesTree as node, i}
-		{@const cls = `indent-${node.indent * 3} ${node.selected ? 'bg-blue-300 text-white' : ''}`}
+		<!-- {@const cls = `indent-${node.indent * 3} ${node.selected ? 'bg-blue-300 text-white' : ''}`} -->
+		{@const cls = `ml-${[0, 2, 4, 6, 8, 10, 12][node.indent]} ${
+			node.selected ? 'bg-blue-300 text-white' : ''
+		}`}
 		<div
 			role="button"
 			tabindex="0"
