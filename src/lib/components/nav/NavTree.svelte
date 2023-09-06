@@ -13,20 +13,23 @@
 	}
 </script>
 
-<div class="bg-slate-300 rounded-lg p-1 mb-1">Features:</div>
+<div class="mx-2 mb-2">
+	<div class="bg-slate-300 rounded-lg p-1 mb-1">Features:</div>
 
-<div>
-	{#each $navNodesTree as node, i}
-		{@const rowIndent = `ml-${[0, 4, 8, 12, 16][node.indent]}`}
-		<div
-			class={rowIndent}
-			role="button"
-			tabindex="0"
-			on:click={() => processNode(node)}
-			on:keyup={() => processNode(node)}
-		>
-			{node.label}
-			{rowIndent}
-		</div>
-	{/each}
+	<div>
+		{#each $navNodesTree as node, i}
+			{@const rowIndent = `ml-${[0, 4, 8, 12, 16][node.indent]}`}
+			<div
+				class="ml-6 p-1 mb-1 hover:bg-blue-400 rounded-lg
+				{node.selected ? 'bg-blue-300 text-white' : ''}"
+				role="button"
+				tabindex="0"
+				on:click={() => processNode(node)}
+				on:keyup={() => processNode(node)}
+			>
+				{node.label}
+				{rowIndent}
+			</div>
+		{/each}
+	</div>
 </div>

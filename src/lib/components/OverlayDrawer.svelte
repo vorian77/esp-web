@@ -31,7 +31,7 @@
 			/>
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}
-		<div class="p-4">
+		<div class="p-2">
 			<NavTree on:nodeProcessed={closeDrawer} />
 		</div>
 	{:else if $drawerStore.id === 'navRight'}
