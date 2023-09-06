@@ -1,8 +1,7 @@
 const FILENAME = '/routes/apps/+layout.server.ts'
 
-export async function load({ locals, route }) {
+export async function load({ locals }) {
 	return {
-		user: locals.user,
-		routeId: route.id
+		user: locals.user
 	}
 }

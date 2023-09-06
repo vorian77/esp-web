@@ -30,13 +30,13 @@
 				on:form-link={$drawerStore.meta.onFormLink}
 			/>
 		</div>
-	{:else if $drawerStore.id === 'navSide'}
+	{:else if $drawerStore.id === 'navLeft'}
 		<div class="p-4">
-			<NavTree
-				bind:this={$drawerStore.meta.menu}
-				on:onNodeSelected={$drawerStore.meta.onNodeSelected}
-				nodes={$drawerStore.meta.nodes}
-			/>
+			<NavTree />
+		</div>
+	{:else if $drawerStore.id === 'navRight'}
+		<div class="p-4">
+			<a href="/logout">Logout</a>
 		</div>
 	{/if}
 </Drawer>

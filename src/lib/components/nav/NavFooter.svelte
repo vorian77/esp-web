@@ -1,18 +1,23 @@
 <script lang="ts">
+	import { processNodeLink } from '$comps/nav/navStore'
+	import { NavNode, NavNodeType } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
-	import { goto } from '$app/navigation'
 
 	const FILENAME = '/$comps/NavFooter.svelte'
 
 	const navColor = '#3b79e1'
 	const itemColors = ['#f5f5f5', '#dedede']
 
-	const nodesFooter = [
+	let nodesFooter: Array<NavNode> = []
+	const nodesConfig = [
 		['Home', 'home', '/apps'],
 		['Contact Us', 'contact-us', '/apps/cm/contactUs'],
 		['Account', 'profile', '/apps/account']
 	]
+	nodesConfig.forEach((n: any) => {
+		nodesFooter.push(new NavNode(NavNodeType.page, undefined, n[2], n[0], n[0], n[1], '', n[2]))
+	})
 
 	// styling
 	const styleContainer = `
@@ -40,24 +45,22 @@
 		`
 				border-top: 1px solid ${navColor};`
 	const marginTopLabel = 'mt-1'
-
-	async function navigate(link: string) {
-		goto(link)
-	}
 </script>
 
 <div id="container" style={styleContainer}>
 	{#each nodesFooter as node, i}
 		<div
-			style={node[2] == $page.url.pathname ? styleItemActive : styleItem}
-			on:click={() => navigate(node[2])}
-			on:keyup={() => navigate(node[2])}
+			role="button"
+			tabindex="0"
+			style={node.obj_link == $page.url.pathname ? styleItemActive : styleItem}
+			on:click={() => processNodeLink(node, true)}
+			on:keyup={() => processNodeLink(node, true)}
 		>
 			<div class="mt-2">
-				<Icon name={node[1]} width="1.0rem" height="1.0rem" fill={navColor} />
+				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={navColor} />
 			</div>
 			<div class={marginTopLabel}>
-				{node[0]}
+				{node.label}
 			</div>
 		</div>
 	{/each}

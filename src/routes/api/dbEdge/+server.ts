@@ -1,14 +1,6 @@
 import { getURLUpload, getURLDownload } from '$server/apiAWS'
-import {
-	FormSource,
-	FormSourceAction,
-	FormSourceDBAction,
-	FormSourceItem,
-	FormSourceItemSource,
-	FormSourceResponse,
-	FormSourceTarget
-} from '$comps/types'
-import { getNodesOfProgram } from '$server/dbEdge'
+import { FormSourceResponse } from '$comps/types'
+import { getNodesByParent } from '$server/dbEdge'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/api/dbEdge/server.ts'
@@ -16,8 +8,8 @@ const FILENAME = '/routes/api/dbEdge/server.ts'
 export async function POST({ request }) {
 	const requestData = await request.json()
 	switch (requestData.action) {
-		case 'getNodesOfProgram':
-			return FormSourceResponse(await getNodesOfProgram(requestData.programId))
+		case 'getNodesByParent':
+			return FormSourceResponse(await getNodesByParent(requestData.parentNodeId))
 			break
 
 		default:

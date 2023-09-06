@@ -1,11 +1,7 @@
 <script lang="ts">
-	import { navNodesBranch, selectNode } from '$comps/nav/navStore'
-	import { NavNode, NavNodeType } from '$comps/types'
+	import { navNodesBranch, processNodeTree } from '$comps/nav/navStore'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
-	import { goto } from '$app/navigation'
-	import { asUpsert, asGet } from '$lib/utils/utils'
-	import { error } from '@sveltejs/kit'
 
 	const FILENAME = '/$comps/nav/NavPage.svelte'
 
@@ -40,34 +36,6 @@
 		`
 				background-color: ${ITEM_COLORS[1]};`
 	const marginTopLabel = '-mt-1'
-
-	async function navigate(node: NavNode) {
-		switch (node.type) {
-			case NavNodeType.form:
-				asUpsert('formId', node.obj_id)
-				goto('/apps/form')
-				break
-
-			case NavNodeType.header:
-				alert(`header: ${node.label}`)
-				break
-
-			case NavNodeType.page:
-				goto(node.obj_link)
-				break
-
-			case NavNodeType.program:
-				selectNode(node)
-				break
-
-			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'navigate',
-					message: `No case defined for node type: ${node.type}.`
-				})
-		}
-	}
 </script>
 
 <div id="container" style={styleContainer}>
@@ -76,8 +44,8 @@
 			role="button"
 			tabindex="0"
 			style={node.link == $page.url.pathname ? styleItemActive : styleItem}
-			on:click={() => navigate(node)}
-			on:keyup={() => navigate(node)}
+			on:click={() => processNodeTree(node)}
+			on:keyup={() => processNodeTree(node)}
 		>
 			<div class="mt-2">
 				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={NAV_COLOR} />

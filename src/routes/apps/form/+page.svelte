@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { asUpsert, asGet } from '$lib/utils/utils'
-	export let data
-
-	let user = data.user
-	// let formId = data.formId
-	let formId = asGet('formId')
+	import { navNodeCurrent } from '$comps/nav/navStore'
+	import NavBack from '$comps/nav/NavBack.svelte'
 </script>
 
-FormId: {JSON.stringify(formId)}
+<h1>Form</h1>
+SelectedNode:
+<pre>{JSON.stringify($navNodeCurrent, null, 2)}</pre>

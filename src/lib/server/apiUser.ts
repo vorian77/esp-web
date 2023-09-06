@@ -24,7 +24,7 @@ export async function getUser(userId: string, retrieveFromStorage: boolean) {
 	user = await getUserESP()
 
 	// <temp> 230819 - add edgedb user info until replaced by edgedb
-	user['edge_temp'] = await getUserEdge()
+	user['edge_temp'] = await getUserEdge('user_sys')
 	console.log('edgeuser:', user['edge_temp'])
 
 	asUpsert('user', user)
