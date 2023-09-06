@@ -15,20 +15,17 @@
 
 <div class="bg-slate-300 rounded-lg p-1 mb-1">Features:</div>
 
-<div id="container">
+<div>
 	{#each $navNodesTree as node, i}
-		<!-- {@const cls = `indent-${node.indent * 3} ${node.selected ? 'bg-blue-300 text-white' : ''}`} -->
 		{@const rowIndent = `ml-${[0, 4, 8, 12, 16][node.indent]}`}
 		<div
-			class="{rowIndent} p-1 mb-1 hover:bg-blue-400 rounded-lg
-			{node.selected ? 'bg-blue-300 text-white' : ''}"
+			class={rowIndent}
 			role="button"
 			tabindex="0"
 			on:click={() => processNode(node)}
 			on:keyup={() => processNode(node)}
 		>
 			{node.label}
-			{node.indent}
 			{rowIndent}
 		</div>
 	{/each}
