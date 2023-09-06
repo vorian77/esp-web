@@ -18,13 +18,10 @@
 <div id="container">
 	{#each $navNodesTree as node, i}
 		<!-- {@const cls = `indent-${node.indent * 3} ${node.selected ? 'bg-blue-300 text-white' : ''}`} -->
-		{@const cls = `
-			ml-${[0, 4, 8, 12, 16][node.indent]}
-		`}
+		{@const rowIndent = `ml-${[0, 4, 8, 12, 16][node.indent]}`}
 		<div
-			class="{cls} p-1 mb-1 hover:bg-blue-400 rounded-lg"
-			class:bg-blue-300={node.selected}
-			class:text-white={node.selected}
+			class="{rowIndent} p-1 mb-1 hover:bg-blue-400 rounded-lg
+			{node.selected ? 'bg-blue-300 text-white' : ''}"
 			role="button"
 			tabindex="0"
 			on:click={() => processNode(node)}
@@ -32,6 +29,7 @@
 		>
 			{node.label}
 			{node.indent}
+			{rowIndent}
 		</div>
 	{/each}
 </div>
