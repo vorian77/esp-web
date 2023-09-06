@@ -13,7 +13,7 @@
 	}
 </script>
 
-<div class="mx-2 mb-2">
+<div class="mx-2 mb-2 text-sm">
 	<div class="bg-slate-300 rounded-lg p-1 mb-1">Features:</div>
 
 	<div>
