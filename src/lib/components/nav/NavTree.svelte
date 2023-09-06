@@ -18,9 +18,9 @@
 
 	<div>
 		{#each $navNodesTree as node, i}
-			{@const rowIndent = `ml-${[0, 4, 8, 12, 16][node.indent]}`}
+			{@const rowIndent = [0, 4, 8, 12, 16][node.indent]}
 			<div
-				class="ml-6 p-1 mb-1 hover:bg-blue-400 rounded-lg
+				class="ml-{rowIndent} p-1 mb-1 hover:bg-blue-400 rounded-lg
 				{node.selected ? 'bg-blue-300 text-white' : ''}"
 				role="button"
 				tabindex="0"
