@@ -1,4 +1,5 @@
 <script lang="ts">
+	import NavTreeItem from '$comps/nav/NavTreeItem.svelte'
 	import { navNodesTree, processNodeTree } from '$comps/nav/navStore'
 	import type { NavNode } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
@@ -42,16 +43,10 @@
 					{node.label}
 				</div>
 			{:else if node.indent === 2}
-				<div
-					class="ml-8 p-1 mb-1 hover:bg-blue-400 rounded-lg
-				{node.selected ? 'bg-blue-300 text-white' : ''}"
-					role="button"
-					tabindex="0"
-					on:click={() => processNode(node)}
-					on:keyup={() => processNode(node)}
-				>
-					{node.label}
-				</div>{/if}
+				<div class="">
+					<NavTreeItem {node} indent={'ml-8'} />
+				</div>
+			{/if}
 		{/each}
 	</div>
 </div>
