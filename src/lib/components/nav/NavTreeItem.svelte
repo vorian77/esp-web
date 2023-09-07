@@ -1,4 +1,6 @@
 <script lang="ts">
+	// 230806 - created outside of "NavTree.svelte" because the computed indent "ml-x"
+	// did not work in deployment
 	import { processNodeTree } from '$comps/nav/navStore'
 	import type { NavNode } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
