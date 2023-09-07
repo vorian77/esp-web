@@ -10,19 +10,22 @@
 
 	<div>
 		{#each $navNodesTree as node, i}
-			{#if node.indent === 0}
+			{@const indent = `ml-${node.indent * 4}`}
+			<NavTreeItem on:nodeProcessed {node} {indent} />
+
+			<!-- {#if node.indent === 0}
 				<NavTreeItem on:nodeProcessed {node} indent={'ml-0'} />
 			{:else if node.indent === 1}
-				<NavTreeItem on:nodeProcessed {node} indent={'ml-4'} />
+				<NavTreeItem on:nodeProcessed {node} {indent} />
 			{:else if node.indent === 2}
-				<NavTreeItem on:nodeProcessed {node} indent={'ml-8'} />
+				<NavTreeItem on:nodeProcessed {node} {indent} />
 			{:else if node.indent === 3}
 				<NavTreeItem on:nodeProcessed {node} indent={'ml-12'} />
 			{:else if node.indent === 4}
 				<NavTreeItem on:nodeProcessed {node} indent={'ml-16'} />
 			{:else if node.indent === 5}
 				<NavTreeItem on:nodeProcessed {node} indent={'ml-20'} />
-			{/if}
+			{/if} -->
 		{/each}
 	</div>
 </div>
