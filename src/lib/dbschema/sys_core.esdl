@@ -1,7 +1,7 @@
 module sys_core {
   type ObjRoot {
-  required name: default::Name;
-  label: str;
+    required name: str;
+    header: str;
   }
 
   abstract type Obj extending sys_core::ObjRoot, default::Mgmt {
@@ -12,13 +12,15 @@ module sys_core {
     constraint exclusive on (.name);
   }
 
+  type App extending sys_core::Ent {}
+
   type CodeType extending sys_core::Obj {
     constraint exclusive on ((.name));
   }
 
   type Code extending sys_core::Obj {
-    required code_type: sys_core::CodeType;
-    constraint exclusive on ((.code_type, .name));
+    required codeType: sys_core::CodeType;
+    constraint exclusive on ((.codeType, .name));
   }
 
   # FUNCTIONS
@@ -35,6 +37,6 @@ module sys_core {
     codeTypeName: str,  
     codeName: str) -> optional sys_core::Code
       using (select sys_core::Code filter 
-        .code_type = (select getCodeType(codeTypeName)) and 
+        .codeType = (select getCodeType(codeTypeName)) and 
         .name = codeName);
 }

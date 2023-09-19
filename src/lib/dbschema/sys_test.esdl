@@ -1,4 +1,4 @@
-module test {
+module sys_test {
   type Person {
     required name: str {
       constraint exclusive;

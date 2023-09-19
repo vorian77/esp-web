@@ -1,12 +1,4 @@
 module sys_user {
-  global SYS_USER := (
-    select User filter .username = 'sys_user'
-  );
-  
-  global SYS_USER_ID := (
-    select User { id } filter .username = 'sys_user'
-  );
-
   type User extending default::Person {
     required username: str;
     required password: str;
@@ -16,12 +8,10 @@ module sys_user {
       };
       on target delete allow;
     };
-    multi link user_types := .<users[is UserType];
+    multi link userTypes := .<users[is UserType];
     constraint exclusive on (.username);
   }
-  # resources_programs := .user_types {resources [is sys_app::Program]: {id, order, name, @allow} filter @allow = true order by .order},
-  # resource_test := (select .user_types {resources[is sys_app::Program]:{id, name, @allow} filter @allow=true})
-
+  
   type UserType extending sys_core::Obj {
     multi resources: sys_core::Obj {
       allow: bool {
@@ -34,6 +24,21 @@ module sys_user {
     };
     constraint exclusive on ((.name));
   }
+  
+  # GLOBALS
+  global SYS_USER := (
+    select User filter .username = 'sys_user'
+  );
+  
+  global SYS_USER_ID := (
+    select User { id } filter .username = 'sys_user'
+  );
+
+  global currentUserId: uuid;
+
+  global currentUser := (
+    select User filter .id = global currentUserId
+  );
 
   # FUNCTIONS
   function getUser(userName: str) -> optional User

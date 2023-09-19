@@ -1,25 +1,18 @@
 module sys_app {
   abstract type NodeObj extending sys_core::Obj {
-    sub_header: str;
-    description: str;
     constraint exclusive on ((.name));
   } 
 
-  type Form extending NodeObj {
-    required code_type: sys_core::Code;
-    submit_button_label: str;
-  }
-
-  type Page extending NodeObj {
-    required link: default::Name;
-  }
-
   type Node extending sys_core::Obj {
-    required code_type: sys_core::Code;
+    required codeType: sys_core::Code;
     parent: Node;
-    required order: default::non_negative;
-    code_icon: sys_core::Code;
-    obj: NodeObj;
+    required order: default::nonNegative;
+    required codeIcon: sys_core::Code;
+    required page: str;
+    codeComponent: sys_core::Code;
+    obj: NodeObj {
+      on target delete allow
+    };
     constraint exclusive on ((.owner, .name));
   }
 

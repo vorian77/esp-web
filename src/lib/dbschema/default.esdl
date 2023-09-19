@@ -4,29 +4,29 @@ module default {
   }
 
   abstract type Person {
-    first_name: Name;
-    last_name: Name;
-    property full_name := .first_name ++ ' ' ++ .last_name;
+    firstName: Name;
+    lastName: Name;
+    property fullName := .firstName ++ ' ' ++ .lastName;
   }
 
   abstract type Mgmt {
-    required created_at: datetime {
+    required createdAt: datetime {
       default := datetime_of_transaction();
       readonly := true;
     };
 
-    required created_by: Person {
+    required createdBy: Person {
       readonly := true;
     };
     
-    modified_at: datetime {
+    modifiedAt: datetime {
       rewrite insert, update using (datetime_of_transaction())
     }
 
-    required modified_by: Person 
+    required modifiedBy: Person 
   }
 
-  scalar type non_negative extending int64 {
+  scalar type nonNegative extending int64 {
     constraint min_value(0);
   }
 }
