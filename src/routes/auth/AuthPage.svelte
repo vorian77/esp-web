@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Form as FormClass } from '$comps/esp/form/form'
-
 	import { goto } from '$app/navigation'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
+	import { navReset, navUser } from '$comps/nav/navStore'
+	import type { FormSourceResponseType } from '$comps/types'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/authPage.svelte'
@@ -50,7 +51,7 @@
 	}
 
 	async function onFormSubmitted(event: CustomEvent) {
-		const { formName } = event.detail
+		const { formName, applicantId } = event.detail
 
 		switch (formName) {
 			case 'auth_login':
@@ -62,6 +63,8 @@
 					}
 					toastStore.trigger(t)
 				} else {
+					navReset()
+					navUser.set(await getUser(applicantId))
 					goto('/apps')
 				}
 				break
@@ -71,6 +74,15 @@
 				await submitForm(formName, forms[formName], forms[formName].values)
 				break
 		}
+	}
+
+	export async function getUser(userId: string) {
+		const responsePromise = await fetch('/api/user', {
+			method: 'POST',
+			body: JSON.stringify({ userId })
+		})
+		const response: FormSourceResponseType = await responsePromise.json()
+		return response.data
 	}
 
 	export async function submitForm(formName: string, verifyFormObj: FormClass) {

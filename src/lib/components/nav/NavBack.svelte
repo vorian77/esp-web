@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { navNodesCrumbs, processNodeCrumb } from '$comps/nav/navStore'
+	import { navNodesCrumbs, nodeProcessCrumb } from '$comps/nav/navStore'
+	import { page } from '$app/stores'
 	import Icon from '$comps/Icon.svelte'
+
 	const NAV_COLOR = '#3b79e1'
 	function goBack() {
-		processNodeCrumb($navNodesCrumbs.length - 2)
+		nodeProcessCrumb($page.url.pathname, $navNodesCrumbs.length - 2)
 	}
 </script>
 

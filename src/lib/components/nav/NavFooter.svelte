@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { processNodeLink } from '$comps/nav/navStore'
+	import { nodeProcessLink } from '$comps/nav/navStore'
 	import { NavNode, NavNodeType } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
@@ -15,8 +15,26 @@
 		['Contact Us', 'contact-us', '/apps/cm/contactUs'],
 		['Account', 'profile', '/apps/account']
 	]
+	const UNSPECIFIED = ''
 	nodesConfig.forEach((n: any) => {
-		nodesFooter.push(new NavNode(NavNodeType.page, undefined, n[2], n[0], n[0], n[1], '', n[2]))
+		const header = n[0]
+		const icon = n[1]
+		const page = n[2]
+
+		nodesFooter.push(
+			new NavNode(
+				header,
+				undefined,
+				NavNodeType.page,
+				header,
+				header,
+				icon,
+				page,
+				UNSPECIFIED,
+				UNSPECIFIED,
+				{}
+			)
+		)
 	})
 
 	// styling
@@ -44,7 +62,11 @@
 		styleItem +
 		`
 				border-top: 1px solid ${navColor};`
-	const marginTopLabel = 'mt-1'
+	const marginTopheader = 'mt-1'
+
+	function processNode(node: NavNode) {
+		nodeProcessLink($page.url.pathname, node, true)
+	}
 </script>
 
 <div id="container" style={styleContainer}>
@@ -52,15 +74,15 @@
 		<div
 			role="button"
 			tabindex="0"
-			style={node.obj_link == $page.url.pathname ? styleItemActive : styleItem}
-			on:click={() => processNodeLink(node, true)}
-			on:keyup={() => processNodeLink(node, true)}
+			style={node.page == $page.url.pathname ? styleItemActive : styleItem}
+			on:click={() => processNode(node)}
+			on:keyup={() => processNode(node)}
 		>
 			<div class="mt-2">
 				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={navColor} />
 			</div>
-			<div class={marginTopLabel}>
-				{node.label}
+			<div class={marginTopheader}>
+				{node.header}
 			</div>
 		</div>
 	{/each}

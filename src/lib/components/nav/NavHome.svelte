@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { navNodesBranch, processNodeTree } from '$comps/nav/navStore'
+	import { navNodesBranch, nodeProcessTree } from '$comps/nav/navStore'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 
-	const FILENAME = '/$comps/nav/NavPage.svelte'
+	const FILENAME = '/$comps/nav/NavHome.svelte'
 
 	const NAV_COLOR = '#3b79e1'
 	const ITEM_COLORS = ['#f5f5f5', '#dedede']
@@ -35,7 +35,11 @@
 		styleItem +
 		`
 				background-color: ${ITEM_COLORS[1]};`
-	const marginTopLabel = '-mt-1'
+	const marginTopheader = '-mt-1'
+
+	function processNode(node: NavNode) {
+		nodeProcessTree($page.url.pathname, node)
+	}
 </script>
 
 <div id="container" style={styleContainer}>
@@ -44,14 +48,14 @@
 			role="button"
 			tabindex="0"
 			style={node.link == $page.url.pathname ? styleItemActive : styleItem}
-			on:click={() => processNodeTree(node)}
-			on:keyup={() => processNodeTree(node)}
+			on:click={() => processNode(node)}
+			on:keyup={() => processNode(node)}
 		>
 			<div class="mt-2">
 				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={NAV_COLOR} />
 			</div>
-			<div class={marginTopLabel}>
-				{node.label}
+			<div class={marginTopheader}>
+				{node.header}
 			</div>
 		</div>
 	{/each}

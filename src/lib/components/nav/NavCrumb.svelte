@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { navNodesCrumbs, processNodeCrumb } from '$comps/nav/navStore'
+	import { navNodesCrumbs, nodeProcessCrumb } from '$comps/nav/navStore'
+	import { page } from '$app/stores'
+
+	function nodeProcess(idx: number) {
+		nodeProcessCrumb($page.url.pathname, idx)
+	}
 </script>
 
 <ol class="breadcrumb text-sm">
@@ -10,15 +15,15 @@
 					class="anchor"
 					role="link"
 					tabindex="0"
-					on:click={() => processNodeCrumb(i)}
-					on:keyup={() => processNodeCrumb(i)}
+					on:click={() => nodeProcess(i)}
+					on:keyup={() => nodeProcess(i)}
 				>
-					{node.label}
+					{node.header}
 				</button>
 			</li>
 			<li class="crumb-separator" aria-hidden>&rsaquo;</li>
 		{:else}
-			<li class="crumb">{node.label}</li>
+			<li class="crumb">{node.header}</li>
 		{/if}
 	{/each}
 </ol>

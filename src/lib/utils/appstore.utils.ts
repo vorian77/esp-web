@@ -38,5 +38,5 @@ export default {
 
 // usage
 //import {asGet, asDelete, asUpsert} from '$lib/utils/utils'
-//asUpsert('user', user)
-//asGet('user')
+//asUpsert('image_file', file)
+//const file = asGet('image_file')

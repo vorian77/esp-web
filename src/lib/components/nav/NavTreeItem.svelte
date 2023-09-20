@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { page } from '$app/stores'
+
 	// 230806 - created outside of "NavTree.svelte" because the computed indent "ml-x"
 	// did not work in deployment
-	import { processNodeTree } from '$comps/nav/navStore'
+	import { nodeProcessTree } from '$comps/nav/navStore'
 	import type { NavNode } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
 
@@ -14,7 +16,7 @@
 
 	function processNode(node: NavNode) {
 		dispatch('nodeProcessed')
-		processNodeTree(node)
+		nodeProcessTree($page.url.pathname, node)
 	}
 </script>
 
@@ -26,5 +28,5 @@
 	on:click={() => processNode(node)}
 	on:keyup={() => processNode(node)}
 >
-	{node.label}
+	{node.header}
 </div>
