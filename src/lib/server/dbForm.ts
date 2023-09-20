@@ -35,7 +35,7 @@ export async function getForm(formName: string, pageData = {}) {
 		// <temp> 230815: auto login - must be removed prior to production deployment
 		form.fields[0].value = '2489999999'
 		form.fields[1].value = 'JakeDog#1'
-		console.log('form.values:', form.fields)
+		// console.log('form.values:', form.fields)
 	}
 
 	// retrieve drop-down-list field items
