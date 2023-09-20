@@ -1,7 +1,7 @@
 import { Field } from '$comps/esp/form/field'
 import { FieldAccess } from '$comps/types'
 
-import { strRequired, valueOrDefault, getArray } from '$utils/utils'
+import { valueOrDefault } from '$utils/utils'
 
 const COMPONENT = '/$comps/esp/form/fieldHeader.ts/'
 
