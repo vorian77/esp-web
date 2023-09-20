@@ -7,7 +7,6 @@ import {
 	FormSourceResponse,
 	type FormSourceResponseType
 } from '$comps/types'
-import { asDelete } from '$lib/utils/utils'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/auth/+server.ts'
@@ -29,18 +28,15 @@ export async function POST({ request, cookies }) {
 			switch (formName) {
 				case 'auth_login':
 				case 'auth_verify_phone_mobile':
-					asDelete('user')
 					rtnData = await processAuth(formName, source, data)
 					if (rtnData.hasOwnProperty('applicantId')) {
 						cookies.set('session_id', rtnData.applicantId, {
 							path: '/',
 							httpOnly: true,
 							sameSite: 'strict',
-							secure: true,
-							maxAge: 60 * 60 * 24 * 7 // one week
+							secure: true
 						})
 					}
-					// set auth
 					break
 
 				case 'auth_account':

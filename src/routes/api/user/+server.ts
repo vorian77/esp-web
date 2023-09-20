@@ -1,11 +1,12 @@
 import { getUserEdge } from '$server/dbEdge'
 import { dbESPAPI } from '$server/dbESP'
 import { FormSourceResponse, HTMLMETHOD, type FormSourceResponseType } from '$comps/types'
-import { error } from '@sveltejs/kit'
+import { json, error } from '@sveltejs/kit'
 
-const FILENAME = '$server/apiUser.ts'
+const FILENAME = '/routes/api/user/server.ts'
 
-export async function getUser(userId: string) {
+export async function POST({ request }) {
+	const { userId } = await request.json()
 	let user = await getUserESP()
 
 	// <temp> 230819 - add edgedb user info until replaced by edgedb
@@ -22,6 +23,7 @@ export async function getUser(userId: string) {
 	parms.forEach((p) => {
 		user[p] = userEdge[p]
 	})
+
 	return FormSourceResponse(user)
 
 	async function getUserESP() {

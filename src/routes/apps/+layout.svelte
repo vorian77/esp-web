@@ -7,24 +7,27 @@
 		type DrawerSettings,
 		getDrawerStore
 	} from '@skeletonlabs/skeleton'
+	import { popup } from '@skeletonlabs/skeleton'
+	import type { PopupSettings } from '@skeletonlabs/skeleton'
 	import NavBar from '$comps/nav/NavBar.svelte'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
-	import { initTree } from '$comps/nav/navStore'
+	import { navInit } from '$comps/nav/navStore'
 	import Icon from '$comps/Icon.svelte'
 	import { goto } from '$app/navigation'
-	import { navNodesCrumbs } from '$comps/nav/navStore'
+	import { navNodesCrumbs, navUser } from '$comps/nav/navStore'
 
 	const drawerStore = getDrawerStore()
 	const NAV_COLOR = '#3b79e1'
 	const ROOT_LINK = '/apps'
 
-	export let data: any
-	const user = data.user
+	// export let data: any
+	// const user = data.user
 
 	onMount(() => {
-		initTree(user.edge_temp.resource_programs)
+		navInit($navUser)
 	})
+
 	function navLeft(): void {
 		const settings: DrawerSettings = {
 			id: 'navLeft',
@@ -41,6 +44,12 @@
 		}
 		drawerStore.open(settings)
 	}
+	const popupClick: PopupSettings = {
+		event: 'click',
+		target: 'popupClick',
+		placement: 'bottom'
+	}
+
 	function goHome() {
 		goto(ROOT_LINK)
 	}
@@ -62,16 +71,18 @@
 				</div>
 
 				<div role="button" tabindex="0" class="text-black" on:click={goHome} on:keyup={goHome}>
-					{user.app_name}
+					{$navUser.app_name}
 				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<div role="button" tabindex="0" class="mr-2" on:click={navRight} on:keyup={navRight}>
-					<Avatar initials={user.initials} width="w-9" background="bg-primary-400" />
+					<!-- <div role="button" tabindex="0" class="mr-2" use:popup={popupClick}> -->
+					<!-- <button class="btn variant-filled" use:popup={popupClick}>Click</button> -->
+					<Avatar initials={$navUser.initials} width="w-9" background="bg-primary-400" />
 				</div>
 			</svelte:fragment>
 		</AppBar>
-		<div class:hidden={$navNodesCrumbs.length == 0}>
+		<div class="z-0" class:hidden={$navNodesCrumbs.length == 0}>
 			<NavBar />
 		</div>
 	</svelte:fragment>
@@ -92,3 +103,8 @@
 		</div>
 	</svelte:fragment>
 </AppShell>
+
+<div class="card p-4 variant-filled-primary z-10" data-popup="popupClick">
+	<a href="/logout">Logout</a>
+	<div class="arrow variant-filled-primary" />
+</div>

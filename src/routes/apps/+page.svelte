@@ -1,24 +1,31 @@
 <script lang="ts">
+	import { navReset, navInit, navNodeCurrent, navUser } from '$comps/nav/navStore'
+	import type { Snapshot } from './$types'
 	import Home from '$comps/home/Home.svelte'
-	import NavPage from '$comps/nav/NavPage.svelte'
-	import { navNodeCurrent, navNodesCrumbs, navNodesBranch, navNodesTree } from '$comps/nav/navStore'
+	import EdgeFormList from '$comps/form/EdgeFormList.svelte'
 
-	export let data: any
-	const user = data.user
+	const DEFAULT_COMPONENT = 'home'
+
+	const components = {
+		home: Home,
+		'form-list': EdgeFormList
+	}
+
+	let node = {}
+	let currentComponent = ''
+
+	export const snapshot: Snapshot<string> = {
+		capture: () => '',
+		restore: () => {
+			navReset()
+			navInit($navUser)
+		}
+	}
+
+	$: {
+		node = $navNodeCurrent
+		currentComponent = node.component || DEFAULT_COMPONENT
+	}
 </script>
 
-<Home {user} />
-<NavPage />
-
-<div>
-	navNodeCurrent: <pre>{JSON.stringify($navNodeCurrent, null, 2)}</pre>
-</div>
-
-navNodesCrumbs: {$navNodesCrumbs.length}
-<pre>{JSON.stringify($navNodesCrumbs, null, 2)}</pre>
-
-navNodesTree: {$navNodesTree.length}
-<pre>{JSON.stringify($navNodesTree, null, 2)}</pre>
-
-navNodesBranch {$navNodesBranch.length}
-<pre>{JSON.stringify($navNodesBranch, null, 2)}</pre>
+<svelte:component this={components[currentComponent]} user={$navUser} {node} />

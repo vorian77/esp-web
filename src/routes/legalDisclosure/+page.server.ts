@@ -1,6 +1,5 @@
-import { getForm } from '$server/dbForm'
-
-export async function load({ locals }) {
-	// todo: migrate disclosure to form per organization
-	return { user: locals.user }
+export async function load({}) {
+	// 230920 - though no data is loaded, /legalDisclosure/+page.server.ts
+	// is required so that hooks.server.ts recognizes the '/legalDisclosure' route
+	return {}
 }
