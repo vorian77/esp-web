@@ -12,10 +12,9 @@
 	import NavBar from '$comps/nav/NavBar.svelte'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
-	import { navInit } from '$comps/nav/navStore'
 	import Icon from '$comps/Icon.svelte'
 	import { goto } from '$app/navigation'
-	import { navNodesCrumbs, navUser } from '$comps/nav/navStore'
+	import { navInit, navNodesCrumbs, navUser } from '$comps/nav/navStore'
 
 	const drawerStore = getDrawerStore()
 	const NAV_COLOR = '#3b79e1'
