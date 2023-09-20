@@ -50,7 +50,7 @@ const COLORS = [
 	'#495a8f'
 ]
 
-export async function POST({ request }) {
+export async function GET({ request }) {
 	let quotes = []
 
 	const COLOR = { color: COLORS[Math.floor(Math.random() * COLORS.length)] }

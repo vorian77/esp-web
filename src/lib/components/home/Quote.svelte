@@ -7,9 +7,7 @@
 
 	onMount(() => {
 		async function getQuote() {
-			const responsePromise = await fetch('/api/quote', {
-				method: 'POST'
-			})
+			const responsePromise = await fetch('/api/quote')
 			const response: FormSourceResponseType = await responsePromise.json()
 			quote = response.data
 		}
