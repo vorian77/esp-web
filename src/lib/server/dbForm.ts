@@ -31,8 +31,8 @@ export async function getForm(formName: string, pageData = {}) {
 	// attempt to retrieve form data
 	form.values = await getValues(formName, form.source, pageData)
 
+	// <temp> 230815: auto login - must be removed prior to production deployment
 	if (formName === 'auth_login') {
-		// <temp> 230815: auto login - must be removed prior to production deployment
 		form.fields[0].value = '2489999999'
 		form.fields[1].value = 'JakeDog#1'
 		// console.log('form.values:', form.fields)
