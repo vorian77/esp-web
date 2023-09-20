@@ -73,6 +73,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.5.7
     version: 20.5.7
+  '@vincjo/datatables':
+    specifier: ^1.12.4
+    version: 1.12.4(svelte@4.2.0)
   autoprefixer:
     specifier: ^10.4.15
     version: 10.4.15(postcss@8.4.29)
@@ -1716,6 +1719,14 @@ packages:
       '@types/node': 20.5.7
       '@types/webidl-conversions': 7.0.0
     dev: false
+
+  /@vincjo/datatables@1.12.4(svelte@4.2.0):
+    resolution: {integrity: sha512-Z2MmDL2MRGof7XyxwO/GB99+GEZBja9xKmiOlGfdMKTIH73K48VZKZv43tUgKf26wczZ4HxUzBTcvAcJucqdgQ==}
+    peerDependencies:
+      svelte: '>=3.54.0'
+    dependencies:
+      svelte: 4.2.0
+    dev: true
 
   /@xmldom/xmldom@0.8.10:
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
