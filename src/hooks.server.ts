@@ -4,26 +4,31 @@ import type { FormSourceResponseType } from '$comps/types'
 
 const FILENAME = 'hooks.server.ts'
 
-const routesUnprotected = ['/about', '/auth']
-const routesSession = ['/api', '/legalDisclosure', '/profile']
+const routesUnprotected = ['/about', '/auth', '/legalDisclosure']
 
 export async function handle({ event, resolve }) {
 	console.log()
 	console.log('hooks.handle.url:', event.url.pathname)
 
-	if (event.url.pathname == '/') {
-		console.log(FILENAME, 'deleting cookie - home path...')
+	if (event.url.pathname === '/') {
+		console.log(FILENAME, 'home path - deleting cookie...')
 		event.cookies.delete('session_id', { path: '/' })
 		return resolve(event)
 	}
 
 	if (event.url.pathname.startsWith('/logout')) {
-		console.log(FILENAME, 'deleting cookie - logout...')
-		event.cookies.delete('session_id', { path: '/' })
+		console.log(FILENAME, 'logout...')
 		throw redirect(303, '/')
 	}
 
-	if (routesUnprotected.includes(event.url.pathname)) {
+	if (event.url.pathname.toLowerCase().startsWith('/api')) {
+		console.log(FILENAME, 'api endpoint...')
+		return resolve(event)
+	}
+
+	if (
+		routesUnprotected.findIndex((r) => r.toLowerCase() === event.url.pathname.toLowerCase()) >= 0
+	) {
 		console.log(FILENAME, 'unprotected route...')
 		return resolve(event)
 	}
@@ -37,19 +42,15 @@ export async function handle({ event, resolve }) {
 
 	// get user info
 	event.locals.user = await fetchUser(sessionId)
+	// console.log('hooks.user:', user)
 	if (!event.locals.user) {
 		console.log(FILENAME, `redirect - could not retrieve user: ${sessionId}`)
 		throw redirect(303, '/')
 	}
 
-	// allow session routes
-	if (routesSession.includes(event.url.pathname)) {
-		console.log(FILENAME, 'session route...')
-		return resolve(event)
-	}
-
 	// confirm legal disclosure
 	if (!event.locals.user.cm_ssr_disclosure) {
+		console.log(FILENAME, 'redirect - not disclosed...')
 		throw redirect(303, '/legalDisclosure')
 	}
 
@@ -70,8 +71,7 @@ export const handleError = ({ error, event }) => {
 }
 
 async function fetchUser(sessionId: string) {
-	const RETRIEVE_FROM_STORAGE = true
-	const responsePromise = await getUser(sessionId, RETRIEVE_FROM_STORAGE)
+	const responsePromise = await getUser(sessionId)
 	const response: FormSourceResponseType = await responsePromise.json()
 	return response.data
 }
