@@ -156,7 +156,7 @@ export function strOptional(val: string, className: string, field: string) {
 	}
 	return strRequired(val, className, field)
 }
-export function strRequired(val: string, className: string, field: string) {
+export function strRequired(val: string | null | undefined, className: string, field: string) {
 	if (typeof val === 'string') {
 		return val
 	} else {
