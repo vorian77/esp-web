@@ -1,27 +1,37 @@
 import * as edgedb from 'edgedb'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
+import {
+	EdgeDBDataType,
+	EdgeDBFilterDirection,
+	type EdgeDBFilterField,
+	type EdgeDBOrderField
+} from '$comps/types'
 import { valueOrDefault } from '$utils/utils'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = 'server/dbEdge.ts'
 
-const client = edgedb.createClient({
+let client = edgedb.createClient({
 	instanceName: EDGEDB_INSTANCE,
 	secretKey: EDGEDB_SECRET_KEY
 })
 
-export async function dbExecute(script: string, parms: {}) {
+export async function dbExecute(script: string, parms = {}) {
 	return await client.execute(script, parms)
 }
 
 export async function dbSelect(query: EdgeQL) {
 	const script = query.getScript()
 	try {
-		return JSON.parse(await client.queryJSON(script))
+		const data = JSON.parse(await client.queryJSON(script))
+		console.log('dbSelect...')
+		// console.log('script:', script)
+		// console.log('data', data)
+		return data
 	} catch (e) {
 		throw error(500, {
 			file: FILENAME,
-			function: 'dbSelectSingle',
+			function: 'dbSelect',
 			message: `Invalid query: ${script}.`
 		})
 	}
@@ -30,7 +40,11 @@ export async function dbSelect(query: EdgeQL) {
 export async function dbSelectSingle(query: EdgeQL) {
 	const script = query.getScript()
 	try {
-		return JSON.parse(await client.querySingleJSON(script))
+		const data = JSON.parse(await client.querySingleJSON(script))
+		console.log('dbSelectSingle...')
+		// console.log('script:', script)
+		// console.log('data:', data)
+		return data
 	} catch (e) {
 		throw error(500, {
 			file: FILENAME,
@@ -126,22 +140,4 @@ export class EdgeQL {
 			})
 		}
 	}
-}
-
-export enum EdgeDBDataType {
-	str = 'str',
-	uuid = 'uuid'
-}
-export enum EdgeDBFilterDirection {
-	asc = 'asc',
-	desc = 'desc'
-}
-export type EdgeDBFilterField = {
-	name: string
-	dataType: EdgeDBDataType
-	val: any
-}
-export type EdgeDBOrderField = {
-	name: string
-	direction: EdgeDBFilterDirection
 }
