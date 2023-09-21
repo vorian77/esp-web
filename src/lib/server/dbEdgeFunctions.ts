@@ -10,7 +10,8 @@ export async function getForm(formId: string, formActionType: 'select' | 'insert
 
 	async function getFormDefn(formId: string) {
 		const query = new EdgeQL(`select sys_form::Form {
-			id, name, header, subHeader, fields: {*},
+			id, name, header, subHeader, 
+			fields: {name, label, access := .codeAccess.name},
 			actions: {type := .codeType.name, query, filterItems: { dbName, source := .codeSource.name, sourceKey, data_type := .codeDataType.name, op := .codeOp.name
 		}}}`)
 		query.addFilter('id', EdgeDBDataType.uuid, formId)

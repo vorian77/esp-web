@@ -55,12 +55,16 @@
 		<thead>
 			<tr>
 				{#each formDefn.fields as field, i}
-					<Th {handler} orderBy={field.name}>{field.label}</Th>
+					{#if field.access !== 'hidden'}
+						<Th {handler} orderBy={field.name}>{field.label}</Th>
+					{/if}
 				{/each}
 			</tr>
 			<tr>
 				{#each formDefn.fields as field, i}
-					<ThFilter {handler} filterBy={field.name} />
+					{#if field.access !== 'hidden'}
+						<ThFilter {handler} filterBy={field.name} />
+					{/if}
 				{/each}
 			</tr>
 		</thead>
@@ -68,13 +72,17 @@
 			{#each $rows as row}
 				<tr on:click={() => recordEdit(row)} on:keyup={() => recordEdit(row)}>
 					{#each formDefn.fields as field, i}
-						<td>{row[field.name]}</td>
+						{#if field.access !== 'hidden'}
+							<td>{row[field.name]}</td>
+						{/if}
 					{/each}
 				</tr>
 			{/each}
 		</tbody>
 	</table>
 </Datatable>
+
+<pre>{JSON.stringify(formDefn, null, 2)}</pre>
 
 <style>
 	thead {
