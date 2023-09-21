@@ -1,9 +1,13 @@
 import { getForm } from '$server/dbForm'
-import { init } from '$server/dbEdgeInit'
+import { initCore } from '$server/dbEdgeInitCore'
+import { initForms } from '$server/dbEdgeInitForms'
+import { initData } from '$server/dbEdgeInitData'
 
 export async function load() {
 	// <temp>  230908 - database init
-	// await init()
+	// await initCore()
+	// await initForms()
+	// await initData()
 
 	return {
 		auth_login: await getForm('auth_login'),

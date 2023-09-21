@@ -9,9 +9,9 @@ const client = createClient({
 
 let CREATOR = ''
 
-export async function init() {
+export async function initCore() {
 	console.log()
-	console.log('edgeDB init.1')
+	console.log('edgeDB-initCore.1')
 	await reset()
 	await root()
 	await users()
@@ -21,7 +21,6 @@ export async function init() {
 	await nodesPrograms()
 	await nodesHeaders()
 	await nodesPages()
-	await nodesForms()
 	await homeScreenWidget()
 	await homeScreen()
 	await userType()
@@ -29,7 +28,7 @@ export async function init() {
 	await userTypeResourcesHomeScreen()
 	await userTypeResourcesApps()
 	await userTypeResourcesPrograms()
-	console.log('edgeDB init.review:', review)
+	console.log('edgeDB-initCore.review:', review)
 }
 
 //const review = await client.query(`select sys_core::ObjRoot {*} `)
@@ -118,6 +117,11 @@ async function codeTypes() {
 			['app_sys', 'ct_sys_form_action_item_data_type'],
 			['app_sys', 'ct_sys_form_action_item_op'],
 			['app_sys', 'ct_sys_form_action_item_source'],
+
+			['app_sys', 'ct_sys_form_field_access'],
+			['app_sys', 'ct_sys_form_field_element'],
+			['app_sys', 'ct_sys_form_field_input'],
+
 			['app_sys', 'ct_sys_icon'],
 
 			['app_sys', 'ct_sys_node_component'],
@@ -164,6 +168,29 @@ async function codes() {
 			['ct_sys_form_action_item_source', 'app_sys', 'data'],
 			['ct_sys_form_action_item_source', 'app_sys', 'form'],
 			['ct_sys_form_action_item_source', 'app_sys', 'literal'],
+
+			// form field - access
+			['ct_sys_form_field_access', 'app_sys', 'hidden'],
+			['ct_sys_form_field_access', 'app_sys', 'optional'],
+			['ct_sys_form_field_access', 'app_sys', 'readOnly'],
+			['ct_sys_form_field_access', 'app_sys', 'required'],
+
+			// form field - element
+			['ct_sys_form_field_element', 'app_sys', 'header'],
+			['ct_sys_form_field_element', 'app_sys', 'input'],
+			['ct_sys_form_field_element', 'app_sys', 'pictureTake'],
+			['ct_sys_form_field_element', 'app_sys', 'select'],
+			['ct_sys_form_field_element', 'app_sys', 'textArea'],
+
+			// form field - input
+			['ct_sys_form_field_input', 'app_sys', 'checkbox'],
+			['ct_sys_form_field_input', 'app_sys', 'date'],
+			['ct_sys_form_field_input', 'app_sys', 'email'],
+			['ct_sys_form_field_input', 'app_sys', 'number'],
+			['ct_sys_form_field_input', 'app_sys', 'password'],
+			['ct_sys_form_field_input', 'app_sys', 'radio'],
+			['ct_sys_form_field_input', 'app_sys', 'tel'],
+			['ct_sys_form_field_input', 'app_sys', 'text'],
 
 			// icons
 			['ct_sys_icon', 'app_cm', 'application'],
@@ -380,76 +407,6 @@ async function nodesPages() {
 				10,
 				'application',
 				'/apps/cm/quotes'
-			]
-		]
-	})
-}
-
-async function nodesForms() {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_app.Node, {
-				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				parent: e.select(e.sys_app.getNode(e.cast(e.str, i[1][0]), e.cast(e.str, i[1][1]))),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_type', e.cast(e.str, i[2]))),
-				name: e.cast(e.str, i[3]),
-				header: e.cast(e.str, i[4]),
-				order: e.cast(e.int64, i[5]),
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_icon', e.cast(e.str, i[6]))),
-				page: e.cast(e.str, i[7]),
-				codeComponent: e.select(e.sys_core.getCode('ct_sys_node_component', e.cast(e.str, i[8]))),
-				createdBy: CREATOR,
-				modifiedBy: CREATOR
-			})
-		})
-	})
-
-	return await query.run(client, {
-		data: [
-			[
-				'app_sys',
-				['app_sys', 'pgm_sys_admin'],
-				'form',
-				'node_sys_app_list',
-				'Applications',
-				10,
-				'application',
-				'/apps',
-				'form-list'
-			],
-			[
-				'app_sys',
-				['app_sys', 'pgm_sys_admin'],
-				'form',
-				'node_sys_user_list',
-				'Users',
-				20,
-				'application',
-				'/apps',
-				'form-list'
-			],
-			[
-				'app_sys',
-				['app_sys', 'pgm_sys_admin'],
-				'form',
-				'node_sys_org_list',
-				'Organizations',
-				30,
-				'application',
-				'/apps',
-				'form-list'
-			],
-			[
-				'app_training',
-				['app_training', 'pgm_training_staff_provider'],
-				'form',
-				'node_training_provider_student_list',
-				'Students',
-				10,
-				'application',
-				'/apps',
-				'form-list'
 			]
 		]
 	})
