@@ -27,7 +27,7 @@ export async function POST({ request }) {
 			throw error(500, {
 				file: FILENAME,
 				function: 'POST',
-				message: `No case defined for action: ${action}.`
+				message: `No case defined for action: ${action}`
 			})
 	}
 }

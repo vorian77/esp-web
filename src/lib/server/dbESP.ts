@@ -301,7 +301,7 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'getSQLColValue',
-			message: `Get value failed for field: ${item.dbName}.`
+			message: `Get value failed for field: ${item.dbName}`
 		})
 	}
 	function quoteVal(val) {

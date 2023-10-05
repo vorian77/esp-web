@@ -61,7 +61,7 @@
 				throw error(500, {
 					file: FILENAME,
 					function: 'getURL',
-					message: `Unable to retrieve URL for ${action} - storage key: ${imgStorageKey}.`
+					message: `Unable to retrieve URL for ${action} - storage key: ${imgStorageKey}`
 				})
 			}
 			return response.data.url
