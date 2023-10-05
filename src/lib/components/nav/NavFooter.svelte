@@ -22,18 +22,7 @@
 		const page = n[2]
 
 		nodesFooter.push(
-			new NavNode(
-				header,
-				undefined,
-				NavNodeType.page,
-				header,
-				header,
-				icon,
-				page,
-				UNSPECIFIED,
-				UNSPECIFIED,
-				{}
-			)
+			new NavNode(header, undefined, NavNodeType.page, header, header, icon, page, UNSPECIFIED)
 		)
 	})
 

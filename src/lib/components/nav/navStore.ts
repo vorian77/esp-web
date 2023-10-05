@@ -1,6 +1,7 @@
 import { get } from 'svelte/store'
 import { localStorageStore } from '@skeletonlabs/skeleton'
-import { NavNode, NavNodeType } from '$comps/types'
+import { NavDataProcessType, NavNode, NavNodeType, type NavNodeObj } from '$comps/types'
+import { Form } from '$comps/esp/form/form'
 import type { FormSourceResponseType } from '$comps/types'
 import { getArray } from '$utils/utils'
 import { goto } from '$app/navigation'
@@ -16,12 +17,22 @@ export let navNodesCrumbs = localStorageStore('navNodesCrumbs', [])
 export let navNodeCurrent = localStorageStore('navNodeCurrent', {})
 export let navUser = localStorageStore('navUser', {})
 
-export function navReset() {
+export function navStorageReset() {
+	navInitiated.set(false)
+	navNodesTree.set([])
+	navNodesBranch.set([])
+	navNodesCrumbs.set([])
+	navNodeCurrent.set({})
+	navUser.set({})
+}
+
+export function navInitReset() {
 	navInitiated.set(false)
 }
 
 export async function navInit(user: any) {
 	const initiated = get(navInitiated)
+
 	if (!initiated) {
 		const PARENT = undefined
 		const DATA = {}
@@ -29,21 +40,9 @@ export async function navInit(user: any) {
 		let navNodes: Array<NavNode> = []
 		dbNodes.forEach((n: any) => {
 			navNodes.push(
-				new NavNode(
-					n.id,
-					PARENT,
-					n.type,
-					n.name,
-					n.header,
-					n.icon,
-					n.page,
-					n.component,
-					n.obj_id,
-					DATA
-				)
+				new NavNode(n.id, PARENT, n['_codeType'], n.name, n.header, n['_codeIcon'], n.page, n.objId)
 			)
 		})
-
 		navInitiated.set(true)
 		navNodesTree.set(navNodes)
 		navNodesBranch.set(navNodes)
@@ -52,109 +51,139 @@ export async function navInit(user: any) {
 	}
 }
 
-export async function navChange(
-	fromPage: string,
-	node: NavNode,
-	treeBranch: 'retrieve-branch' | 'retrieve-child' | 'remove' | undefined,
-	currentNode: 'self' | 'first-child' | undefined,
-	nodeData: {} | undefined,
-	formActionType: 'insert' | 'select' | undefined
-) {
-	switch (treeBranch) {
-		case 'retrieve-branch':
-			treeBranchRetrieve(node, false)
-			break
+// export async function objActionProcessOld(
+// 	fromPage: string,
+// 	node: NavNode,
+// 	treeBranch: 'retrieve-branch' | 'retrieve-child' | 'remove' | undefined,
+// 	newCurrentNode: 'self' | 'first-child' | undefined,
+// 	nodeData: {} | undefined,
+// 	dataActionType: DataActionType | undefined
+// ) {
+// 	switch (treeBranch) {
+// 		case 'retrieve-branch':
+// 			await treeBranchRetrieve(node, false)
+// 			break
 
-		case 'retrieve-child':
-			treeBranchRetrieve(node, true)
-			break
+// 		case 'retrieve-child':
+// 			await treeBranchRetrieve(node, true)
+// 			break
 
-		case 'remove':
-			treeBranchRemove(node)
-			break
+// 		case 'remove':
+// 			treeBranchRemove(node)
+// 			break
 
-		case undefined:
-			break
+// 		case undefined:
+// 			break
 
-		default:
-			throw error(500, {
-				file: FILENAME,
-				function: 'navChange',
-				message: `No case defined for treeBranch: ${treeBranch}.`
-			})
+// 		default:
+// 			throw error(500, {
+// 				file: FILENAME,
+// 				function: 'navChange',
+// 				message: `No case defined for treeBranch: ${treeBranch}`
+// 			})
+// 	}
+
+// 	// set working node
+// 	if (newCurrentNode === 'first-child') {
+// 		// <temp> 230911 - what about no first-child as form-detail
+// 		const treeNodes = get(navNodesTree)
+// 		const idx = getNodeIdx(node.id)
+// 		const childNode = treeNodes[idx + 1]
+// 		if (childNode?.parent.id === node.id) {
+// 			node = childNode
+// 		}
+// 	}
+
+// 	// verify - form node has form definition
+// 	if (node.type === NavNodeType.object && !node.objId) {
+// 		alert(`No object defined for node: ${node.name}`)
+// 	}
+
+// 	if (typeof newCurrentNode !== 'undefined') {
+// 		setNodeCurrent(node)
+// 	}
+
+// 	if (fromPage !== node.page) {
+// 		goto(node.page)
+// 	}
+// }
+
+export async function objActionListEdit(nodeParent: NavNode, recordId: string) {
+	await treeBranchRetrieve(nodeParent, false)
+	const node: NavNode = getNodeFirstChild(nodeParent)
+	node.obj = await getNodeObjForm(node.objId, node.obj, NavDataProcessType.select, { recordId })
+	setNodeCurrent(node)
+}
+
+export async function objActionListNew(nodeParent: NavNode) {
+	console.log('List-New:', nodeParent)
+	await treeBranchRetrieve(nodeParent, true)
+	const node: NavNode = getNodeFirstChild(nodeParent)
+	node.obj = await getNodeObjForm(node.objId, node.obj, NavDataProcessType.insert, {})
+	setNodeCurrent(node)
+}
+
+export async function objActionDetailDelete(node: NavNode) {
+	console.log('Detail-Delete:', node)
+	return true
+}
+
+export async function objActionDetailNew(node: NavNode) {
+	console.log('Detail-New:', node)
+}
+
+export async function objActionDetailSave(node: NavNode, formValues: {}) {
+	// save data
+	node.obj = await getNodeObjForm(node.objId, node.obj, NavDataProcessType.save, {
+		formValues,
+		user: get(navUser)
+	})
+	if (!node.obj!.data.id) {
+		return false
 	}
 
-	// set working node
-	if (currentNode === 'first-child') {
-		// <temp> 230911 - what about no first-child as form-detail
-		const treeNodes = get(navNodesTree)
-		const idx = getNodeIdx(node.id)
-		const childNode = treeNodes[idx + 1]
-		if (childNode?.parent.id === node.id) {
-			node = childNode
-		}
-	}
+	// <temp> 230929 re-retrieve data - to update calculated values
+	node.obj = await getNodeObjForm(node.objId, node.obj, NavDataProcessType.select, {
+		recordId: node.obj!.data.id
+	})
 
-	if (typeof nodeData !== 'undefined') {
-		node.data = nodeData
-	}
-
-	if (node.component && node.component.startsWith('form')) {
-		// verify - form configured on node
-		if (node.obj_id) {
-			const data = getTraversalData()
-			const responsePromise = await fetch('/api/dbEdge', {
-				method: 'POST',
-				body: JSON.stringify({
-					function: 'getForm',
-					formId: node.obj_id,
-					formActionType,
-					data
-				})
-			})
-			const response: FormSourceResponseType = await responsePromise.json()
-			node.form = response.data
-		} else {
-			alert(`No form defined for node: ${node.name}.`)
-			node.component = 'home'
-		}
-	}
-
-	if (typeof currentNode !== 'undefined') {
-		setNodeCurrent(node)
-	}
-
-	if (fromPage !== node.page) {
-		goto(node.page)
-	}
+	setNodeCurrent(node)
+	return true
 }
 
 async function nodeProcess(fromPage: string, node: NavNode) {
 	switch (node.type) {
 		case NavNodeType.header:
-		case NavNodeType.program:
-			navChange(fromPage, node, undefined, 'self', undefined, undefined)
-			break
-
-		case NavNodeType.form:
-			navChange(fromPage, node, undefined, 'self', undefined, 'select')
-			break
-
 		case NavNodeType.page:
-			navChange(fromPage, node, undefined, 'self', undefined, undefined)
+		case NavNodeType.program:
+			node.data = getTraversalData()
+			setNodeCurrent(node)
+			if (fromPage !== node.page) {
+				goto(node.page)
+			}
+			break
+
+		case NavNodeType.object:
+			const data = { user: get(navUser), traversal: getTraversalData() }
+			node.obj = await getNodeObjForm(node.objId, node.obj, NavDataProcessType.select, data)
+			treeBranchRemove(node)
+			setNodeCurrent(node)
+			if (fromPage !== node.page) {
+				goto(node.page)
+			}
 			break
 
 		default:
 			throw error(500, {
 				file: FILENAME,
-				function: 'processNode',
-				message: `No case defined for node.type: ${node.type}.`
+				function: 'nodeProcess',
+				message: `No case defined for node.type: ${node.type}`
 			})
 	}
 }
 
 export async function nodeProcessTree(fromPage: string, node: NavNode) {
-	if ([NavNodeType.program, NavNodeType.header].includes(node.type) && !node.expanded) {
+	if ([NavNodeType.program, NavNodeType.header].includes(node.type)) {
 		await treeBranchRetrieve(node, false)
 	}
 	setBranch(node)
@@ -186,6 +215,10 @@ export async function nodeProcessTree(fromPage: string, node: NavNode) {
 }
 
 async function treeBranchRetrieve(node: NavNode, firstChildOnly: boolean) {
+	if (node.isExpanded) {
+		return
+	}
+
 	// 1: retrieve nodes
 	const responsePromise = await fetch('/api/dbEdge', {
 		method: 'POST',
@@ -201,7 +234,7 @@ async function treeBranchRetrieve(node: NavNode, firstChildOnly: boolean) {
 	}
 	newNodes.forEach((n: any) => {
 		newBranch.push(
-			new NavNode(n.id, node, n.type, n.name, n.header, n.icon, n.page, n.component, n.obj_id, {})
+			new NavNode(n.id, node, n['_codeType'], n.name, n.header, n['_codeIcon'], n.page, n.objId)
 		)
 	})
 
@@ -218,10 +251,10 @@ async function treeBranchRetrieve(node: NavNode, firstChildOnly: boolean) {
 			...value.slice(idx + 1)
 		])
 	}
-	node.expanded = true
+	node.isExpanded = true
 }
 
-async function treeBranchRemove(parentNode: NavNode) {
+function treeBranchRemove(parentNode: NavNode) {
 	let newTree: Array<NavNode> = []
 	const oldTree = get(navNodesTree)
 	oldTree.forEach((n: NavNode) => {
@@ -229,7 +262,8 @@ async function treeBranchRemove(parentNode: NavNode) {
 			newTree.push(n)
 		}
 	})
-	navNodesTree.set(node)
+	parentNode.isExpanded = false
+	navNodesTree.set(newTree)
 
 	function onBranch(node: NavNode) {
 		while (node) {
@@ -262,7 +296,7 @@ export async function nodeProcessLink(fromPage: string, node: NavNode, root = fa
 	// reset tree
 	navNodesTree.update((value) =>
 		value.map((n: NavNode) => {
-			n.selected = false
+			n.isSelected = false
 			return n
 		})
 	)
@@ -291,24 +325,66 @@ function getNodeIdx(nodeId: string): number {
 	return idx
 }
 
-function setNodeCurrent(node: NavNode) {
-	// set selected node, make others not selected
-	navNodesTree.update((value) =>
-		value.map((n: NavNode) => {
-			n.selected = n.id === node.id
-			return n
-		})
-	)
-	navNodeCurrent.set(node)
-}
-
 function getTraversalData() {
 	let nodesData = []
 	const nodesCrumb = get(navNodesCrumbs)
 	nodesCrumb.forEach((n) => {
 		if (n.data && Object.keys(n.data).length > 0) {
-			nodesData.push(n.data)
+			nodesData.push(getTraversalDataNode(n.name, n.data))
 		}
 	})
 	return nodesData
+}
+
+function getNodeFirstChild(nodeParent: NavNode) {
+	// <temp> 230911 - what about no first-child as form-detail?
+	const treeNodes = get(navNodesTree)
+	const idx = getNodeIdx(nodeParent.id)
+	const childNode = treeNodes[idx + 1]
+	if (childNode?.parent.id === nodeParent.id) {
+		return childNode
+	} else {
+		throw error(500, {
+			file: FILENAME,
+			function: 'getNodeFirstChild',
+			message: `No child nodes defined for parent: ${nodeParent.name}`
+		})
+	}
+}
+
+async function getNodeObjForm(
+	objId: string,
+	nodeObj: NavNodeObj | undefined,
+	processType: NavDataProcessType,
+	data: any
+) {
+	const responsePromise = await fetch('/api/dbEdge', {
+		method: 'POST',
+		body: JSON.stringify({
+			function: 'getNodeObjForm',
+			objId,
+			nodeObj,
+			processType,
+			data
+		})
+	})
+	const response: FormSourceResponseType = await responsePromise.json()
+	return response.data
+}
+
+function getTraversalDataNode(key: string, data: any) {
+	const newData: any = {}
+	newData[key] = { ...data }
+	return newData
+}
+
+function setNodeCurrent(node: NavNode) {
+	// set selected node, make others not selected
+	navNodesTree.update((value) =>
+		value.map((n: NavNode) => {
+			n.isSelected = n.id === node.id
+			return n
+		})
+	)
+	navNodeCurrent.set(node)
 }

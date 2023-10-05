@@ -5,6 +5,7 @@
 	const FILENAME = 'routes/+page.svelte'
 
 	export let data
+
 	let pageCurrent = ''
 </script>
 

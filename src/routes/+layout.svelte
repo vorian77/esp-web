@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { beforeNavigate } from '$app/navigation'
+	import { navStorageReset } from '$comps/nav/navStore'
 	import '../app.postcss'
 
 	// initialize stores
@@ -14,6 +16,17 @@
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom'
 	import { storePopup } from '@skeletonlabs/skeleton'
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
+
+	beforeNavigate((navigation) => {
+		// if (navigation.to.route.id === null || navigation.to.route.id === '/') {
+		// 	navStorageReset()
+		// }
+		// if (tokenExpired()) refreshToken()
+		// if (!tokenValid()) {
+		// 	navigation.cancel()
+		// 	goto('/login')
+		// }
+	})
 </script>
 
 <!-- Overlays -->

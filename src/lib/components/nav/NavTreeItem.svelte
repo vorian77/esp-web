@@ -22,7 +22,7 @@
 
 <div
 	class="{indent} p-1 mb-1 hover:bg-blue-400 rounded-lg
-	{node.selected ? 'bg-blue-300 text-white' : ''}"
+	{node.isSelected ? 'bg-blue-300 text-white' : ''}"
 	role="button"
 	tabindex="0"
 	on:click={() => processNode(node)}
