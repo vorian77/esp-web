@@ -1,4 +1,4 @@
-import { getUserEdge } from '$server/dbEdge'
+import { getUserEdge } from '$server/dbEdge/types.edgeDB.server'
 import { dbESPAPI } from '$server/dbESP'
 import { FormSourceResponse, HTMLMETHOD, type FormSourceResponseType } from '$comps/types'
 import { json, error } from '@sveltejs/kit'
@@ -16,7 +16,7 @@ export async function POST({ request }) {
 		'lastName',
 		'firstName',
 		'fullName',
-		'username',
+		'userName',
 		'resource_home_screen_widgets',
 		'resource_programs'
 	]
@@ -49,7 +49,7 @@ export async function POST({ request }) {
 			throw error(500, {
 				file: FILENAME,
 				function: 'fetchUser',
-				message: `No apps defined for user: ${user.per_name_full} id: ${user.user_id}.`
+				message: `No apps defined for user: ${user.per_name_full} id: ${user.user_id}`
 			})
 		}
 		const appsList = user.apps.split(',')
