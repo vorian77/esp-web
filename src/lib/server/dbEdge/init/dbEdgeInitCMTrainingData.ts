@@ -1,34 +1,26 @@
-import { createClient } from 'edgedb'
-import e from '../dbschema/edgeql-js'
-import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
+import { execute, review } from '$server/dbEdge/types.edgeDB.server'
 
-const client = createClient({
-	instanceName: EDGEDB_INSTANCE,
-	secretKey: EDGEDB_SECRET_KEY
-})
+const FILE = 'initCMTrainingData'
+let reviewQuery = ''
 
-const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-let q = ''
-let result
-
-export async function initData() {
+export async function initCMTrainingData() {
 	console.log()
-	console.log('edgeDB-initData.1')
+	console.log(`${FILE}...`)
 	await reset()
 	await dataStudents()
-	console.log('edgeDB-initData.review:', review)
+	await review(FILE, reviewQuery)
 }
 
-const review = await client.query(`select cm_training::Student {*}`)
+reviewQuery = `select cm_training::Student {*}`
 
 async function reset() {
-	await client.execute(`
+	await execute(`
   delete cm_training::Student;
 `)
 }
 
 async function dataStudents() {
-	await client.execute(`
+	await execute(`
     with
     myCreator := (select sys_user::getUser('user_sys'))
     for x in {

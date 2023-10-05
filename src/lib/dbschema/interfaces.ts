@@ -311,35 +311,78 @@ export namespace sys_app {
     "parent"?: Node | null;
     "order": number;
     "page": string;
-    "codeComponent"?: sys_core.Code | null;
     "codeIcon": sys_core.Code;
     "codeType": sys_core.Code;
-    "obj"?: NodeObj | null;
+    "obj"?: sys_obj.NodeObj | null;
   }
-  export interface NodeObj extends sys_core.Obj {}
 }
-export namespace sys_form {
-  export interface Form extends sys_app.NodeObj {
-    "actions": FormAction[];
-    "fields": FormField[];
-    "description"?: string | null;
-    "subHeader"?: string | null;
-  }
-  export interface FormAction extends std.$Object {
+export namespace sys_obj {
+  export interface DataAction extends std.$Object {
     "codeType": sys_core.Code;
-    "filterItems": FormActionItem[];
-    "query": string;
+    "items": DataActionItem[];
+    "query"?: string | null;
   }
-  export interface FormActionItem extends std.$Object {
-    "codeDataType"?: sys_core.Code | null;
-    "codeOp"?: sys_core.Code | null;
-    "codeSource"?: sys_core.Code | null;
+  export interface DataActionItem extends std.$Object {
+    "codeDataType"?: ct_sys_edgedb_data_type | null;
+    "codeDirection"?: ct_sys_data_action_item_direction | null;
+    "codeOp"?: ct_sys_data_action_item_op | null;
+    "codeSource"?: ct_sys_data_action_item_source | null;
     "dbName": string;
+    "fieldName"?: string | null;
+    "order"?: number | null;
     "sourceKey"?: string | null;
   }
+  export interface NodeObj extends sys_core.Obj {
+    "codeCardinality": sys_core.Code;
+    "codeComponent": sys_core.Code;
+    "dataActions": DataAction[];
+    "objActions": ObjAction[];
+  }
+  export interface Form extends NodeObj {
+    "table"?: sys_db.Table | null;
+    "fields": FormField[];
+    "description"?: string | null;
+    "isPopup"?: boolean | null;
+    "subHeader"?: string | null;
+    "submitButtonLabel"?: string | null;
+  }
   export interface FormField extends std.$Object {
-    "header": string;
-    "name": string;
+    "codeAccess": sys_core.Code;
+    "codeElement"?: sys_core.Code | null;
+    "codeInputType"?: sys_core.Code | null;
+    "column": sys_db.Column;
+    "dynamicLabel"?: string | null;
+    "matchColumn"?: string | null;
+    "maxLength"?: number | null;
+    "maxValue"?: number | null;
+    "minLength"?: number | null;
+    "minValue"?: number | null;
+    "pattern"?: string | null;
+    "patternMsg"?: string | null;
+    "patternReplacement"?: string | null;
+    "placeHolder"?: string | null;
+    "staticLabel"?: string | null;
+  }
+  export interface ObjAction extends sys_core.Obj {
+    "order": number;
+  }
+  export type ct_sys_data_action_item_direction = "asc" | "desc";
+  export type ct_sys_data_action_item_op = "eq";
+  export type ct_sys_data_action_item_source = "calc" | "data" | "env" | "literal" | "traversal" | "user";
+  export type ct_sys_edgedb_data_type = "bool" | "datetime" | "expr" | "int64" | "json" | "str" | "uuid";
+}
+export namespace sys_db {
+  export interface Column extends sys_core.Obj {
+    "codeAlignment": sys_core.Code;
+    "codeDataType": sys_core.Code;
+    "expr"?: string | null;
+    "hRows": number;
+    "headerSide"?: string | null;
+    "width": number;
+  }
+  export interface Table extends sys_core.Obj {
+    "hasMgmt": boolean;
+    "columns": Column[];
   }
 }
 export namespace sys_test {
@@ -353,8 +396,7 @@ export namespace sys_test {
 }
 export namespace sys_user {
   export interface User extends Person {
-    "username": string;
-    "resources": sys_core.Obj[];
+    "userName": string;
     "password": string;
     "userTypes": UserType[];
   }
@@ -472,13 +514,22 @@ export interface types {
     "HomeScreen": sys_app.HomeScreen;
     "HomeScreenWidget": sys_app.HomeScreenWidget;
     "Node": sys_app.Node;
-    "NodeObj": sys_app.NodeObj;
   };
-  "sys_form": {
-    "Form": sys_form.Form;
-    "FormAction": sys_form.FormAction;
-    "FormActionItem": sys_form.FormActionItem;
-    "FormField": sys_form.FormField;
+  "sys_obj": {
+    "DataAction": sys_obj.DataAction;
+    "DataActionItem": sys_obj.DataActionItem;
+    "NodeObj": sys_obj.NodeObj;
+    "Form": sys_obj.Form;
+    "FormField": sys_obj.FormField;
+    "ObjAction": sys_obj.ObjAction;
+    "ct_sys_data_action_item_direction": sys_obj.ct_sys_data_action_item_direction;
+    "ct_sys_data_action_item_op": sys_obj.ct_sys_data_action_item_op;
+    "ct_sys_data_action_item_source": sys_obj.ct_sys_data_action_item_source;
+    "ct_sys_edgedb_data_type": sys_obj.ct_sys_edgedb_data_type;
+  };
+  "sys_db": {
+    "Column": sys_db.Column;
+    "Table": sys_db.Table;
   };
   "sys_test": {
     "Movie": sys_test.Movie;
