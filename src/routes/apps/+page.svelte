@@ -1,31 +1,43 @@
 <script lang="ts">
-	import { navReset, navInit, navNodeCurrent, navUser } from '$comps/nav/navStore'
+	import { navInitReset, navInit, navNodeCurrent, navUser } from '$comps/nav/navStore'
+	import type { NavNode } from '$comps/types'
 	import type { Snapshot } from './$types'
-	import Home from '$comps/home/Home.svelte'
-	import EdgeFormList from '$comps/form/EdgeFormList.svelte'
+	import NodeHome from '$comps/home/NodeHome.svelte'
+	import NodeFormList from '$comps/nav/NodeFormList.svelte'
+	import NodeFormDetail from '$comps/nav/NodeFormDetail.svelte'
+	import FormList from '$comps/form/FormList.svelte'
 
-	const DEFAULT_COMPONENT = 'home'
+	const DEFAULT_COMPONENT = 'Home'
 
-	const components = {
-		home: Home,
-		'form-list': EdgeFormList
+	const comps = {
+		Home: NodeHome,
+		FormList: NodeFormList,
+		FormDetail: NodeFormDetail
 	}
 
-	let node = {}
-	let currentComponent = ''
+	let node: NavNode
+	let compName = ''
+	let compCurrent
 
 	export const snapshot: Snapshot<string> = {
 		capture: () => '',
 		restore: () => {
-			navReset()
+			navInitReset()
 			navInit($navUser)
 		}
 	}
 
 	$: {
 		node = $navNodeCurrent
-		currentComponent = node.component || DEFAULT_COMPONENT
+		compName = node.obj?.component || DEFAULT_COMPONENT
+		compCurrent = comps[compName]
 	}
 </script>
 
-<svelte:component this={components[currentComponent]} user={$navUser} {node} />
+<!-- <div>node: {node.name}</div>
+<div>node.obj.component: {node.obj?.component}</div> -->
+<!-- <div>component: {compName}</div> -->
+<svelte:component this={compCurrent} {node} />
+
+<!-- nodeCurrent:
+<pre>{JSON.stringify(node, null, 2)}</pre> -->

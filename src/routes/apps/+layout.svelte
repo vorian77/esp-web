@@ -20,9 +20,6 @@
 	const NAV_COLOR = '#3b79e1'
 	const ROOT_LINK = '/apps'
 
-	// export let data: any
-	// const user = data.user
-
 	onMount(() => {
 		navInit($navUser)
 	})

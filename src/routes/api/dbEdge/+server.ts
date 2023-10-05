@@ -1,5 +1,5 @@
 import { FormSourceResponse } from '$comps/types'
-import { getForm, getNodesByParent } from '$server/dbEdge'
+import { getNodeObjForm, getNodesByParent } from '$server/dbEdge/types.edgeDB.server'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/api/dbEdge/server.ts'
@@ -7,9 +7,14 @@ const FILENAME = '/routes/api/dbEdge/server.ts'
 export async function POST({ request }) {
 	const requestData = await request.json()
 	switch (requestData.function) {
-		case 'getForm':
+		case 'getNodeObjForm':
 			return FormSourceResponse(
-				await getForm(requestData.formId, requestData.formActionType, requestData.data)
+				await getNodeObjForm(
+					requestData.objId,
+					requestData.nodeObj,
+					requestData.processType,
+					requestData.data
+				)
 			)
 			break
 
@@ -21,7 +26,7 @@ export async function POST({ request }) {
 			throw error(500, {
 				file: FILENAME,
 				function: 'POST',
-				message: `No case defined for function: ${requestData.function}.`
+				message: `No case defined for function: ${requestData.function}`
 			})
 	}
 }

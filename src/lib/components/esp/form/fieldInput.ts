@@ -29,7 +29,6 @@ export class FieldInput extends Field {
 
 	constructor(obj: {}, index: number, fields: Array<FieldInput>) {
 		super(obj, index)
-
 		obj = valueOrDefault(obj, {})
 		this.type = memberOfEnumOrDefault(
 			obj.type,
@@ -97,7 +96,7 @@ export class FieldInput extends Field {
 				throw error(500, {
 					file: FILENAME,
 					function: 'constructor.initMatchColumn',
-					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}".`
+					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}"`
 				})
 			}
 		}
@@ -141,7 +140,7 @@ export class FieldInput extends Field {
 					this.index,
 					ValidityError.minValue,
 					ValidityErrorLevel.error,
-					`"${this.label}" must be at least ${this.minValue}.`
+					`"${this.label}" must be at least ${this.minValue}`
 				)
 			}
 		}
@@ -152,7 +151,7 @@ export class FieldInput extends Field {
 					this.index,
 					ValidityError.maxValue,
 					ValidityErrorLevel.error,
-					`"${this.label}" cannot exceed ${this.maxValue}.`
+					`"${this.label}" cannot exceed ${this.maxValue}`
 				)
 			}
 		}
@@ -160,7 +159,7 @@ export class FieldInput extends Field {
 		if (this.pattern) {
 			const regex = new RegExp(this.pattern)
 			if (!regex.test(fieldValue)) {
-				const errorMsg = this.patternMsg || `The value you entered is not a valid "${this.label}".`
+				const errorMsg = this.patternMsg || `The value you entered is not a valid "${this.label}"`
 				return this.fieldInvalid(
 					this.index,
 					ValidityError.pattern,

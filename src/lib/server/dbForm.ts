@@ -95,7 +95,7 @@ export async function processForm(
 			throw error(500, {
 				file: FILENAME,
 				function: 'processForm',
-				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}.`
+				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}`
 			})
 		}
 	}
@@ -158,7 +158,7 @@ export async function processForm(
 							throw error(500, {
 								file: FILENAME,
 								function: 'setParmVals',
-								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}.`
+								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}`
 							})
 					}
 					break // nested case

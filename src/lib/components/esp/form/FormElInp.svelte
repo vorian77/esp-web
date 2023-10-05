@@ -26,8 +26,6 @@
 	/>
 </label>
 
-<!-- <input class="input" title="Input (disabled)" type="text" placeholder="input disabled" disabled="true" /> -->
-
 <style>
 	/* turn off spinner */
 	/* Chrome, Safari, Edge, Opera */

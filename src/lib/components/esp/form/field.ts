@@ -21,6 +21,7 @@ export class Field {
 	label: string
 	validity: Validity
 	value: string
+	hasChanged: boolean
 
 	constructor(obj: {}, index: number) {
 		obj = valueOrDefault(obj, {})
@@ -48,6 +49,7 @@ export class Field {
 		}
 		this.validity = new Validity()
 		this.value = valueOrDefault(obj.value, '')
+		this.hasChanged = false
 	}
 
 	// UTILITY METHODS
@@ -58,8 +60,13 @@ export class Field {
 		})
 		return items
 	}
+	getValue(formData) {
+		// overridden for checkBox
+		return formData.get(this.name)
+	}
 	validate(formData): Validation {
-		const fieldValue = this.validateGetValue(formData)
+		const fieldValue = this.getValue(formData)
+		this.hasChanged = this.value != fieldValue
 
 		// only validate access types that require validation
 		const evalutedAccessTypes = new Set([FieldAccess.required, FieldAccess.optional])
@@ -81,10 +88,7 @@ export class Field {
 		}
 		return this.fieldNotInvalid(this.index, fieldValue)
 	}
-	validateGetValue(formData) {
-		// overridden for checkBox
-		return formData.get(this.name)
-	}
+
 	fieldValid(index: number, fieldValue: any) {
 		return new Validation(
 			ValidationType.field,

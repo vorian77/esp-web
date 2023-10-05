@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Form } from '$comps/esp/form/form'
+	import type { Field } from '$comps/esp/form/field'
 	import {
 		FieldElement,
 		Validation,
@@ -16,7 +17,7 @@
 	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
 	import FormLink from '$comps/esp/form/FormLink.svelte'
-	import { createEventDispatcher, onMount } from 'svelte'
+	import { createEventDispatcher, onMount, tick } from 'svelte'
 	import { error } from '@sveltejs/kit'
 
 	const dispatch = createEventDispatcher()
@@ -27,6 +28,11 @@
 
 	export let formObj: Form
 	export let surface = ''
+	export let formHasChanged = false
+	export let formValidToSubmit = true
+
+	$: formHasChanged = formObj.fields.some((f) => f.hasChanged)
+	$: formValidToSubmit = formObj.validToSubmit
 
 	const classPopup = formObj.popup ? 'grid grid-cols-10 gap-4' : ''
 	const classPopupHeader = formObj.popup ? 'col-span-9' : ''
@@ -49,16 +55,13 @@
 		validateField(event, fieldName)
 	}
 	function validateField(event, fieldName) {
-		const idx = formObj.fields.findIndex((f) => f.name == fieldName)
-
 		const fieldForm = event.target.form
 		const formData = new FormData(fieldForm)
-
+		const idx = formObj.fields.findIndex((f) => f.name == fieldName)
 		const v: Validation = formObj.fields[idx].validate(formData)
 		setValidities(v.validityFields)
 	}
 	function setValidities(newValidities: Array<ValidityField>) {
-		let formStatus = ValidationStatus.valid
 		newValidities.forEach(({ index, validity }) => {
 			formObj.fields[index].validity = validity
 		})
@@ -151,6 +154,8 @@
 				{:else if field.element === FieldElement.textArea}
 					<FormElTextarea bind:field on:change={validateFieldBase} on:keyup={keyUp} />
 				{/if}
+				Original value: {field.value}
+				hasChanged: {field.hasChanged}
 			</div>
 
 			{#if formObj.fields[idx].validity.level == ValidityErrorLevel.error}

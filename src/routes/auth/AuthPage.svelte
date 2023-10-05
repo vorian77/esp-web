@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import { navReset, navUser } from '$comps/nav/navStore'
+	import { navInitReset, navStorageReset, navUser } from '$comps/nav/navStore'
 	import type { FormSourceResponseType } from '$comps/types'
 	import { error } from '@sveltejs/kit'
 
@@ -63,7 +63,8 @@
 					}
 					toastStore.trigger(t)
 				} else {
-					navReset()
+					navStorageReset()
+					navInitReset()
 					navUser.set(await getUser(applicantId))
 					goto('/apps')
 				}

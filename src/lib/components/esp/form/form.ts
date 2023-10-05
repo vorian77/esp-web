@@ -24,6 +24,7 @@ import {
 	ValidationStatus,
 	ValidityField
 } from '$comps/types'
+import { ObjectAction, DataAction } from '$comps/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/esp/form/form.ts/'
@@ -34,8 +35,11 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
+	showProcessObjects: boolean
 	popup: boolean
 	fields: Array<Field>
+	objActions: Array<ObjectAction>
+	dataActions: Array<DataAction>
 	source: FormSource | undefined
 	height: string
 	footerText: Array<FooterText>
@@ -45,15 +49,18 @@ export class Form {
 	submitResponse: {} | undefined
 	validToSubmit: boolean
 
-	constructor(obj) {
+	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
 		this.name = strRequired(obj.name, 'Form', 'name')
 		this.header = valueOrDefault(obj.header, '')
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, '')
+		this.showProcessObjects = valueOrDefault(obj.showProcessObjects, false)
 		this.popup = valueOrDefault(obj.popup, false)
 		this.fields = this.initFields(obj.fields)
+		this.objActions = this.initObjActions(obj.objActions)
+		this.dataActions = this.initDataActions(obj.dataActions)
 		this.source = obj.source ? new FormSource(obj.source) : undefined
 		this.height = valueOrDefault(obj.height, '')
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)
@@ -68,6 +75,12 @@ export class Form {
 		let newFields: Array<Field> = []
 		fields.forEach((field: {}, index: number) => {
 			let newField: Field
+
+			// <temp> accomodate EdgeDB forms
+			this.edgeDBCodeFieldConversion(field, '_codeElement', 'element')
+			this.edgeDBCodeFieldConversion(field, '_codeType', 'type')
+			this.edgeDBCodeFieldConversion(field, '_codeAccess', 'access')
+
 			const element = memberOfEnumOrDefault(
 				field.element,
 				'Form',
@@ -76,6 +89,7 @@ export class Form {
 				FieldElement,
 				FieldElement.input
 			)
+
 			switch (element) {
 				case FieldElement.input:
 					const type = field.type
@@ -91,6 +105,10 @@ export class Form {
 						case FieldElementInputType.checkbox:
 							newField = new FieldCheckbox(field, index)
 							break
+						case FieldElementInputType.listField:
+							newField = new FieldInput(field, index, newFields)
+							break
+
 						case FieldElementInputType.radio:
 							newField = new FieldRadio(field, index)
 							break
@@ -103,6 +121,7 @@ export class Form {
 				case FieldElement.header:
 					newField = new FieldHeader(field, index)
 					break
+
 				case FieldElement.pictureTake:
 					newField = new FieldPictureTake(field, index)
 					break
@@ -118,12 +137,37 @@ export class Form {
 					throw error(500, {
 						file: FILENAME,
 						function: 'initFields',
-						message: `No case defined for field element: ${element} in form: ${this.name}.`
+						message: `No case defined for field element: ${element} in form: ${this.name}`
 					})
 			}
 			newFields.push(newField)
 		})
 		return newFields
+	}
+
+	initObjActions(actions: any) {
+		actions = valueOrDefault(actions, [])
+		let newActions: Array<ObjectAction> = []
+		actions.forEach((a: {}) => {
+			newActions.push(new ObjectAction(a))
+		})
+
+		return newActions
+	}
+
+	initDataActions(actions: any) {
+		actions = valueOrDefault(actions, [])
+		let newActions: Array<DataAction> = []
+		actions.forEach((a: {}) => {
+			newActions.push(new DataAction(a))
+		})
+		return newActions
+	}
+
+	edgeDBCodeFieldConversion(field: any, edgeDBPropertyName: string, fieldPropertyName: string) {
+		if (field[edgeDBPropertyName]) {
+			field[fieldPropertyName] = field[edgeDBPropertyName]
+		}
 	}
 
 	getFormElement(): HTMLFormElement | undefined {
@@ -135,7 +179,7 @@ export class Form {
 	validateForm(): Validation {
 		const formEl = this.getFormElement()
 		const formData = new FormData(formEl)
-		const fieldValue = this.fields[0].validateGetValue(formData)
+		const fieldValue = this.fields[0].getValue(formData)
 
 		// set formData
 		let validityFields: Array<ValidityField> = []
@@ -189,12 +233,6 @@ export class Form {
 		if (!this.source) {
 			return FormSourceResponse({})
 		}
-		const formEl = this.getFormElement()
-		const formData = new FormData(formEl)
-		let formValues = {}
-		this.fields.forEach((f) => {
-			formValues[f.name] = f.validateGetValue(formData)
-		})
 
 		const responsePromise = await fetch(this.source.processURL, {
 			method: 'POST',
@@ -202,7 +240,7 @@ export class Form {
 				action: 'form_submit',
 				formName: this.name,
 				source: this.source,
-				data: { ...formValues, ...this.pageData }
+				data: { ...this.getFormValues(), ...this.pageData }
 			})
 		})
 		const response = await responsePromise.json()
@@ -219,6 +257,16 @@ export class Form {
 		return FormSourceResponse(response)
 	}
 
+	getFormValues() {
+		const formEl = this.getFormElement()
+		const formData = new FormData(formEl)
+		let formValues = {}
+		this.fields.forEach((f) => {
+			formValues[f.name] = f.getValue(formData)
+		})
+		return formValues
+	}
+
 	getFieldValue(fieldName: string) {
 		const obj = this.fields.find((obj) => obj.name == fieldName)
 		return obj?.value || ''
@@ -231,7 +279,7 @@ export class Form {
 			throw error(500, {
 				file: FILENAME,
 				function: 'setFieldValue',
-				message: `Unable to find field: ${fieldName} in form: ${this.name}.`
+				message: `Unable to find field: ${fieldName} in form: ${this.name}`
 			})
 		}
 	}
