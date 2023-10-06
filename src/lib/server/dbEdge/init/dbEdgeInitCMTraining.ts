@@ -2,6 +2,8 @@ import { addForm, addNode, getFormById, execute } from '$server/dbEdge/types.edg
 import {
 	apps,
 	nodesPrograms,
+	userTypeResourcesApps,
+	userTypeResourcesPrograms,
 	columns,
 	tables,
 	tableColumns
@@ -45,6 +47,15 @@ export async function initCMTraining() {
 			'/apps',
 			'Home'
 		]
+	])
+
+	// ut_sys_admin
+	await userTypeResourcesApps([['ut_sys_admin', 'app_cm_training']])
+
+	await userTypeResourcesPrograms([
+		['ut_sys_admin', ['app_cm_training', 'pgm_training_staff_adm']],
+		['ut_sys_admin', ['app_cm_training', 'pgm_training_staff_provider']],
+		['ut_sys_admin', ['app_cm_training', 'pgm_training_student']]
 	])
 
 	await tables([['app_cm_training', 'Student', true]])

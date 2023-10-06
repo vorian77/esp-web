@@ -18,7 +18,8 @@ let reviewQuery = ''
 // reviewQuery = `select sys_obj::ObjAction {*}`
 // reviewQuery = `select sys_db::Table {*}`
 // reviewQuery = `select sys_db::Column {*}`
-reviewQuery = `select sys_obj::Form {*}`
+// reviewQuery = `select sys_obj::Form {*}`
+reviewQuery = `select sys_user::UserType {name, resources: {name}} filter .name = 'ut_sys_admin'`
 
 export async function init() {
 	// <temp>  230908 - database init
@@ -28,5 +29,5 @@ export async function init() {
 	// await initCM()
 	await initCMTraining()
 	// await initCMTrainingData()
-	// await review(FILE, reviewQuery)
+	await review(FILE, reviewQuery)
 }
