@@ -25,7 +25,7 @@ module sys_core {
 
   # FUNCTIONS
   function getRoot() -> optional sys_core::ObjRoot
-    using (select assert_single((select sys_core::ObjRoot filter .name = 'root')));
+    using (select assert_single((select sys_core::ObjRoot filter .name = '*ROOTOBJ*')));
 
   function getEnt(entName: str) -> optional sys_core::Ent
       using (select sys_core::Ent filter .name = entName);

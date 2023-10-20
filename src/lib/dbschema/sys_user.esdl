@@ -2,21 +2,21 @@ module sys_user {
   type User extending default::Person {
     required userName: str;
     required password: str;
-    multi link userTypes := .<users[is UserType];
+    multi userTypes: UserType {
+      isActive: bool;
+      on target delete allow;
+    };
     constraint exclusive on (.userName);
   }
   
   type UserType extending sys_core::Obj {
     multi resources: sys_core::Obj {
-      allow: bool {
-        default := true;
-      };
-      on target delete allow;
-    };
-     multi users: User {
       on target delete allow;
     };
     constraint exclusive on ((.name));
+  }
+  type Widget extending sys_core::Obj {
+    constraint exclusive on (.name);
   }
   
   # GLOBALS
@@ -36,8 +36,11 @@ module sys_user {
 
   # FUNCTIONS
   function getUser(userName: str) -> optional User
-      using (select sys_user::User filter .userName = userName);
+      using (select User filter .userName = userName);
 
   function getUserType(userTypeName: str) -> optional UserType
-    using (select sys_user::UserType filter .name = userTypeName);
+    using (select UserType filter .name = userTypeName);
+
+  function getWidget(widgetName: str) -> optional Widget
+    using (select Widget filter .name = widgetName);   
 }

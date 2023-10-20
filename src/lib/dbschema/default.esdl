@@ -1,7 +1,5 @@
 module default {
-  scalar type Name extending str {
-    constraint min_len_value(3);
-  }
+  scalar type Name extending str;
 
   abstract type Person {
     firstName: Name;

@@ -9,6 +9,23 @@ export namespace std {
   export interface FreeObject extends BaseObject {}
   export type JsonEmpty = "ReturnEmpty" | "ReturnTarget" | "Error" | "UseNull" | "DeleteKey";
 }
+export interface Person extends std.$Object {
+  "firstName"?: string | null;
+  "lastName"?: string | null;
+  "fullName"?: string | null;
+}
+export interface Mgmt extends std.$Object {
+  "createdAt": Date;
+  "modifiedAt"?: Date | null;
+  "createdBy": Person;
+  "modifiedBy": Person;
+}
+export namespace app_cm_training {
+  export interface Student extends Person, Mgmt {
+    "agencyId": string;
+    "email"?: string | null;
+  }
+}
 export namespace cfg {
   export interface ConfigObject extends std.BaseObject {}
   export interface AbstractConfig extends ConfigObject {
@@ -52,23 +69,6 @@ export namespace cfg {
     "transports": ConnectionTransport[];
   }
   export interface Trust extends AuthMethod {}
-}
-export interface Person extends std.$Object {
-  "firstName"?: string | null;
-  "lastName"?: string | null;
-  "fullName"?: string | null;
-}
-export interface Mgmt extends std.$Object {
-  "createdAt": Date;
-  "modifiedAt"?: Date | null;
-  "createdBy": Person;
-  "modifiedBy": Person;
-}
-export namespace cm_training {
-  export interface Student extends Person, Mgmt {
-    "agencyId": string;
-    "email"?: string | null;
-  }
 }
 export namespace schema {
   export type AccessKind = "Select" | "UpdateRead" | "UpdateWrite" | "Delete" | "Insert";
@@ -302,56 +302,14 @@ export namespace sys_core {
   }
   export interface CodeType extends Obj {}
 }
-export namespace sys_app {
-  export interface HomeScreen extends sys_core.Obj {
-    "widgets": HomeScreenWidget[];
-  }
-  export interface HomeScreenWidget extends sys_core.Obj {}
-  export interface Node extends sys_core.Obj {
-    "parent"?: Node | null;
-    "order": number;
-    "page": string;
-    "codeIcon": sys_core.Code;
-    "codeType": sys_core.Code;
-    "obj"?: sys_obj.NodeObj | null;
-  }
-}
-export namespace sys_obj {
-  export interface DataAction extends std.$Object {
-    "codeType": sys_core.Code;
-    "items": DataActionItem[];
-    "query"?: string | null;
-  }
-  export interface DataActionItem extends std.$Object {
-    "codeDataType"?: ct_sys_edgedb_data_type | null;
-    "codeDirection"?: ct_sys_data_action_item_direction | null;
-    "codeOp"?: ct_sys_data_action_item_op | null;
-    "codeSource"?: ct_sys_data_action_item_source | null;
-    "dbName": string;
-    "fieldName"?: string | null;
-    "order"?: number | null;
-    "sourceKey"?: string | null;
-  }
-  export interface NodeObj extends sys_core.Obj {
-    "codeCardinality": sys_core.Code;
-    "codeComponent": sys_core.Code;
-    "dataActions": DataAction[];
-    "objActions": ObjAction[];
-  }
-  export interface Form extends NodeObj {
-    "table"?: sys_db.Table | null;
-    "fields": FormField[];
-    "description"?: string | null;
-    "isPopup"?: boolean | null;
-    "subHeader"?: string | null;
-    "submitButtonLabel"?: string | null;
-  }
-  export interface FormField extends std.$Object {
-    "codeAccess": sys_core.Code;
-    "codeElement"?: sys_core.Code | null;
-    "codeInputType"?: sys_core.Code | null;
-    "column": sys_db.Column;
+export namespace sys_db {
+  export interface Column extends sys_core.Obj {
+    "codeAlignment": sys_core.Code;
+    "codeDataType": sys_core.Code;
     "dynamicLabel"?: string | null;
+    "expr"?: string | null;
+    "hRows": number;
+    "headerSide"?: string | null;
     "matchColumn"?: string | null;
     "maxLength"?: number | null;
     "maxValue"?: number | null;
@@ -362,27 +320,59 @@ export namespace sys_obj {
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
     "staticLabel"?: string | null;
-  }
-  export interface ObjAction extends sys_core.Obj {
-    "order": number;
-  }
-  export type ct_sys_data_action_item_direction = "asc" | "desc";
-  export type ct_sys_data_action_item_op = "eq";
-  export type ct_sys_data_action_item_source = "calc" | "data" | "env" | "literal" | "traversal" | "user";
-  export type ct_sys_edgedb_data_type = "bool" | "datetime" | "expr" | "int64" | "json" | "str" | "uuid";
-}
-export namespace sys_db {
-  export interface Column extends sys_core.Obj {
-    "codeAlignment": sys_core.Code;
-    "codeDataType": sys_core.Code;
-    "expr"?: string | null;
-    "hRows": number;
-    "headerSide"?: string | null;
     "width": number;
   }
   export interface Table extends sys_core.Obj {
     "hasMgmt": boolean;
     "columns": Column[];
+  }
+}
+export namespace sys_obj {
+  export interface DataObj extends sys_core.Obj {
+    "actions": DataObjAction[];
+    "codeCardinality": sys_core.Code;
+    "codeComponent": sys_core.Code;
+  }
+  export interface DataObjAction extends sys_core.Obj {
+    "order": number;
+  }
+  export interface Form extends DataObj {
+    "table"?: sys_db.Table | null;
+    "fields": FormField[];
+    "description"?: string | null;
+    "isPopup"?: boolean | null;
+    "subHeader"?: string | null;
+    "submitButtonLabel"?: string | null;
+  }
+  export interface FormField extends std.$Object {
+    "codeAccess"?: sys_core.Code | null;
+    "codeDbDataOp"?: sys_core.Code | null;
+    "codeDbDataSource"?: sys_core.Code | null;
+    "codeDbListDir"?: sys_core.Code | null;
+    "codeElement"?: sys_core.Code | null;
+    "codeInputType"?: sys_core.Code | null;
+    "column": sys_db.Column;
+    "dbDataSourceKey"?: string | null;
+    "dbListOrder"?: number | null;
+    "dbName"?: string | null;
+    "dbSelectOrder"?: number | null;
+    "isDbAllowNull"?: boolean | null;
+    "isDbExcludeInsert"?: boolean | null;
+    "isDbExcludeUpdate"?: boolean | null;
+    "isDbIdentity"?: boolean | null;
+    "isDbListOrderField"?: boolean | null;
+    "isDbPreset"?: boolean | null;
+    "isDbSys"?: boolean | null;
+    "isDisplay"?: boolean | null;
+    "isDisplayable"?: boolean | null;
+  }
+  export interface NodeObj extends sys_core.Obj {
+    "codeIcon": sys_core.Code;
+    "codeType": sys_core.Code;
+    "parent"?: NodeObj | null;
+    "order": number;
+    "page": string;
+    "dataObj"?: DataObj | null;
   }
 }
 export namespace sys_test {
@@ -403,9 +393,9 @@ export namespace sys_user {
   export interface SYS_USER extends User {}
   export interface SYS_USER_ID extends User {}
   export interface UserType extends sys_core.Obj {
-    "users": User[];
     "resources": sys_core.Obj[];
   }
+  export interface Widget extends sys_core.Obj {}
   export interface currentUser extends User {}
 }
 export interface types {
@@ -414,6 +404,13 @@ export interface types {
     "Object": std.$Object;
     "FreeObject": std.FreeObject;
     "JsonEmpty": std.JsonEmpty;
+  };
+  "default": {
+    "Person": Person;
+    "Mgmt": Mgmt;
+  };
+  "app_cm_training": {
+    "Student": app_cm_training.Student;
   };
   "cfg": {
     "ConfigObject": cfg.ConfigObject;
@@ -428,13 +425,6 @@ export interface types {
     "JWT": cfg.JWT;
     "SCRAM": cfg.SCRAM;
     "Trust": cfg.Trust;
-  };
-  "default": {
-    "Person": Person;
-    "Mgmt": Mgmt;
-  };
-  "cm_training": {
-    "Student": cm_training.Student;
   };
   "schema": {
     "AccessKind": schema.AccessKind;
@@ -510,26 +500,16 @@ export interface types {
     "Code": sys_core.Code;
     "CodeType": sys_core.CodeType;
   };
-  "sys_app": {
-    "HomeScreen": sys_app.HomeScreen;
-    "HomeScreenWidget": sys_app.HomeScreenWidget;
-    "Node": sys_app.Node;
-  };
-  "sys_obj": {
-    "DataAction": sys_obj.DataAction;
-    "DataActionItem": sys_obj.DataActionItem;
-    "NodeObj": sys_obj.NodeObj;
-    "Form": sys_obj.Form;
-    "FormField": sys_obj.FormField;
-    "ObjAction": sys_obj.ObjAction;
-    "ct_sys_data_action_item_direction": sys_obj.ct_sys_data_action_item_direction;
-    "ct_sys_data_action_item_op": sys_obj.ct_sys_data_action_item_op;
-    "ct_sys_data_action_item_source": sys_obj.ct_sys_data_action_item_source;
-    "ct_sys_edgedb_data_type": sys_obj.ct_sys_edgedb_data_type;
-  };
   "sys_db": {
     "Column": sys_db.Column;
     "Table": sys_db.Table;
+  };
+  "sys_obj": {
+    "DataObj": sys_obj.DataObj;
+    "DataObjAction": sys_obj.DataObjAction;
+    "Form": sys_obj.Form;
+    "FormField": sys_obj.FormField;
+    "NodeObj": sys_obj.NodeObj;
   };
   "sys_test": {
     "Movie": sys_test.Movie;
@@ -540,6 +520,7 @@ export interface types {
     "SYS_USER": sys_user.SYS_USER;
     "SYS_USER_ID": sys_user.SYS_USER_ID;
     "UserType": sys_user.UserType;
+    "Widget": sys_user.Widget;
     "currentUser": sys_user.currentUser;
   };
 }

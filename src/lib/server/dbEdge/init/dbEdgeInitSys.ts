@@ -1,23 +1,21 @@
+import { review } from '$server/dbEdge/types.edgeDB.server'
 import {
 	root,
 	apps,
 	users,
 	codeTypes,
 	codes,
-	nodesPrograms,
-	nodesHeaders,
-	homeScreen,
-	homeScreenWidget,
-	homeScreenAddWidgets,
+	nodeObjPages,
+	nodeObjPrograms,
+	nodeObjHeaders,
 	userType,
-	userTypeUsers,
-	userTypeResourcesHomeScreen,
+	userUserType,
 	userTypeResourcesApps,
 	userTypeResourcesPrograms,
-	objActions,
-	columns,
-	tables,
-	tableColumns
+	userTypeResourcesWidgets,
+	widgets,
+	dataObjActions,
+	columns
 } from '$server/dbEdge/init/dbEdgeInitUtilities'
 import { execute } from '$server/dbEdge/types.edgeDB.server'
 
@@ -27,27 +25,56 @@ export async function initSys() {
 	console.log()
 	console.log(`${FILE}.1`)
 	await reset()
-	await root()
+	await review(FILE + '.1', reviewQuery)
+	await data()
+	await review(FILE + '.2', reviewQuery)
+}
+
+const reviewQuery = 'select sys_user::User {**}'
+
+async function reset() {
+	const query = `
+		delete app_cm_training::Student;
+		delete sys_obj::NodeObj;  		
+		delete sys_obj::Form;
+		delete sys_db::Table;
+		delete sys_db::Column;  
+		delete sys_obj::DataObjAction;
+		delete sys_user::Widget;
+  	delete sys_core::Code;
+  	delete sys_core::CodeType;
+  	delete sys_user::UserType;
+		delete sys_core::Obj;
+		delete sys_user::User;
+    delete sys_core::ObjRoot;
+`
+	await execute(query)
+}
+
+async function data() {
+	await root('*ROOTOBJ*')
 	await users([['System', 'User', 'user_sys', '!8394812kalsdjfa*!@#$$*&']])
 	await apps([['app_sys'], ['app_db']])
+
+	await userType([['app_sys', 'ut_sys_admin']])
+	await userUserType([['user_sys', 'ut_sys_admin']])
+
 	await codeTypes([
 		['app_db', 'ct_db_col_alignment'],
-
-		['app_sys', 'ct_sys_data_action_type'],
-		['app_sys', 'ct_sys_edgedb_data_type'],
-		['app_sys', 'ct_sys_data_action_item_op'],
-		['app_sys', 'ct_sys_data_action_item_source'],
+		['app_db', 'ct_db_col_data_type'],
 
 		['app_sys', 'ct_sys_form_field_access'],
 		['app_sys', 'ct_sys_form_field_element'],
 		['app_sys', 'ct_sys_form_field_input'],
+		['app_sys', 'ct_sys_form_field_list_dir'],
+		['app_sys', 'ct_sys_form_field_op'],
+		['app_sys', 'ct_sys_form_field_source'],
 
-		['app_sys', 'ct_sys_icon'],
+		['app_sys', 'ct_sys_data_obj_cardinality'],
+		['app_sys', 'ct_sys_data_obj_component'],
 
-		['app_sys', 'ct_sys_node_type'],
-
-		['app_sys', 'ct_sys_node_obj_cardinality'],
-		['app_sys', 'ct_sys_node_obj_component']
+		['app_sys', 'ct_sys_node_obj_icon'],
+		['app_sys', 'ct_sys_node_obj_type']
 	])
 	await codes([
 		// db col - alignment
@@ -56,37 +83,18 @@ export async function initSys() {
 		['ct_db_col_alignment', 'app_db', 'justify'],
 		['ct_db_col_alignment', 'app_db', 'right'],
 
-		// edgedb - data type
-		['ct_sys_edgedb_data_type', 'app_sys', 'bool'],
-		['ct_sys_edgedb_data_type', 'app_sys', 'datetime'],
-		['ct_sys_edgedb_data_type', 'app_sys', 'expr'],
-		['ct_sys_edgedb_data_type', 'app_sys', 'int64'],
-		['ct_sys_edgedb_data_type', 'app_sys', 'json'],
-		['ct_sys_edgedb_data_type', 'app_sys', 'str'],
-		['ct_sys_edgedb_data_type', 'app_sys', 'uuid'],
-
-		// data action - type
-		['ct_sys_data_action_type', 'app_sys', 'select-filter'],
-		['ct_sys_data_action_type', 'app_sys', 'select-fields'],
-		['ct_sys_data_action_type', 'app_sys', 'select-order'],
-		['ct_sys_data_action_type', 'app_sys', 'insert-fields'],
-		['ct_sys_data_action_type', 'app_sys', 'update-filter'],
-		['ct_sys_data_action_type', 'app_sys', 'update-fields'],
-		['ct_sys_data_action_type', 'app_sys', 'delete-filter'],
-
-		// data action item - op
-		['ct_sys_data_action_item_op', 'app_sys', '='],
-
-		// data action item - source
-		['ct_sys_data_action_item_source', 'app_sys', 'calc'],
-		['ct_sys_data_action_item_source', 'app_sys', 'data'],
-		['ct_sys_data_action_item_source', 'app_sys', 'env'],
-		['ct_sys_data_action_item_source', 'app_sys', 'literal'],
-		['ct_sys_data_action_item_source', 'app_sys', 'traversal'],
-		['ct_sys_data_action_item_source', 'app_sys', 'user'],
+		// db col - data type
+		['ct_db_col_data_type', 'app_sys', 'bool'],
+		['ct_db_col_data_type', 'app_sys', 'datetime'],
+		['ct_db_col_data_type', 'app_sys', 'expr'],
+		['ct_db_col_data_type', 'app_sys', 'int16'],
+		['ct_db_col_data_type', 'app_sys', 'int64'],
+		['ct_db_col_data_type', 'app_sys', 'json'],
+		['ct_db_col_data_type', 'app_sys', 'obj'],
+		['ct_db_col_data_type', 'app_sys', 'str'],
+		['ct_db_col_data_type', 'app_sys', 'uuid'],
 
 		// form field - access
-		['ct_sys_form_field_access', 'app_sys', 'hidden'],
 		['ct_sys_form_field_access', 'app_sys', 'optional'],
 		['ct_sys_form_field_access', 'app_sys', 'readOnly'],
 		['ct_sys_form_field_access', 'app_sys', 'required'],
@@ -94,7 +102,6 @@ export async function initSys() {
 		// form field - element
 		['ct_sys_form_field_element', 'app_sys', 'header'],
 		['ct_sys_form_field_element', 'app_sys', 'input'],
-		['ct_sys_form_field_element', 'app_sys', 'listField'],
 		['ct_sys_form_field_element', 'app_sys', 'pictureTake'],
 		['ct_sys_form_field_element', 'app_sys', 'select'],
 		['ct_sys_form_field_element', 'app_sys', 'textArea'],
@@ -103,70 +110,92 @@ export async function initSys() {
 		['ct_sys_form_field_input', 'app_sys', 'checkbox'],
 		['ct_sys_form_field_input', 'app_sys', 'date'],
 		['ct_sys_form_field_input', 'app_sys', 'email'],
-		['ct_sys_form_field_input', 'app_sys', 'listField'],
 		['ct_sys_form_field_input', 'app_sys', 'number'],
 		['ct_sys_form_field_input', 'app_sys', 'password'],
 		['ct_sys_form_field_input', 'app_sys', 'radio'],
 		['ct_sys_form_field_input', 'app_sys', 'tel'],
 		['ct_sys_form_field_input', 'app_sys', 'text'],
 
-		// icons
-		['ct_sys_icon', 'app_sys', 'application'],
+		// form field - list direction
+		['ct_sys_form_field_list_dir', 'app_sys', 'asc'],
+		['ct_sys_form_field_list_dir', 'app_sys', 'desc'],
 
-		// node types
-		['ct_sys_node_type', 'app_sys', 'header'],
-		['ct_sys_node_type', 'app_sys', 'object'],
-		['ct_sys_node_type', 'app_sys', 'page'],
-		['ct_sys_node_type', 'app_sys', 'program'],
+		// form field - op
+		['ct_sys_form_field_op', 'app_sys', 'eq'],
 
-		// node obj - cardinality
-		['ct_sys_node_obj_cardinality', 'app_sys', 'list'],
-		['ct_sys_node_obj_cardinality', 'app_sys', 'detail'],
+		// form field - source
+		['ct_sys_form_field_source', 'app_sys', 'calc'],
+		['ct_sys_form_field_source', 'app_sys', 'data'],
+		['ct_sys_form_field_source', 'app_sys', 'env'],
+		['ct_sys_form_field_source', 'app_sys', 'literal'],
+		['ct_sys_form_field_source', 'app_sys', 'traversal'],
+		['ct_sys_form_field_source', 'app_sys', 'user'],
 
-		// node_obj - components
-		['ct_sys_node_obj_component', 'app_sys', 'Home'],
-		['ct_sys_node_obj_component', 'app_sys', 'FormList'],
-		['ct_sys_node_obj_component', 'app_sys', 'FormDetail']
+		// data obj - cardinality
+		['ct_sys_data_obj_cardinality', 'app_sys', 'list'],
+		['ct_sys_data_obj_cardinality', 'app_sys', 'detail'],
+
+		// data obj - components
+		['ct_sys_data_obj_component', 'app_sys', 'Home'],
+		['ct_sys_data_obj_component', 'app_sys', 'FormList'],
+		['ct_sys_data_obj_component', 'app_sys', 'FormDetail'],
+
+		// node obj - icons
+		['ct_sys_node_obj_icon', 'app_sys', 'application'],
+		['ct_sys_node_obj_icon', 'app_sys', 'root'],
+
+		// node obj - types
+		['ct_sys_node_obj_type', 'app_sys', 'header'],
+		['ct_sys_node_obj_type', 'app_sys', 'object'],
+		['ct_sys_node_obj_type', 'app_sys', 'page'],
+		['ct_sys_node_obj_type', 'app_sys', 'program']
 	])
-	await nodesPrograms([
-		['app_sys', 'program', 'pgm_sys_admin', 'Administration', 10, 'application', '/apps', 'Home']
-	])
-	await nodesHeaders([
+	await nodeObjHeaders([
 		[
 			'app_sys',
-			['app_sys', 'pgm_sys_admin'],
+			'pgm_sys_admin',
 			'header',
 			'node_sys_utility_header',
 			'Utilities',
 			40,
 			'application',
-			'/apps',
-			'Home'
+			'/home/app'
 		]
 	])
-	await homeScreen([['app_sys', 'hs_sys_user']])
-	await homeScreenWidget([['app_sys', 'hsw_sys_user']])
-	await homeScreenAddWidgets([['hs_sys_user', ['hsw_sys_user']]])
+	await nodeObjPages([
+		[
+			'app_sys',
+			'node_sys_utility_header',
+			'page',
+			'node_sys_utility_quotes',
+			'Utility-Quotes',
+			10,
+			'application',
+			'/home/cm/quotes'
+		]
+	])
+	await nodeObjPrograms([
+		['app_sys', 'program', 'pgm_sys_admin', 'SysAdmin', 10, 'application', '/home/app']
+	])
 
-	await userType([['app_sys', 'ut_sys_admin']])
-	await userTypeUsers([['ut_sys_admin', 'user_sys']])
-	await userTypeResourcesHomeScreen([['ut_sys_admin', 'hs_sys_user']])
+	await widgets([['app_sys', 'widget_sys_user']])
+
 	await userTypeResourcesApps([
 		['ut_sys_admin', 'app_sys'],
-		['ut_sys_admin', 'app_cm'],
-		['ut_sys_admin', 'app_cm_training']
+		['ut_sys_admin', 'app_db']
 	])
 	await userTypeResourcesPrograms([
-		['ut_sys_admin', ['app_sys', 'pgm_sys_admin']],
-		['ut_sys_admin', ['app_cm', 'pgm_cm_staff']],
-		['ut_sys_admin', ['app_cm', 'pgm_cm_student_applicant']],
-		['ut_sys_admin', ['app_cm', 'pgm_cm_student']],
+		['ut_sys_admin', 'pgm_sys_admin'],
+		['ut_sys_admin', 'pgm_cm_staff'],
+		['ut_sys_admin', 'pgm_cm_student_applicant'],
+		['ut_sys_admin', 'pgm_cm_student'],
 
-		['ut_sys_admin', ['app_cm_training', 'pgm_training_staff_adm']],
-		['ut_sys_admin', ['app_cm_training', 'pgm_training_staff_provider']],
-		['ut_sys_admin', ['app_cm_training', 'pgm_training_student']]
+		['ut_sys_admin', 'pgm_training_staff_adm'],
+		['ut_sys_admin', 'pgm_training_staff_provider'],
+		['ut_sys_admin', 'pgm_training_student']
 	])
-	await objActions([
+	await userTypeResourcesWidgets([['ut_sys_admin', 'widget_sys_user']])
+	await dataObjActions([
 		['app_sys', 'noa_list_save', 'Save', 100],
 		['app_sys', 'noa_list_new', 'New', 110],
 		['app_sys', 'noa_list_edit', 'Edit', 120],
@@ -184,78 +213,79 @@ export async function initSys() {
 
 	// columns - sys
 	await columns([
-		['app_sys', 'id', 'System ID', 'System ID', 'uuid', '', 'left', 0, 0],
-		['app_sys', 'createdAt', 'Created At', 'Created At', 'datetime', '', 'left', 0, 0],
-		['app_sys', 'modifiedAt', 'Modified At', 'Modified At', 'datetime', '', 'left', 0, 0],
+		['app_sys', 'id', 'System ID', 'System ID', 'uuid', '', 'left', 0, 0, '', ''],
+		['app_sys', 'createdAt', 'Created At', 'Created At', 'datetime', '', 'left', 0, 0, '', ''],
+		['app_sys', 'modifiedAt', 'Modified At', 'Modified At', 'datetime', '', 'left', 0, 0, '', ''],
 		[
 			'app_sys',
 			'createdBy',
 			'Created By',
 			'Created By',
-			'expr',
+			'obj',
 			'(select sys_user::getUser([("user", "userName")]))',
 			'left',
 			0,
-			0
+			0,
+			'',
+			''
 		],
 		[
 			'app_sys',
 			'modifiedBy',
 			'Modified By',
 			'Modified By',
-			'expr',
+			'obj',
 			'(select sys_user::getUser([("user", "userName")]))',
 			'left',
 			0,
-			0
+			0,
+			'',
+			''
 		],
 		[
 			'app_sys',
 			'owner',
 			'Owner',
 			'Owner',
-			'expr',
+			'obj',
 			'(select sys_core::getEnt([("traversal","","name", "str")]))',
 			'left',
 			0,
-			0
+			0,
+			'',
+			''
 		]
 	])
 
 	// columns - common
 	await columns([
-		['app_sys', 'firstName', 'First Name', 'First Name', 'str', '', 'left', 0, 0],
-		['app_sys', 'lastName', 'Last Name', 'Last Name', 'str', '', 'left', 0, 0],
-		['app_sys', 'fullName', 'Full Name', 'Full Name', 'str', '', 'left', 0, 0],
-		['app_sys', 'email', 'Email', 'Email', 'str', '', 'left', 0, 0]
+		[
+			'app_sys',
+			'firstName',
+			'First Name',
+			'First Name',
+			'str',
+			'',
+			'left',
+			0,
+			0,
+			'Enter first name',
+			''
+		],
+		[
+			'app_sys',
+			'lastName',
+			'Last Name',
+			'Last Name',
+			'str',
+			'',
+			'left',
+			0,
+			0,
+			'',
+			'Enter last name'
+		],
+		['app_sys', 'fullName', 'Full Name', 'Full Name', 'str', '', 'left', 0, 0, '', ''],
+		['app_sys', 'email', 'Email', 'Email', 'str', '', 'left', 0, 0, 'Enter email', '']
 	])
-
-	// await review(FILE, reviewQuery)
-}
-
-async function reset() {
-	const query = `
-  	delete sys_app::HomeScreen;
-    delete sys_app::HomeScreenWidget;
-    delete sys_app::Node;
-		delete sys_app::Node filter exists .obj;
-		delete sys_obj::NodeObj;  
-		delete sys_obj::FormField;
-		delete sys_obj::DataAction; 
-		delete sys_obj::DataActionItem;
-		delete sys_obj::ObjAction;
-		delete sys_obj::Form;
-		delete sys_db::Table;
-		delete sys_db::Column;  
-    delete sys_core::Code;
-    delete sys_core::CodeType;
-    delete sys_user::UserType;
-    delete sys_core::ObjRoot;
-    delete sys_core::Obj;
-    delete sys_core::Ent;
-		delete cm_training::Student;
-    delete sys_user::User;
-		delete sys_core::App;
-`
-	await execute(query)
 }

@@ -7,8 +7,25 @@ const client = createClient({
 	secretKey: EDGEDB_SECRET_KEY
 })
 
-export async function root() {
-	await client.execute(`insert sys_core::ObjRoot { name := 'root', header:= 'Root' };`)
+export async function root(rootName: string) {
+	const query = e.insert(e.sys_core.ObjRoot, {
+		name: rootName
+	})
+	return await query.run(client)
+}
+
+export async function users(params: any) {
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.insert(e.sys_user.User, {
+				firstName: e.cast(e.str, i[0]),
+				lastName: e.cast(e.str, i[1]),
+				userName: e.cast(e.str, i[2]),
+				password: e.cast(e.str, i[3])
+			})
+		})
+	})
+	return await query.run(client, { data: params })
 }
 
 export async function apps(params: any) {
@@ -25,16 +42,33 @@ export async function apps(params: any) {
 	})
 	return await query.run(client, { data: params })
 }
-
-export async function users(params: any) {
+export async function userType(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_user.User, {
-				firstName: e.cast(e.str, i[0]),
-				lastName: e.cast(e.str, i[1]),
-				userName: e.cast(e.str, i[2]),
-				password: e.cast(e.str, i[3])
+			return e.insert(e.sys_user.UserType, {
+				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
+				name: e.cast(e.str, i[1]),
+				createdBy: CREATOR,
+				modifiedBy: CREATOR
 			})
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
+export async function userUserType(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.update(e.sys_user.User, (u) => ({
+				filter: e.op(u.userName, '=', e.cast(e.str, i[0])),
+				set: {
+					userTypes: {
+						'+=': e.select(e.sys_user.getUserType(e.cast(e.str, i[1])))
+					}
+				}
+			}))
 		})
 	})
 	return await query.run(client, { data: params })
@@ -71,17 +105,59 @@ export async function codes(params: any) {
 	return await query.run(client, { data: params })
 }
 
-export async function nodesPrograms(params: any) {
+export async function nodeObjHeaders(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_app.Node, {
+			return e.insert(e.sys_obj.NodeObj, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_type', e.cast(e.str, i[1]))),
+				parent: e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1]))),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', e.cast(e.str, i[2]))),
+				name: e.cast(e.str, i[3]),
+				header: e.cast(e.str, i[4]),
+				order: e.cast(e.int64, i[5]),
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[6]))),
+				page: e.cast(e.str, i[7]),
+				createdBy: CREATOR,
+				modifiedBy: CREATOR
+			})
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
+export async function nodeObjPages(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.insert(e.sys_obj.NodeObj, {
+				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
+				parent: e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1]))),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', e.cast(e.str, i[2]))),
+				name: e.cast(e.str, i[3]),
+				header: e.cast(e.str, i[4]),
+				order: e.cast(e.int64, i[5]),
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[6]))),
+				page: e.cast(e.str, i[7]),
+				createdBy: CREATOR,
+				modifiedBy: CREATOR
+			})
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
+export async function nodeObjPrograms(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.insert(e.sys_obj.NodeObj, {
+				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', e.cast(e.str, i[1]))),
 				name: e.cast(e.str, i[2]),
 				header: e.cast(e.str, i[3]),
 				order: e.cast(e.int64, i[4]),
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_icon', e.cast(e.str, i[5]))),
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[5]))),
 				page: e.cast(e.str, i[6]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
@@ -91,139 +167,16 @@ export async function nodesPrograms(params: any) {
 	return await query.run(client, { data: params })
 }
 
-export async function nodesHeaders(params: any) {
+export async function widgets(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_app.Node, {
-				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				parent: e.select(e.sys_app.getNode(e.cast(e.str, i[1][0]), e.cast(e.str, i[1][1]))),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_type', e.cast(e.str, i[2]))),
-				name: e.cast(e.str, i[3]),
-				header: e.cast(e.str, i[4]),
-				order: e.cast(e.int64, i[5]),
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_icon', e.cast(e.str, i[6]))),
-				page: e.cast(e.str, i[7]),
-				createdBy: CREATOR,
-				modifiedBy: CREATOR
-			})
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function nodesPages(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_app.Node, {
-				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				parent: e.select(e.sys_app.getNode(e.cast(e.str, i[1][0]), e.cast(e.str, i[1][1]))),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_type', e.cast(e.str, i[2]))),
-				name: e.cast(e.str, i[3]),
-				header: e.cast(e.str, i[4]),
-				order: e.cast(e.int64, i[5]),
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_icon', e.cast(e.str, i[6]))),
-				page: e.cast(e.str, i[7]),
-				createdBy: CREATOR,
-				modifiedBy: CREATOR
-			})
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function homeScreen(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_app.HomeScreen, {
+			return e.insert(e.sys_user.Widget, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				name: e.cast(e.str, i[1]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function homeScreenWidget(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_app.HomeScreenWidget, {
-				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				name: e.cast(e.str, i[1]),
-				createdBy: CREATOR,
-				modifiedBy: CREATOR
-			})
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function homeScreenAddWidgets(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_app.HomeScreen, (hs) => ({
-				filter: e.op(hs.name, '=', e.cast(e.str, i[0])),
-				set: {
-					widgets: {
-						'+=': e.assert_distinct(
-							e.for(e.json_array_unpack(i[1]), (y) => {
-								return e.select(e.sys_app.getHomeScreenWidget(e.cast(e.str, y)))
-							})
-						)
-					}
-				}
-			}))
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function userType(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_user.UserType, {
-				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				name: e.cast(e.str, i[1]),
-				createdBy: CREATOR,
-				modifiedBy: CREATOR
-			})
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function userTypeUsers(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_user.UserType, (ut) => ({
-				filter: e.op(ut.name, '=', e.cast(e.str, i[0])),
-				set: {
-					users: { '+=': e.select(e.sys_user.getUser(e.cast(e.str, i[1]))) }
-				}
-			}))
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function userTypeResourcesHomeScreen(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_user.UserType, (ut) => ({
-				filter: e.op(ut.name, '=', e.cast(e.str, i[0])),
-				set: {
-					resources: { '+=': e.select(e.sys_app.getHomeScreen(e.cast(e.str, i[1]))) }
-				}
-			}))
 		})
 	})
 	return await query.run(client, { data: params })
@@ -252,7 +205,7 @@ export async function userTypeResourcesPrograms(params: any) {
 				filter: e.op(ut.name, '=', e.cast(e.str, i[0])),
 				set: {
 					resources: {
-						'+=': e.select(e.sys_app.getNode(e.cast(e.str, i[1][0]), e.cast(e.str, i[1][1])))
+						'+=': e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1])))
 					}
 				}
 			}))
@@ -261,11 +214,26 @@ export async function userTypeResourcesPrograms(params: any) {
 	return await query.run(client, { data: params })
 }
 
-export async function objActions(params: any) {
+export async function userTypeResourcesWidgets(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_obj.ObjAction, {
+			return e.update(e.sys_user.UserType, (ut) => ({
+				filter: e.op(ut.name, '=', e.cast(e.str, i[0])),
+				set: {
+					resources: { '+=': e.select(e.sys_user.getWidget(e.cast(e.str, i[1]))) }
+				}
+			}))
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
+export async function dataObjActions(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.insert(e.sys_obj.DataObjAction, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				name: e.cast(e.str, i[1]),
 				header: e.cast(e.str, i[2]),
@@ -287,11 +255,13 @@ export async function columns(data: any) {
 				name: e.cast(e.str, i[1]),
 				header: e.cast(e.str, i[2]),
 				headerSide: e.cast(e.str, i[3]),
-				codeDataType: e.select(e.sys_core.getCode('ct_sys_edgedb_data_type', e.cast(e.str, i[4]))),
+				codeDataType: e.select(e.sys_core.getCode('ct_db_col_data_type', e.cast(e.str, i[4]))),
 				expr: e.cast(e.str, i[5]),
 				codeAlignment: e.select(e.sys_core.getCode('ct_db_col_alignment', e.cast(e.str, i[6]))),
 				width: e.cast(e.int16, i[7]),
 				hRows: e.cast(e.int16, i[8]),
+				placeHolder: e.cast(e.str, i[9]),
+				matchColumn: e.cast(e.str, i[10]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})

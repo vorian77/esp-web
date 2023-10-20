@@ -1,5 +1,6 @@
 import { FormSourceResponse } from '$comps/types'
-import { getNodeObjForm, getNodesByParent } from '$server/dbEdge/types.edgeDB.server'
+import { getNodeObjForm, getNodeObjsByParent } from '$server/dbEdge/types.edgeDB.server'
+
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/api/dbEdge/server.ts'
@@ -10,8 +11,8 @@ export async function POST({ request }) {
 		case 'getNodeObjForm':
 			return FormSourceResponse(
 				await getNodeObjForm(
-					requestData.objId,
 					requestData.nodeObj,
+					requestData.dataObjId,
 					requestData.processType,
 					requestData.data
 				)
@@ -19,7 +20,7 @@ export async function POST({ request }) {
 			break
 
 		case 'getNodesByParent':
-			return FormSourceResponse(await getNodesByParent(requestData.parentNodeId))
+			return FormSourceResponse(await getNodeObjsByParent(requestData.parentNodeId))
 			break
 
 		default:

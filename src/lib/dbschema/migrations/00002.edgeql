@@ -1,9 +1,9 @@
-CREATE MIGRATION m1r7w7zrg5vcalthukfmkmbzyggvk3dclhk5q325l2pnrhwzpvy6cq
-    ONTO m1r3urhrjvipjkcj6xfbny6caqzw4p7fhaq6gyenzffifjnhie57pa
+CREATE MIGRATION m1niox3x74eajfakusew6hxaea3fyigdcm7lx3o4qhyphml4r5nv5a
+    ONTO m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
 {
-  ALTER TYPE sys_form::FormField {
-      ALTER PROPERTY header {
-          RENAME TO label;
-      };
-  };
+  CREATE FUNCTION sys_obj::getDataObj(dataObjName: std::str) -> OPTIONAL sys_obj::DataObj USING (SELECT
+      sys_obj::DataObj
+  FILTER
+      (.name = dataObjName)
+  );
 };

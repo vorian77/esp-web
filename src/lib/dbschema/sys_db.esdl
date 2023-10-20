@@ -6,6 +6,17 @@ module sys_db{
     required hRows: int16;
     required codeAlignment: sys_core::Code;
     required codeDataType: sys_core::Code;
+    placeHolder: str;
+    matchColumn: str;
+    minLength: default::nonNegative;
+    maxLength: default::nonNegative;
+    minValue: default::nonNegative;
+    maxValue: default::nonNegative;
+    pattern: str;
+    patternMsg: str;
+    patternReplacement: str;
+    staticLabel: str;
+    dynamicLabel: str;
     constraint exclusive on (.name);
   }
 

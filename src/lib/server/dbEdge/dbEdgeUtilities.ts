@@ -36,9 +36,8 @@ export async function addForm(data: any) {
 			codeComponent: e.str,
 			isPopup: e.optional(e.bool),
 			submitButtonLabel: e.optional(e.str),
-			fields: e.array(e.json),
-			objActions: e.optional(e.array(e.str)),
-			dataActions: e.array(e.json),
+			fields: e.optional(e.array(e.json)),
+			actions: e.optional(e.array(e.str)),
 			creator: e.str
 		},
 		(p) => {
@@ -50,81 +49,183 @@ export async function addForm(data: any) {
 				description: p.description,
 				table: e.select(e.sys_db.getTable(p.tableModule, p.tableName)),
 				codeCardinality: e.select(
-					e.sys_core.getCode('ct_sys_node_obj_cardinality', p.codeCardinality)
+					e.sys_core.getCode('ct_sys_data_obj_cardinality', p.codeCardinality)
 				),
-				codeComponent: e.select(e.sys_core.getCode('ct_sys_node_obj_component', p.codeComponent)),
+				codeComponent: e.select(e.sys_core.getCode('ct_sys_data_obj_component', p.codeComponent)),
 				isPopup: p.isPopup,
 				submitButtonLabel: p.submitButtonLabel,
 
-				objActions: e.select(e.sys_obj.ObjAction, (OA) => ({
-					filter: e.contains(p.objActions, OA.name)
+				actions: e.select(e.sys_obj.DataObjAction, (OA) => ({
+					filter: e.contains(p.actions, OA.name)
 				})),
-
-				dataActions: e.for(e.array_unpack(p.dataActions), (da) => {
-					return e.insert(e.sys_obj.DataAction, {
-						codeType: e.select(
-							e.sys_core.getCode(
-								'ct_sys_data_action_type',
-								e.cast(e.str, e.json_get(da, 'codeType'))
-							)
-						),
-						query: e.cast(e.str, e.json_get(da, 'query')),
-						items: e.for(e.array_unpack(e.cast(e.array(e.json), e.json_get(da, 'items'))), (i) =>
-							e.insert(e.sys_obj.DataActionItem, {
-								dbName: e.cast(e.str, e.json_get(i, 'dbName')),
-								codeDataType: e.cast(
-									e.sys_obj.ct_sys_edgedb_data_type,
-									e.json_get(i, 'codeDataType')
-								),
-								codeDirection: e.cast(
-									e.sys_obj.ct_sys_data_action_item_direction,
-									e.json_get(i, 'codeDirection')
-								),
-								codeOp: e.cast(e.sys_obj.ct_sys_data_action_item_op, e.json_get(i, 'codeOp')),
-								codeSource: e.cast(
-									e.sys_obj.ct_sys_data_action_item_source,
-									e.json_get(i, 'codeSource')
-								),
-								fieldName: e.cast(e.str, e.json_get(i, 'fieldName')),
-								order: e.cast(e.int16, e.json_get(i, 'order')),
-								sourceKey: e.cast(e.str, e.json_get(i, 'sourceKey'))
-							})
-						)
-					})
-				}),
-
 				fields: e.for(e.array_unpack(p.fields), (f) => {
 					return e.insert(e.sys_obj.FormField, {
 						column: e.select(e.sys_db.getColumn(e.cast(e.str, e.json_get(f, 'columnName')))),
-						codeAccess: e.select(
-							e.sys_core.getCode(
-								'ct_sys_form_field_access',
-								e.cast(e.str, e.json_get(f, 'codeAccess'))
-							)
-						),
+
 						codeElement: e.select(
 							e.sys_core.getCode(
 								'ct_sys_form_field_element',
 								e.cast(e.str, e.json_get(f, 'codeElement'))
 							)
 						),
+
 						codeInputType: e.select(
 							e.sys_core.getCode(
 								'ct_sys_form_field_input',
 								e.cast(e.str, e.json_get(f, 'codeInputType'))
 							)
 						),
-						dynamicLabel: e.cast(e.str, e.json_get(f, 'dynamicLabel')),
-						matchColumn: e.cast(e.str, e.json_get(f, 'matchColumn')),
-						minLength: e.cast(e.int16, e.json_get(f, 'minLength')),
-						maxLength: e.cast(e.int16, e.json_get(f, 'maxLength')),
-						minValue: e.cast(e.int16, e.json_get(f, 'minValue')),
-						maxValue: e.cast(e.int16, e.json_get(f, 'maxValue')),
-						pattern: e.cast(e.str, e.json_get(f, 'pattern')),
-						patternMsg: e.cast(e.str, e.json_get(f, 'patternMsg')),
-						patternReplacement: e.cast(e.str, e.json_get(f, 'patternReplacement')),
-						placeHolder: e.cast(e.str, e.json_get(f, 'placeHolder')),
-						staticLabel: e.cast(e.str, e.json_get(f, 'staticLabel'))
+
+						codeAccess: e.select(
+							e.sys_core.getCode(
+								'ct_sys_form_field_access',
+								e.cast(e.str, e.json_get(f, 'codeAccess'))
+							)
+						),
+
+						dbSelectOrder: e.cast(e.int16, e.json_get(f, 'dbSelectOrder')),
+
+						isDisplayable: e.op(
+							e.bool(true),
+							'if',
+							e.op(e.cast(e.bool, e.json_get(f, 'isDisplayable')), '?=', e.cast(e.bool, e.set())),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDisplayable'))
+						),
+
+						isDisplay: e.op(
+							e.bool(true),
+							'if',
+							e.op(e.cast(e.bool, e.json_get(f, 'isDisplay')), '?=', e.cast(e.bool, e.set())),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDisplay'))
+						),
+
+						isDbSys: e.op(
+							e.bool(false),
+							'if',
+							e.op(e.cast(e.bool, e.json_get(f, 'isDbSys')), '?=', e.cast(e.bool, e.set())),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDbSys'))
+						),
+
+						// dbName: e.cast(e.str, e.json_get(f, 'dbName')),
+						dbName: e.op(
+							e.cast(e.str, e.json_get(f, 'columnName')),
+							'if',
+							e.op(e.cast(e.str, e.json_get(f, 'dbName')), '?=', e.cast(e.str, e.set())),
+							'else',
+							e.cast(e.str, e.json_get(f, 'dbName'))
+						),
+
+						codeDbDataSource: e.select(
+							e.sys_core.getCode(
+								'ct_sys_form_field_source',
+								e.cast(e.str, e.json_get(f, 'codeDbDataSource'))
+							)
+						),
+
+						dbDataSourceKey: e.op(
+							e.cast(e.str, e.json_get(f, 'dbDataSourceKey')),
+							'if',
+							e.op(e.cast(e.str, e.json_get(f, 'dbDataSourceKey')), '?!=', e.cast(e.str, e.set())),
+							'else',
+							e.op(
+								e.cast(e.str, e.json_get(f, 'columnName')),
+								'if',
+								e.op(
+									e.cast(e.str, e.json_get(f, 'codeDbDataSource')),
+									'?!=',
+									e.cast(e.str, e.set())
+								),
+								'else',
+								e.cast(e.str, e.set())
+							)
+						),
+
+						codeDbDataOp: e.sys_core.getCode(
+							'ct_sys_form_field_op',
+							e.cast(e.str, e.json_get(f, 'codeDbDataOp'))
+						),
+
+						isDbIdentity: e.op(
+							e.bool(false),
+							'if',
+							e.op(e.cast(e.bool, e.json_get(f, 'isDbIdentity')), '?=', e.cast(e.bool, e.set())),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDbIdentity'))
+						),
+
+						isDbPreset: e.op(
+							e.bool(false),
+							'if',
+							e.op(e.cast(e.bool, e.json_get(f, 'isDbPreset')), '?=', e.cast(e.bool, e.set())),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDbPreset'))
+						),
+
+						isDbAllowNull: e.op(
+							e.bool(false),
+							'if',
+							e.op(e.cast(e.bool, e.json_get(f, 'isDbAllowNull')), '?=', e.cast(e.bool, e.set())),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDbAllowNull'))
+						),
+
+						isDbExcludeInsert: e.op(
+							e.bool(false),
+							'if',
+							e.op(
+								e.cast(e.bool, e.json_get(f, 'isDbExcludeInsert')),
+								'?=',
+								e.cast(e.bool, e.set())
+							),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDbExcludeInsert'))
+						),
+
+						isDbExcludeUpdate: e.op(
+							e.bool(false),
+							'if',
+							e.op(
+								e.cast(e.bool, e.json_get(f, 'isDbExcludeUpdate')),
+								'?=',
+								e.cast(e.bool, e.set())
+							),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDbExcludeUpdate'))
+						),
+
+						isDbListOrderField: e.op(
+							e.bool(false),
+							'if',
+							e.op(
+								e.cast(e.bool, e.json_get(f, 'isDbListOrderField')),
+								'?=',
+								e.cast(e.bool, e.set())
+							),
+							'else',
+							e.cast(e.bool, e.json_get(f, 'isDbListOrderField'))
+						),
+
+						codeDbListDir: e.op(
+							e.sys_core.getCode(
+								'ct_sys_form_field_list_dir',
+								e.cast(e.str, e.json_get(f, 'codeDbListDir'))
+							),
+							'if',
+							e.op(e.cast(e.str, e.json_get(f, 'codeDbListDir')), '?!=', e.cast(e.str, e.set())),
+							'else',
+							e.op(
+								e.sys_core.getCode('ct_sys_form_field_list_dir', e.str('asc')),
+								'if',
+								e.cast(e.bool, e.json_get(f, 'isDbListOrderField')),
+								'else',
+								e.cast(e.sys_core.Code, e.set())
+							)
+						),
+
+						dbListOrder: e.cast(e.int16, e.json_get(f, 'dbListOrder'))
 					})
 				}),
 
@@ -136,36 +237,31 @@ export async function addForm(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addNode(data: any) {
+export async function addNodeObj(data: any) {
 	const query = e.params(
 		{
 			owner: e.str,
-			parentNode: e.optional(e.json),
+			parentNodeName: e.optional(e.str),
 			codeType: e.str,
 			name: e.str,
 			header: e.optional(e.str),
 			order: e.int16,
 			codeIcon: e.str,
 			page: e.str,
-			obj: e.optional(e.str),
+			dataObj: e.optional(e.str),
 			creator: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_app.Node, {
+			return e.insert(e.sys_obj.NodeObj, {
 				owner: e.select(e.sys_core.getEnt(p.owner)),
-				parent: e.select(
-					e.sys_app.getNode(
-						e.cast(e.str, e.json_get(p.parentNode, 'owner')),
-						e.cast(e.str, e.json_get(p.parentNode, 'name'))
-					)
-				),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_type', p.codeType)),
+				parent: e.select(e.sys_obj.getNodeObjByName(p.parentNodeName)),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', p.codeType)),
 				name: p.name,
 				header: p.header,
 				order: p.order,
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_icon', p.codeIcon)),
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', p.codeIcon)),
 				page: p.page,
-				obj: e.select(e.sys_obj.getNodeObjByName(p.obj)),
+				dataObj: e.select(e.sys_obj.getDataObj(p.dataObj)),
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
 				modifiedBy: e.select(e.sys_user.getUser(p.creator))
 			})
@@ -174,38 +270,58 @@ export async function addNode(data: any) {
 	return await query.run(client, data)
 }
 
-export async function getFormById(formOwner: string, formId: string) {
+export async function getFormIdByName(formName: string) {
+	const query = e.select(e.sys_obj.Form, (form) => ({
+		id: true,
+		filter_single: e.op(form.name, '=', formName)
+	}))
+	return await query.run(client)
+}
+
+export async function getFormById(formId: string) {
 	const query = e.select(e.sys_obj.Form, (form) => ({
 		id: true,
 		name: true,
 		header: true,
 		subHeader: true,
 		description: true,
-		tableModule: form.table.owner.name,
-		tableName: form.table.name,
+		_table: e.select(form.table, (t) => ({
+			module: t.owner.name,
+			name: true,
+			hasMgmt: true
+		})),
 		_codeCardinality: form.codeCardinality.name,
 		_codeComponent: form.codeComponent.name,
 		isPopup: true,
 		submitButtonLabel: true,
-		_objActions: e.select(form.objActions.name),
-		_dataActions: e.select(form.dataActions, (da) => ({
-			_codeType: da.codeType.name,
-			query: true,
-			_items: e.select(da.items, (i) => ({
-				dbName: true,
-				_codeDataType: e.select(i.codeDataType),
-				_codeDirection: e.select(i.codeDirection),
-				_codeOp: e.select(i.codeOp),
-				_codeSource: e.select(i.codeSource),
-				fieldName: true,
-				order: true,
-				sourceKey: true
-			}))
+		_actions: e.select(form.actions, (oa) => ({
+			name: true,
+			header: true,
+			order_by: {
+				expression: oa.order,
+				direction: e.ASC
+			}
 		})),
 		_fields: e.select(form.fields, (f) => ({
-			_codeAccess: e.select(f.codeAccess.name),
-			_codeElement: e.select(f.codeElement.name),
-			_codeInputType: e.select(f.codeInputType.name),
+			dbName: true,
+			dbSelectOrder: true,
+			_codeElement: f.codeElement.name,
+			_codeInputType: f.codeInputType.name,
+			_codeAccess: f.codeAccess.name,
+			isDisplayable: true,
+			isDisplay: true,
+			isDbSys: true,
+			_codeDbDataSource: f.codeDbDataSource.name,
+			dbDataSourceKey: true,
+			_codeDbDataOp: f.codeDbDataOp.name,
+			isDbIdentity: true,
+			isDbPreset: true,
+			isDbAllowNull: true,
+			isDbExcludeInsert: true,
+			isDbExcludeUpdate: true,
+			isDbListOrderField: true,
+			_codeDbListDir: f.codeDbListDir.name,
+			dbListOrder: true,
 			_column: e.select(f.column, (c) => ({
 				name: true,
 				header: true,
@@ -213,29 +329,142 @@ export async function getFormById(formOwner: string, formId: string) {
 				expr: true,
 				width: true,
 				hRows: true,
-				_codeAlignment: e.select(c.codeAlignment.name),
-				_codeDataType: e.select(c.codeDataType.name)
-			})),
-			dynamicLabel: true,
-			matchColumn: true,
-			minLength: true,
-			maxLength: true,
-			minValue: true,
-			maxValue: true,
-			pattern: true,
-			patternMsg: true,
-			patternReplacement: true,
-			placeHolder: true,
-			staticLabel: true
+				_codeAlignment: c.codeAlignment.name,
+				_codeDataType: c.codeDataType.name,
+				dynamicLabel: true,
+				matchColumn: true,
+				minLength: true,
+				maxLength: true,
+				minValue: true,
+				maxValue: true,
+				pattern: true,
+				patternMsg: true,
+				patternReplacement: true,
+				placeHolder: true,
+				staticLabel: true
+			}))
 		})),
 
-		filter_single: e.op(form.name, '=', 'form_training_provider_student_detail')
+		_fieldsId: e.select(form.fields, (f) => ({
+			dbName: true,
+			_codeDbDataType: f.column.codeDataType.name,
+			_codeDbDataSource: f.codeDbDataSource.name,
+			dbDataSourceKey: true,
+			_codeDbDataOp: f.codeDbDataOp.name,
+			fieldName: f.column.name,
+			filter: e.op(f.isDbIdentity, '=', e.bool(true))
+		})),
+
+		_fieldsOrder: e.select(form.fields, (f) => ({
+			dbName: true,
+			_codeDbListDir: f.codeDbListDir.name,
+			dbListOrder: true,
+			filter: e.op(f.isDbListOrderField, '=', e.bool(true)),
+			order_by: f.dbListOrder
+		})),
+
+		_fieldsPreset: e.select(form.fields, (f) => ({
+			dbName: true,
+			_codeDbDataType: f.column.codeDataType.name,
+			_codeDbDataSource: f.codeDbDataSource.name,
+			dbDataSourceKey: true,
+			_codeDbDataOp: f.codeDbDataOp.name,
+			fieldName: f.column.name,
+			filter: e.op(f.isDbPreset, '=', e.bool(true))
+		})),
+
+		_fieldsSaveInsert: e.select(form.fields, (f) => ({
+			dbName: true,
+			_codeDbDataType: f.column.codeDataType.name,
+			_codeDbDataSource: f.codeDbDataSource.name,
+			dbDataSourceKey: true,
+			_codeDbDataOp: f.codeDbDataOp.name,
+			fieldName: f.column.name,
+			filter: e.op(
+				e.op(f.isDbSys, '=', e.bool(false)),
+				'and',
+				e.op(f.isDbExcludeInsert, '=', e.bool(false))
+			)
+		})),
+
+		_fieldsSaveUpdate: e.select(form.fields, (f) => ({
+			dbName: true,
+			_codeDbDataType: f.column.codeDataType.name,
+			_codeDbDataSource: f.codeDbDataSource.name,
+			dbDataSourceKey: true,
+			_codeDbDataOp: f.codeDbDataOp.name,
+			fieldName: f.column.name,
+			filter: e.op(
+				e.op(f.isDbSys, '=', e.bool(false)),
+				'and',
+				e.op(f.isDbExcludeUpdate, '=', e.bool(false))
+			)
+		})),
+
+		_fieldsSelect: e.select(form.fields, (f) => ({
+			dbName: true,
+			_codeDbDataType: f.column.codeDataType.name,
+			fieldName: f.column.name,
+			dbSelectOrder: true,
+			order_by: {
+				expression: f.dbSelectOrder,
+				direction: e.ASC
+			}
+		})),
+
+		filter_single: e.op(form.id, '=', e.cast(e.uuid, formId))
 	}))
 	return await query.run(client)
 }
 
-function removeObjProperty(obj: any, property: string) {
-	const removedObj = obj[property]
-	delete obj[property]
-	return removedObj
+export async function getNodeObjsByParent(parentNodeId: string) {
+	const query = e.select(e.sys_obj.NodeObj, (n) => ({
+		id: true,
+		_codeType: n.codeType.name,
+		name: true,
+		header: true,
+		_codeIcon: n.codeIcon.name,
+		page: true,
+		dataObjId: n.dataObj.id,
+		order: true,
+		filter: e.op(n.parent.id, '=', e.cast(e.uuid, parentNodeId)),
+		order_by: {
+			expression: n.order,
+			direction: e.ASC
+		}
+	}))
+	return await query.run(client)
+}
+
+export async function getUserByUserName(userName: string) {
+	const query = e.select(e.sys_user.User, (u) => ({
+		id: true,
+		lastName: true,
+		firstName: true,
+		fullName: true,
+		userName: true,
+		resource_widgets: e.select(u.userTypes.resources.is(e.sys_user.Widget), (ut) => ({
+			id: true,
+			name: true
+		})),
+		resource_programs: e.select(u.userTypes.resources.is(e.sys_obj.NodeObj), (ut) => ({
+			id: true,
+			_codeType: ut.codeType.name,
+			name: true,
+			header: true,
+			_codeIcon: ut.codeIcon.name,
+			page: true,
+			dataObjId: ut.dataObj.id,
+			order: true,
+			order_by: {
+				expression: ut.order,
+				direction: e.ASC
+			}
+		})),
+		// _resources := (select .userTypes filter @isActive = false) {name}
+		// filter: e.op(ut['@isActive'], '=', e.bool(true)),
+
+		filter_single: e.op(u.userName, '=', userName)
+	}))
+	return await query.run(client)
 }

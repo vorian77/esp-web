@@ -1,6 +1,6 @@
 import { execute, review } from '$server/dbEdge/types.edgeDB.server'
 
-const FILE = 'initCMTrainingData'
+const FILE = 'dbEdgeInitCMTrainingData'
 let reviewQuery = ''
 
 export async function initCMTrainingData() {
@@ -11,11 +11,11 @@ export async function initCMTrainingData() {
 	await review(FILE, reviewQuery)
 }
 
-reviewQuery = `select cm_training::Student {*}`
+reviewQuery = `select app_cm_training::Student {*}`
 
 async function reset() {
 	await execute(`
-  delete cm_training::Student;
+  delete app_cm_training::Student;
 `)
 }
 
@@ -37,7 +37,7 @@ async function dataStudents() {
       ('AE-197700', 'William', 'Cobb', 'wc@gmail.com'),
       ('AE-197700', 'Italo', 'Rodriguez', 'ir@gmail.com'),
     }
-    union (insert cm_training::Student {
+    union (insert app_cm_training::Student {
       agencyId := x.0,
       firstName := x.1,
       lastName := x.2,
