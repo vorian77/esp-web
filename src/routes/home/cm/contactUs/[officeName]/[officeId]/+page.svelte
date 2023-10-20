@@ -15,7 +15,7 @@
 		const respData = event.detail
 		if (respData?.statusCode == 202) {
 			toast('We received your message and will get back with you soon!', 'variant-filled-secondary')
-			goto('/apps')
+			goto('/home')
 		} else {
 			toast(
 				'Unable to send your message. Please try again or report this problem.',

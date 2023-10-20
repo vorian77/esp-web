@@ -5,7 +5,7 @@ import { HTMLMETHOD } from '$comps/types'
 import { getEnvVar } from '$server/env'
 import { error } from '@sveltejs/kit'
 
-const FILENAME = '/routes/apps/cm/docs/+server.ts'
+const FILENAME = '/routes/home/cm/docs/+server.ts'
 
 export const POST = async ({ request, locals }) => {
 	const { elgId } = await request.json()

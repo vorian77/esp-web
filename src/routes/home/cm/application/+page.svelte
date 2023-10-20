@@ -2,7 +2,7 @@
 	import { Stepper, Step } from '@skeletonlabs/skeleton'
 	import { Form as FormClass } from '$comps/esp/form/form'
 	import Form from '$comps/esp/form/FormDetail.svelte'
-	import ElgDocsList from '$routes/apps/cm/docs/ElgDocsList.svelte'
+	import ElgDocsList from '$routes/home/cm/docs/ElgDocsList.svelte'
 	import AddressSelect from '$comps/AddressSelect.svelte'
 	import { getToastStore } from '@skeletonlabs/skeleton'
 
@@ -50,7 +50,7 @@
 
 	async function onCompleteHandler(e): void {
 		// update status
-		const responsePromise = await fetch('/apps/cm/application', {
+		const responsePromise = await fetch('/home/cm/application', {
 			method: 'POST'
 		})
 		const response = await responsePromise.json()

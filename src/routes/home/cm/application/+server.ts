@@ -3,7 +3,7 @@ import { HTMLMETHOD } from '$comps/types'
 import { sendEmail, EmailAlert } from '$server/apiSendGrid.js'
 import { error } from '@sveltejs/kit'
 
-const FILENAME = '/routes/apps/cm/application/+server.ts'
+const FILENAME = '/routes/home/cm/application/+server.ts'
 
 export const POST = async ({ locals }) => {
 	const responsePromise = await dbESPAPI(HTMLMETHOD.POST, 'ws_cm_ssr_registration', {

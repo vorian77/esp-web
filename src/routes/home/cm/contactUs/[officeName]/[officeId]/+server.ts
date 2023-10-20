@@ -8,7 +8,7 @@ import { sendEmail, EmailAlert } from '$server/apiSendGrid.js'
 import { processForm } from '$server/dbForm'
 import { error } from '@sveltejs/kit'
 
-const FILENAME = '/routes/apps/cm/contactUs/[officeName]/[officeId]+server.ts'
+const FILENAME = '/routes/home/cm/contactUs/[officeName]/[officeId]+server.ts'
 
 export async function POST({ request }) {
 	const requestData = await request.json()

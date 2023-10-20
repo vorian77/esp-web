@@ -9,16 +9,20 @@
 	} from '@skeletonlabs/skeleton'
 	import { popup } from '@skeletonlabs/skeleton'
 	import type { PopupSettings } from '@skeletonlabs/skeleton'
+	import { navInit, navTree, navUser } from '$comps/nav/navStore'
+	import type { TreeNode } from '$comps/types'
 	import NavBar from '$comps/nav/NavBar.svelte'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
 	import Icon from '$comps/Icon.svelte'
 	import { goto } from '$app/navigation'
-	import { navInit, navNodesCrumbs, navUser } from '$comps/nav/navStore'
 
 	const drawerStore = getDrawerStore()
 	const NAV_COLOR = '#3b79e1'
-	const ROOT_LINK = '/apps'
+	const ROOT_LINK = '/home'
+
+	let treeCrumbs: TreeNode[]
+	$: treeCrumbs = $navTree.listCrumbs ? $navTree.listCrumbs : []
 
 	onMount(() => {
 		navInit($navUser)
@@ -78,7 +82,7 @@
 				</div>
 			</svelte:fragment>
 		</AppBar>
-		<div class="z-0" class:hidden={$navNodesCrumbs.length == 0}>
+		<div class="z-0" class:hidden={treeCrumbs.length < 2}>
 			<NavBar />
 		</div>
 	</svelte:fragment>

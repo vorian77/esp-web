@@ -16,7 +16,7 @@
 		})
 		const response = await responsePromise.json()
 		if (response.success && response.data.disclosure == 1) {
-			goto('/apps')
+			goto('/home')
 		} else {
 			throw error(500, {
 				file: FILENAME,

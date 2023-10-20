@@ -66,7 +66,7 @@
 					navStorageReset()
 					navInitReset()
 					navUser.set(await getUser(applicantId))
-					goto('/apps')
+					goto('/home')
 				}
 				break
 

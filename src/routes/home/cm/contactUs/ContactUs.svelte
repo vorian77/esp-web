@@ -7,7 +7,7 @@
 		window.location.href = 'tel:' + phoneNbr
 	}
 	function message(office, officeId) {
-		goto(`/apps/cm/contactUs/${office}/${officeId}`)
+		goto(`/home/cm/contactUs/${office}/${officeId}`)
 	}
 </script>
 
