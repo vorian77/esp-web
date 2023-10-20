@@ -24,6 +24,13 @@ export class Field {
 	hasChanged: boolean
 
 	constructor(obj: {}, index: number) {
+		// <temp> - until migration off mongoDB
+		if (obj.hasOwnProperty('isDisplay')) {
+			if (!obj.isDisplay) {
+				obj.access = 'hidden'
+			}
+		}
+
 		obj = valueOrDefault(obj, {})
 		this.index = index
 		this.element = memberOfEnumOrDefault(
@@ -35,6 +42,9 @@ export class Field {
 			FieldElement.input
 		)
 		this.name = strRequired(obj.name, 'Field', 'name')
+
+		// <temp>
+
 		this.access = memberOfEnumOrDefault(
 			obj.access,
 			'Field',

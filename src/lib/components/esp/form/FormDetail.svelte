@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Form } from '$comps/esp/form/form'
-	import type { Field } from '$comps/esp/form/field'
 	import {
 		FieldElement,
 		Validation,
@@ -17,7 +16,7 @@
 	import FormElSelect from '$comps/esp/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/esp/form/FormElTextarea.svelte'
 	import FormLink from '$comps/esp/form/FormLink.svelte'
-	import { createEventDispatcher, onMount, tick } from 'svelte'
+	import { createEventDispatcher, onMount } from 'svelte'
 	import { error } from '@sveltejs/kit'
 
 	const dispatch = createEventDispatcher()
@@ -34,8 +33,8 @@
 	$: formHasChanged = formObj.fields.some((f) => f.hasChanged)
 	$: formValidToSubmit = formObj.validToSubmit
 
-	const classPopup = formObj.popup ? 'grid grid-cols-10 gap-4' : ''
-	const classPopupHeader = formObj.popup ? 'col-span-9' : ''
+	const classPopup = formObj.isPopup ? 'grid grid-cols-10 gap-4' : ''
+	const classPopupHeader = formObj.isPopup ? 'col-span-9' : ''
 
 	onMount(() => {
 		// pre-validate form
@@ -94,6 +93,9 @@
 	function cancelForm(event: MouseEvent) {
 		dispatch('formCancelled')
 	}
+	function test() {
+		formObj.fields[0].value = 'abc'
+	}
 </script>
 
 <div class={surface}>
@@ -113,7 +115,7 @@
 				<slot name="actions" />
 			</div>
 			<div>
-				{#if formObj.popup}
+				{#if formObj.isPopup}
 					<button
 						type="button"
 						class="btn-icon btn-icon-sm variant-filled-error ml-2"
@@ -154,8 +156,6 @@
 				{:else if field.element === FieldElement.textArea}
 					<FormElTextarea bind:field on:change={validateFieldBase} on:keyup={keyUp} />
 				{/if}
-				Original value: {field.value}
-				hasChanged: {field.hasChanged}
 			</div>
 
 			{#if formObj.fields[idx].validity.level == ValidityErrorLevel.error}
@@ -167,6 +167,7 @@
 					<p>{formObj.fields[idx].validity.message}</p>
 				</div>
 			{/if}
+			Original Val: {field.value} HasChanged: {field.hasChanged}
 		{/each}
 
 		{#if formObj.submitButtonLabel}
@@ -189,3 +190,5 @@
 		<FormLink footerLink={link} on:form-link />
 	{/each}
 </div>
+
+<button on:click={test}>Test</button>

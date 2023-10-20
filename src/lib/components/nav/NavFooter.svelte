@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { nodeProcessLink } from '$comps/nav/navStore'
-	import { NavNode, NavNodeType } from '$comps/types'
+	import { NavTree, NavTreeNode } from '$comps/types'
+	import type { rawNodeObj } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 
@@ -9,22 +10,29 @@
 	const navColor = '#3b79e1'
 	const itemColors = ['#f5f5f5', '#dedede']
 
-	let nodesFooter: Array<NavNode> = []
 	const nodesConfig = [
-		['Home', 'home', '/apps'],
-		['Contact Us', 'contact-us', '/apps/cm/contactUs'],
-		['Account', 'profile', '/apps/account']
+		['Home', 'home', '/home'],
+		['Contact Us', 'contact-us', '/home/cm/contactUs'],
+		['Account', 'profile', '/home/account']
 	]
-	const UNSPECIFIED = ''
+	let rawNodes: Array<rawNodeObj> = []
 	nodesConfig.forEach((n: any) => {
 		const header = n[0]
 		const icon = n[1]
 		const page = n[2]
 
-		nodesFooter.push(
-			new NavNode(header, undefined, NavNodeType.page, header, header, icon, page, UNSPECIFIED)
-		)
+		rawNodes.push({
+			id: header,
+			_codeType: 'page',
+			name: header,
+			header: header,
+			_codeIcon: icon,
+			page,
+			dataObjId: null
+		})
 	})
+	const navTree: NavTree = new NavTree(rawNodes)
+	const nodesFooter = navTree.listTree
 
 	// styling
 	const styleContainer = `
@@ -53,7 +61,7 @@
 				border-top: 1px solid ${navColor};`
 	const marginTopheader = 'mt-1'
 
-	function processNode(node: NavNode) {
+	function processNode(node: NavTreeNode) {
 		nodeProcessLink($page.url.pathname, node, true)
 	}
 </script>
@@ -63,15 +71,15 @@
 		<div
 			role="button"
 			tabindex="0"
-			style={node.page == $page.url.pathname ? styleItemActive : styleItem}
+			style={node.nodeObj.page == $page.url.pathname ? styleItemActive : styleItem}
 			on:click={() => processNode(node)}
 			on:keyup={() => processNode(node)}
 		>
 			<div class="mt-2">
-				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={navColor} />
+				<Icon name={node.nodeObj.icon} width="1.0rem" height="1.0rem" fill={navColor} />
 			</div>
 			<div class={marginTopheader}>
-				{node.header}
+				{node.nodeObj.header}
 			</div>
 		</div>
 	{/each}

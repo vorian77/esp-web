@@ -1,7 +1,17 @@
 <script lang="ts">
-	import { navNodesBranch, nodeProcessTree } from '$comps/nav/navStore'
+	import { navTree, nodeProcessTree } from '$comps/nav/navStore'
+	import { NavTree } from '$comps/types'
+	import type { NavTreeNode } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
+
+	let navTreeLocal: NavTree
+	let navTreeList: NavTreeNode[]
+
+	$: {
+		navTreeLocal = Object.assign(new NavTree([]), $navTree)
+		navTreeList = navTreeLocal.listBranch
+	}
 
 	const FILENAME = '/$comps/nav/NavHome.svelte'
 
@@ -37,26 +47,36 @@
 				background-color: ${ITEM_COLORS[1]};`
 	const marginTopheader = '-mt-1'
 
-	function processNode(node: NavNode) {
+	function processNode(node: NavTreeNode) {
 		nodeProcessTree($page.url.pathname, node)
 	}
 </script>
 
 <div id="container" style={styleContainer}>
-	{#each $navNodesBranch as node, i}
+	{#each navTreeList as node}
 		<div
 			role="button"
 			tabindex="0"
-			style={node.link == $page.url.pathname ? styleItemActive : styleItem}
+			style={node.nodeObj.page == $page.url.pathname ? styleItemActive : styleItem}
 			on:click={() => processNode(node)}
 			on:keyup={() => processNode(node)}
 		>
 			<div class="mt-2">
-				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={NAV_COLOR} />
+				<Icon name={node.nodeObj.icon} width="1.0rem" height="1.0rem" fill={NAV_COLOR} />
 			</div>
 			<div class={marginTopheader}>
-				{node.header}
+				{node.nodeObj.header}
 			</div>
 		</div>
 	{/each}
 </div>
+
+<!-- <div>
+	treeBranch:
+	<pre>{JSON.stringify(treeBranch, null, 2)}</pre>
+</div> -->
+
+<!-- <div>
+	treeBranch:
+	<pre>{JSON.stringify(treeBranch, null, 2)}</pre>
+</div> -->

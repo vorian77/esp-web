@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { NavNode } from '$comps/types'
+	import type { NodeObj, NavTreeNode } from '$comps/types'
 	import Form from '$comps/esp/form/FormDetail.svelte'
 	import { Form as FormClass } from '$comps/esp/form/form'
 	import {
@@ -14,8 +14,10 @@
 		type ToastSettings
 	} from '@skeletonlabs/skeleton'
 
-	export let node: NavNode
+	export let treeNode: NavTreeNode
+	export let scrollToTop = () => {}
 
+	let navNode: NodeObj
 	let formClass: FormClass
 	let formHasChanged = false
 	let formValidToSubmit = true
@@ -23,18 +25,20 @@
 	const modalStore = getModalStore()
 	const toastStore = getToastStore()
 
-	$: formClass = new FormClass(node.obj!.defn)
-
+	$: {
+		navNode = treeNode.nodeObj
+		formClass = new FormClass(navNode.dataObj!.defn)
+	}
 	const functions = {
 		noa_detail_delete: async () => {
-			if (node.obj?.saveMode === 'update') {
+			if (navNode.dataObj?.saveMode === 'update') {
 				executeOnConfirm(
 					'Delete Record',
 					'Are you sure you want to delete this record (this action cannot be undone)?',
-					async () => await objActionDetailDelete(node)
+					async () => await objActionDetailDelete(treeNode, formClass.getFormValues())
 				)
 			} else {
-				await objActionDetailDelete(node)
+				await objActionDetailDelete(treeNode, formClass.getFormValues())
 			}
 		},
 
@@ -43,16 +47,17 @@
 				executeOnConfirm(
 					'Discard Changes',
 					'Are you sure you want discard your changes to this record?',
-					async () => await objActionDetailNew(node)
+					async () => await objActionDetailNew(treeNode)
 				)
 			} else {
-				await objActionDetailNew(node)
+				await objActionDetailNew(treeNode)
 			}
 		},
 
 		noa_detail_save: async () => {
-			const success = await objActionDetailSave(node, formClass.getFormValues())
+			const success = await objActionDetailSave(treeNode, formClass.getFormValues())
 			if (success) {
+				formClass.resetFormValues()
 				showToast('Record saved!')
 			} else {
 				showToast('Unable to save record.')
@@ -81,9 +86,6 @@
 	}
 </script>
 
-FormHasChanged: {formHasChanged}
-ValidToSumit: {formValidToSubmit}
-
 <Form formObj={formClass} bind:formHasChanged bind:formValidToSubmit>
 	<svelte:fragment slot="actions">
 		{#each formClass.objActions as action}
@@ -96,6 +98,3 @@ ValidToSumit: {formValidToSubmit}
 		{/each}
 	</svelte:fragment>
 </Form>
-
-<!-- <pre>{JSON.stringify(node.obj, null, 2)}</pre> -->
-<pre>{JSON.stringify(node.obj, null, 2)}</pre>

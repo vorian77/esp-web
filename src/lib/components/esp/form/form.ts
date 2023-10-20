@@ -9,6 +9,7 @@ import type { Field } from '$comps/esp/form/field'
 import { FieldCheckbox } from '$comps/esp/form/fieldCheckbox'
 import { FieldHeader } from '$comps/esp/form/fieldHeader'
 import { FieldInput } from '$comps/esp/form/fieldInput'
+import { FieldList } from '$comps/esp/form/fieldList'
 import { FieldPictureTake } from '$comps/esp/form/fieldPictureTake'
 import { FieldRadio } from '$comps/esp/form/fieldRadio'
 import { FieldSelect } from '$comps/esp/form/fieldSelect'
@@ -24,7 +25,7 @@ import {
 	ValidationStatus,
 	ValidityField
 } from '$comps/types'
-import { ObjectAction, DataAction } from '$comps/types'
+import { ObjectAction } from '$comps/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/esp/form/form.ts/'
@@ -35,11 +36,9 @@ export class Form {
 	subHeader: string
 	description: string
 	submitButtonLabel: string
-	showProcessObjects: boolean
-	popup: boolean
+	isPopup: boolean
 	fields: Array<Field>
 	objActions: Array<ObjectAction>
-	dataActions: Array<DataAction>
 	source: FormSource | undefined
 	height: string
 	footerText: Array<FooterText>
@@ -51,16 +50,18 @@ export class Form {
 
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
+
+		this.edgeDBConversion(obj, obj._fields, 'fields')
+		this.edgeDBConversion(obj, obj._actions, 'objActions')
+
 		this.name = strRequired(obj.name, 'Form', 'name')
 		this.header = valueOrDefault(obj.header, '')
 		this.subHeader = valueOrDefault(obj.subHeader, '')
 		this.description = valueOrDefault(obj.description, '')
 		this.submitButtonLabel = valueOrDefault(obj.submitButtonLabel, '')
-		this.showProcessObjects = valueOrDefault(obj.showProcessObjects, false)
-		this.popup = valueOrDefault(obj.popup, false)
+		this.isPopup = valueOrDefault(obj.isPopup, false)
 		this.fields = this.initFields(obj.fields)
 		this.objActions = this.initObjActions(obj.objActions)
-		this.dataActions = this.initDataActions(obj.dataActions)
 		this.source = obj.source ? new FormSource(obj.source) : undefined
 		this.height = valueOrDefault(obj.height, '')
 		this.footerText = getArrayOfModels(FooterText, obj.footerText)
@@ -70,16 +71,18 @@ export class Form {
 		this.validToSubmit = true
 	}
 
-	initFields(fields) {
+	initFields(fields: any) {
 		fields = valueOrDefault(fields, [])
 		let newFields: Array<Field> = []
 		fields.forEach((field: {}, index: number) => {
 			let newField: Field
 
-			// <temp> accomodate EdgeDB forms
-			this.edgeDBCodeFieldConversion(field, '_codeElement', 'element')
-			this.edgeDBCodeFieldConversion(field, '_codeType', 'type')
-			this.edgeDBCodeFieldConversion(field, '_codeAccess', 'access')
+			this.edgeDBConversion(field, field._codeAccess, 'access')
+			this.edgeDBConversion(field, field._codeElement, 'element')
+			this.edgeDBConversion(field, field._codeInputType, 'type')
+
+			this.edgeDBConversion(field, field?._column?.name, 'name')
+			this.edgeDBConversion(field, field?._column?.header, 'label')
 
 			const element = memberOfEnumOrDefault(
 				field.element,
@@ -105,9 +108,6 @@ export class Form {
 						case FieldElementInputType.checkbox:
 							newField = new FieldCheckbox(field, index)
 							break
-						case FieldElementInputType.listField:
-							newField = new FieldInput(field, index, newFields)
-							break
 
 						case FieldElementInputType.radio:
 							newField = new FieldRadio(field, index)
@@ -120,6 +120,10 @@ export class Form {
 
 				case FieldElement.header:
 					newField = new FieldHeader(field, index)
+					break
+
+				case FieldElement.listField:
+					newField = new FieldList(field, index)
 					break
 
 				case FieldElement.pictureTake:
@@ -155,18 +159,10 @@ export class Form {
 		return newActions
 	}
 
-	initDataActions(actions: any) {
-		actions = valueOrDefault(actions, [])
-		let newActions: Array<DataAction> = []
-		actions.forEach((a: {}) => {
-			newActions.push(new DataAction(a))
-		})
-		return newActions
-	}
-
-	edgeDBCodeFieldConversion(field: any, edgeDBPropertyName: string, fieldPropertyName: string) {
-		if (field[edgeDBPropertyName]) {
-			field[fieldPropertyName] = field[edgeDBPropertyName]
+	edgeDBConversion(obj: any, edgeVal: any, fieldPropertyName: string) {
+		// <temp> remove after MongoDB migration is complete
+		if (edgeVal) {
+			obj[fieldPropertyName] = edgeVal
 		}
 	}
 
@@ -265,6 +261,15 @@ export class Form {
 			formValues[f.name] = f.getValue(formData)
 		})
 		return formValues
+	}
+
+	resetFormValues() {
+		const formEl = this.getFormElement()
+		const formData = new FormData(formEl)
+		this.fields.forEach((f) => {
+			f.value = f.getValue(formData)
+			console.log('rfv:', f.value)
+		})
 	}
 
 	getFieldValue(fieldName: string) {

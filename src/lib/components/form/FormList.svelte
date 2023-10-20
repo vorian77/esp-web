@@ -6,7 +6,7 @@
 
 	export let formObj: Form
 	export let formData: Array<{}>
-	export let onListRowClick = (row: {}) => {}
+	export let onListRowClick = (data: any) => {}
 
 	const ROW_PER_PAGE = 10
 
@@ -63,8 +63,11 @@
 		</thead>
 		<tbody>
 			{#if formData}
-				{#each $rows as row}
-					<tr on:click={() => onListRowClick(row)} on:keyup={() => onListRowClick(row)}>
+				{#each $rows as row, i (row.id)}
+					<tr
+						on:click={() => onListRowClick({ i, row })}
+						on:keyup={() => onListRowClick({ index: i, row })}
+					>
 						{#each formObj.fields as field, i}
 							{#if field.access !== 'hidden'}
 								<td>{row[field.name]}</td>
@@ -76,12 +79,6 @@
 		</tbody>
 	</table>
 </Datatable>
-
-<!-- formDefn:
-<pre>{JSON.stringify(formObj, null, 2)}</pre>
-
-formData:
-<pre>{JSON.stringify(formData, null, 2)}</pre> -->
 
 <style>
 	thead {
