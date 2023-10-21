@@ -11,8 +11,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # edgeDB
-.edgeql
-**/*.edgeql.ts
-*.edgeql
-interfaces.ts
-dbschema/queries.*
+# .edgeql
+# **/*.edgeql.ts
+# *.edgeql
+# interfaces.ts
+# dbschema/queries.*
