@@ -1,6 +1,6 @@
-import { getUserEdge } from '$server/dbEdge/types.edgeDB.server'
 import { dbESPAPI } from '$server/dbESP'
 import { FormSourceResponse, HTMLMETHOD, type FormSourceResponseType } from '$comps/types'
+import { getUserByUserName } from '$server/dbEdge/types.edgeDB.server'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '$server/apiUser.ts'
@@ -9,19 +9,20 @@ export async function getUser(userId: string) {
 	let user = await getUserESP()
 
 	// <temp> 230819 - add edgedb user info until replaced by edgedb
-	const userEdge = await getUserEdge('user_sys')
+	const userEdge = await getUserByUserName('user_sys')
 	const parms = [
 		'id',
 		'lastName',
 		'firstName',
 		'fullName',
 		'userName',
-		'resource_home_screen_widgets',
-		'resource_programs'
+		'resource_programs',
+		'resource_widgets'
 	]
 	parms.forEach((p) => {
 		user[p] = userEdge[p]
 	})
+	// console.log('apiUser.user:', user)
 	return FormSourceResponse(user)
 
 	async function getUserESP() {
@@ -51,9 +52,19 @@ export async function getUser(userId: string) {
 			})
 		}
 		const appsList = user.apps.split(',')
-		user.apps = appsList.map((app: string) => '/apps/' + app)
-		user.root = user.user_types.includes('admin') ? '/apps' : user.apps[0]
+		user.apps = appsList.map((app: string) => '/home/' + app)
+		user.root = user.user_types.includes('admin') ? '/home' : user.apps[0]
 
 		return user
 	}
 }
+
+// <temp> 231008 - need to figure out how to set global current user
+// set global current user
+// await dbExecute(`set global sys_user::currentUserId := <uuid>"${user.id}"`)
+// set global currentUserId := <uuid>"9a2966ba-4e96-11ee-abc0-73f75479eb42";
+
+// const q = `select global sys_user::currentUser { fullName }`
+// const u = await dbSelectSingle(q)
+// console.log('global user:', u)
+// await getData('')

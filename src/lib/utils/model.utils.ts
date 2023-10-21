@@ -85,6 +85,18 @@ export function memberOfEnumOrDefault(
 	}
 	return memberOfEnum(val, fieldName, className, enumName, enumObj)
 }
+export function memberOfEnumIfExists(
+	val: string,
+	fieldName: string,
+	className: string,
+	enumName: string,
+	enumObj: object
+) {
+	if (!val) {
+		return undefined
+	}
+	return memberOfEnum(val, fieldName, className, enumName, enumObj)
+}
 export function nbrOptional(val, name) {
 	if (!val) {
 		return undefined

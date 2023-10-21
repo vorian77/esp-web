@@ -14,9 +14,9 @@ export class User {
 	}
 
 	hasResourceWidget(resource: string): boolean {
-		if (!this.user.resource_home_screen_widgets) {
+		if (!this.user.resource_widgets) {
 			return false
 		}
-		return undefined !== this.user.resource_home_screen_widgets.find((r) => r.name === resource)
+		return undefined !== this.user.resource_widgets.find((r) => r.name === resource)
 	}
 }
