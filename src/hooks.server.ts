@@ -1,14 +1,14 @@
 import { redirect } from '@sveltejs/kit'
 import { getUser } from '$server/apiUser'
-import type { FormSourceResponseType } from '$comps/types'
+import type { ResponseBody } from '$comps/types'
 
-const FILENAME = 'hooks.server.ts'
+const FILENAME = 'hooks.server'
 
 const routesUnprotected = ['/about', '/auth', '/legalDisclosure']
 
 export async function handle({ event, resolve }) {
 	console.log()
-	console.log('hooks.handle.url:', event.url.pathname)
+	console.log(FILENAME, `url: ${event.url.pathname}`)
 
 	if (event.url.pathname === '/') {
 		console.log(FILENAME, 'home path - deleting cookie...')
@@ -42,7 +42,7 @@ export async function handle({ event, resolve }) {
 
 	// get user info
 	event.locals.user = await fetchUser(sessionId)
-	// console.log('hooks.user:', user)
+	// console.log('hooks.user:', event.locals.user)
 	if (!event.locals.user) {
 		console.log(FILENAME, `redirect - could not retrieve user: ${sessionId}`)
 		throw redirect(303, '/')
@@ -71,7 +71,7 @@ export const handleError = ({ error, event }) => {
 }
 
 async function fetchUser(sessionId: string) {
-	const responsePromise = await getUser(sessionId)
-	const response: FormSourceResponseType = await responsePromise.json()
+	const responsePromise: Response = await getUser(sessionId)
+	const response: ResponseBody = await responsePromise.json()
 	return response.data
 }

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { NodeObj, NavTreeNode } from '$comps/types'
-	import { Form as FormClass } from '$comps/esp/form/form'
+	import { Form as FormClass } from '$comps/form/form'
 	import FormList from '$comps/form/FormList.svelte'
-	import { objActionListEdit, objActionListNew } from '$comps/nav/navStore'
+	import { objActionListEdit } from '$comps/nav/navObjActions'
 
 	export let treeNode: NavTreeNode
 	export let scrollToTop = () => {}
@@ -16,28 +16,9 @@
 	}
 
 	function onListRowClick(data: any) {
-		const d = { listRows: navNode.dataObj!.data.length, listRowsCurrent: data.i, ...data.row }
-		objActionListEdit(treeNode, d)
+		objActionListEdit(treeNode, data.row, data.index)
 		scrollToTop()
-	}
-
-	function listActionEdit() {
-		// objActionListEdit(node, rowId)
-	}
-
-	function listActionSave() {}
-
-	const functions = {
-		noa_list_new: () => objActionListNew(treeNode)
 	}
 </script>
 
-<FormList formObj={formClass} formData={navNode.dataObj?.data} {onListRowClick}>
-	<svelte:fragment slot="actions">
-		{#each formClass.objActions as action}
-			<button class="btn variant-filled-primary mt-1 ml-1" on:click={functions[action.name]}
-				>{action.header}
-			</button>
-		{/each}
-	</svelte:fragment>
-</FormList>
+<FormList formObj={formClass} formData={navNode.dataObj?.data} {onListRowClick} />

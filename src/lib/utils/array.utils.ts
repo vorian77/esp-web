@@ -1,7 +1,7 @@
 /** array.utils.js */
 
-export function getArray(objs) {
-	objs = objs != null ? objs : []
+export function getArray(objs: any) {
+	objs = objs != null && objs != undefined ? objs : []
 	let arr = []
 
 	if (Array.isArray(objs)) {

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Form as FormClass } from '$comps/esp/form/form'
+	import { Form as FormClass } from '$comps/form/form'
+	import { initUser } from '$comps/nav/navStore'
 	import { goto } from '$app/navigation'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import { navInitReset, navStorageReset, navUser } from '$comps/nav/navStore'
-	import type { FormSourceResponseType } from '$comps/types'
+	import type { ResponseBody } from '$comps/types'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/authPage.svelte'
@@ -63,9 +63,7 @@
 					}
 					toastStore.trigger(t)
 				} else {
-					navStorageReset()
-					navInitReset()
-					navUser.set(await getUser(applicantId))
+					initUser(await getUser(applicantId))
 					goto('/home')
 				}
 				break
@@ -82,7 +80,7 @@
 			method: 'POST',
 			body: JSON.stringify({ userId })
 		})
-		const response: FormSourceResponseType = await responsePromise.json()
+		const response: ResponseBody = await responsePromise.json()
 		return response.data
 	}
 

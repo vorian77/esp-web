@@ -1,155 +1,578 @@
-import { review } from '$server/dbEdge/types.edgeDB.server'
 import {
-	root,
+	addCode,
+	addCodeType,
+	addColumn,
+	addDataObjAction,
+	addFormFieldItemsList,
+	addUser,
+	execute,
+	review
+} from '$server/dbEdge/types.edgeDB.server'
+import {
 	apps,
-	users,
 	codeTypes,
 	codes,
 	nodeObjPages,
 	nodeObjPrograms,
 	nodeObjHeaders,
+	resetDB,
+	rootObj,
+	tables,
 	userType,
 	userUserType,
 	userTypeResourcesApps,
 	userTypeResourcesPrograms,
 	userTypeResourcesWidgets,
-	widgets,
-	dataObjActions,
-	columns
+	widgets
 } from '$server/dbEdge/init/dbEdgeInitUtilities'
-import { execute } from '$server/dbEdge/types.edgeDB.server'
 
 const FILE = 'initSys'
 
-export async function initSys() {
+export default async function initSys() {
 	console.log()
-	console.log(`${FILE}.1`)
-	await reset()
-	await review(FILE + '.1', reviewQuery)
-	await data()
+	console.log(`${FILE}.start...`)
+	await resetDB()
+	await initSysCore()
+	await initSysCodes()
+	await initSysFieldItemsLists()
+	await initSysColumns()
+	await initSysDataObjActions()
+	await initTablePerson()
+	await initSysApp()
+	await initReviewQuery()
+	console.log(`${FILE}.end`)
+}
+
+async function initReviewQuery() {
+	let reviewQuery = ''
+	// reviewQuery ='select sys_obj::Form {**} filter .name = "form_training_provider_student_list"'
+	// reviewQuery = 'select sys_core::CodeType {id, name, order, parent}'
 	await review(FILE + '.2', reviewQuery)
 }
 
-const reviewQuery = 'select sys_user::User {**}'
+async function initSysCore() {
+	await rootObj()
 
-async function reset() {
-	const query = `
-		delete app_cm_training::Student;
-		delete sys_obj::NodeObj;  		
-		delete sys_obj::Form;
-		delete sys_db::Table;
-		delete sys_db::Column;  
-		delete sys_obj::DataObjAction;
-		delete sys_user::Widget;
-  	delete sys_core::Code;
-  	delete sys_core::CodeType;
-  	delete sys_user::UserType;
-		delete sys_core::Obj;
-		delete sys_user::User;
-    delete sys_core::ObjRoot;
-`
-	await execute(query)
+	await addUser({
+		firstName: 'System',
+		lastName: 'User',
+		userName: 'user_sys',
+		password: '!8394812kalsdjfa*!@#$$*&'
+	})
+
+	await apps([['app_sys'], ['app_db']])
 }
 
-async function data() {
-	await root('*ROOTOBJ*')
-	await users([['System', 'User', 'user_sys', '!8394812kalsdjfa*!@#$$*&']])
-	await apps([['app_sys'], ['app_db']])
-
-	await userType([['app_sys', 'ut_sys_admin']])
-	await userUserType([['user_sys', 'ut_sys_admin']])
-
+async function initSysCodes() {
 	await codeTypes([
-		['app_db', 'ct_db_col_alignment'],
-		['app_db', 'ct_db_col_data_type'],
+		['app_db', 0, 'ct_db_col_alignment'],
+		['app_db', 0, 'ct_db_col_data_type'],
 
-		['app_sys', 'ct_sys_form_field_access'],
-		['app_sys', 'ct_sys_form_field_element'],
-		['app_sys', 'ct_sys_form_field_input'],
-		['app_sys', 'ct_sys_form_field_list_dir'],
-		['app_sys', 'ct_sys_form_field_op'],
-		['app_sys', 'ct_sys_form_field_source'],
+		['app_sys', 0, 'ct_sys_data_obj_cardinality'],
+		['app_sys', 0, 'ct_sys_data_obj_component'],
 
-		['app_sys', 'ct_sys_data_obj_cardinality'],
-		['app_sys', 'ct_sys_data_obj_component'],
+		['app_sys', 0, 'ct_sys_form_field_access'],
+		['app_sys', 0, 'ct_sys_form_field_element'],
+		['app_sys', 0, 'ct_sys_form_field_list_dir'],
+		['app_sys', 0, 'ct_sys_form_field_op'],
+		['app_sys', 0, 'ct_sys_form_field_source'],
 
-		['app_sys', 'ct_sys_node_obj_icon'],
-		['app_sys', 'ct_sys_node_obj_type']
+		['app_sys', 0, 'ct_sys_node_obj_icon'],
+		['app_sys', 0, 'ct_sys_node_obj_type'],
+
+		['app_sys', 0, 'ct_sys_person_race'],
+		['app_sys', 0, 'ct_sys_state']
 	])
+
 	await codes([
 		// db col - alignment
-		['ct_db_col_alignment', 'app_db', 'left'],
-		['ct_db_col_alignment', 'app_db', 'center'],
-		['ct_db_col_alignment', 'app_db', 'justify'],
-		['ct_db_col_alignment', 'app_db', 'right'],
+		['ct_db_col_alignment', 'app_db', 'center', 0],
+		['ct_db_col_alignment', 'app_db', 'left', 1],
+		['ct_db_col_alignment', 'app_db', 'justify', 2],
+		['ct_db_col_alignment', 'app_db', 'right', 3],
 
 		// db col - data type
-		['ct_db_col_data_type', 'app_sys', 'bool'],
-		['ct_db_col_data_type', 'app_sys', 'datetime'],
-		['ct_db_col_data_type', 'app_sys', 'expr'],
-		['ct_db_col_data_type', 'app_sys', 'int16'],
-		['ct_db_col_data_type', 'app_sys', 'int64'],
-		['ct_db_col_data_type', 'app_sys', 'json'],
-		['ct_db_col_data_type', 'app_sys', 'obj'],
-		['ct_db_col_data_type', 'app_sys', 'str'],
-		['ct_db_col_data_type', 'app_sys', 'uuid'],
-
-		// form field - access
-		['ct_sys_form_field_access', 'app_sys', 'optional'],
-		['ct_sys_form_field_access', 'app_sys', 'readOnly'],
-		['ct_sys_form_field_access', 'app_sys', 'required'],
-
-		// form field - element
-		['ct_sys_form_field_element', 'app_sys', 'header'],
-		['ct_sys_form_field_element', 'app_sys', 'input'],
-		['ct_sys_form_field_element', 'app_sys', 'pictureTake'],
-		['ct_sys_form_field_element', 'app_sys', 'select'],
-		['ct_sys_form_field_element', 'app_sys', 'textArea'],
-
-		// form field - input
-		['ct_sys_form_field_input', 'app_sys', 'checkbox'],
-		['ct_sys_form_field_input', 'app_sys', 'date'],
-		['ct_sys_form_field_input', 'app_sys', 'email'],
-		['ct_sys_form_field_input', 'app_sys', 'number'],
-		['ct_sys_form_field_input', 'app_sys', 'password'],
-		['ct_sys_form_field_input', 'app_sys', 'radio'],
-		['ct_sys_form_field_input', 'app_sys', 'tel'],
-		['ct_sys_form_field_input', 'app_sys', 'text'],
-
-		// form field - list direction
-		['ct_sys_form_field_list_dir', 'app_sys', 'asc'],
-		['ct_sys_form_field_list_dir', 'app_sys', 'desc'],
-
-		// form field - op
-		['ct_sys_form_field_op', 'app_sys', 'eq'],
-
-		// form field - source
-		['ct_sys_form_field_source', 'app_sys', 'calc'],
-		['ct_sys_form_field_source', 'app_sys', 'data'],
-		['ct_sys_form_field_source', 'app_sys', 'env'],
-		['ct_sys_form_field_source', 'app_sys', 'literal'],
-		['ct_sys_form_field_source', 'app_sys', 'traversal'],
-		['ct_sys_form_field_source', 'app_sys', 'user'],
+		['ct_db_col_data_type', 'app_sys', 'bool', 0],
+		['ct_db_col_data_type', 'app_sys', 'computed', 1],
+		['ct_db_col_data_type', 'app_sys', 'date', 2],
+		['ct_db_col_data_type', 'app_sys', 'datetime', 3],
+		['ct_db_col_data_type', 'app_sys', 'decimal', 4],
+		['ct_db_col_data_type', 'app_sys', 'edgeType', 5],
+		['ct_db_col_data_type', 'app_sys', 'int16', 6],
+		['ct_db_col_data_type', 'app_sys', 'int32', 7],
+		['ct_db_col_data_type', 'app_sys', 'int64', 8],
+		['ct_db_col_data_type', 'app_sys', 'json', 9],
+		['ct_db_col_data_type', 'app_sys', 'str', 10],
+		['ct_db_col_data_type', 'app_sys', 'uuid', 11],
 
 		// data obj - cardinality
-		['ct_sys_data_obj_cardinality', 'app_sys', 'list'],
-		['ct_sys_data_obj_cardinality', 'app_sys', 'detail'],
+		['ct_sys_data_obj_cardinality', 'app_sys', 'detail', 0],
+		['ct_sys_data_obj_cardinality', 'app_sys', 'list', 1],
 
 		// data obj - components
-		['ct_sys_data_obj_component', 'app_sys', 'Home'],
-		['ct_sys_data_obj_component', 'app_sys', 'FormList'],
-		['ct_sys_data_obj_component', 'app_sys', 'FormDetail'],
+		['ct_sys_data_obj_component', 'app_sys', 'Home', 0],
+		['ct_sys_data_obj_component', 'app_sys', 'FormDetail', 1],
+		['ct_sys_data_obj_component', 'app_sys', 'FormList', 2],
+
+		// form field - access
+		['ct_sys_form_field_access', 'app_sys', 'optional', 0],
+		['ct_sys_form_field_access', 'app_sys', 'readOnly', 1],
+		['ct_sys_form_field_access', 'app_sys', 'required', 2],
+
+		// form field - element
+		['ct_sys_form_field_element', 'app_sys', 'checkbox', 0],
+		['ct_sys_form_field_element', 'app_sys', 'date', 1],
+		['ct_sys_form_field_element', 'app_sys', 'email', 2],
+		['ct_sys_form_field_element', 'app_sys', 'file', 3],
+		['ct_sys_form_field_element', 'app_sys', 'input', 4],
+		['ct_sys_form_field_element', 'app_sys', 'label', 5],
+		['ct_sys_form_field_element', 'app_sys', 'number', 6],
+		['ct_sys_form_field_element', 'app_sys', 'password', 7],
+		['ct_sys_form_field_element', 'app_sys', 'radio', 8],
+		['ct_sys_form_field_element', 'app_sys', 'select', 9],
+		['ct_sys_form_field_element', 'app_sys', 'tel', 10],
+		['ct_sys_form_field_element', 'app_sys', 'text', 11],
+		['ct_sys_form_field_element', 'app_sys', 'textArea', 12],
+
+		// form field - list direction
+		['ct_sys_form_field_list_dir', 'app_sys', 'asc', 0],
+		['ct_sys_form_field_list_dir', 'app_sys', 'desc', 1],
+
+		// form field - op
+		['ct_sys_form_field_op', 'app_sys', 'eq', 0],
+
+		// form field - source
+		['ct_sys_form_field_source', 'app_sys', 'calc', 0],
+		['ct_sys_form_field_source', 'app_sys', 'data', 1],
+		['ct_sys_form_field_source', 'app_sys', 'env', 2],
+		['ct_sys_form_field_source', 'app_sys', 'literal', 3],
+		['ct_sys_form_field_source', 'app_sys', 'traversal', 4],
+		['ct_sys_form_field_source', 'app_sys', 'user', 5],
 
 		// node obj - icons
-		['ct_sys_node_obj_icon', 'app_sys', 'application'],
-		['ct_sys_node_obj_icon', 'app_sys', 'root'],
+		['ct_sys_node_obj_icon', 'app_sys', 'application', 0],
+		['ct_sys_node_obj_icon', 'app_sys', 'root', 1],
 
 		// node obj - types
-		['ct_sys_node_obj_type', 'app_sys', 'header'],
-		['ct_sys_node_obj_type', 'app_sys', 'object'],
-		['ct_sys_node_obj_type', 'app_sys', 'page'],
-		['ct_sys_node_obj_type', 'app_sys', 'program']
+		['ct_sys_node_obj_type', 'app_sys', 'header', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'object', 1],
+		['ct_sys_node_obj_type', 'app_sys', 'page', 2],
+		['ct_sys_node_obj_type', 'app_sys', 'program', 3],
+
+		// person - race
+		['ct_sys_person_race', 'app_sys', 'American Indian and Alaskan Native', 0],
+		['ct_sys_person_race', 'app_sys', 'Asian', 1],
+		['ct_sys_person_race', 'app_sys', 'Black or African American', 2],
+		['ct_sys_person_race', 'app_sys', 'Native Hawaiian and Other Pacific Islander', 3],
+		['ct_sys_person_race', 'app_sys', 'Two or more races', 4],
+		['ct_sys_person_race', 'app_sys', 'White', 5],
+		['ct_sys_person_race', 'app_sys', 'Other', 6],
+		['ct_sys_person_race', 'app_sys', 'Prefer Not To Say', 7],
+
+		// state
+		['ct_sys_state', 'app_sys', 'Illinois', 0],
+		['ct_sys_state', 'app_sys', 'Maryland', 0],
+		['ct_sys_state', 'app_sys', 'Michigan', 0],
+		['ct_sys_state', 'app_sys', 'Ohio', 0],
+		['ct_sys_state', 'app_sys', 'Pennsylvania', 0]
 	])
+}
+
+async function initSysFieldItemsLists() {
+	await addFormFieldItemsList({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		dbSelect:
+			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str;parms;codeTypeName> ORDER BY .order',
+		propertyId: 'id',
+		propertyLabel: 'name',
+		name: 'il_sys_code_order_index_by_codeTypeName'
+	})
+	await addFormFieldItemsList({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		dbSelect:
+			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str;parms;codeTypeName> ORDER BY .name',
+		propertyId: 'id',
+		propertyLabel: 'name',
+		name: 'il_sys_code_order_name_by_codeTypeName'
+	})
+}
+
+async function initSysColumns() {
+	await columnsSpecial()
+	await columnsMgmt()
+	await columnsCommon()
+
+	async function columnsSpecial() {
+		// columns - mgmt
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'special_label',
+			isExcludeInsert: true,
+			isExcludeSelect: true,
+			isExcludeUpdate: true,
+			name: 'special_label'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'computed',
+			codeDataTypePreset: 'str',
+			exprSelect: `(SELECT sys_user::User {fullName := str_upper(.person.fullName)} FILTER .userName = <str;user;userName>)`,
+			header: 'Full Name (uppercase)',
+			isExcludeUpdate: true,
+			name: 'computed_person_fullname_uppercase'
+		})
+	}
+
+	async function columnsMgmt() {
+		// columns - mgmt
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'uuid',
+			header: 'System ID',
+			isSetBySys: true,
+			name: 'id'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'datetime',
+			header: 'Created At',
+			isSetBySys: true,
+			name: 'createdAt'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'datetime',
+			header: 'Modified At',
+			isSetBySys: true,
+			name: 'modifiedAt'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'edgeType',
+			codeDataTypePreset: 'str',
+			edgeTypeDefn: {
+				property: 'person.fullName',
+				table: { mod: 'sys_user', name: 'User' }
+			},
+			exprPreset: '<str;user;fullName>',
+			exprSave: '(SELECT sys_user::getUser(<str;user;userName>))',
+			header: 'Created By',
+			isExcludeUpdate: true,
+			name: 'createdBy'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'edgeType',
+			codeDataTypePreset: 'str',
+			edgeTypeDefn: {
+				property: 'person.fullName',
+				table: { mod: 'sys_user', name: 'User' }
+			},
+			exprPreset: '<str;user;fullName>',
+			exprSave: '(SELECT sys_user::getUser(<str;user;userName>))',
+			header: 'Modified By',
+			name: 'modifiedBy'
+		})
+	}
+
+	async function columnsCommon() {
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Category',
+			name: 'codeCategory'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Status',
+			name: 'codeStatus'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'date',
+			header: 'End Date',
+			name: 'dateEnd'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'date',
+			header: 'Start Date',
+			name: 'dateStart'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Description',
+			name: 'description'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'bool',
+			header: 'Active',
+			name: 'isActive'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Name',
+			name: 'name'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Note',
+			name: 'note'
+		})
+
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'edgeType',
+			codeDataTypePreset: 'str',
+			edgeTypeDefn: {
+				property: 'name',
+				table: { mod: 'sys_core', name: 'Org' }
+			},
+			exprPreset: `(SELECT "Atlantic Impact: <str;user;fullName>")`,
+			exprSave: `(SELECT sys_core::getOrg(<str;user;organization>))`,
+			header: 'Owner',
+			name: 'owner'
+		})
+	}
+}
+
+async function initSysDataObjActions() {
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_list_save',
+		header: 'Save',
+		order: 100
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_list_new',
+		header: 'New',
+		order: 110
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_list_edit',
+		header: 'Edit',
+		order: 120
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_list_delete',
+		header: 'Delete',
+		order: 130,
+		color: 'variant-filled-error'
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_list_columns',
+		header: 'Columns',
+		order: 140
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_detail_save',
+		header: 'Save',
+		order: 200
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_detail_save_new',
+		header: 'Save/New',
+		order: 210
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_detail_save_as',
+		header: 'Save',
+		order: 220
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_detail_new',
+		header: 'New',
+		order: 230
+	})
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_detail_delete',
+		header: 'Delete',
+		order: 240,
+		color: 'variant-filled-error'
+	})
+
+	await addDataObjAction({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_print',
+		header: 'Print',
+		order: 300
+	})
+}
+
+async function initTablePerson() {
+	await tables([['app_sys', 'default', 'Person', false]])
+	await columnsPerson()
+
+	async function columnsPerson() {
+		// columns - common
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Address 1',
+			name: 'addr1'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Address 2',
+			name: 'addr2'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'json',
+			exprStorageKey: 'avatar_<raw;calc;random10>',
+			header: 'Avatar',
+			name: 'avatar'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'date',
+			header: 'Birth Date',
+			name: 'birthDate'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'City',
+			name: 'city'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'edgeType',
+			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+			header: 'Race',
+			name: 'codeRace'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'edgeType',
+			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+			header: 'State',
+			name: 'codeState'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Email',
+			name: 'email'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'json',
+			header: 'Ethnicity',
+			name: 'ethnicity'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Favorite Food',
+			isMultiSelect: true,
+			name: 'favFood'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'First Name',
+			name: 'firstName'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Full Name',
+			name: 'fullName'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Gender',
+			name: 'gender'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Last Name',
+			name: 'lastName'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Mobile Phone',
+			name: 'phoneMobile'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Zip',
+			name: 'zip'
+		})
+	}
+}
+
+async function initSysApp() {
+	await nodeObjPrograms([
+		['app_sys', 'program', 'pgm_sys_admin', 'SysAdmin', 10, 'application', '/home/app']
+	])
+
 	await nodeObjHeaders([
 		[
 			'app_sys',
@@ -162,6 +585,7 @@ async function data() {
 			'/home/app'
 		]
 	])
+
 	await nodeObjPages([
 		[
 			'app_sys',
@@ -174,118 +598,16 @@ async function data() {
 			'/home/cm/quotes'
 		]
 	])
-	await nodeObjPrograms([
-		['app_sys', 'program', 'pgm_sys_admin', 'SysAdmin', 10, 'application', '/home/app']
-	])
 
 	await widgets([['app_sys', 'widget_sys_user']])
+
+	await userType([['app_sys', 'ut_sys_admin']])
+	await userUserType([['user_sys', 'ut_sys_admin']])
 
 	await userTypeResourcesApps([
 		['ut_sys_admin', 'app_sys'],
 		['ut_sys_admin', 'app_db']
 	])
-	await userTypeResourcesPrograms([
-		['ut_sys_admin', 'pgm_sys_admin'],
-		['ut_sys_admin', 'pgm_cm_staff'],
-		['ut_sys_admin', 'pgm_cm_student_applicant'],
-		['ut_sys_admin', 'pgm_cm_student'],
-
-		['ut_sys_admin', 'pgm_training_staff_adm'],
-		['ut_sys_admin', 'pgm_training_staff_provider'],
-		['ut_sys_admin', 'pgm_training_student']
-	])
+	await userTypeResourcesPrograms([['ut_sys_admin', 'pgm_sys_admin']])
 	await userTypeResourcesWidgets([['ut_sys_admin', 'widget_sys_user']])
-	await dataObjActions([
-		['app_sys', 'noa_list_save', 'Save', 100],
-		['app_sys', 'noa_list_new', 'New', 110],
-		['app_sys', 'noa_list_edit', 'Edit', 120],
-		['app_sys', 'noa_list_delete', 'Delete', 130],
-		['app_sys', 'noa_list_columns', 'Columns', 140],
-
-		['app_sys', 'noa_detail_save', 'Save', 200],
-		['app_sys', 'noa_detail_save_new', 'Save/New', 210],
-		['app_sys', 'noa_detail_save_as', 'Save As', 220],
-		['app_sys', 'noa_detail_new', 'New', 230],
-		['app_sys', 'noa_detail_delete', 'Delete', 240],
-
-		['app_sys', 'noa_print', 'Print', 300]
-	])
-
-	// columns - sys
-	await columns([
-		['app_sys', 'id', 'System ID', 'System ID', 'uuid', '', 'left', 0, 0, '', ''],
-		['app_sys', 'createdAt', 'Created At', 'Created At', 'datetime', '', 'left', 0, 0, '', ''],
-		['app_sys', 'modifiedAt', 'Modified At', 'Modified At', 'datetime', '', 'left', 0, 0, '', ''],
-		[
-			'app_sys',
-			'createdBy',
-			'Created By',
-			'Created By',
-			'obj',
-			'(select sys_user::getUser([("user", "userName")]))',
-			'left',
-			0,
-			0,
-			'',
-			''
-		],
-		[
-			'app_sys',
-			'modifiedBy',
-			'Modified By',
-			'Modified By',
-			'obj',
-			'(select sys_user::getUser([("user", "userName")]))',
-			'left',
-			0,
-			0,
-			'',
-			''
-		],
-		[
-			'app_sys',
-			'owner',
-			'Owner',
-			'Owner',
-			'obj',
-			'(select sys_core::getEnt([("traversal","","name", "str")]))',
-			'left',
-			0,
-			0,
-			'',
-			''
-		]
-	])
-
-	// columns - common
-	await columns([
-		[
-			'app_sys',
-			'firstName',
-			'First Name',
-			'First Name',
-			'str',
-			'',
-			'left',
-			0,
-			0,
-			'Enter first name',
-			''
-		],
-		[
-			'app_sys',
-			'lastName',
-			'Last Name',
-			'Last Name',
-			'str',
-			'',
-			'left',
-			0,
-			0,
-			'',
-			'Enter last name'
-		],
-		['app_sys', 'fullName', 'Full Name', 'Full Name', 'str', '', 'left', 0, 0, '', ''],
-		['app_sys', 'email', 'Email', 'Email', 'str', '', 'left', 0, 0, 'Enter email', '']
-	])
 }

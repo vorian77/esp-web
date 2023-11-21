@@ -10,25 +10,27 @@ let client = edgedb.createClient({
 })
 
 export async function queryMultiple(script: string) {
+	if (!script) return {}
 	try {
 		return JSON.parse(await client.queryJSON(script))
 	} catch (e) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'queryMultiple',
-			message: `Invalid query: ${script}`
+			message: `Invalid query: ${script} ${e.message}`
 		})
 	}
 }
 
 export async function querySingle(script: string) {
+	if (!script) return {}
 	try {
 		return JSON.parse(await client.querySingleJSON(script))
 	} catch (e) {
 		throw error(500, {
 			file: FILENAME,
-			function: 'queryMultiple',
-			message: `Invalid query: ${script}`
+			function: 'querySingle',
+			message: `Invalid query: ${script} ${e.message}`
 		})
 	}
 }

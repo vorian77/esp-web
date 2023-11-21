@@ -1,29 +1,26 @@
 module default {
   scalar type Name extending str;
 
-  abstract type Person {
-    firstName: Name;
-    lastName: Name;
+  type Person {
+    addr1: str;
+    addr2: str;
+    avatar: json;
+    birthDate: cal::local_date;
+    city: str;
+    codeRace: sys_core::Code;
+    codeState: sys_core::Code;
+    email: str;
+    ethnicity: json;
+    favFood: str;
+    required firstName: Name;
     property fullName := .firstName ++ ' ' ++ .lastName;
+    gender: str;
+    required lastName: Name;
+    note: str;
+    phoneMobile: str;
+    zip: str;
   }
-
-  abstract type Mgmt {
-    required createdAt: datetime {
-      default := datetime_of_transaction();
-      readonly := true;
-    };
-
-    required createdBy: Person {
-      readonly := true;
-    };
-    
-    modifiedAt: datetime {
-      rewrite insert, update using (datetime_of_transaction())
-    }
-
-    required modifiedBy: Person 
-  }
-
+  
   scalar type nonNegative extending int64 {
     constraint min_value(0);
   }

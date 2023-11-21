@@ -1,5 +1,5 @@
 import { dbESPAPI } from '$server/dbESP'
-import { FormSourceResponse, HTMLMETHOD, type FormSourceResponseType } from '$comps/types'
+import { getServerResponse, HTMLMETHOD, type ResponseBody } from '$comps/types'
 import { getUserByUserName } from '$server/dbEdge/types.edgeDB.server'
 import { error } from '@sveltejs/kit'
 
@@ -7,7 +7,6 @@ const FILENAME = '$server/apiUser.ts'
 
 export async function getUser(userId: string) {
 	let user = await getUserESP()
-
 	// <temp> 230819 - add edgedb user info until replaced by edgedb
 	const userEdge = await getUserByUserName('user_sys')
 	const parms = [
@@ -22,18 +21,18 @@ export async function getUser(userId: string) {
 	parms.forEach((p) => {
 		user[p] = userEdge[p]
 	})
-	// console.log('apiUser.user:', user)
-	return FormSourceResponse(user)
+	user['organization'] = 'Atlantic Impact'
+	return getServerResponse(user)
 
 	async function getUserESP() {
 		const responsePromise = await dbESPAPI(HTMLMETHOD.GET, 'ws_cm_ssr_user', { userId })
-		const response: FormSourceResponseType = await responsePromise.json()
+		const response: ResponseBody = await responsePromise.json()
 
-		if (!response.data.user_id) {
+		if (!response.success) {
 			throw error(500, {
 				file: FILENAME,
-				function: 'fetchUser',
-				message: `unable to retrieve user: ${userId}`
+				function: 'getUserESP',
+				message: `Unable to retrieve user: ${userId}`
 			})
 		}
 

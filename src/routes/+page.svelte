@@ -2,11 +2,19 @@
 	import AuthPage from '$routes/auth/AuthPage.svelte'
 	import logo from '$assets/YO-Baltimore-logo.png'
 
+	import { initUser } from '$comps/nav/navStore'
+	import { goto } from '$app/navigation'
+
 	const FILENAME = 'routes/+page.svelte'
 
 	export let data
-
 	let pageCurrent = ''
+
+	function login() {
+		// <temp> 231026 express login
+		initUser(data.user)
+		goto('/home')
+	}
 </script>
 
 <AuthPage bind:data bind:pageCurrent />
@@ -16,6 +24,10 @@
 		<img class="mx-auto" src={logo} width="260" alt="Organization logo" />
 
 		<div class="flex-box">
+			<button type="button" class="btn variant-filled-secondary w-full mt-1" on:click={login}>
+				Express Login
+			</button>
+
 			<button
 				type="button"
 				class="btn variant-filled-primary w-full mt-10"

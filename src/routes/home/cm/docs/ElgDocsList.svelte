@@ -14,7 +14,7 @@
 		openModal(formDefn)
 
 		async function getFormData(elgId: number) {
-			const responePromise = await fetch('/home/cm/docs', {
+			const responePromise: Response = await fetch('/home/cm/docs', {
 				method: 'POST',
 				body: JSON.stringify({ elgId }),
 				headers: {
@@ -26,7 +26,7 @@
 		}
 
 		async function getlistData() {
-			const responePromise = await fetch('/home/cm/docs', {
+			const responePromise: Response = await fetch('/home/cm/docs', {
 				method: 'GET',
 				headers: {
 					'content-type': 'application/json'

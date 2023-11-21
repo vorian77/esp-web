@@ -1,26 +1,46 @@
 <script lang="ts">
-	import type { Form } from '$comps/esp/form/form'
+	import type { Form } from '$comps/form/form'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
+	import { navParms } from '$comps/nav/navStore'
+	import DataObjActions from '$comps/DataObjActions.svelte'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
+	import DataViewer from '$comps/DataViewer.svelte'
+	import { getArray } from '$utils/array.utils'
 
 	export let formObj: Form
 	export let formData: Array<{}>
 	export let onListRowClick = (data: any) => {}
 
-	const ROW_PER_PAGE = 10
+	const ROW_PER_PAGE = 20
 
 	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
 	const rows = handler.getRows()
+	let sort: any
 
 	$: {
-		handler.setRows(formData)
+		handler.setRows($navParms.data)
 		handler.setPage(1)
 		handler.clearFilters()
 		handler.clearSearch()
+		sort = handler.getSort()
+	}
+
+	$: {
+		const sortItems = formObj.defn._fieldsDbOrder
 		handler.clearSort()
+		if (sortItems) {
+			for (let i = sortItems.length - 1; i >= 0; i--) {
+				handler.applySort({
+					orderBy: sortItems[i]._name,
+					direction: sortItems[i]._codeDbListDir ? sortItems[i]._codeDbListDir : 'asc'
+				})
+			}
+		}
 	}
 </script>
+
+<!-- <DataViewer header="sort" data={JSON.stringify(sort, null, 2)} /> -->
 
 <div class="flex justify-between">
 	<div>
@@ -28,6 +48,7 @@
 	</div>
 	<div>
 		<slot name="actions" />
+		<DataObjActions {formObj} />
 	</div>
 </div>
 
@@ -45,7 +66,7 @@
 			<tr>
 				{#if formObj.fields}
 					{#each formObj.fields as field, i}
-						{#if field.access !== 'hidden'}
+						{#if field.isDisplayable && field.isDisplay}
 							<Th {handler} orderBy={field.name}>{field.label}</Th>
 						{/if}
 					{/each}
@@ -54,7 +75,7 @@
 			<tr>
 				{#if formObj.fields}
 					{#each formObj.fields as field, i}
-						{#if field.access !== 'hidden'}
+						{#if field.isDisplayable && field.isDisplay}
 							<ThFilter {handler} filterBy={field.name} />
 						{/if}
 					{/each}
@@ -65,12 +86,12 @@
 			{#if formData}
 				{#each $rows as row, i (row.id)}
 					<tr
-						on:click={() => onListRowClick({ i, row })}
+						on:click={() => onListRowClick({ index: i, row })}
 						on:keyup={() => onListRowClick({ index: i, row })}
 					>
 						{#each formObj.fields as field, i}
-							{#if field.access !== 'hidden'}
-								<td>{row[field.name]}</td>
+							{#if field.isDisplayable && field.isDisplay}
+								<td>{row[field.name].display}</td>
 							{/if}
 						{/each}
 					</tr>

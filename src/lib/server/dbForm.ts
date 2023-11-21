@@ -4,10 +4,10 @@ import {
 	FormSourceDBAction,
 	FormSourceItem,
 	FormSourceItemSource,
-	FormSourceResponse,
+	getServerResponse,
 	FormSourceTarget
 } from '$comps/types'
-import type { Field } from '$comps/esp/form/field'
+import type { Field } from '$comps/form/field'
 
 import { dbGetForm } from '$server/dbMongo'
 import { getEnvVar } from '$server/env'
@@ -90,7 +90,7 @@ export async function processForm(
 
 	if (actionIdx < 0) {
 		if (optional) {
-			return FormSourceResponse({})
+			return getServerResponse({})
 		} else {
 			throw error(500, {
 				file: FILENAME,

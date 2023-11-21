@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { navUser } from '$comps/nav/navStore'
-	import { User } from '$comps/types'
+	import { getUser } from '$comps/nav/navStore'
+	import type { User } from '$comps/types'
 	import SysUser from '$routes/home/User.svelte'
 	import CMUser from '$routes/home/UserCM.svelte'
 	import Quote from '$routes/home/Quote.svelte'
@@ -8,20 +8,11 @@
 
 	const FILENAME = '$routes/home/+page.svelte'
 
-	let user: any
-	let userObj: any
-	let showSysUser: boolean
-	let showCMUser: boolean
-	let showCMQuote: boolean
+	const user: User = getUser()
 
-	$: {
-		user = $navUser
-		userObj = new User(user)
-
-		showSysUser = userObj.hasResourceWidget('widget_sys_user')
-		showCMUser = userObj.hasResourceWidget('widget_cm_user')
-		showCMQuote = userObj.hasResourceWidget('widget_cm_quotes')
-	}
+	let showSysUser: boolean = user.hasResourceWidget('widget_sys_user')
+	let showCMUser: boolean = user.hasResourceWidget('widget_cm_user')
+	let showCMQuote: boolean = user.hasResourceWidget('widget_cm_quotes')
 </script>
 
 {#if showSysUser}
@@ -37,4 +28,3 @@
 {/if}
 
 <NavHome />
-<!-- <pre>{JSON.stringify(user.resource_widgets, null, 2)}</pre> -->

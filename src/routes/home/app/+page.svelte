@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { navInit, navInitReset, navTree, navUser } from '$comps/nav/navStore'
-	import type { DataObj, NodeObj, NavTree, NavTreeNode } from '$comps/types'
-	import type { Snapshot } from './$types'
+	import { navTree, navUser } from '$comps/nav/navStore'
+	import { type DataObj, type NodeObj, NavTree, type NavTreeNode } from '$comps/types'
+	import { capitalizeFirstLetter } from '$comps/types'
 	import NodeFormList from '$comps/nav/NodeFormList.svelte'
 	import NodeFormDetail from '$comps/nav/NodeFormDetail.svelte'
 
@@ -12,33 +12,25 @@
 		FormDetail: NodeFormDetail
 	}
 
+	let navTreeLocal: NavTree
 	let navTreeNode: NavTreeNode | undefined
 	let nodeObj: NodeObj | undefined
-	let dataObj: DataObj | undefined
+	let dataObj: DataObj | null
 	let compName = ''
 	let compCurrent: any
 	let nodeType = ''
 	let isRootNavTreeNode: boolean | undefined
 	let scrollContainer: any
 
-	export const snapshot: Snapshot<string> = {
-		capture: () => '',
-		restore: () => {
-			navInitReset()
-			navInit($navUser)
-		}
-	}
-
 	$: {
-		navTreeNode = $navTree.hasOwnProperty('currentNode') ? $navTree.currentNode : undefined
-		nodeObj = navTreeNode?.nodeObj ? navTreeNode.nodeObj : undefined
-		dataObj = nodeObj?.dataObj ? nodeObj.dataObj : undefined
-		compName = dataObj ? dataObj.component : ''
+		navTreeLocal = Object.assign(new NavTree([]), $navTree)
+		navTreeNode = navTreeLocal.currentNode
+		nodeObj = navTreeNode.nodeObj
+		dataObj = nodeObj.dataObj
+		compName = dataObj && dataObj.component ? dataObj.component : ''
 		compCurrent = comps[compName]
-
 		isRootNavTreeNode = !compName && navTreeNode?.key.toLowerCase().includes('root')
-		nodeType = nodeObj ? nodeObj.type : 'unknown'
-		nodeType = nodeType.charAt(0).toUpperCase() + nodeType.slice(1)
+		nodeType = capitalizeFirstLetter(nodeObj ? nodeObj.type : 'unknown')
 	}
 
 	function scrollToTop() {

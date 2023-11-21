@@ -70,13 +70,3 @@
 		</div>
 	{/each}
 </div>
-
-<!-- <div>
-	treeBranch:
-	<pre>{JSON.stringify(treeBranch, null, 2)}</pre>
-</div> -->
-
-<!-- <div>
-	treeBranch:
-	<pre>{JSON.stringify(treeBranch, null, 2)}</pre>
-</div> -->

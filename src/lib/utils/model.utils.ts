@@ -3,7 +3,7 @@ import { error } from '@sveltejs/kit'
 
 const FILENAME = '/utils/model.utils.js'
 
-export function booleanOrFalse(val, name) {
+export function booleanOrFalse(val: any, name: string) {
 	if (!val) {
 		return false
 	} else if (typeof val === 'boolean') {

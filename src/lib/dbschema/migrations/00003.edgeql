@@ -1,11 +1,8 @@
-CREATE MIGRATION m1qsbydi3md2smxpmw55g7crddxo53mudymhuwuwmyakikhxhpr32q
-    ONTO m1niox3x74eajfakusew6hxaea3fyigdcm7lx3o4qhyphml4r5nv5a
+CREATE MIGRATION m1uhtumqmowr5ybd5bsjlz5botqvhxrxf4luqvo4qiazdhqphz6ttq
+    ONTO m1lddbksjln62ats7hitooyj2gcxgib5famuoamlt2mbdbaot6t2yq
 {
-  ALTER FUNCTION sys_core::getRoot() USING (SELECT
-      std::assert_single((SELECT
-          sys_core::ObjRoot
-      FILTER
-          (.name = '*ROOTOBJ*')
-      ))
-  );
+  ALTER TYPE sys_db::Column {
+      CREATE PROPERTY exprSave: std::str;
+      CREATE PROPERTY exprSelect: std::str;
+  };
 };

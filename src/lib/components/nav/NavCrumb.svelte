@@ -1,21 +1,32 @@
 <script lang="ts">
-	import { nodeProcessCrumb } from '$comps/nav/navStore'
-	import { NavTree, type NavTreeNode } from '$comps/types'
+	import { navStatus, nodeProcessCrumb } from '$comps/nav/navStore'
+	import { DataObjStatus, NavTree, type NavTreeNode } from '$comps/types'
 	import { navTree } from '$comps/nav/navStore'
 	import { page } from '$app/stores'
+	import Messenger from '$comps/Messenger.svelte'
 
 	let navTreeLocal: NavTree
 	let treeCrumbs: NavTreeNode[]
+	let messenger: Messenger
+	let currentIdx = 0
 
 	$: {
 		navTreeLocal = Object.assign(new NavTree([]), $navTree)
 		treeCrumbs = navTreeLocal.listCrumbs
 	}
+	$: dataObjStatusLocal = Object.assign(new DataObjStatus(), $navStatus)
 
-	function nodeProcess(idx: number) {
-		nodeProcessCrumb($page.url.pathname, idx)
+	async function onProcessNode(idx: number) {
+		currentIdx = idx
+		messenger.askB4Transition(dataObjStatusLocal, true, processNode)
+	}
+
+	function processNode() {
+		nodeProcessCrumb($page.url.pathname, currentIdx)
 	}
 </script>
+
+<Messenger bind:this={messenger} />
 
 <ol class="breadcrumb">
 	{#each treeCrumbs as node, i}
@@ -26,8 +37,8 @@
 					class="anchor mt-0.5"
 					role="link"
 					tabindex="0"
-					on:click={() => nodeProcess(i)}
-					on:keyup={() => nodeProcess(i)}
+					on:click={() => onProcessNode(i)}
+					on:keyup={() => onProcessNode(i)}
 				>
 					{header}
 				</button>

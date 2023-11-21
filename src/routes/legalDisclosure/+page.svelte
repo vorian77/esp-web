@@ -1,17 +1,19 @@
 <script lang="ts">
-	import { navUser } from '$comps/nav/navStore'
+	import { getUser } from '$comps/nav/navStore'
+	import type { User } from '$comps/types'
 	import { goto } from '$app/navigation'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/legalDisclosure'
 
-	let legalDisclosure = $navUser.cm_ssr_disclosure
+	const user: User = getUser()
+	const legalDisclosure = user.cm_ssr_disclosure
 
 	async function accept() {
-		const responsePromise = await fetch('/api/legalDisclosure', {
+		const responsePromise: Response = await fetch('/api/legalDisclosure', {
 			method: 'POST',
 			body: JSON.stringify({
-				applicantId: $navUser.user_id
+				applicantId: user.user_id
 			})
 		})
 		const response = await responsePromise.json()
@@ -21,7 +23,7 @@
 			throw error(500, {
 				file: FILENAME,
 				function: 'accept',
-				message: `Unable to update disclosure for user id: ${navUser.user_id}`
+				message: `Unable to update disclosure for user id: ${user.user_id}`
 			})
 		}
 	}

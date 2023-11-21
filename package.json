@@ -37,6 +37,7 @@
 	"type": "module",
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.433.0",
+		"@aws-sdk/s3-request-presigner": "^3.441.0",
 		"@capacitor/camera": "^5.0.7",
 		"@capacitor/core": "^5.5.0",
 		"@capacitor/geolocation": "^5.0.6",

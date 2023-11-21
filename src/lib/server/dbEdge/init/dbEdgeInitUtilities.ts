@@ -1,31 +1,18 @@
 import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
+import { execute } from '$server/dbEdge/types.edgeDB.server'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
 	secretKey: EDGEDB_SECRET_KEY
 })
 
-export async function root(rootName: string) {
+export async function rootObj() {
 	const query = e.insert(e.sys_core.ObjRoot, {
-		name: rootName
+		name: '*ROOTOBJ*'
 	})
 	return await query.run(client)
-}
-
-export async function users(params: any) {
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_user.User, {
-				firstName: e.cast(e.str, i[0]),
-				lastName: e.cast(e.str, i[1]),
-				userName: e.cast(e.str, i[2]),
-				password: e.cast(e.str, i[3])
-			})
-		})
-	})
-	return await query.run(client, { data: params })
 }
 
 export async function apps(params: any) {
@@ -80,7 +67,8 @@ export async function codeTypes(params: any) {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.CodeType, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				name: e.cast(e.str, i[1]),
+				order: e.cast(e.int16, i[1]),
+				name: e.cast(e.str, i[2]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -97,6 +85,7 @@ export async function codes(params: any) {
 				codeType: e.select(e.sys_core.getCodeType(e.cast(e.str, i[0]))),
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[1]))),
 				name: e.cast(e.str, i[2]),
+				order: e.cast(e.int16, i[3]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -229,55 +218,15 @@ export async function userTypeResourcesWidgets(params: any) {
 	return await query.run(client, { data: params })
 }
 
-export async function dataObjActions(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_obj.DataObjAction, {
-				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				name: e.cast(e.str, i[1]),
-				header: e.cast(e.str, i[2]),
-				order: e.cast(e.int64, i[3]),
-				createdBy: CREATOR,
-				modifiedBy: CREATOR
-			})
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
-export async function columns(data: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_db.Column, {
-				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				name: e.cast(e.str, i[1]),
-				header: e.cast(e.str, i[2]),
-				headerSide: e.cast(e.str, i[3]),
-				codeDataType: e.select(e.sys_core.getCode('ct_db_col_data_type', e.cast(e.str, i[4]))),
-				expr: e.cast(e.str, i[5]),
-				codeAlignment: e.select(e.sys_core.getCode('ct_db_col_alignment', e.cast(e.str, i[6]))),
-				width: e.cast(e.int16, i[7]),
-				hRows: e.cast(e.int16, i[8]),
-				placeHolder: e.cast(e.str, i[9]),
-				matchColumn: e.cast(e.str, i[10]),
-				createdBy: CREATOR,
-				modifiedBy: CREATOR
-			})
-		})
-	})
-	return await query.run(client, { data })
-}
-
 export async function tables(data: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_db.Table, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				name: e.cast(e.str, i[1]),
-				hasMgmt: e.cast(e.bool, i[2]),
+				mod: e.cast(e.str, i[1]),
+				name: e.cast(e.str, i[2]),
+				hasMgmt: e.cast(e.bool, i[3]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -302,4 +251,42 @@ export async function tableColumns(data: any) {
 		})
 	})
 	return await query.run(client, { data })
+}
+
+export async function resetDB(owner: string | undefined = undefined) {
+	let query = ''
+	const tables: Array<string> = []
+
+	// tables in delete order
+	tables.push('app_cm_training::Section')
+	tables.push('app_cm_training::Course')
+	tables.push('app_cm::Student')
+	tables.push('sys_obj::NodeObj')
+	tables.push('sys_obj::Form')
+	tables.push('sys_obj::FormFieldItemsList')
+	tables.push('sys_db::Table')
+	tables.push('sys_db::Column')
+	tables.push('sys_obj::DataObjAction')
+	tables.push('sys_user::Widget')
+	tables.push('sys_core::Code')
+	tables.push('sys_core::CodeType')
+	tables.push('sys_user::UserType')
+	tables.push('sys_core::Obj')
+	tables.push('sys_user::User')
+
+	tables.forEach((t) => {
+		if (query) query += ' '
+		query += 'delete ' + t
+		if (owner) query += ` filter .owner.name = '${owner}'`
+		query += ';'
+	})
+
+	if (!owner) query += ' delete default::Person; delete sys_core::ObjRoot;'
+
+	// console.log()
+	// console.log(`reset.query: (${owner ? owner : ''})`)
+	// console.log(query)
+	// console.log()
+
+	await execute(query)
 }

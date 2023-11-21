@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Form } from '$comps/esp/form/form'
+	import type { Form } from '$comps/form/form'
 	export let formObj: Form
 	export let currentSite = 0
 

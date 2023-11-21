@@ -1,12 +1,7 @@
 import { sendText } from '$server/apiTwilio'
 import { processForm } from '$server/dbForm'
 import { getEnvVar } from '$server/env'
-import {
-	FormSource,
-	FormSourceDBAction,
-	FormSourceResponse,
-	type FormSourceResponseType
-} from '$comps/types'
+import { FormSource, FormSourceDBAction, getServerResponse, type ResponseBody } from '$comps/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/auth/+server.ts'
@@ -53,13 +48,13 @@ export async function POST({ request, cookies }) {
 			}
 			break
 	}
-	return FormSourceResponse(rtnData)
+	return getServerResponse(rtnData)
 
 	async function processAuth(formName: string, source: FormSource, data: {}) {
 		data.orgId = getOrgId(request.url)
 		const responsePromise = await processForm(formName, source, FormSourceDBAction.upsert, data)
 		if (responsePromise) {
-			const response: FormSourceResponseType = await responsePromise.json()
+			const response: ResponseBody = await responsePromise.json()
 			if (!response.success) {
 				throw error(400, {
 					file: FILENAME,

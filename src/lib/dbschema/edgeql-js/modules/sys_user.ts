@@ -2,20 +2,81 @@
 
 import * as $ from "../reflection";
 import * as _ from "../imports";
-import type * as _default from "./default";
 import type * as _std from "./std";
 import type * as _sys_core from "./sys_core";
-export type $UserλShape = $.typeutil.flatten<_default.$PersonλShape & {
+import type * as _default from "./default";
+import type * as _app_cm_training from "./app_cm_training";
+import type * as _sys_obj from "./sys_obj";
+import type * as _sys_db from "./sys_db";
+import type * as _app_cm from "./app_cm";
+export type $MgmtλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
+  "createdAt": $.PropertyDesc<_std.$datetime, $.Cardinality.One, false, false, true, true>;
+  "modifiedAt": $.PropertyDesc<_std.$datetime, $.Cardinality.AtMostOne, false, false, false, false>;
+  "createdBy": $.LinkDesc<$User, $.Cardinality.One, {}, false, false,  true, false>;
+  "modifiedBy": $.LinkDesc<$User, $.Cardinality.One, {}, false, false,  false, false>;
+}>;
+type $Mgmt = $.ObjectType<"sys_user::Mgmt", $MgmtλShape, null, [
+  ..._std.$Object_6b06be9b27fe11ee83ff159af7e1bb81['__exclusives__'],
+]>;
+const $Mgmt = $.makeType<$Mgmt>(_.spec, "c7116676-71ae-11ee-8320-072310bd1979", _.syntax.literal);
+
+const Mgmt: $.$expr_PathNode<$.TypeSet<$Mgmt, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Mgmt, $.Cardinality.Many), null);
+
+export type $UserλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
   "userName": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
   "password": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
-  "userTypes": $.LinkDesc<$UserType, $.Cardinality.Many, {
-    "@isActive": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne>;
-  }, false, false, false, false>;
+  "userTypes": $.LinkDesc<$UserType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "owner": $.LinkDesc<_sys_core.$ObjRoot, $.Cardinality.One, {}, false, false,  false, false>;
+  "person": $.LinkDesc<_default.$Person, $.Cardinality.One, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_user::Staff]": $.LinkDesc<$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_user::Staff]": $.LinkDesc<$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<userInstructor[is app_cm_training::Section]": $.LinkDesc<_app_cm_training.$Section, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_user::Mgmt]": $.LinkDesc<$Mgmt, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_core::Obj]": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_obj::DataObjAction]": $.LinkDesc<_sys_obj.$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_obj::FormFieldItemsList]": $.LinkDesc<_sys_obj.$FormFieldItemsList, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_core::Ent]": $.LinkDesc<_sys_core.$Ent, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_core::Org]": $.LinkDesc<_sys_core.$Org, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_user::Widget]": $.LinkDesc<$Widget, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_core::Code]": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_db::Table]": $.LinkDesc<_sys_db.$Table, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_obj::NodeObj]": $.LinkDesc<_sys_obj.$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_user::UserType]": $.LinkDesc<$UserType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_user::Mgmt]": $.LinkDesc<$Mgmt, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_core::Obj]": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_obj::DataObjAction]": $.LinkDesc<_sys_obj.$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_obj::FormFieldItemsList]": $.LinkDesc<_sys_obj.$FormFieldItemsList, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_core::Ent]": $.LinkDesc<_sys_core.$Ent, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_core::Org]": $.LinkDesc<_sys_core.$Org, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_user::Widget]": $.LinkDesc<$Widget, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_core::Code]": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_db::Table]": $.LinkDesc<_sys_db.$Table, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_obj::NodeObj]": $.LinkDesc<_sys_obj.$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_user::UserType]": $.LinkDesc<$UserType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm_training::Section]": $.LinkDesc<_app_cm_training.$Section, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm_training::Section]": $.LinkDesc<_app_cm_training.$Section, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<userInstructor": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $User = $.ObjectType<"sys_user::User", $UserλShape, null, [
-  ..._default.$Person['__exclusives__'],
+  ..._std.$Object_6b06be9b27fe11ee83ff159af7e1bb81['__exclusives__'],
 ]>;
-const $User = $.makeType<$User>(_.spec, "31bd109a-6ebf-11ee-80cf-8be07177b08a", _.syntax.literal);
+const $User = $.makeType<$User>(_.spec, "c77c2ba5-71ae-11ee-aaff-63669acf1f56", _.syntax.literal);
 
 const User: $.$expr_PathNode<$.TypeSet<$User, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($User, $.Cardinality.Many), null);
 
@@ -24,7 +85,7 @@ export type $SYS_USERλShape = $.typeutil.flatten<$UserλShape & {
 type $SYS_USER = $.ObjectType<"sys_user::SYS_USER", $SYS_USERλShape, null, [
   ...$User['__exclusives__'],
 ]>;
-const $SYS_USER = $.makeType<$SYS_USER>(_.spec, "31d61607-6ebf-11ee-bf61-df038cb81fab", _.syntax.literal);
+const $SYS_USER = $.makeType<$SYS_USER>(_.spec, "c7977def-71ae-11ee-81bb-e5febbcc097b", _.syntax.literal);
 
 const SYS_USER: $.$expr_PathNode<$.TypeSet<$SYS_USER, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SYS_USER, $.Cardinality.Many), null);
 
@@ -33,14 +94,30 @@ export type $SYS_USER_IDλShape = $.typeutil.flatten<$UserλShape & {
 type $SYS_USER_ID = $.ObjectType<"sys_user::SYS_USER_ID", $SYS_USER_IDλShape, null, [
   ...$User['__exclusives__'],
 ]>;
-const $SYS_USER_ID = $.makeType<$SYS_USER_ID>(_.spec, "31d997dd-6ebf-11ee-81ed-6be96a146b74", _.syntax.literal);
+const $SYS_USER_ID = $.makeType<$SYS_USER_ID>(_.spec, "c79b124d-71ae-11ee-a930-af22d8f55fe7", _.syntax.literal);
 
 const SYS_USER_ID: $.$expr_PathNode<$.TypeSet<$SYS_USER_ID, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SYS_USER_ID, $.Cardinality.Many), null);
 
+export type $StaffλShape = $.typeutil.flatten<$MgmtλShape & {
+  "owner": $.LinkDesc<_sys_core.$ObjRoot, $.Cardinality.One, {}, false, false,  false, false>;
+  "roles": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
+  "person": $.LinkDesc<_default.$Person, $.Cardinality.One, {}, false, false,  false, false>;
+  "<staffAdmin[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffProvider[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffAdmin": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffProvider": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+}>;
+type $Staff = $.ObjectType<"sys_user::Staff", $StaffλShape, null, [
+  ...$Mgmt['__exclusives__'],
+]>;
+const $Staff = $.makeType<$Staff>(_.spec, "862399d9-824a-11ee-87eb-f7db66b6dadd", _.syntax.literal);
+
+const Staff: $.$expr_PathNode<$.TypeSet<$Staff, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Staff, $.Cardinality.Many), null);
+
 export type $UserTypeλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "resources": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<userTypes[is sys_user::User]": $.LinkDesc<$User, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes[is sys_user::SYS_USER]": $.LinkDesc<$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<userTypes[is sys_user::User]": $.LinkDesc<$User, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes[is sys_user::SYS_USER_ID]": $.LinkDesc<$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes[is sys_user::currentUser]": $.LinkDesc<$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -48,7 +125,7 @@ export type $UserTypeλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
 type $UserType = $.ObjectType<"sys_user::UserType", $UserTypeλShape, null, [
   ..._sys_core.$Obj['__exclusives__'],
 ]>;
-const $UserType = $.makeType<$UserType>(_.spec, "31c84135-6ebf-11ee-b117-d33a0c9ede80", _.syntax.literal);
+const $UserType = $.makeType<$UserType>(_.spec, "c788be60-71ae-11ee-893e-0b97dd6a9d59", _.syntax.literal);
 
 const UserType: $.$expr_PathNode<$.TypeSet<$UserType, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($UserType, $.Cardinality.Many), null);
 
@@ -57,7 +134,7 @@ export type $WidgetλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
 type $Widget = $.ObjectType<"sys_user::Widget", $WidgetλShape, null, [
   ..._sys_core.$Obj['__exclusives__'],
 ]>;
-const $Widget = $.makeType<$Widget>(_.spec, "31cdac8e-6ebf-11ee-b3d8-252d6a9bd321", _.syntax.literal);
+const $Widget = $.makeType<$Widget>(_.spec, "c78ecdc6-71ae-11ee-b0d3-efbf65d6a32f", _.syntax.literal);
 
 const Widget: $.$expr_PathNode<$.TypeSet<$Widget, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Widget, $.Cardinality.Many), null);
 
@@ -66,7 +143,7 @@ export type $currentUserλShape = $.typeutil.flatten<$UserλShape & {
 type $currentUser = $.ObjectType<"sys_user::currentUser", $currentUserλShape, null, [
   ...$User['__exclusives__'],
 ]>;
-const $currentUser = $.makeType<$currentUser>(_.spec, "31dcf904-6ebf-11ee-b443-5919dbaa2731", _.syntax.literal);
+const $currentUser = $.makeType<$currentUser>(_.spec, "c79e7b57-71ae-11ee-b4d5-63b8e5ffae77", _.syntax.literal);
 
 const currentUser: $.$expr_PathNode<$.TypeSet<$currentUser, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($currentUser, $.Cardinality.Many), null);
 
@@ -82,7 +159,7 @@ function getUser<
 ): getUserλFuncExpr<P1>;
 function getUser(...args: any[]) {
   const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_user::getUser', args, _.spec, [
-    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "31bd109a-6ebf-11ee-80cf-8be07177b08a", returnTypemod: "OptionalType"},
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "c77c2ba5-71ae-11ee-aaff-63669acf1f56", returnTypemod: "OptionalType"},
   ]);
   return _.syntax.$expressionify({
     __kind__: $.ExpressionKind.Function,
@@ -106,7 +183,7 @@ function getUserType<
 ): getUserTypeλFuncExpr<P1>;
 function getUserType(...args: any[]) {
   const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_user::getUserType', args, _.spec, [
-    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "31c84135-6ebf-11ee-b117-d33a0c9ede80", returnTypemod: "OptionalType"},
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "c788be60-71ae-11ee-893e-0b97dd6a9d59", returnTypemod: "OptionalType"},
   ]);
   return _.syntax.$expressionify({
     __kind__: $.ExpressionKind.Function,
@@ -130,7 +207,7 @@ function getWidget<
 ): getWidgetλFuncExpr<P1>;
 function getWidget(...args: any[]) {
   const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_user::getWidget', args, _.spec, [
-    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "31cdac8e-6ebf-11ee-b3d8-252d6a9bd321", returnTypemod: "OptionalType"},
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "c78ecdc6-71ae-11ee-b0d3-efbf65d6a32f", returnTypemod: "OptionalType"},
   ]);
   return _.syntax.$expressionify({
     __kind__: $.ExpressionKind.Function,
@@ -160,13 +237,13 @@ const $sys_user__globals: {  SYS_USER: _.syntax.$expr_Global<
               $.Cardinality.AtMostOne
               >} = {  SYS_USER: _.syntax.makeGlobal(
               "sys_user::SYS_USER",
-              $.makeType(_.spec, "31d61607-6ebf-11ee-bf61-df038cb81fab", _.syntax.literal),
+              $.makeType(_.spec, "c7977def-71ae-11ee-81bb-e5febbcc097b", _.syntax.literal),
               $.Cardinality.AtMostOne) as any,  SYS_USER_ID: _.syntax.makeGlobal(
               "sys_user::SYS_USER_ID",
-              $.makeType(_.spec, "31d997dd-6ebf-11ee-81ed-6be96a146b74", _.syntax.literal),
+              $.makeType(_.spec, "c79b124d-71ae-11ee-a930-af22d8f55fe7", _.syntax.literal),
               $.Cardinality.AtMostOne) as any,  currentUser: _.syntax.makeGlobal(
               "sys_user::currentUser",
-              $.makeType(_.spec, "31dcf904-6ebf-11ee-b443-5919dbaa2731", _.syntax.literal),
+              $.makeType(_.spec, "c79e7b57-71ae-11ee-b4d5-63b8e5ffae77", _.syntax.literal),
               $.Cardinality.AtMostOne) as any,  currentUserId: _.syntax.makeGlobal(
               "sys_user::currentUserId",
               $.makeType(_.spec, "00000000-0000-0000-0000-000000000100", _.syntax.literal),
@@ -174,12 +251,14 @@ const $sys_user__globals: {  SYS_USER: _.syntax.$expr_Global<
 
 
 
-export { $User, User, $SYS_USER, SYS_USER, $SYS_USER_ID, SYS_USER_ID, $UserType, UserType, $Widget, Widget, $currentUser, currentUser };
+export { $Mgmt, Mgmt, $User, User, $SYS_USER, SYS_USER, $SYS_USER_ID, SYS_USER_ID, $Staff, Staff, $UserType, UserType, $Widget, Widget, $currentUser, currentUser };
 
 type __defaultExports = {
+  "Mgmt": typeof Mgmt;
   "User": typeof User;
   "SYS_USER": typeof SYS_USER;
   "SYS_USER_ID": typeof SYS_USER_ID;
+  "Staff": typeof Staff;
   "UserType": typeof UserType;
   "Widget": typeof Widget;
   "currentUser": typeof currentUser;
@@ -189,9 +268,11 @@ type __defaultExports = {
   "global": typeof $sys_user__globals
 };
 const __defaultExports: __defaultExports = {
+  "Mgmt": Mgmt,
   "User": User,
   "SYS_USER": SYS_USER,
   "SYS_USER_ID": SYS_USER_ID,
+  "Staff": Staff,
   "UserType": UserType,
   "Widget": Widget,
   "currentUser": currentUser,

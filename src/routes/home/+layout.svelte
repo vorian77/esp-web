@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
 	import {
 		AppBar,
 		AppShell,
@@ -9,24 +8,35 @@
 	} from '@skeletonlabs/skeleton'
 	import { popup } from '@skeletonlabs/skeleton'
 	import type { PopupSettings } from '@skeletonlabs/skeleton'
-	import { navInit, navTree, navUser } from '$comps/nav/navStore'
-	import type { TreeNode } from '$comps/types'
+	import { getUser, initNav, navStatus, navTree } from '$comps/nav/navStore'
+	import { type NavTreeNode, NavTree } from '$comps/types'
+	import type { User } from '$comps/types'
 	import NavBar from '$comps/nav/NavBar.svelte'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
-	import NavTree from '$comps/nav/NavTree.svelte'
+	import NavTreeComp from '$comps/nav/NavTree.svelte'
 	import Icon from '$comps/Icon.svelte'
 	import { goto } from '$app/navigation'
+	import DataViewer from '$comps/DataViewer.svelte'
 
 	const drawerStore = getDrawerStore()
 	const NAV_COLOR = '#3b79e1'
 	const ROOT_LINK = '/home'
 
-	let treeCrumbs: TreeNode[]
-	$: treeCrumbs = $navTree.listCrumbs ? $navTree.listCrumbs : []
+	const user: User = getUser()
 
-	onMount(() => {
-		navInit($navUser)
-	})
+	let saveStore = false
+	let navTreeLocal: NavTree
+	let treeCrumbs: NavTreeNode[] = []
+
+	$: if (!saveStore && user) {
+		initNav(user)
+		saveStore = true
+	}
+
+	$: {
+		navTreeLocal = Object.assign(new NavTree([]), $navTree)
+		treeCrumbs = navTreeLocal.listCrumbs
+	}
 
 	function navLeft(): void {
 		const settings: DrawerSettings = {
@@ -71,14 +81,16 @@
 				</div>
 
 				<div role="button" tabindex="0" class="text-black" on:click={goHome} on:keyup={goHome}>
-					{$navUser.app_name}
+					{#if user.app_name}
+						{user.app_name}
+					{/if}
 				</div>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<div role="button" tabindex="0" class="mr-2" on:click={navRight} on:keyup={navRight}>
 					<!-- <div role="button" tabindex="0" class="mr-2" use:popup={popupClick}> -->
 					<!-- <button class="btn variant-filled" use:popup={popupClick}>Click</button> -->
-					<Avatar initials={$navUser.initials} width="w-9" background="bg-primary-400" />
+					<Avatar initials={user.initials} width="w-9" background="bg-primary-400" />
 				</div>
 			</svelte:fragment>
 		</AppBar>
@@ -89,11 +101,12 @@
 
 	<svelte:fragment slot="sidebarLeft">
 		<div class="bg-white mt-2">
-			<NavTree />
+			<NavTreeComp />
 		</div>
 	</svelte:fragment>
 
 	<div class="mx-3 mt-2">
+		<DataViewer header="navStatus" data={$navStatus} />
 		<slot />
 	</div>
 

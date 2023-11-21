@@ -1,6 +1,6 @@
 import sgMail from '@sendgrid/mail'
 import { strOptional, strRequired, valueOrDefault } from '$utils/utils'
-import { FormSourceResponse } from '$comps/types'
+import { getServerResponse } from '$comps/types'
 
 const FILENAME = '$server/sendGrid.ts'
 

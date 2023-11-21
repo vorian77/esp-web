@@ -1,9 +1,7 @@
-CREATE MIGRATION m1niox3x74eajfakusew6hxaea3fyigdcm7lx3o4qhyphml4r5nv5a
-    ONTO m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
+CREATE MIGRATION m1lddbksjln62ats7hitooyj2gcxgib5famuoamlt2mbdbaot6t2yq
+    ONTO m1vvfwmmli63kha2q4by7zi3o2gzx3tu42dmjrhd27pshsivayphsq
 {
-  CREATE FUNCTION sys_obj::getDataObj(dataObjName: std::str) -> OPTIONAL sys_obj::DataObj USING (SELECT
-      sys_obj::DataObj
-  FILTER
-      (.name = dataObjName)
-  );
+  ALTER TYPE sys_db::Column {
+      DROP PROPERTY expr;
+  };
 };

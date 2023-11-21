@@ -1,6 +1,6 @@
 import { API_NINJAS_SECRET } from '$env/static/private'
 import { processForm } from '$server/dbForm'
-import { FormSourceResponse } from '$comps/types'
+import { getServerResponse } from '$comps/types'
 
 const CATEGORIES = ['inspirational', 'courage']
 // const CATEGORIES = [
@@ -64,7 +64,7 @@ export async function GET({ request }) {
 	}
 
 	async function getQuote() {
-		const quotesRes = await fetch(API, {
+		const quotesRes: Response = await fetch(API, {
 			method: 'GET',
 			headers: {
 				'X-API-KEY': API_NINJAS_SECRET,
@@ -78,5 +78,5 @@ export async function GET({ request }) {
 	}
 
 	const quote = await getQuote()
-	return FormSourceResponse({ ...quote, ...COLOR })
+	return getServerResponse({ ...quote, ...COLOR })
 }

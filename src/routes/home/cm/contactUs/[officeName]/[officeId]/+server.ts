@@ -1,9 +1,4 @@
-import {
-	FormSource,
-	FormSourceDBAction,
-	FormSourceResponse,
-	type FormSourceResponseType
-} from '$comps/types'
+import { FormSource, FormSourceDBAction, getServerResponse, type ResponseBody } from '$comps/types'
 import { sendEmail, EmailAlert } from '$server/apiSendGrid.js'
 import { processForm } from '$server/dbForm'
 import { error } from '@sveltejs/kit'
@@ -15,12 +10,12 @@ export async function POST({ request }) {
 	const { formName, source, data } = requestData
 
 	const respMsg = await sendMsgToCM(formName, source, data)
-	return FormSourceResponse(await sendMsgToStaffEmail(respMsg.data))
+	return getServerResponse(await sendMsgToStaffEmail(respMsg.data))
 
 	async function sendMsgToCM(formName: string, source: FormSource, data: {}) {
 		const responsePromise = await processForm(formName, source, FormSourceDBAction.upsert, data)
 		if (responsePromise) {
-			const response: FormSourceResponseType = await responsePromise.json()
+			const response: ResponseBody = await responsePromise.json()
 			if (!response.success) {
 				throw error(400, {
 					file: FILENAME,

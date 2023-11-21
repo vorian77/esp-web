@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
-	import Form from '$comps/esp/form/FormDetail.svelte'
+	import Form from '$comps/form/FormDetail.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
 
 	const drawerStore = getDrawerStore()
@@ -32,7 +32,7 @@
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}
 		<div class="p-2">
-			<NavTree on:nodeProcessed={closeDrawer} />
+			<NavTree on:processNode={closeDrawer} />
 		</div>
 	{:else if $drawerStore.id === 'navRight'}
 		<div class="p-4">

@@ -3,88 +3,61 @@
 import * as $ from "../reflection";
 import * as _ from "../imports";
 import type * as _std from "./std";
+import type * as _cal from "./cal";
 import type * as _sys_core from "./sys_core";
-import type * as _sys_db from "./sys_db";
-import type * as _sys_obj from "./sys_obj";
+import type * as _app_cm from "./app_cm";
 import type * as _sys_user from "./sys_user";
-import type * as _app_cm_training from "./app_cm_training";
 export type $Name = $.ScalarType<"std::str", string>;
-const Name: $.scalarTypeWithConstructor<_std.$str, never> = $.makeType<$.scalarTypeWithConstructor<_std.$str, never>>(_.spec, "31ba9b2f-6ebf-11ee-9c1d-733fa7597cf1", _.syntax.literal);
+const Name: $.scalarTypeWithConstructor<_std.$str, never> = $.makeType<$.scalarTypeWithConstructor<_std.$str, never>>(_.spec, "c779e93d-71ae-11ee-a35f-53945e85672e", _.syntax.literal);
 
 export type $nonNegative = $.ScalarType<"std::number", number>;
-const nonNegative: $.scalarTypeWithConstructor<_std.$number, string> = $.makeType<$.scalarTypeWithConstructor<_std.$number, string>>(_.spec, "317d1d78-6ebf-11ee-be8e-a1c7802b76b7", _.syntax.literal);
+const nonNegative: $.scalarTypeWithConstructor<_std.$number, string> = $.makeType<$.scalarTypeWithConstructor<_std.$number, string>>(_.spec, "c7618c23-71ae-11ee-966d-ffbbb5d32be9", _.syntax.literal);
 
 export type $PersonλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
-  "firstName": $.PropertyDesc<$Name, $.Cardinality.AtMostOne, false, false, false, false>;
-  "lastName": $.PropertyDesc<$Name, $.Cardinality.AtMostOne, false, false, false, false>;
-  "fullName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, true, false, false>;
-  "<createdBy[is Mgmt]": $.LinkDesc<$Mgmt, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_core::Obj]": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_db::Table]": $.LinkDesc<_sys_db.$Table, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_core::Ent]": $.LinkDesc<_sys_core.$Ent, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_obj::DataObjAction]": $.LinkDesc<_sys_obj.$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_core::Code]": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_obj::NodeObj]": $.LinkDesc<_sys_obj.$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is Mgmt]": $.LinkDesc<$Mgmt, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_core::Obj]": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_db::Table]": $.LinkDesc<_sys_db.$Table, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_core::Ent]": $.LinkDesc<_sys_core.$Ent, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_obj::DataObjAction]": $.LinkDesc<_sys_obj.$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_core::Code]": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_obj::NodeObj]": $.LinkDesc<_sys_obj.$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_user::UserType]": $.LinkDesc<_sys_user.$UserType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_user::UserType]": $.LinkDesc<_sys_user.$UserType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_user::Widget]": $.LinkDesc<_sys_user.$Widget, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_user::Widget]": $.LinkDesc<_sys_user.$Widget, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is app_cm_training::Student]": $.LinkDesc<_app_cm_training.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is app_cm_training::Student]": $.LinkDesc<_app_cm_training.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "addr1": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "addr2": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "birthDate": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "city": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "email": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "phoneMobile": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "zip": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "favFood": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "gender": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "firstName": $.PropertyDesc<$Name, $.Cardinality.One, false, false, false, false>;
+  "lastName": $.PropertyDesc<$Name, $.Cardinality.One, false, false, false, false>;
+  "fullName": $.PropertyDesc<_std.$str, $.Cardinality.One, false, true, false, false>;
+  "ethnicity": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
+  "codeState": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "codeRace": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "avatar": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
+  "<person[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::Staff]": $.LinkDesc<_sys_user.$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::User]": $.LinkDesc<_sys_user.$User, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::SYS_USER_ID]": $.LinkDesc<_sys_user.$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::SYS_USER]": $.LinkDesc<_sys_user.$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::currentUser]": $.LinkDesc<_sys_user.$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Person = $.ObjectType<"default::Person", $PersonλShape, null, [
   ..._std.$Object_6b06be9b27fe11ee83ff159af7e1bb81['__exclusives__'],
 ]>;
-const $Person = $.makeType<$Person>(_.spec, "31bab009-6ebf-11ee-b4d8-4b17d93fd9f1", _.syntax.literal);
+const $Person = $.makeType<$Person>(_.spec, "c779fb20-71ae-11ee-a52a-455bf99b509e", _.syntax.literal);
 
 const Person: $.$expr_PathNode<$.TypeSet<$Person, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Person, $.Cardinality.Many), null);
 
-export type $MgmtλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
-  "createdAt": $.PropertyDesc<_std.$datetime, $.Cardinality.One, false, false, true, true>;
-  "modifiedAt": $.PropertyDesc<_std.$datetime, $.Cardinality.AtMostOne, false, false, false, false>;
-  "createdBy": $.LinkDesc<$Person, $.Cardinality.One, {}, false, false,  true, false>;
-  "modifiedBy": $.LinkDesc<$Person, $.Cardinality.One, {}, false, false,  false, false>;
-}>;
-type $Mgmt = $.ObjectType<"default::Mgmt", $MgmtλShape, null, [
-  ..._std.$Object_6b06be9b27fe11ee83ff159af7e1bb81['__exclusives__'],
-]>;
-const $Mgmt = $.makeType<$Mgmt>(_.spec, "315f3bcb-6ebf-11ee-ae99-b9b8dd080ff6", _.syntax.literal);
-
-const Mgmt: $.$expr_PathNode<$.TypeSet<$Mgmt, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Mgmt, $.Cardinality.Many), null);
 
 
-
-export { Name, nonNegative, $Person, Person, $Mgmt, Mgmt };
+export { Name, nonNegative, $Person, Person };
 
 type __defaultExports = {
   "Name": typeof Name;
   "nonNegative": typeof nonNegative;
-  "Person": typeof Person;
-  "Mgmt": typeof Mgmt
+  "Person": typeof Person
 };
 const __defaultExports: __defaultExports = {
   "Name": Name,
   "nonNegative": nonNegative,
-  "Person": Person,
-  "Mgmt": Mgmt
+  "Person": Person
 };
 export default __defaultExports;

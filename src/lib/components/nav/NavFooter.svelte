@@ -1,11 +1,16 @@
 <script lang="ts">
-	import { nodeProcessLink } from '$comps/nav/navStore'
-	import { NavTree, NavTreeNode } from '$comps/types'
-	import type { rawNodeObj } from '$comps/types'
+	import { navStatus, nodeProcessLink } from '$comps/nav/navStore'
+	import { DataObjStatus, NavTree, NavTreeNode, type NodeObjRaw } from '$comps/types'
+	import Messenger from '$comps/Messenger.svelte'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 
 	const FILENAME = '/$comps/NavFooter.svelte'
+
+	let messenger: Messenger
+	let currentNode: NavTreeNode
+
+	$: dataObjStatusLocal = Object.assign(new DataObjStatus(), $navStatus)
 
 	const navColor = '#3b79e1'
 	const itemColors = ['#f5f5f5', '#dedede']
@@ -15,7 +20,7 @@
 		['Contact Us', 'contact-us', '/home/cm/contactUs'],
 		['Account', 'profile', '/home/account']
 	]
-	let rawNodes: Array<rawNodeObj> = []
+	let rawNodes: Array<NodeObjRaw> = []
 	nodesConfig.forEach((n: any) => {
 		const header = n[0]
 		const icon = n[1]
@@ -61,10 +66,17 @@
 				border-top: 1px solid ${navColor};`
 	const marginTopheader = 'mt-1'
 
-	function processNode(node: NavTreeNode) {
-		nodeProcessLink($page.url.pathname, node, true)
+	async function onProcessNode(node: NavTreeNode) {
+		currentNode = node
+		messenger.askB4Transition(dataObjStatusLocal, true, processNode)
+	}
+
+	function processNode() {
+		nodeProcessLink($page.url.pathname, currentNode)
 	}
 </script>
+
+<Messenger bind:this={messenger} />
 
 <div id="container" style={styleContainer}>
 	{#each nodesFooter as node, i}
@@ -72,8 +84,8 @@
 			role="button"
 			tabindex="0"
 			style={node.nodeObj.page == $page.url.pathname ? styleItemActive : styleItem}
-			on:click={() => processNode(node)}
-			on:keyup={() => processNode(node)}
+			on:click={() => onProcessNode(node)}
+			on:keyup={() => onProcessNode(node)}
 		>
 			<div class="mt-2">
 				<Icon name={node.nodeObj.icon} width="1.0rem" height="1.0rem" fill={navColor} />

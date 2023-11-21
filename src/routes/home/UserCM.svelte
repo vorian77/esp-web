@@ -1,5 +1,6 @@
 <script lang="ts">
-	export let user
+	import type { User } from '$comps/types'
+	export let user: User
 </script>
 
 <div class="rounded-lg p-3 mb-3 bg-neutral-100">

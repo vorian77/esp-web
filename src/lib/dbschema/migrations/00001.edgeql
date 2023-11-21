@@ -1,4 +1,4 @@
-CREATE MIGRATION m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
+CREATE MIGRATION m1vvfwmmli63kha2q4by7zi3o2gzx3tu42dmjrhd27pshsivayphsq
     ONTO initial
 {
   CREATE MODULE app_cm_training IF NOT EXISTS;
@@ -70,7 +70,7 @@ CREATE MIGRATION m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
       std::assert_single((SELECT
           sys_core::ObjRoot
       FILTER
-          (.name = 'root')
+          (.name = '*ROOTOBJ*')
       ))
   );
   CREATE SCALAR TYPE default::nonNegative EXTENDING std::int64 {
@@ -101,6 +101,16 @@ CREATE MIGRATION m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
   FILTER
       (.name = columnName)
   );
+  CREATE ABSTRACT TYPE sys_obj::DataObj EXTENDING sys_core::Obj {
+      CREATE CONSTRAINT std::exclusive ON (.name);
+      CREATE REQUIRED LINK codeCardinality: sys_core::Code;
+      CREATE REQUIRED LINK codeComponent: sys_core::Code;
+  };
+  CREATE FUNCTION sys_obj::getDataObj(dataObjName: std::str) -> OPTIONAL sys_obj::DataObj USING (SELECT
+      sys_obj::DataObj
+  FILTER
+      (.name = dataObjName)
+  );
   CREATE TYPE sys_obj::DataObjAction EXTENDING sys_core::Obj {
       CREATE CONSTRAINT std::exclusive ON (.name);
       CREATE REQUIRED PROPERTY order: default::nonNegative;
@@ -114,6 +124,9 @@ CREATE MIGRATION m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
       CREATE CONSTRAINT std::exclusive ON (.name);
       CREATE REQUIRED LINK codeIcon: sys_core::Code;
       CREATE REQUIRED LINK codeType: sys_core::Code;
+      CREATE LINK dataObj: sys_obj::DataObj {
+          ON TARGET DELETE ALLOW;
+      };
       CREATE LINK parent: sys_obj::NodeObj;
       CREATE REQUIRED PROPERTY order: default::nonNegative;
       CREATE REQUIRED PROPERTY page: std::str;
@@ -198,11 +211,8 @@ CREATE MIGRATION m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
       CREATE PROPERTY email: std::str;
   };
   CREATE TYPE sys_core::App EXTENDING sys_core::Ent;
-  CREATE ABSTRACT TYPE sys_obj::DataObj EXTENDING sys_core::Obj {
+  ALTER TYPE sys_obj::DataObj {
       CREATE MULTI LINK actions: sys_obj::DataObjAction;
-      CREATE REQUIRED LINK codeCardinality: sys_core::Code;
-      CREATE REQUIRED LINK codeComponent: sys_core::Code;
-      CREATE CONSTRAINT std::exclusive ON (.name);
   };
   CREATE TYPE sys_obj::FormField {
       CREATE LINK codeAccess: sys_core::Code;
@@ -214,17 +224,17 @@ CREATE MIGRATION m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
       CREATE REQUIRED LINK column: sys_db::Column {
           ON SOURCE DELETE ALLOW;
       };
+      CREATE PROPERTY columnNameAlias: std::str;
       CREATE PROPERTY dbDataSourceKey: std::str;
-      CREATE PROPERTY dbListOrder: default::nonNegative;
       CREATE PROPERTY dbName: std::str;
-      CREATE PROPERTY dbSelectOrder: default::nonNegative;
+      CREATE PROPERTY dbOrderList: default::nonNegative;
+      CREATE PROPERTY dbOrderSelect: default::nonNegative;
       CREATE PROPERTY isDbAllowNull: std::bool;
-      CREATE PROPERTY isDbExcludeInsert: std::bool;
-      CREATE PROPERTY isDbExcludeUpdate: std::bool;
+      CREATE PROPERTY isDbExcludeSave: std::bool;
+      CREATE PROPERTY isDbExcludeSaveUpdate: std::bool;
       CREATE PROPERTY isDbIdentity: std::bool;
       CREATE PROPERTY isDbListOrderField: std::bool;
       CREATE PROPERTY isDbPreset: std::bool;
-      CREATE PROPERTY isDbSys: std::bool;
       CREATE PROPERTY isDisplay: std::bool;
       CREATE PROPERTY isDisplayable: std::bool;
   };
@@ -244,11 +254,6 @@ CREATE MIGRATION m145jjbu7ux6k34e5pejnyqzxmn5xaksqdxuixd2ttw4solwfaqgwa
           CREATE CONSTRAINT std::exclusive;
           CREATE PROPERTY isIdentity: std::bool;
           CREATE PROPERTY isRequired: std::bool;
-      };
-  };
-  ALTER TYPE sys_obj::NodeObj {
-      CREATE LINK dataObj: sys_obj::DataObj {
-          ON TARGET DELETE ALLOW;
       };
   };
   CREATE TYPE sys_test::Person {

@@ -1,33 +1,36 @@
 module sys_db{
   type Column extending sys_core::Obj {
-    headerSide: str;
-    expr: str;
-    required width: int16;
-    required hRows: int16;
-    required codeAlignment: sys_core::Code;
+    classValue: str;
+    codeAlignment: sys_core::Code;
     required codeDataType: sys_core::Code;
-    placeHolder: str;
+    codeDataTypePreset: sys_core::Code;
+    edgeTypeDefn: json;
+    exprPreset: str;
+    exprSave: str;
+    exprSelect: str;
+    exprStorageKey: str;
+    headerSide: str;
+    isExcludeInsert: bool;
+    isExcludeSelect: bool;
+    isExcludeUpdate: bool;
+    isMultiSelect: bool;
+    isSetBySys: bool;
     matchColumn: str;
-    minLength: default::nonNegative;
     maxLength: default::nonNegative;
-    minValue: default::nonNegative;
     maxValue: default::nonNegative;
+    minLength: default::nonNegative;
+    minValue: default::nonNegative;
     pattern: str;
     patternMsg: str;
     patternReplacement: str;
-    staticLabel: str;
-    dynamicLabel: str;
+    placeHolder: str;
     constraint exclusive on (.name);
   }
 
   type Table extending sys_core::Obj {
+    mod: str;
     required hasMgmt: bool;
-    multi columns: Column{
-      isRequired: bool;
-      isIdentity: bool;
-      on source delete allow;
-      constraint exclusive;
-    };
+    multi columns: Column;
     constraint exclusive on ((.owner, .name));
   }
 

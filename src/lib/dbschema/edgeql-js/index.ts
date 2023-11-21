@@ -11,12 +11,13 @@ import _cfg from "./modules/cfg";
 import _default from "./modules/default";
 import _schema from "./modules/schema";
 import _sys from "./modules/sys";
-import _app_cm_training from "./modules/app_cm_training";
+import _sys_user from "./modules/sys_user";
+import _app_cm from "./modules/app_cm";
 import _sys_core from "./modules/sys_core";
+import _app_cm_training from "./modules/app_cm_training";
 import _sys_db from "./modules/sys_db";
 import _sys_obj from "./modules/sys_obj";
 import _sys_test from "./modules/sys_test";
-import _sys_user from "./modules/sys_user";
 import _math from "./modules/math";
 
 const ExportDefault: typeof _std & 
@@ -29,12 +30,13 @@ const ExportDefault: typeof _std &
   "default": typeof _default;
   "schema": typeof _schema;
   "sys": typeof _sys;
-  "app_cm_training": typeof _app_cm_training;
+  "sys_user": typeof _sys_user;
+  "app_cm": typeof _app_cm;
   "sys_core": typeof _sys_core;
+  "app_cm_training": typeof _app_cm_training;
   "sys_db": typeof _sys_db;
   "sys_obj": typeof _sys_obj;
   "sys_test": typeof _sys_test;
-  "sys_user": typeof _sys_user;
   "math": typeof _math;
 } = {
   ..._std,
@@ -47,12 +49,13 @@ const ExportDefault: typeof _std &
   "default": _default,
   "schema": _schema,
   "sys": _sys,
-  "app_cm_training": _app_cm_training,
+  "sys_user": _sys_user,
+  "app_cm": _app_cm,
   "sys_core": _sys_core,
+  "app_cm_training": _app_cm_training,
   "sys_db": _sys_db,
   "sys_obj": _sys_obj,
   "sys_test": _sys_test,
-  "sys_user": _sys_user,
   "math": _math,
 };
 const Cardinality = $.Cardinality;

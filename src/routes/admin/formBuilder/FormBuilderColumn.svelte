@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Form as FormClass } from '$comps/esp/form/form'
-	import Form from '$comps/esp/form/FormDetail.svelte'
+	import { Form as FormClass } from '$comps/form/form'
+	import Form from '$comps/form/FormDetail.svelte'
 
 	export let data
 

@@ -7,7 +7,7 @@ import {
 	FormSourceItem,
 	FormSourceItemDataType,
 	FormSourceItemSource,
-	FormSourceResponse,
+	getServerResponse,
 	HTMLMETHOD
 } from '$comps/types'
 import { error } from '@sveltejs/kit'
@@ -109,26 +109,27 @@ export async function dbESPAPI(
 
 	try {
 		const resp = await axios(options)
-		const data = resp.data
-		let newData = {}
+		return getServerResponse(resp.data)
 
-		// set message
-		if (data.hasOwnProperty('success')) {
-			newData = data
-			if (newData.success) {
-				newData.message = msgSuccess ?? data.message ?? ''
-			} else {
-				newData.message = msgFail ?? data.message ?? ''
-			}
-		} else {
-			// assume success
-			newData = {
-				success: true,
-				message: msgSuccess,
-				data
-			}
-		}
-		return FormSourceResponse(newData)
+		// console.log('dbESP.axios.resp.data:', data)
+		// let newData = {}
+
+		// // set message
+		// if (data.hasOwnProperty('success')) {
+		// 	newData = data
+		// 	if (newData.success) {
+		// 		newData.message = msgSuccess ?? data.message ?? ''
+		// 	} else {
+		// 		newData.message = msgFail ?? data.message ?? ''
+		// 	}
+		// } else {
+		// 	// assume success
+		// 	newData = {
+		// 		success: true,
+		// 		message: msgSuccess,
+		// 		data
+		// 	}
+		// }
 	} catch (err: any) {
 		throw error(500, {
 			file: FILENAME,
@@ -211,7 +212,7 @@ function getSqlSelect(sourceAction: FormSourceActionDirect) {
 		}
 		return getSQLExecute(HTMLMETHOD.GET, sql, sourceAction)
 	} else {
-		return FormSourceResponse({})
+		return getServerResponse({})
 	}
 }
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { nodeProcessRowManager } from '$comps/nav/navStore'
 	import type { DataObjRowChange, NavTreeNode } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 
@@ -8,9 +7,10 @@
 	export let node: NavTreeNode
 	export let action: DataObjRowChange
 	export let icon: string
+	export let onProcessRow = async (node: NavTreeNode, action: DataObjRowChange) => {}
 
 	async function onClick() {
-		await nodeProcessRowManager(node, action)
+		await onProcessRow(node, action)
 	}
 </script>
 

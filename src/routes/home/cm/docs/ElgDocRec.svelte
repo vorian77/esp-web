@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import { Form as FormClass } from '$comps/esp/form/form'
-	import Form from '$comps/esp/form/FormDetail.svelte'
-	import type { FormSourceResponseType } from '$comps/types.js'
-	import { asDelete, asGet } from '$lib/utils/utils'
+	import { Form as FormClass } from '$comps/form/form'
+	import Form from '$comps/form/FormDetail.svelte'
+	import type { ResponseBody } from '$comps/types.js'
+	import { asDelete, asGet } from '$utils/utils'
 
 	import { onDestroy } from 'svelte'
 	import { error } from '@sveltejs/kit'
@@ -51,11 +51,11 @@
 		modalStore.close()
 
 		async function getURL(action: string, parms: {}) {
-			const responsePromise = await fetch('/api/aws', {
+			const responsePromise: Response = await fetch('/api/aws', {
 				method: 'POST',
 				body: JSON.stringify({ action, parms })
 			})
-			const response: FormSourceResponseType = await responsePromise.json()
+			const response: ResponseBody = await responsePromise.json()
 
 			if (!response.data.url) {
 				throw error(500, {
@@ -69,7 +69,7 @@
 
 		async function uploadImage(url, imgFile) {
 			try {
-				const resp = await fetch(url, {
+				const resp: Response = await fetch(url, {
 					method: 'PUT',
 					body: imgFile,
 					headers: {

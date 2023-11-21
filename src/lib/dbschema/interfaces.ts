@@ -9,21 +9,113 @@ export namespace std {
   export interface FreeObject extends BaseObject {}
   export type JsonEmpty = "ReturnEmpty" | "ReturnTarget" | "Error" | "UseNull" | "DeleteKey";
 }
-export interface Person extends std.$Object {
-  "firstName"?: string | null;
-  "lastName"?: string | null;
-  "fullName"?: string | null;
+export namespace sys_user {
+  export interface Mgmt extends std.$Object {
+    "createdAt": Date;
+    "modifiedAt"?: Date | null;
+    "createdBy": User;
+    "modifiedBy": User;
+  }
+  export interface User extends std.$Object {
+    "userName": string;
+    "password": string;
+    "userTypes": UserType[];
+    "owner": sys_core.ObjRoot;
+    "person": Person;
+  }
+  export interface SYS_USER extends User {}
+  export interface SYS_USER_ID extends User {}
+  export interface Staff extends Mgmt {
+    "owner": sys_core.ObjRoot;
+    "roles": sys_core.Code[];
+    "person": Person;
+  }
+  export interface UserType extends sys_core.Obj {
+    "resources": sys_core.Obj[];
+  }
+  export interface Widget extends sys_core.Obj {}
+  export interface currentUser extends User {}
 }
-export interface Mgmt extends std.$Object {
-  "createdAt": Date;
-  "modifiedAt"?: Date | null;
-  "createdBy": Person;
-  "modifiedBy": Person;
+export namespace app_cm {
+  export interface Student extends sys_user.Mgmt {
+    "agencyId": string;
+    "person": Person;
+    "owner": sys_core.Org;
+  }
+}
+export interface Person extends std.$Object {
+  "addr1"?: string | null;
+  "addr2"?: string | null;
+  "birthDate"?: edgedb.LocalDate | null;
+  "city"?: string | null;
+  "email"?: string | null;
+  "note"?: string | null;
+  "phoneMobile"?: string | null;
+  "zip"?: string | null;
+  "favFood"?: string | null;
+  "gender"?: string | null;
+  "firstName": string;
+  "lastName": string;
+  "fullName": string;
+  "ethnicity"?: unknown | null;
+  "codeState"?: sys_core.Code | null;
+  "codeRace"?: sys_core.Code | null;
+  "avatar"?: unknown | null;
+}
+export namespace sys_core {
+  export interface ObjRoot extends std.$Object {
+    "header"?: string | null;
+    "name": string;
+  }
+  export interface Obj extends ObjRoot, sys_user.Mgmt {
+    "owner": ObjRoot;
+  }
+  export interface Ent extends Obj {
+    "roles": Code[];
+  }
+  export interface App extends Ent {}
+  export interface Code extends Obj {
+    "codeType": CodeType;
+    "value"?: string | null;
+    "parent"?: Code | null;
+    "order": number;
+  }
+  export interface CodeType extends Obj {
+    "parent"?: CodeType | null;
+    "order": number;
+  }
+  export interface Org extends Ent {
+    "state"?: CodeType | null;
+    "addr1"?: string | null;
+    "addr2"?: string | null;
+    "city"?: string | null;
+    "zip"?: string | null;
+  }
 }
 export namespace app_cm_training {
-  export interface Student extends Person, Mgmt {
-    "agencyId": string;
-    "email"?: string | null;
+  export interface Course extends sys_core.Obj {
+    "description"?: string | null;
+    "staffAdmin"?: sys_user.Staff | null;
+    "provider"?: sys_core.Org | null;
+    "cost"?: number | null;
+    "isActive"?: boolean | null;
+    "schedule"?: string | null;
+    "staffProvider"?: sys_user.Staff | null;
+    "codeSector"?: sys_core.Code | null;
+    "codeTypePayment"?: sys_core.CodeType | null;
+    "codeMultiCerts": sys_core.Code[];
+    "codeMultiExams": sys_core.Code[];
+    "codeMultiItemsIncluded": sys_core.Code[];
+    "codeMultiItemsNotIncluded": sys_core.Code[];
+    "codeMultiRqmts": sys_core.Code[];
+  }
+  export interface Section extends sys_core.Obj {
+    "course": Course;
+    "codeStatus": sys_core.Code;
+    "userInstructor"?: sys_user.User | null;
+    "dateEnd"?: edgedb.LocalDate | null;
+    "dateStart": edgedb.LocalDate;
+    "note"?: string | null;
   }
 }
 export namespace cfg {
@@ -287,28 +379,9 @@ export namespace sys {
   export type TransactionIsolation = "RepeatableRead" | "Serializable";
   export type VersionStage = "dev" | "alpha" | "beta" | "rc" | "final";
 }
-export namespace sys_core {
-  export interface ObjRoot extends std.$Object {
-    "header"?: string | null;
-    "name": string;
-  }
-  export interface Obj extends ObjRoot, Mgmt {
-    "owner": ObjRoot;
-  }
-  export interface Ent extends Obj {}
-  export interface App extends Ent {}
-  export interface Code extends Obj {
-    "codeType": CodeType;
-  }
-  export interface CodeType extends Obj {}
-}
 export namespace sys_db {
   export interface Column extends sys_core.Obj {
-    "codeAlignment": sys_core.Code;
     "codeDataType": sys_core.Code;
-    "dynamicLabel"?: string | null;
-    "expr"?: string | null;
-    "hRows": number;
     "headerSide"?: string | null;
     "matchColumn"?: string | null;
     "maxLength"?: number | null;
@@ -319,60 +392,91 @@ export namespace sys_db {
     "patternMsg"?: string | null;
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
-    "staticLabel"?: string | null;
-    "width": number;
+    "exprSelect"?: string | null;
+    "codeAlignment"?: sys_core.Code | null;
+    "isSetBySys"?: boolean | null;
+    "isExcludeSelect"?: boolean | null;
+    "classValue"?: string | null;
+    "isExcludeInsert"?: boolean | null;
+    "isExcludeUpdate"?: boolean | null;
+    "exprStorageKey"?: string | null;
+    "edgeTypeDefn"?: unknown | null;
+    "codeDataTypePreset"?: sys_core.Code | null;
+    "exprPreset"?: string | null;
+    "exprSave"?: string | null;
+    "isMultiSelect"?: boolean | null;
   }
   export interface Table extends sys_core.Obj {
     "hasMgmt": boolean;
     "columns": Column[];
+    "mod"?: string | null;
   }
 }
 export namespace sys_obj {
   export interface DataObj extends sys_core.Obj {
-    "actions": DataObjAction[];
     "codeCardinality": sys_core.Code;
     "codeComponent": sys_core.Code;
+    "actions": DataObjAction[];
   }
   export interface DataObjAction extends sys_core.Obj {
     "order": number;
+    "color"?: string | null;
   }
   export interface Form extends DataObj {
     "table"?: sys_db.Table | null;
-    "fields": FormField[];
     "description"?: string | null;
     "isPopup"?: boolean | null;
     "subHeader"?: string | null;
     "submitButtonLabel"?: string | null;
+    "fieldsDb": FormFieldDb[];
+    "fieldsEl": FormFieldEl[];
+    "link"?: unknown | null;
   }
-  export interface FormField extends std.$Object {
-    "codeAccess"?: sys_core.Code | null;
+  export interface FormFieldDb extends std.$Object {
     "codeDbDataOp"?: sys_core.Code | null;
     "codeDbDataSource"?: sys_core.Code | null;
     "codeDbListDir"?: sys_core.Code | null;
-    "codeElement"?: sys_core.Code | null;
-    "codeInputType"?: sys_core.Code | null;
     "column": sys_db.Column;
     "dbDataSourceKey"?: string | null;
-    "dbListOrder"?: number | null;
-    "dbName"?: string | null;
-    "dbSelectOrder"?: number | null;
+    "dbOrderList"?: number | null;
+    "dbOrderSelect"?: number | null;
     "isDbAllowNull"?: boolean | null;
-    "isDbExcludeInsert"?: boolean | null;
-    "isDbExcludeUpdate"?: boolean | null;
-    "isDbIdentity"?: boolean | null;
     "isDbListOrderField"?: boolean | null;
-    "isDbPreset"?: boolean | null;
-    "isDbSys"?: boolean | null;
+    "fieldName"?: string | null;
+    "dbExpr"?: string | null;
+    "isDbFilter"?: boolean | null;
+    "isLinkMember"?: boolean | null;
+  }
+  export interface FormFieldEl extends std.$Object {
+    "codeAccess"?: sys_core.Code | null;
+    "codeElement"?: sys_core.Code | null;
+    "column": sys_db.Column;
+    "height"?: number | null;
     "isDisplay"?: boolean | null;
     "isDisplayable"?: boolean | null;
+    "width"?: number | null;
+    "itemsList"?: FormFieldItemsList | null;
+    "dbOrderSelect"?: number | null;
+    "itemsListParms"?: unknown | null;
+    "items"?: unknown[] | null;
+    "labelDynamicKey"?: string | null;
+    "labelDynamicSource"?: string | null;
+    "labelHeader"?: string | null;
+    "labelText"?: string | null;
+  }
+  export interface FormFieldItemsList extends sys_core.Obj {
+    "fieldsDb": FormFieldDb[];
+    "dbSelect": string;
+    "propertyId": string;
+    "propertyLabel": string;
   }
   export interface NodeObj extends sys_core.Obj {
     "codeIcon": sys_core.Code;
     "codeType": sys_core.Code;
+    "dataObj"?: DataObj | null;
     "parent"?: NodeObj | null;
     "order": number;
     "page": string;
-    "dataObj"?: DataObj | null;
   }
 }
 export namespace sys_test {
@@ -384,20 +488,6 @@ export namespace sys_test {
     "name": string;
   }
 }
-export namespace sys_user {
-  export interface User extends Person {
-    "userName": string;
-    "password": string;
-    "userTypes": UserType[];
-  }
-  export interface SYS_USER extends User {}
-  export interface SYS_USER_ID extends User {}
-  export interface UserType extends sys_core.Obj {
-    "resources": sys_core.Obj[];
-  }
-  export interface Widget extends sys_core.Obj {}
-  export interface currentUser extends User {}
-}
 export interface types {
   "std": {
     "BaseObject": std.BaseObject;
@@ -405,12 +495,34 @@ export interface types {
     "FreeObject": std.FreeObject;
     "JsonEmpty": std.JsonEmpty;
   };
+  "sys_user": {
+    "Mgmt": sys_user.Mgmt;
+    "User": sys_user.User;
+    "SYS_USER": sys_user.SYS_USER;
+    "SYS_USER_ID": sys_user.SYS_USER_ID;
+    "Staff": sys_user.Staff;
+    "UserType": sys_user.UserType;
+    "Widget": sys_user.Widget;
+    "currentUser": sys_user.currentUser;
+  };
+  "app_cm": {
+    "Student": app_cm.Student;
+  };
   "default": {
     "Person": Person;
-    "Mgmt": Mgmt;
+  };
+  "sys_core": {
+    "ObjRoot": sys_core.ObjRoot;
+    "Obj": sys_core.Obj;
+    "Ent": sys_core.Ent;
+    "App": sys_core.App;
+    "Code": sys_core.Code;
+    "CodeType": sys_core.CodeType;
+    "Org": sys_core.Org;
   };
   "app_cm_training": {
-    "Student": app_cm_training.Student;
+    "Course": app_cm_training.Course;
+    "Section": app_cm_training.Section;
   };
   "cfg": {
     "ConfigObject": cfg.ConfigObject;
@@ -492,14 +604,6 @@ export interface types {
     "TransactionIsolation": sys.TransactionIsolation;
     "VersionStage": sys.VersionStage;
   };
-  "sys_core": {
-    "ObjRoot": sys_core.ObjRoot;
-    "Obj": sys_core.Obj;
-    "Ent": sys_core.Ent;
-    "App": sys_core.App;
-    "Code": sys_core.Code;
-    "CodeType": sys_core.CodeType;
-  };
   "sys_db": {
     "Column": sys_db.Column;
     "Table": sys_db.Table;
@@ -508,20 +612,14 @@ export interface types {
     "DataObj": sys_obj.DataObj;
     "DataObjAction": sys_obj.DataObjAction;
     "Form": sys_obj.Form;
-    "FormField": sys_obj.FormField;
+    "FormFieldDb": sys_obj.FormFieldDb;
+    "FormFieldEl": sys_obj.FormFieldEl;
+    "FormFieldItemsList": sys_obj.FormFieldItemsList;
     "NodeObj": sys_obj.NodeObj;
   };
   "sys_test": {
     "Movie": sys_test.Movie;
     "Person": sys_test.Person;
-  };
-  "sys_user": {
-    "User": sys_user.User;
-    "SYS_USER": sys_user.SYS_USER;
-    "SYS_USER_ID": sys_user.SYS_USER_ID;
-    "UserType": sys_user.UserType;
-    "Widget": sys_user.Widget;
-    "currentUser": sys_user.currentUser;
   };
 }
 

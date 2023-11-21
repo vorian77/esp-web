@@ -1,5 +1,6 @@
 import { memberOfEnum, strOptional, strRequired, valueOrDefault } from '$utils/utils'
-import type { DataActionSaveMode } from '$comps/types'
+import { Field, FieldValue } from '$comps/form/field'
+import { type DataObj, DataObjCardinality, FieldElement } from '$comps/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/lib/components/nav/types.nav.ts'
@@ -11,7 +12,7 @@ export class NavTree {
 	listCrumbs: Array<NavTreeNode> = []
 	listTree: Array<NavTreeNode> = []
 
-	constructor(rawNodes: Array<rawNodeObj>) {
+	constructor(rawNodes: Array<NodeObjRaw>) {
 		const ROOT_NAME = '+ROOT+'
 		const ROOT_PARM = 'root'
 		this.rootNode = new NavTreeNode(
@@ -24,7 +25,7 @@ export class NavTree {
 		this.setNodeLists('')
 	}
 
-	addBranch(node: NavTreeNode, rawNodes: Array<rawNodeObj>) {
+	addBranch(node: NavTreeNode, rawNodes: Array<NodeObjRaw>) {
 		rawNodes.forEach((n) => {
 			const navNode = new NodeObj(
 				n.id,
@@ -167,7 +168,111 @@ export class NavTreeNode {
 	}
 }
 
-export type rawNodeObj = {
+export class NavParms {
+	data: Array<Record<string, FieldValue>> = []
+	cardinality: DataObjCardinality = DataObjCardinality.detail
+	isInsertMode: boolean = false
+
+	addItem(key: string, valData: any, valDisplay: any) {
+		const row = this.data.length - 1
+		this.data[row][key] = new FieldValue(valData, valDisplay)
+	}
+	addRow() {
+		this.data.push({})
+	}
+
+	getValue(key: string, row: number = 0) {
+		if (!this.data) return undefined
+		return this.data[row][key]
+	}
+
+	hasProperty(key: string, row: number = 0) {
+		if (!this.data) return false
+		return this.data[row].hasOwnProperty(key)
+	}
+}
+
+export class NavParmsDB extends NavParms {
+	constructor(dataObj: DataObj | undefined, isInsertMode: boolean) {
+		super()
+		this.isInsertMode = isInsertMode
+		if (dataObj?.data) {
+			this.cardinality = dataObj.cardinality
+
+			if (this.cardinality === DataObjCardinality.detail) {
+				this.parseRow(dataObj.data)
+			} else {
+				dataObj.data.forEach((dataRow: any) => this.parseRow(dataRow))
+			}
+		}
+		console.log('NavParmsDB.data:', this.data)
+	}
+	parseRow(data: any) {
+		if (!data) return
+		this.addRow()
+
+		for (const key in data) {
+			const value: any = data[key]
+			let valDisplay: any
+			let valData: any
+			if (
+				value &&
+				Object.entries(value).length > 0 &&
+				!Array.isArray(value) &&
+				value.hasOwnProperty('data') &&
+				value.hasOwnProperty('display')
+			) {
+				valData = value.data
+				valDisplay = value.display
+			} else {
+				valData = value
+				valDisplay = value
+			}
+			this.addItem(key, valData, valDisplay)
+		}
+	}
+}
+
+export class NavParmsObjDetail extends NavParms {
+	constructor(objFields: Array<Field>) {
+		super()
+		this.cardinality = DataObjCardinality.detail
+		this.addRow()
+		objFields.forEach((f) => {
+			if (f.element !== FieldElement.label) this.addItem(f.name, f.value?.data, f.value?.display)
+		})
+		console.log('NavParmsObjDetail.data:', this.data)
+	}
+}
+
+export class NavParmsRestore extends NavParms {
+	constructor(rawNavParms: any) {
+		super()
+		if (rawNavParms.hasOwnProperty('data')) {
+			// restoring from navParms
+			this.cardinality = rawNavParms.cardinality
+			this.isInsertMode = rawNavParms.isInsertMode
+			rawNavParms.data.forEach((dataRow: any) => this.parseRow(dataRow))
+		} else {
+			// restoring from object
+			this.parseRow(rawNavParms)
+		}
+		console.log('NavParmsRestore.data:', this.data)
+	}
+	parseRow(dataRow: any) {
+		if (!dataRow) return
+		this.addRow()
+		for (const key in dataRow) {
+			if (dataRow[key].hasOwnProperty('data') && dataRow[key].hasOwnProperty('display')) {
+				this.addItem(key, dataRow[key].data, dataRow[key].display)
+			} else {
+				this.addItem(key, dataRow[key], dataRow[key])
+			}
+		}
+	}
+}
+
+export type NodeObjRaw = {
 	id: string
 	_codeType: string
 	name: string
@@ -185,8 +290,7 @@ export class NodeObj {
 	icon: string
 	page: string
 	dataObjId: string | null
-	dataObj: DataObj | null = null
-	data: any = {}
+	dataObj: DataObj | undefined
 
 	constructor(
 		id: string,
@@ -208,57 +312,6 @@ export class NodeObj {
 	}
 }
 
-export class DataObj {
-	cardinality: DataObjCardinality
-	component: DataObjComponent
-	data: any
-	defn: any
-	listRows: number
-	listRowsCurrent: number
-	saveMode: DataActionSaveMode | undefined
-
-	constructor(defnRaw: any) {
-		this.cardinality = memberOfEnum(
-			defnRaw._codeCardinality,
-			'DataObj',
-			'cardinality',
-			'DataObjCardinality',
-			DataObjCardinality
-		)
-		this.component = memberOfEnum(
-			defnRaw._codeComponent,
-			'DataObj',
-			'component',
-			'DataObjComponent',
-			DataObjComponent
-		)
-		this.defn = defnRaw
-		this.listRows = valueOrDefault(defnRaw.listRows, -1)
-		this.listRowsCurrent = valueOrDefault(defnRaw.listRowsCurrent, -1)
-	}
-}
-
-export enum DataActionProcessType {
-	delete = 'delete',
-	preset = 'preset',
-	save = 'save',
-	select = 'select'
-}
-export enum DataObjCardinality {
-	list = 'list',
-	detail = 'detail'
-}
-export enum DataObjComponent {
-	Home = 'Home',
-	FormList = 'FormList',
-	FormDetail = 'FormDetail'
-}
-export enum DataObjRowChange {
-	first = 'first',
-	left = 'left',
-	right = 'right',
-	last = 'last'
-}
 export enum NodeObjType {
 	header = 'header',
 	object = 'object',
