@@ -26,8 +26,8 @@ export namespace sys_user {
   export interface SYS_USER extends User {}
   export interface SYS_USER_ID extends User {}
   export interface Staff extends Mgmt {
-    "owner": sys_core.ObjRoot;
     "roles": sys_core.Code[];
+    "owner": sys_core.ObjRoot;
     "person": Person;
   }
   export interface UserType extends sys_core.Obj {
@@ -76,7 +76,9 @@ export namespace sys_core {
   export interface App extends Ent {}
   export interface Code extends Obj {
     "codeType": CodeType;
-    "value"?: string | null;
+    "valueDecimal"?: string | null;
+    "valueInteger"?: number | null;
+    "valueString"?: string | null;
     "parent"?: Code | null;
     "order": number;
   }
@@ -93,14 +95,25 @@ export namespace sys_core {
   }
 }
 export namespace app_cm_training {
+  export interface Cohort extends sys_core.Obj {
+    "codeStatus"?: sys_core.Code | null;
+    "course": Course;
+    "staffAdmin"?: sys_user.Staff | null;
+    "staffAgency"?: sys_user.Staff | null;
+    "staffInstructor"?: sys_user.Staff | null;
+    "venue"?: sys_core.Org | null;
+    "capacity"?: number | null;
+    "isCohortRequired"?: string | null;
+    "note"?: string | null;
+    "schedule"?: string | null;
+  }
   export interface Course extends sys_core.Obj {
     "description"?: string | null;
+    "codeStatus"?: sys_core.Code | null;
     "staffAdmin"?: sys_user.Staff | null;
     "provider"?: sys_core.Org | null;
     "cost"?: number | null;
-    "isActive"?: boolean | null;
     "schedule"?: string | null;
-    "staffProvider"?: sys_user.Staff | null;
     "codeSector"?: sys_core.Code | null;
     "codeTypePayment"?: sys_core.CodeType | null;
     "codeMultiCerts": sys_core.Code[];
@@ -108,14 +121,8 @@ export namespace app_cm_training {
     "codeMultiItemsIncluded": sys_core.Code[];
     "codeMultiItemsNotIncluded": sys_core.Code[];
     "codeMultiRqmts": sys_core.Code[];
-  }
-  export interface Section extends sys_core.Obj {
-    "course": Course;
-    "codeStatus": sys_core.Code;
-    "userInstructor"?: sys_user.User | null;
-    "dateEnd"?: edgedb.LocalDate | null;
-    "dateStart": edgedb.LocalDate;
-    "note"?: string | null;
+    "isActive"?: string | null;
+    "staffAgency"?: sys_user.Staff | null;
   }
 }
 export namespace cfg {
@@ -392,6 +399,7 @@ export namespace sys_db {
     "patternMsg"?: string | null;
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
+    "exprPreset"?: string | null;
     "exprSelect"?: string | null;
     "codeAlignment"?: sys_core.Code | null;
     "isSetBySys"?: boolean | null;
@@ -402,8 +410,6 @@ export namespace sys_db {
     "exprStorageKey"?: string | null;
     "edgeTypeDefn"?: unknown | null;
     "codeDataTypePreset"?: sys_core.Code | null;
-    "exprPreset"?: string | null;
-    "exprSave"?: string | null;
     "isMultiSelect"?: boolean | null;
   }
   export interface Table extends sys_core.Obj {
@@ -430,9 +436,12 @@ export namespace sys_obj {
     "submitButtonLabel"?: string | null;
     "fieldsDb": FormFieldDb[];
     "fieldsEl": FormFieldEl[];
+    "exprFilter"?: string | null;
     "link"?: unknown | null;
   }
   export interface FormFieldDb extends std.$Object {
+    "exprFilter"?: string | null;
+    "exprPreset"?: string | null;
     "codeDbDataOp"?: sys_core.Code | null;
     "codeDbDataSource"?: sys_core.Code | null;
     "codeDbListDir"?: sys_core.Code | null;
@@ -443,11 +452,11 @@ export namespace sys_obj {
     "isDbAllowNull"?: boolean | null;
     "isDbListOrderField"?: boolean | null;
     "fieldName"?: string | null;
-    "dbExpr"?: string | null;
     "isDbFilter"?: boolean | null;
     "isLinkMember"?: boolean | null;
   }
   export interface FormFieldEl extends std.$Object {
+    "headerAlt"?: string | null;
     "codeAccess"?: sys_core.Code | null;
     "codeElement"?: sys_core.Code | null;
     "column": sys_db.Column;
@@ -521,8 +530,8 @@ export interface types {
     "Org": sys_core.Org;
   };
   "app_cm_training": {
+    "Cohort": app_cm_training.Cohort;
     "Course": app_cm_training.Course;
-    "Section": app_cm_training.Section;
   };
   "cfg": {
     "ConfigObject": cfg.ConfigObject;

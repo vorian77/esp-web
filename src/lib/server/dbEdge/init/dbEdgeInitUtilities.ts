@@ -253,12 +253,74 @@ export async function tableColumns(data: any) {
 	return await query.run(client, { data })
 }
 
+export async function addOrgs(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.insert(e.sys_core.Org, {
+				owner: e.select(e.sys_core.getRoot()),
+				name: e.cast(e.str, i[0]),
+				createdBy: CREATOR,
+				modifiedBy: CREATOR
+			})
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
+export async function addRoleOrg(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.update(e.sys_core.Org, (o) => ({
+				filter: e.op(o.name, '=', e.cast(e.str, i[0])),
+				set: {
+					roles: { '+=': e.select(e.sys_core.getCode('ct_sys_role_org', e.cast(e.str, i[1]))) }
+				}
+			}))
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
+export async function addStaff(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.insert(e.sys_user.Staff, {
+				owner: e.select(e.sys_core.getRoot()),
+				person: e.insert(e.default.Person, {
+					firstName: e.cast(e.str, i[0]),
+					lastName: e.cast(e.str, i[1])
+				}),
+				createdBy: CREATOR,
+				modifiedBy: CREATOR
+			})
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
+export async function addRoleStaff(params: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.update(e.sys_user.getStaffByName(e.cast(e.str, i[0]), e.cast(e.str, i[1])), (o) => ({
+				set: {
+					roles: { '+=': e.select(e.sys_core.getCode('ct_sys_role_staff', e.cast(e.str, i[2]))) }
+				}
+			}))
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
 export async function resetDB(owner: string | undefined = undefined) {
 	let query = ''
 	const tables: Array<string> = []
 
 	// tables in delete order
-	tables.push('app_cm_training::Section')
+	tables.push('app_cm_training::Cohort')
 	tables.push('app_cm_training::Course')
 	tables.push('app_cm::Student')
 	tables.push('sys_obj::NodeObj')
@@ -272,6 +334,7 @@ export async function resetDB(owner: string | undefined = undefined) {
 	tables.push('sys_core::CodeType')
 	tables.push('sys_user::UserType')
 	tables.push('sys_core::Obj')
+	tables.push('sys_user::Staff')
 	tables.push('sys_user::User')
 
 	tables.forEach((t) => {

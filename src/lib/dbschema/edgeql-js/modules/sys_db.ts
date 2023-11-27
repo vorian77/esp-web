@@ -18,6 +18,7 @@ export type $ColumnλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "patternMsg": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "patternReplacement": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "placeHolder": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "exprPreset": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "exprSelect": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeAlignment": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "isSetBySys": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -28,8 +29,6 @@ export type $ColumnλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "exprStorageKey": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "edgeTypeDefn": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeDataTypePreset": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "exprPreset": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "exprSave": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "isMultiSelect": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "<column[is sys_obj::FormFieldEl]": $.LinkDesc<_sys_obj.$FormFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column[is sys_obj::FormFieldDb]": $.LinkDesc<_sys_obj.$FormFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;

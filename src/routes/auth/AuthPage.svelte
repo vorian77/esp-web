@@ -18,7 +18,8 @@
 	const drawerStore = getDrawerStore()
 	const toastStore = getToastStore()
 
-	const authForms = ['auth_login', 'auth_signup', 'auth_verify_phone_mobile', 'auth_reset_password']
+	// const authForms = ['auth_login', 'auth_signup', 'auth_verify_phone_mobile', 'auth_reset_password']
+	const authForms = ['auth_login']
 	let forms = initForms(authForms)
 
 	function initForms(formList: Array<string>) {

@@ -5,28 +5,26 @@ import {
 	DataObjProcessType,
 	DataObj,
 	DataObjCardinality,
-	formatDate,
 	formatDateTime,
-	getArray,
 	memberOfEnum,
-	type RawFormField,
-	strRequired,
-	valueOrDefault,
-	DataObjActionParmsNode
+	type ProcessDataObj,
+	type RawFormField
 } from '$comps/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = 'server/dbEdgeDataObj.ts'
 
-export async function processDataObj(
-	dataObj: DataObj,
-	dataObjId: string,
-	processType: DataObjProcessType,
-	parms: any = {}
-) {
+export async function processDataObj(parms: ProcessDataObj) {
 	console.log()
 	console.log('processDataObj...')
-	console.log('processType:', processType)
+	console.log('processType:', parms.processType)
+
+	// parms
+	// nodeKey: string,
+	// dataObj: DataObj,
+	// dataObjId: string,
+	// processType: DataObjProcessType,
+	// data: any = {}
 
 	// if (!dataObj.defn) {
 	// 	dataObj.defn = await getFormById(dataObjId)
@@ -35,82 +33,89 @@ export async function processDataObj(
 	// }
 	// dataObj = new DataObj(dataObj.defn)
 
-	if (!dataObj) {
-		const formDefn = await getFormById(dataObjId)
-		dataObj = new DataObj(formDefn)
-		dataObj.defn = formDefn
+	if (!parms.dataObj) {
+		const formDefn = await getFormById(parms.dataObjId)
+		parms.dataObj = new DataObj(formDefn)
+		parms.dataObj.defn = formDefn
 	}
 
-	return await processData(processType, dataObj, parms)
+	return await processData(parms)
 }
 
-async function processData(processType: DataObjProcessType, dataObj: DataObj, parms: any) {
-	const query = new EdgeQL(dataObj.defn, processType)
-	switch (processType) {
+async function processData(parms: ProcessDataObj) {
+	// nodeKey: string, dataObj: DataObj, data: any
+	const dataObj = parms.dataObj!
+	const query = new EdgeQL(parms.nodeKey, dataObj.defn)
+
+	switch (parms.processType) {
 		case DataObjProcessType.delete:
-			return await processDataDelete(query, dataObj, parms)
+			return await processDataDelete(query, dataObj, parms.data)
 			break
 
 		case DataObjProcessType.preset:
-			return await processDataPreset(query, dataObj, parms)
+			return await processDataPreset(query, dataObj, parms.data)
 			break
 
 		case DataObjProcessType.saveInsert:
-			return await processDataSaveInsert(query, dataObj, parms)
+			return await processDataSaveInsert(query, dataObj, parms.data)
 			break
 
 		case DataObjProcessType.saveUpdate:
-			return await processDataSaveUpdate(query, dataObj, parms)
+			return await processDataSaveUpdate(query, dataObj, parms.data)
 			break
 
 		case DataObjProcessType.select:
-			return await processDataSelect(query, dataObj, parms)
+			return await processDataSelect(query, dataObj, parms.data)
 			break
 
 		default:
 			throw error(500, {
 				file: FILENAME,
 				function: 'processData',
-				message: `No case defined for processType: ${processType}`
+				message: `No case defined for processType: ${parms.processType}`
 			})
 	}
 }
-async function processDataDelete(query: EdgeQL, dataObj: DataObj, parms: any) {
-	let script = query.getScriptDelete(parms)
+async function processDataDelete(query: EdgeQL, dataObj: DataObj, data: any) {
+	const script = query.getScriptDelete(data)
 	dataObj.data = await querySingle(script)
 	return dataObj
 }
 
-async function processDataPreset(query: EdgeQL, dataObj: DataObj, parms: any) {
-	let script
-
-	script = query.getScriptPreset(parms)
+async function processDataPreset(query: EdgeQL, dataObj: DataObj, data: any) {
+	const script = query.getScriptPreset(data)
 	dataObj.data = await queryMultiple(script)
 	dataObj.data = await processDataPost(query, dataObj)
 	return dataObj
 }
 
-async function processDataSaveInsert(query: EdgeQL, dataObj: DataObj, parms: any) {
-	const script = query.getScriptSaveInsert(parms)
+async function processDataSaveInsert(query: EdgeQL, dataObj: DataObj, data: any) {
+	const script = query.getScriptSaveInsert(data)
 	dataObj.data = await querySingle(script)
-	return await processDataSaveSetBySys(query, dataObj)
+
+	if (dataObj.data.hasOwnProperty('id')) {
+		const key = dataObj.defn._table.mod + '::' + dataObj.defn._table.name
+		data.tree[key]['id'] = dataObj.data.id
+
+		// retrieve all values
+		return processDataSelect(query, dataObj, data)
+	}
 }
 
-async function processDataSaveUpdate(query: EdgeQL, dataObj: DataObj, parms: any) {
-	const script = query.getScriptSaveUpdate(parms)
+async function processDataSaveUpdate(query: EdgeQL, dataObj: DataObj, data: any) {
+	// update
+	let script = query.getScriptSaveUpdate(data)
 	dataObj.data = await querySingle(script)
-	return await processDataSaveSetBySys(query, dataObj)
-}
 
-async function processDataSaveSetBySys(query: EdgeQL, dataObj: DataObj) {
-	const script = query.getScriptSelectSys({ data: dataObj.data })
+	// retrieve values set by system
+	script = query.getScriptSelectSys(data)
 	dataObj.data = await queryMultiple(script)
 	dataObj.data = await processDataPost(query, dataObj)
 	return dataObj
 }
 
-async function processDataSelect(query: EdgeQL, dataObj: DataObj, parms: any) {
-	let script = query.getScriptSelectUser(parms)
+async function processDataSelect(query: EdgeQL, dataObj: DataObj, data: any) {
+	let script = query.getScriptSelectUser(data)
 	dataObj.data = await queryMultiple(script)
 	dataObj.data = await processDataPost(query, dataObj)
 	return dataObj
@@ -121,7 +126,7 @@ async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 	if (!data) return data
 
 	for (const field of dataObj.defn._fieldsEl) {
-		await getDataItems(query, field, data)
+		await getDataItems(query, field)
 
 		const fieldName = field._column.name
 		for (let [index, val] of data.entries()) {
@@ -137,7 +142,7 @@ async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 	}
 
 	if (dataObj.cardinality === DataObjCardinality.detail) data = data[0]
-	console.log('processDataSelect.return:', data)
+	console.log('processDataPost.return:', data)
 	return data
 
 	function formatDataForDisplay(
@@ -156,7 +161,6 @@ async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 
 		switch (dataTypeField) {
 			case DataFieldDataType.bool:
-				console.log('formData.bool...')
 				return [undefined, null].includes(value) ? false : value
 
 			case DataFieldDataType.computed:
@@ -192,12 +196,14 @@ async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 			case DataFieldDataType.json:
 				return value ? JSON.parse(value) : value
 
+			case DataFieldDataType.str:
+				return !value ? '' : value
 			default:
 				return value
 		}
 	}
 
-	async function getDataItems(query: EdgeQL, field: RawFormField, data: any) {
+	async function getDataItems(query: EdgeQL, field: RawFormField) {
 		if (field._itemsList) {
 			const script = query.getScriptDataItems(field._itemsList.dbSelect, field.itemsListParms)
 			field.items = await queryMultiple(script)

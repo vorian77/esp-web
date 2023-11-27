@@ -1,19 +1,13 @@
 <script lang="ts">
-	import type { NodeObj, NavTreeNode } from '$comps/types'
-	import { Form as FormClass } from '$comps/form/form'
+	import type { DataObj, NavTreeNode } from '$comps/types'
 	import FormList from '$comps/form/FormList.svelte'
 	import { objActionListEdit } from '$comps/nav/navObjActions'
 
 	export let treeNode: NavTreeNode
 	export let scrollToTop = () => {}
+	let dataObj: DataObj | undefined
 
-	let navNode: NodeObj
-	let formClass: FormClass
-
-	$: {
-		navNode = treeNode.nodeObj
-		formClass = new FormClass(navNode.dataObj?.defn)
-	}
+	$: dataObj = treeNode.nodeObj.dataObj
 
 	function onListRowClick(data: any) {
 		objActionListEdit(treeNode, data.row, data.index)
@@ -21,4 +15,4 @@
 	}
 </script>
 
-<FormList formObj={formClass} formData={navNode.dataObj?.data} {onListRowClick} />
+<FormList {dataObj} {onListRowClick} />

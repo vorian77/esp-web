@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { DataObjStatus, NavTree, type NavTreeNode } from '$comps/types'
 	import { navStatus, navTree, nodeProcessTree } from '$comps/nav/navStore'
-	import NavTreeItem from '$comps/nav/NavTreeItem.svelte'
 	import { createEventDispatcher } from 'svelte'
 	import { page } from '$app/stores'
 	import Messenger from '$comps/Messenger.svelte'
@@ -38,7 +37,18 @@
 	<div class="bg-slate-300 rounded-lg p-1 mb-1">Features:</div>
 	<div>
 		{#each treeList as node}
-			<NavTreeItem {node} {onProcessNode} />
+			<div
+				class="p-1 mb-.5 hover:bg-blue-400 rounded-lg {node.isSelected
+					? 'bg-blue-300 text-white'
+					: ''}"
+				role="button"
+				tabindex="0"
+				on:click={() => onProcessNode(node)}
+				on:keyup={() => onProcessNode(node)}
+			>
+				{@html '&nbsp;'.repeat(node.indent * 3)}
+				{node.nodeObj.header}
+			</div>
 		{/each}
 	</div>
 </div>

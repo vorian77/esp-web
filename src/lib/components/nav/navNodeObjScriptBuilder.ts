@@ -8,17 +8,14 @@ import {
 	strRequired,
 	valueOrDefault
 } from '$lib/utils/utils'
-import { type DataObjProcessType, NavParmsRestore } from '$comps/types'
+import { type DataObjProcessType } from '$comps/types'
 import { error } from '@sveltejs/kit'
 import { FieldValue } from '$comps/form/field'
 
 const FILENAME = '/$comps/types.edgeDB.ts'
 
 export class EdgeQL {
-	objName: string
-	table: Table
-	link: EdgeType | undefined
-
+	exprFilter: string | undefined
 	fieldsID: Array<DataFieldDataId>
 	fieldsOrder: Array<DataFieldOrder>
 	fieldsPreset: Array<DataFieldPreset>
@@ -26,23 +23,16 @@ export class EdgeQL {
 	fieldsSaveUpdate: Array<DataFieldData>
 	fieldsSelectUser: Array<DataFieldSelect>
 	fieldsSelectSys: Array<DataFieldSelect>
+	link: EdgeType | undefined
+	nodeKey: string
+	objName: string
+	table: Table
 
-	constructor(nodeObjDefn: any, processType: DataObjProcessType) {
+	constructor(nodeKey: string, nodeObjDefn: any) {
+		this.nodeKey = nodeKey
+
 		const obj = valueOrDefault(nodeObjDefn, {})
-		console.log()
-		console.log('EdgeQL...')
-		// console.log('raw-defn:', obj)
-		// console.log('raw-fieldsID:', obj._fieldsDbId)
-		// console.log('raw-fieldsOrder:', obj._fieldsDbOrder)
-		// console.log('raw-fieldsPreset:', obj._fieldsDbPreset)
-		// console.log('raw-fieldsSaveInsert:', obj._fieldsDbSaveInsert)
-		// console.log('raw-fieldsSaveUpdate:', obj._fieldsDbSaveUpdate)
-		// console.log('raw-fieldsSelectUser:', obj._fieldsDbSelectUser)
-		console.log('raw-fieldsSelectSys:', obj._fieldsDbSelectSys)
-
-		this.objName = obj.name
-		this.table = new Table(obj._table)
-		this.link = obj.link ? new EdgeType(obj.link) : undefined
+		this.exprFilter = strOptional(obj.exprFilter, 'EdgeQL', 'exprFilter')
 
 		this.fieldsID = this.initFields(obj._fieldsDbId, DataFieldDataId)
 		this.fieldsOrder = this.initFields(obj._fieldsDbOrder, DataFieldOrder)
@@ -52,13 +42,30 @@ export class EdgeQL {
 		this.fieldsSelectUser = this.initFields(obj._fieldsDbSelectUser, DataFieldSelect)
 		this.fieldsSelectSys = this.initFields(obj._fieldsDbSelectSys, DataFieldSelect)
 
+		this.link = obj.link ? new EdgeType(obj.link) : undefined
+		this.objName = obj.name
+		this.table = new Table(obj._table)
+
+		console.log()
+		console.log('EdgeQL...')
+		// console.log('exprFilter:', this.exprFilter)
+
+		// console.log('raw-defn:', obj)
+		// console.log('raw-fieldsID:', obj._fieldsDbId)
+		// console.log('raw-fieldsOrder:', obj._fieldsDbOrder)
+		// console.log('raw-fieldsPreset:', obj._fieldsDbPreset)
+		// console.log('raw-fieldsSaveInsert:', obj._fieldsDbSaveInsert)
+		// console.log('raw-fieldsSaveUpdate:', obj._fieldsDbSaveUpdate)
+		// console.log('raw-fieldsSelectUser:', obj._fieldsDbSelectUser)
+		// console.log('raw-fieldsSelectSys:', obj._fieldsDbSelectSys)
+
 		// console.log('fieldsID:', this.fieldsID)
 		// console.log('fieldsOrder:', this.fieldsOrder)
 		// console.log('fieldsPreset:', this.fieldsPreset)
 		// console.log('fieldsSaveInsert:', this.fieldsSaveInsert)
 		// console.log('fieldsSaveUpdate:', this.fieldsSaveUpdate)
 		// console.log('fieldsSelectUser:', this.fieldsSelectUser)
-		console.log('fieldsSelectSys:', this.fieldsSelectSys)
+		// console.log('fieldsSelectSys:', this.fieldsSelectSys)
 
 		// add mgmt columns
 		// if (this.table.hasMgmt) {
@@ -84,49 +91,43 @@ export class EdgeQL {
 		console.log()
 	}
 
-	getScriptDataItems(dbSelect: string, parms: any) {
-		this.restoreParmsData(parms)
-		const script = getValExpr(dbSelect, parms)
-		// this.logScript('dataItems', script)
+	getScriptDataItems(dbSelect: string, data: any) {
+		const script = getValExpr(dbSelect, data)
 		return script
 	}
-	getScriptDelete(parms: any) {
-		this.restoreParmsData(parms)
-		const queryFilter = this.getScriptItemsFilter(this.fieldsID, parms)
-		const script = 'DELETE ' + this.table.module + '::' + this.table.name + queryFilter
+	getScriptDelete(data: any) {
+		const queryFilter = this.getScriptItemsFilter(this.fieldsID, data)
+		const script = 'DELETE ' + this.table.getObject() + queryFilter
 		this.logScript('delete', script)
 		return script
 	}
 
-	getScriptPreset(parms: any) {
-		this.restoreParmsData(parms)
+	getScriptPreset(data: any) {
 		let script = ''
 
 		if (this.fieldsPreset.length > 0) {
-			const queryFields = this.getScriptItemsPreset(this.fieldsPreset, parms)
+			const queryFields = this.getScriptItemsPreset(this.fieldsPreset, data)
 			script = 'SELECT ' + queryFields
 		}
 		this.logScript('preset', script)
 		return script
 	}
 
-	getScriptSaveInsert(parms: any) {
-		this.restoreParmsData(parms)
-		const queryFields = this.getScriptItemsSave(this.fieldsSaveInsert, parms, true)
-		let script = 'INSERT ' + this.table.module + '::' + this.table.name + ' ' + queryFields
+	getScriptSaveInsert(data: any) {
+		const queryFields = this.getScriptItemsSave(this.fieldsSaveInsert, data, true)
+		let script = 'INSERT ' + this.table.getObject() + ' ' + queryFields
 		this.logScript('insert', script)
 		return script
 	}
 
-	getScriptSaveUpdate(parms: any) {
-		this.restoreParmsData(parms)
-		const queryFilter = this.getScriptItemsFilter(this.fieldsID, parms)
-		let queryFields = this.getScriptItemsSave(this.fieldsSaveUpdate, parms)
+	getScriptSaveUpdate(data: any) {
+		const queryFilter = this.getScriptItemsFilter(this.fieldsID, data)
+		let queryFields = this.getScriptItemsSave(this.fieldsSaveUpdate, data)
 		if (queryFields) {
 			queryFields = ' SET ' + queryFields
 		}
 
-		let script = 'UPDATE ' + this.table.module + '::' + this.table.name + queryFilter + queryFields
+		let script = 'UPDATE ' + this.table.getObject() + queryFilter + queryFields
 
 		if (this.link) {
 			const linkPropertyID =
@@ -135,7 +136,7 @@ export class EdgeQL {
 				' := (SELECT ' +
 				this.table.getObject() +
 				' { id } ' +
-				this.getScriptItemsFilter(this.fieldsID, parms) +
+				this.getScriptItemsFilter(this.fieldsID, data) +
 				')'
 			script = linkPropertyID + ' ' + script
 		}
@@ -144,43 +145,36 @@ export class EdgeQL {
 		return script
 	}
 
-	getScriptSelect(parms: any, fieldsSelect: Array<DataFieldSelect>) {
-		this.restoreParmsData(parms)
-		const queryFields = this.getScriptItemsSelect(fieldsSelect, parms)
-		const queryFilter = this.getScriptItemsFilter(this.fieldsID, parms)
+	getScriptSelect(data: any, fieldsSelect: Array<DataFieldSelect>) {
+		const queryFields = this.getScriptItemsSelect(fieldsSelect, data)
+		const queryFilter = this.getScriptItemsFilter(this.fieldsID, data)
 		const queryOrder = this.getScriptItemsOrder(this.fieldsOrder)
 
-		const script =
-			'SELECT ' +
-			this.table.module +
-			'::' +
-			this.table.name +
-			queryFields +
-			queryFilter +
-			queryOrder
+		const script = 'SELECT ' + this.table.getObject() + ' ' + queryFields + queryFilter + queryOrder
 		this.logScript('select', script)
 		return script
 	}
-	getScriptSelectSys(parms: any) {
-		return this.getScriptSelect(parms, this.fieldsSelectSys)
+	getScriptSelectSys(data: any) {
+		return this.getScriptSelect(data, this.fieldsSelectSys)
 	}
-	getScriptSelectUser(parms: any) {
-		return this.getScriptSelect(parms, this.fieldsSelectUser)
-	}
-
-	restoreParmsData(parms: any) {
-		if (parms.data) parms.data = new NavParmsRestore(parms.data)
-		if (parms.data) console.log('resotreParmsData.parms:', parms.data)
+	getScriptSelectUser(data: any) {
+		return this.getScriptSelect(data, this.fieldsSelectUser)
 	}
 
-	getScriptItemsFilter(fields: Array<DataFieldDataId>, parms: any) {
+	getScriptItemsFilter(fields: Array<DataFieldDataId>, data: any) {
 		let script = ''
+		let exprFilter = ''
 
-		fields.forEach((f) => {
-			if (script) script += ' AND '
-			script += '.' + f.name + ' ' + this.getOp(f.codeOp) + ' ' + getVal(f, parms)
-		})
-		if (script) script = ' FILTER ' + script
+		if (!this.exprFilter) {
+			exprFilter = `.id = <uuid,tree,${this.table.getObject()};id>`
+		} else if (this.exprFilter?.toLowerCase() !== 'none') {
+			exprFilter = this.exprFilter
+		}
+
+		if (exprFilter) {
+			script = getValExpr(exprFilter, data)
+			if (script) script = ' FILTER ' + script
+		}
 
 		return script
 	}
@@ -202,24 +196,24 @@ export class EdgeQL {
 		return script
 	}
 
-	getScriptItemsPreset(fields: Array<DataFieldPreset>, parms: any) {
+	getScriptItemsPreset(fields: Array<DataFieldPreset>, data: any) {
 		let script = ''
 		fields.forEach((f) => {
 			if (script) script += ', '
-			script += f.name + ' := ' + getValExpr(f.expr, parms)
+			script += f.name + ' := ' + getValExpr(f.expr, data)
 		})
-		if (script) script = ' { ' + script + ' }'
+		if (script) script = '{ ' + script + ' }'
 		return script
 	}
 
-	getScriptItemsSave(fields: Array<DataFieldData>, parms: any, isInsert: boolean = false) {
+	getScriptItemsSave(fields: Array<DataFieldData>, data: any, isInsert: boolean = false) {
 		let script = ''
 
 		// non link fields
 		fields.forEach((f) => {
 			if (!f.isLinkMember) {
 				if (script) script += ', '
-				script += getProperty(f, parms)
+				script += f.name + ' := ' + getVal(f, data, this.table)
 			}
 		})
 
@@ -229,7 +223,8 @@ export class EdgeQL {
 			fields.forEach((f) => {
 				if (f.isLinkMember) {
 					if (items) items += ', '
-					items += getProperty(f, parms)
+
+					items += f.name + ' := ' + getVal(f, data, this.table)
 				}
 			})
 
@@ -237,22 +232,13 @@ export class EdgeQL {
 				let linkProperty = ''
 				if (isInsert) {
 					linkProperty =
-						this.link.property +
-						' := (INSERT ' +
-						this.link.table.module +
-						'::' +
-						this.link.table.name +
-						' {' +
-						items +
-						'}) '
+						this.link.property + ' := (INSERT ' + this.link.table.getObject() + ' {' + items + '}) '
 				} else {
 					// update
 					linkProperty =
 						this.link.property +
 						' := (UPDATE ' +
-						this.link.table.module +
-						'::' +
-						this.link.table.name +
+						this.link.table.getObject() +
 						' FILTER .id = _' +
 						this.link.property +
 						'.' +
@@ -269,25 +255,15 @@ export class EdgeQL {
 
 		if (script) script = '{ ' + script + ' }'
 		return script
-
-		function getProperty(field: DataFieldData, parms: any) {
-			let newItem = ''
-			if (field.expr) {
-				newItem = field.name + ' := ' + getValExpr(field.expr, parms)
-			} else {
-				newItem = field.name + ' := ' + getVal(field, parms)
-			}
-			return newItem
-		}
 	}
 
-	getScriptItemsSelect(fields: Array<DataFieldSelect>, parms: any) {
+	getScriptItemsSelect(fields: Array<DataFieldSelect>, data: any) {
 		let script = ''
 		fields.forEach((f) => {
 			if (script) script += ', '
 
 			if (f.expr) {
-				script += f.name + ' := ' + getValExpr(f.expr, parms)
+				script += f.name + ' := ' + getValExpr(f.expr, data)
 			} else if (f.isLinkMember) {
 				script += f.name + ' := .' + this.link?.property + '.' + f.name
 				if (f.edgeTypeDefn) script += ' {data := .id, display := .' + f.edgeTypeDefn.property + '}'
@@ -298,7 +274,7 @@ export class EdgeQL {
 			}
 		})
 
-		if (script) script = ' { ' + script + ' }'
+		if (script) script = '{ ' + script + ' }'
 		return script
 	}
 
@@ -318,11 +294,11 @@ export class EdgeQL {
 	}
 }
 
-export function getVal(field: DataFieldData, parms: any) {
-	const valRaw = getValRaw(field, parms)
+export function getVal(field: DataFieldData, data: any, table: Table | undefined = undefined): any {
+	const valRaw = getValRaw(field, data)
 	return getValDB(field, valRaw)
 
-	function getValRaw(field: DataFieldData, parms: any) {
+	function getValRaw(field: DataFieldData, data: any) {
 		switch (field.codeSource) {
 			case DataFieldSource.calc:
 				switch (field.sourceKey) {
@@ -337,29 +313,31 @@ export function getVal(field: DataFieldData, parms: any) {
 						})
 				}
 
-			case DataFieldSource.data:
-				if (parms.data.hasProperty(field.sourceKey)) {
-					return parms.data.getValue(field.sourceKey)
-				} else {
-					throw error(500, {
-						file: FILENAME,
-						function: 'getValRaw - DataFieldSource.data',
-						message: `Cannot find key: ${field.sourceKey} in data parms: ${JSON.stringify(
-							parms.data,
-							null,
-							2
-						)}.`
-					})
-				}
+			case DataFieldSource.form:
+				if (table) return getTreeValue(table.getObject(), field.sourceKey)
 
 			case DataFieldSource.literal:
 				return field.sourceKey
 
 			case DataFieldSource.parms:
-				return parms[field.sourceKey]
+				return data[field.sourceKey]
+
+			case DataFieldSource.tree:
+				const tokens = field.sourceKey.split(';')
+				if (tokens.length === 2) {
+					const keyNode = tokens[0]
+					const keyValue = tokens[1]
+					return getTreeValue(keyNode, keyValue)
+				} else {
+					throw error(500, {
+						file: FILENAME,
+						function: `getValRaw.source: ${field.codeSource}`,
+						message: `Invalid sourceKey: ${field.sourceKey}`
+					})
+				}
 
 			case DataFieldSource.user:
-				return parms.user[field.sourceKey]
+				return data.user[field.sourceKey]
 
 			default:
 				throw error(500, {
@@ -368,15 +346,26 @@ export function getVal(field: DataFieldData, parms: any) {
 					message: `No case defined for source: ${field.codeSource}`
 				})
 		}
+		function getTreeValue(keyNode: string, keyValue: string) {
+			try {
+				return data.tree[keyNode][keyValue]
+			} catch (err) {
+				throw error(500, {
+					file: FILENAME,
+					function: 'getTreeValue',
+					message: `Missing data tree value for keyNode: ${keyNode} keyValue: ${keyValue}`
+				})
+			}
+		}
 	}
 
 	function getValDB(field: DataFieldData, val: any) {
 		let valObject
 
-		if (val instanceof FieldValue) {
+		if (isAFieldValue(val)) {
 			delete val.selected
 			valObject = val
-			val = val.data ? val.data : null
+			val = val.data
 		}
 
 		if (field.codeDataType === DataFieldDataType.json) {
@@ -388,7 +377,7 @@ export function getVal(field: DataFieldData, parms: any) {
 			return [undefined, null].includes(val) ? false : val
 		}
 
-		if (!val || (Array.isArray(val) && val.length === 0)) return '{}'
+		if ((!val && val !== 0) || (Array.isArray(val) && val.length === 0)) return '{}'
 
 		switch (field.codeDataType) {
 			case DataFieldDataType.date:
@@ -416,7 +405,7 @@ export function getVal(field: DataFieldData, parms: any) {
 					} else {
 						filter = `= ${getId(val)}`
 					}
-					val = `(SELECT ${field.edgeTypeDefn.table.module}::${field.edgeTypeDefn.table.name} FILTER .id ${filter})`
+					val = `(SELECT ${field.edgeTypeDefn.table.getObject()} FILTER .id ${filter})`
 				}
 				break
 
@@ -449,23 +438,32 @@ export function getVal(field: DataFieldData, parms: any) {
 			return "'" + val + "'"
 		}
 	}
+	function isAFieldValue(obj: any) {
+		return (
+			obj !== null &&
+			typeof obj === 'object' &&
+			!Array.isArray(obj) &&
+			'data' in obj &&
+			'display' in obj
+		)
+	}
 }
 
-export function getValExpr(expr: string, parms: any): string {
+export function getValExpr(expr: string, data: any): string {
 	/*
-		data token <[dataType];[source];[sourceKey]>
-		eg. (select sys_user::getUser(<str;user;userName>))
+		data token <[dataType],[source],[sourceKey]>
+		eg. (select sys_user::getUser(<str,user,userName>))
 	*/
 	const regex = /<(.*?)>/g
 	const newExpr = expr.replace(regex, (t) => {
 		const token = t.slice(1, t.length - 1)
-		const tokenItems = token.split(';')
+		const tokenItems = token.split(',')
 		const exprField = new DataFieldData({
 			_codeDataType: tokenItems[0],
 			_codeDbDataSource: tokenItems[1],
 			dbDataSourceKey: tokenItems[2]
 		})
-		return getVal(exprField, parms)
+		return getVal(exprField, data)
 	})
 	return newExpr
 }
@@ -477,7 +475,6 @@ class DataFieldData extends DataField {
 	codeDataType: DataFieldDataType
 	codeSource: DataFieldSource
 	edgeTypeDefn: EdgeTypeDefn | undefined
-	expr: string | undefined
 	isLinkMember: boolean
 	isMultiSelect: boolean
 	name: string | undefined
@@ -497,18 +494,18 @@ class DataFieldData extends DataField {
 			'codeSource',
 			'DataFieldSource',
 			DataFieldSource,
-			DataFieldSource.data
+			DataFieldSource.form
 		)
 		this.edgeTypeDefn = obj._edgeTypeDefn ? new EdgeTypeDefn(obj._edgeTypeDefn) : undefined
-		this.expr = strOptional(obj._exprSave, 'DataFieldData', 'expr')
 		this.isLinkMember = booleanOrFalse(obj.isLinkMember, 'DataFieldData.isLinkMember')
 		this.isMultiSelect = booleanOrFalse(obj._isMultiSelect, 'DataFieldData.isMultiLink')
 		this.name = strOptional(obj._name, 'DataFieldData', 'name')
-		this.sourceKey = obj._expr ? obj._expr : valueOrDefault(obj.dbDataSourceKey, obj._name)
+		this.sourceKey = valueOrDefault(obj.dbDataSourceKey, obj._name)
 	}
 }
 class DataFieldDataId extends DataFieldData {
 	codeOp: DataFieldOp
+	exprFilter: string | undefined
 	constructor(obj: any) {
 		super(obj)
 		obj = valueOrDefault(obj, {})
@@ -520,6 +517,7 @@ class DataFieldDataId extends DataFieldData {
 			DataFieldOp,
 			DataFieldOp.eq
 		)
+		this.exprFilter = strOptional(obj._exprFilter, 'DataFieldDataId', 'exprFilter')
 	}
 }
 
@@ -603,18 +601,17 @@ class EdgeTypeDefn {
 	}
 }
 export class Table {
+	hasMgmt: boolean
 	module: string
 	name: string
-	hasMgmt: boolean
-
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
+		this.hasMgmt = booleanOrFalse(obj.hasMgmt, 'Table')
 		this.module = strRequired(obj.mod, 'Table', 'mod')
 		this.name = strRequired(obj.name, 'Table', 'name')
-		this.hasMgmt = booleanOrFalse(obj.hasMgmt, 'Table')
 	}
 	getObject() {
-		return this.module + '::' + this.name + ' '
+		return this.module + '::' + this.name
 	}
 }
 
@@ -642,11 +639,40 @@ export enum DataFieldOp {
 }
 export enum DataFieldSource {
 	calc = 'calc',
-	data = 'data',
 	env = 'env',
 	form = 'form',
 	literal = 'literal',
 	parms = 'parms',
-	system = 'system',
+	tree = 'tree',
 	user = 'user'
+}
+
+export class BinarySelect {
+	BinarySelectTypes: Partial<Record<DataFieldDataType, [any, any]>> = {
+		bool: [true, false],
+		int16: [1, 0],
+		str: ['Yes', 'No']
+	}
+	selections: any
+	constructor(dataType: DataFieldDataType) {
+		this.selections = this.BinarySelectTypes[dataType]
+	}
+
+	isSelected(value: any) {
+		return this.getIdx(value) === 0
+	}
+
+	getIdx(value: any) {
+		return this.selections.findIndex((s: any) => {
+			return s === value
+		})
+	}
+
+	getDefault() {
+		return this.selections[1]
+	}
+
+	getValue(value: any) {
+		return this.selections[(this.getIdx(value) + 1) % 2]
+	}
 }

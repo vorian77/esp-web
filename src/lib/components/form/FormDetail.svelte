@@ -2,12 +2,18 @@
 	import { Form } from '$comps/form/form'
 	import { FieldValue, type Field } from '$comps/form/field'
 	import {
+		BinarySelect,
 		FieldElement,
+		DataObj,
+		NodeObj,
+		NavParmsDB,
+		NavTreeNode,
 		Validation,
 		ValidityField,
 		ValidityErrorLevel,
 		ValidityError,
-		valueOrDefault
+		valueOrDefault,
+		DataFieldDataType
 	} from '$comps/types'
 	import FormElFile from '$comps/form/FormElFile.svelte'
 	import FormElInp from '$comps/form/FormElInp.svelte'
@@ -21,6 +27,7 @@
 	import {
 		navParms,
 		navStatus,
+		setNavParms,
 		setNavStatusObjChanged,
 		setNavStatusObjValid
 	} from '$comps/nav/navStore'
@@ -33,23 +40,28 @@
 	const FORM_NAME = ''
 	const SUBMIT_BUTTON_NAME = 'SUBMIT_BUTTON_NAME'
 
-	export let dataObj: any
+	export let dataObj: DataObj
 	export let surface = ''
 
 	// export let scrollToTop = () => {}
 
-	let formObj = new Form(dataObj.defn)
+	let formObj: Form
 	let classPopup = ''
 	let classPopupHeader = ''
 
 	$: {
-		classPopup = formObj.isPopup ? 'grid grid-cols-10 gap-4' : ''
-		classPopupHeader = formObj.isPopup ? 'col-span-9' : ''
+		formObj = new Form(dataObj.defn)
+		setNavParms(dataObj, dataObj.isInsertMode!)
 	}
 
 	$: formObj.objData = $navParms
 	$: setNavStatusObjChanged(formObj.hasChanged())
 	$: setNavStatusObjValid(formObj.validToSave)
+
+	$: {
+		classPopup = formObj.isPopup ? 'grid grid-cols-10 gap-4' : ''
+		classPopupHeader = formObj.isPopup ? 'col-span-9' : ''
+	}
 
 	// export async function submitForm() {
 	// 	const v: Validation = formObj.validateForm()
@@ -90,8 +102,8 @@
 			const idx = formObj.getFieldIdx(fieldName)
 			if (idx >= 0) {
 				const field = formObj.fields[idx]
-				const newValue = !valueOrDefault(field.value.data, false)
-				setFieldVal(fieldName, newValue)
+				const binarySelect = new BinarySelect(field.dataType)
+				setFieldVal(fieldName, binarySelect.getValue(field.value.data))
 			}
 		} else {
 			// multi-select

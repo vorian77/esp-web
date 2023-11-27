@@ -69,7 +69,7 @@ export class Field {
 		this.isDisplay = valueOrDefault(obj.isDisplay, true)
 		this.isDisplayable = valueOrDefault(obj.isDisplayable, true)
 		this.isMultiSelect = valueOrDefault(obj._column.isMultiSelect, false)
-		this.label = strRequired(obj._column.header, 'Field', 'label')
+		this.label = strRequired(obj.headerAlt || obj._column.header, 'Field', 'label')
 		this.labelSide = valueOrDefault(obj._column.headerSide, this.label)
 		this.name = strRequired(obj._column.name, 'Field', 'name')
 		this.validity = new Validity()
@@ -156,7 +156,7 @@ export class Field {
 export class FieldValue {
 	data: any
 	display: any
-	selected: boolean | undefined
+	selected?: boolean
 
 	constructor(data: any, display: any, selected = undefined) {
 		this.data = data

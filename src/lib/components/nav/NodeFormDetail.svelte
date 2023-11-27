@@ -1,12 +1,15 @@
 <script lang="ts">
-	import type { NodeObj, NavTreeNode } from '$comps/types'
+	import type { DataObj, NavTreeNode } from '$comps/types'
 	import FormDetail from '$comps/form/FormDetail.svelte'
 
 	export let treeNode: NavTreeNode
 	export let scrollToTop = undefined
 
-	let navNode: NodeObj
-	$: navNode = treeNode.nodeObj
+	let dataObj: DataObj | undefined
+
+	$: dataObj = treeNode.nodeObj.dataObj
 </script>
 
-<FormDetail dataObj={navNode.dataObj} />
+{#if dataObj}
+	<FormDetail {dataObj} />
+{/if}

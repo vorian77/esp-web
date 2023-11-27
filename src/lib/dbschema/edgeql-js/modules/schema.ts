@@ -10,9 +10,9 @@ import type * as _sys_user from "./sys_user";
 import type * as _app_cm from "./app_cm";
 import type * as _sys_core from "./sys_core";
 import type * as _default from "./default";
+import type * as _app_cm_training from "./app_cm_training";
 import type * as _sys_test from "./sys_test";
 import type * as _sys_db from "./sys_db";
-import type * as _app_cm_training from "./app_cm_training";
 export type $AccessKind = {
   "Select": $.$expr_Literal<$AccessKind>;
   "UpdateRead": $.$expr_Literal<$AccessKind>;
@@ -691,6 +691,7 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is Person]": $.LinkDesc<_default.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_user::UserType]": $.LinkDesc<_sys_user.$UserType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_user::Widget]": $.LinkDesc<_sys_user.$Widget, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_obj::FormFieldDb]": $.LinkDesc<_sys_obj.$FormFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_test::Person]": $.LinkDesc<_sys_test.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -708,7 +709,6 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm_training::Section]": $.LinkDesc<_app_cm_training.$Section, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<intersection_of": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<subject": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

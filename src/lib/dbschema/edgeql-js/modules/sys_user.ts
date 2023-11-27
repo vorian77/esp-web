@@ -30,7 +30,8 @@ export type $UserλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff1
   "person": $.LinkDesc<_default.$Person, $.Cardinality.One, {}, false, false,  false, false>;
   "<modifiedBy[is sys_user::Staff]": $.LinkDesc<$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_user::Staff]": $.LinkDesc<$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<userInstructor[is app_cm_training::Section]": $.LinkDesc<_app_cm_training.$Section, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_user::Mgmt]": $.LinkDesc<$Mgmt, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_core::Obj]": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -67,11 +68,8 @@ export type $UserλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff1
   "<modifiedBy[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is app_cm_training::Section]": $.LinkDesc<_app_cm_training.$Section, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is app_cm_training::Section]": $.LinkDesc<_app_cm_training.$Section, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<userInstructor": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $User = $.ObjectType<"sys_user::User", $UserλShape, null, [
   ..._std.$Object_6b06be9b27fe11ee83ff159af7e1bb81['__exclusives__'],
@@ -99,13 +97,17 @@ const $SYS_USER_ID = $.makeType<$SYS_USER_ID>(_.spec, "c79b124d-71ae-11ee-a930-a
 const SYS_USER_ID: $.$expr_PathNode<$.TypeSet<$SYS_USER_ID, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SYS_USER_ID, $.Cardinality.Many), null);
 
 export type $StaffλShape = $.typeutil.flatten<$MgmtλShape & {
-  "owner": $.LinkDesc<_sys_core.$ObjRoot, $.Cardinality.One, {}, false, false,  false, false>;
   "roles": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
+  "owner": $.LinkDesc<_sys_core.$ObjRoot, $.Cardinality.One, {}, false, false,  false, false>;
   "person": $.LinkDesc<_default.$Person, $.Cardinality.One, {}, false, false,  false, false>;
   "<staffAdmin[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<staffProvider[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffAgency[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffInstructor[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffAdmin[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffAgency[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffAdmin": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<staffProvider": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffAgency": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffInstructor": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Staff = $.ObjectType<"sys_user::Staff", $StaffλShape, null, [
   ...$Mgmt['__exclusives__'],
@@ -219,6 +221,33 @@ function getWidget(...args: any[]) {
   }) as any;
 };
 
+type getStaffByNameλFuncExpr<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+  P2 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+> = $.$expr_Function<
+  $Staff, $.cardutil.overrideLowerBound<$.cardutil.multiplyCardinalities<$.cardutil.paramCardinality<P1>, $.cardutil.paramCardinality<P2>>, 'Zero'>
+>;
+function getStaffByName<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+  P2 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+>(
+  firstName: P1,
+  lastName: P2,
+): getStaffByNameλFuncExpr<P1, P2>;
+function getStaffByName(...args: any[]) {
+  const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_user::getStaffByName', args, _.spec, [
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}, {typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "862399d9-824a-11ee-87eb-f7db66b6dadd", returnTypemod: "OptionalType"},
+  ]);
+  return _.syntax.$expressionify({
+    __kind__: $.ExpressionKind.Function,
+    __element__: returnType,
+    __cardinality__: cardinality,
+    __name__: "sys_user::getStaffByName",
+    __args__: positionalArgs,
+    __namedargs__: namedArgs,
+  }) as any;
+};
+
 const $sys_user__globals: {  SYS_USER: _.syntax.$expr_Global<
               // "sys_user::SYS_USER",
               $SYS_USER,
@@ -265,6 +294,7 @@ type __defaultExports = {
   "getUser": typeof getUser;
   "getUserType": typeof getUserType;
   "getWidget": typeof getWidget;
+  "getStaffByName": typeof getStaffByName;
   "global": typeof $sys_user__globals
 };
 const __defaultExports: __defaultExports = {
@@ -279,6 +309,7 @@ const __defaultExports: __defaultExports = {
   "getUser": getUser,
   "getUserType": getUserType,
   "getWidget": getWidget,
+  "getStaffByName": getStaffByName,
   "global": $sys_user__globals
 };
 export default __defaultExports;

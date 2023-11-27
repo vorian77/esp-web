@@ -8,14 +8,7 @@ export async function POST({ request }) {
 	const requestData = await request.json()
 	switch (requestData.function) {
 		case 'processDataObj':
-			return getServerResponse(
-				await processDataObj(
-					requestData.dataObj,
-					requestData.dataObjId,
-					requestData.processType,
-					requestData.parms
-				)
-			)
+			return getServerResponse(await processDataObj(requestData.parms))
 			break
 
 		case 'getNodeObjsByParent':

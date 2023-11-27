@@ -3,17 +3,34 @@
 import * as $ from "../reflection";
 import * as _ from "../imports";
 import type * as _sys_core from "./sys_core";
-import type * as _std from "./std";
 import type * as _sys_user from "./sys_user";
-import type * as _cal from "./cal";
+import type * as _std from "./std";
+export type $CohortλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
+  "codeStatus": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "course": $.LinkDesc<$Course, $.Cardinality.One, {}, false, false,  false, false>;
+  "staffAdmin": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "staffAgency": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "staffInstructor": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "venue": $.LinkDesc<_sys_core.$Org, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "capacity": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
+  "isCohortRequired": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "schedule": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+}>;
+type $Cohort = $.ObjectType<"app_cm_training::Cohort", $CohortλShape, null, [
+  ..._sys_core.$Obj['__exclusives__'],
+]>;
+const $Cohort = $.makeType<$Cohort>(_.spec, "e62a3382-89f7-11ee-ae3b-89e851154f44", _.syntax.literal);
+
+const Cohort: $.$expr_PathNode<$.TypeSet<$Cohort, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Cohort, $.Cardinality.Many), null);
+
 export type $CourseλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "description": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "codeStatus": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "staffAdmin": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "provider": $.LinkDesc<_sys_core.$Org, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "cost": $.PropertyDesc<_std.$float32, $.Cardinality.AtMostOne, false, false, false, false>;
-  "isActive": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "schedule": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "staffProvider": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeSector": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeTypePayment": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeMultiCerts": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -21,7 +38,9 @@ export type $CourseλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "codeMultiItemsIncluded": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
   "codeMultiItemsNotIncluded": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
   "codeMultiRqmts": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<course[is app_cm_training::Section]": $.LinkDesc<$Section, $.Cardinality.Many, {}, false, false,  false, false>;
+  "isActive": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "staffAgency": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "<course[is app_cm_training::Cohort]": $.LinkDesc<$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<course": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Course = $.ObjectType<"app_cm_training::Course", $CourseλShape, null, [
@@ -31,31 +50,42 @@ const $Course = $.makeType<$Course>(_.spec, "edb845d2-7d84-11ee-a1b3-051822eac25
 
 const Course: $.$expr_PathNode<$.TypeSet<$Course, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Course, $.Cardinality.Many), null);
 
-export type $SectionλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
-  "course": $.LinkDesc<$Course, $.Cardinality.One, {}, false, false,  false, false>;
-  "codeStatus": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
-  "userInstructor": $.LinkDesc<_sys_user.$User, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "dateEnd": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
-  "dateStart": $.PropertyDesc<_cal.$local_date, $.Cardinality.One, false, false, false, false>;
-  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-}>;
-type $Section = $.ObjectType<"app_cm_training::Section", $SectionλShape, null, [
-  ..._sys_core.$Obj['__exclusives__'],
-]>;
-const $Section = $.makeType<$Section>(_.spec, "edbd3edc-7d84-11ee-958a-e72c540505e4", _.syntax.literal);
+type getCMTrainingCourseλFuncExpr<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+> = $.$expr_Function<
+  $Course, $.cardutil.overrideLowerBound<$.cardutil.paramCardinality<P1>, 'Zero'>
+>;
+function getCMTrainingCourse<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+>(
+  name: P1,
+): getCMTrainingCourseλFuncExpr<P1>;
+function getCMTrainingCourse(...args: any[]) {
+  const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('app_cm_training::getCMTrainingCourse', args, _.spec, [
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "edb845d2-7d84-11ee-a1b3-051822eac25d", returnTypemod: "OptionalType"},
+  ]);
+  return _.syntax.$expressionify({
+    __kind__: $.ExpressionKind.Function,
+    __element__: returnType,
+    __cardinality__: cardinality,
+    __name__: "app_cm_training::getCMTrainingCourse",
+    __args__: positionalArgs,
+    __namedargs__: namedArgs,
+  }) as any;
+};
 
-const Section: $.$expr_PathNode<$.TypeSet<$Section, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Section, $.Cardinality.Many), null);
 
 
-
-export { $Course, Course, $Section, Section };
+export { $Cohort, Cohort, $Course, Course };
 
 type __defaultExports = {
+  "Cohort": typeof Cohort;
   "Course": typeof Course;
-  "Section": typeof Section
+  "getCMTrainingCourse": typeof getCMTrainingCourse
 };
 const __defaultExports: __defaultExports = {
+  "Cohort": Cohort,
   "Course": Course,
-  "Section": Section
+  "getCMTrainingCourse": getCMTrainingCourse
 };
 export default __defaultExports;

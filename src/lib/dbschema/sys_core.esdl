@@ -9,7 +9,9 @@ module sys_core {
   } 
 
   type Ent extending Obj {
-    multi roles: sys_core::Code; 
+    multi roles: sys_core::Code{
+      on target delete allow;
+    }; 
     constraint exclusive on (.name);
   }
 
@@ -33,7 +35,9 @@ module sys_core {
     parent: Code;
     required codeType: CodeType;
     required order: default::nonNegative;
-    value: str;
+    valueDecimal: decimal;
+    valueInteger: int64;
+    valueString: str;
     constraint exclusive on ((.codeType, .name));
   }
 

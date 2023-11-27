@@ -1,5 +1,7 @@
 import {
 	addColumn,
+	addCode,
+	addCodeType,
 	addForm,
 	addNodeObj,
 	addUser,
@@ -46,8 +48,27 @@ async function initCore() {
 		['app_cm_training', 0, 'ct_cm_training_course_items_included'],
 		['app_cm_training', 0, 'ct_cm_training_course_items_not_included'],
 		['app_cm_training', 0, 'ct_cm_training_course_rqmt'],
-		['app_cm_training', 0, 'ct_cm_training_course_sector']
+		['app_cm_training', 0, 'ct_cm_training_course_sector'],
+
+		['app_cm_training', 0, 'ct_cm_training_payment_type']
 	])
+
+	await addCodeType({
+		owner: 'app_cm_training',
+		parent: 'ct_cm_training_payment_type',
+		header: 'Milestone 1 (Single Payment)',
+		name: 'ct_cm_training_payment_type_milestone1',
+		order: 0,
+		creator: 'user_sys'
+	})
+	await addCodeType({
+		owner: 'app_cm_training',
+		parent: 'ct_cm_training_payment_type',
+		header: 'Milestone 2 (Dual Payments)',
+		name: 'ct_cm_training_payment_type_milestone2',
+		order: 1,
+		creator: 'user_sys'
+	})
 
 	await codes([
 		// ct_cm_training_course_cert
@@ -86,15 +107,43 @@ async function initCore() {
 		['ct_cm_training_course_sector', 'app_cm_training', 'Personal Care and Services', 5],
 		['ct_cm_training_course_sector', 'app_cm_training', 'Transportation', 6]
 	])
+
+	// ct_cm_training_payment_type_milestone1
 }
+
+// await addCode({
+// 	owner: 'app_cm_training',
+// 	codeType: 'ct_cm_training_payment_type_milestone1',
+// 	header: 'Payment 1 - 100%',
+// 	name: 'milestone1_payment1',
+// 	order: 0,
+// 	creator: 'user_sys'
+// })
+// await addCode({
+// 	owner: 'app_cm_training',
+// 	codeType: 'ct_cm_training_payment_type_milestone2',
+// 	header: 'Payment 1 - 50%',
+// 	name: 'milestone2_payment1',
+// 	order: 0,
+// 	creator: 'user_sys'
+// })
+// await addCode({
+// 	owner: 'app_cm_training',
+// 	codeType: 'ct_cm_training_payment_type_milestone2',
+// 	header: 'Payment 2 - 50%',
+// 	name: 'milestone2_payment1',
+// 	order: 0,
+// 	creator: 'user_sys'
+// })
 
 async function initDB() {
 	await dbCourse()
-	await dbSection()
+	await dbCohort()
 }
 
 async function initForms() {
 	await formsProviderCourse()
+	await formsProviderCohort()
 	await formsProviderStudent()
 }
 
@@ -165,6 +214,14 @@ async function dbCourse() {
 	await addColumn({
 		creator: 'user_sys',
 		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'CodeType' } },
+		header: 'Payment Type',
+		name: 'codeTypePayment'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
 		codeDataType: 'decimal',
 		header: 'Cost',
 		name: 'cost'
@@ -197,13 +254,30 @@ async function dbCourse() {
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
 		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'Staff' } },
-		header: 'Staff - Provider',
-		name: 'staffProvider'
+		header: 'Staff - Agency',
+		name: 'staffAgency'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'Staff' } },
+		header: 'Staff - Instructor',
+		name: 'staffInstructor'
 	})
 }
 
-async function dbSection() {
-	await tables([['app_cm_training', 'app_cm_training', 'Section', true]])
+async function dbCohort() {
+	await tables([['app_cm_training', 'app_cm_training', 'Cohort', true]])
+
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
+		header: 'Course',
+		name: 'course'
+	})
 }
 
 async function formsProviderCourse() {
@@ -216,6 +290,7 @@ async function formsProviderCourse() {
 		name: 'form_training_provider_course_list',
 		header: 'Courses',
 		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'Course' },
+		exprFilter: 'none',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -233,8 +308,7 @@ async function formsProviderCourse() {
 				codeAccess: 'readOnly',
 				columnName: 'name',
 				dbOrderList: 10,
-				dbOrderSelect: 30,
-				isDbListOrderField: true
+				dbOrderSelect: 30
 			},
 			{
 				codeAccess: 'readOnly',
@@ -259,42 +333,83 @@ async function formsProviderCourse() {
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'isActive',
-				dbOrderSelect: 20
+				dbOrderSelect: 10
 			},
 			{
 				columnName: 'name',
-				dbOrderSelect: 30
-			},
-			{
-				codeElement: 'number',
-				columnName: 'cost',
-				dbOrderSelect: 40
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'textArea',
-				columnName: 'schedule',
-				dbOrderSelect: 42
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'textArea',
-				columnName: 'description',
-				dbOrderSelect: 50
+				dbOrderSelect: 20
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'codeSector',
-				dbOrderSelect: 60,
+				dbOrderSelect: 30,
 				itemsList: 'il_sys_code_order_index_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_training_course_sector' }
 			},
 			{
 				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'description',
+				dbOrderSelect: 40
+			},
+			{
+				codeElement: 'number',
+				columnName: 'cost',
+				dbOrderSelect: 50
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'codeTypePayment',
+				dbOrderSelect: 70,
+				itemsList: 'il_sys_codeType_order_name_by_codeTypeParentName',
+				itemsListParms: { codeTypeParentName: 'ct_cm_training_payment_type' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'schedule',
+				dbOrderSelect: 80
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'owner',
+				dbOrderSelect: 90,
+				itemsList: 'il_sys_role_org_by_codeName',
+				itemsListParms: { codeName: 'cm_training_role_org_agency' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'staffAdmin',
+				dbOrderSelect: 100,
+				itemsList: 'il_sys_role_staff_by_codeName',
+				itemsListParms: { codeName: 'cm_training_role_staff_admin' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'staffAgency',
+				dbOrderSelect: 110,
+				itemsList: 'il_sys_role_staff_by_codeName',
+				itemsListParms: { codeName: 'cm_training_role_staff_agency' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'codeStatus',
+				dbOrderSelect: 120,
+				itemsList: 'il_sys_code_order_index_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_sys_status' }
+			},
+
+			{
+				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiExams',
-				dbOrderSelect: 70,
+				dbOrderSelect: 130,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_training_course_exam' }
 			},
@@ -302,7 +417,7 @@ async function formsProviderCourse() {
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiCerts',
-				dbOrderSelect: 80,
+				dbOrderSelect: 140,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_training_course_cert' }
 			},
@@ -310,7 +425,7 @@ async function formsProviderCourse() {
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiItemsIncluded',
-				dbOrderSelect: 90,
+				dbOrderSelect: 150,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_training_course_items_included' }
 			},
@@ -318,7 +433,7 @@ async function formsProviderCourse() {
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiItemsNotIncluded',
-				dbOrderSelect: 100,
+				dbOrderSelect: 160,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_training_course_items_not_included' }
 			},
@@ -326,45 +441,180 @@ async function formsProviderCourse() {
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiRqmts',
-				dbOrderSelect: 110,
+				dbOrderSelect: 170,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_training_course_rqmt' }
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
-				dbOrderSelect: 150,
+				dbOrderSelect: 180,
 				isDbFilter: true,
 				isDisplayable: true
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'owner',
-				dbOrderSelect: 160,
-				isDisplayable: true
-			},
-			{
-				codeAccess: 'readOnly',
 				columnName: 'createdAt',
-				dbOrderSelect: 170,
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdBy',
-				dbOrderSelect: 180,
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'modifiedAt',
 				dbOrderSelect: 190,
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'modifiedBy',
+				columnName: 'createdBy',
 				dbOrderSelect: 200,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedAt',
+				dbOrderSelect: 210,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 220,
+				isDisplay: true
+			}
+		]
+	})
+}
+
+async function formsProviderCohort() {
+	/* node_training_provider_cohort_list */
+	await addForm({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormList',
+		codeCardinality: 'list',
+		name: 'form_training_provider_cohort_list',
+		header: 'Cohorts',
+		table: {
+			owner: 'app_cm_training',
+			mod: 'app_cm_training',
+			name: 'Cohort'
+		},
+		exprFilter: '.course.id = <uuid,tree,app_cm_training::Course;id>',
+		actions: ['noa_list_new'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'name',
+				dbOrderList: 10,
+				dbOrderSelect: 30,
+				headerAlt: 'Cohort ID'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'note',
+				dbOrderSelect: 40
+			}
+		]
+	})
+
+	/* node_training_provider_cohort_detail */
+	await addForm({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		name: 'form_training_provider_cohort_detail',
+		header: 'Cohort',
+		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'Cohort' },
+		actions: ['noa_detail_save', 'noa_detail_new', 'noa_detail_delete'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'course',
+				dbOrderSelect: 10,
+				exprPreset:
+					'(SELECT app_cm_training::Course { data := .id, display := .name } FILTER .id = <uuid,tree,app_cm_training::Course;id>)'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'owner',
+				dbOrderSelect: 15,
+				exprPreset:
+					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,organization>)'
+			},
+			{
+				columnName: 'name',
+				dbOrderSelect: 20,
+				headerAlt: 'Cohort ID'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'codeStatus',
+				dbOrderSelect: 50,
+				itemsList: 'il_sys_code_order_index_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_sys_status' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'staffAdmin',
+				dbOrderSelect: 60,
+				itemsList: 'il_sys_role_staff_by_codeName',
+				itemsListParms: { codeName: 'cm_training_role_staff_admin' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'staffAgency',
+				dbOrderSelect: 70,
+				itemsList: 'il_sys_role_staff_by_codeName',
+				itemsListParms: { codeName: 'cm_training_role_staff_agency' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'staffInstructor',
+				dbOrderSelect: 80,
+				itemsList: 'il_sys_role_staff_by_codeName',
+				itemsListParms: { codeName: 'cm_training_role_staff_instructor' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'note',
+				dbOrderSelect: 170
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 180,
+				isDbFilter: true,
+				isDisplayable: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdAt',
+				dbOrderSelect: 190,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdBy',
+				dbOrderSelect: 200,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedAt',
+				dbOrderSelect: 210,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 220,
 				isDisplay: true
 			}
 		]
@@ -382,6 +632,7 @@ async function formsProviderStudent() {
 		header: 'Students',
 		subHeader: 'All students enrolled in any courses.',
 		table: { owner: 'app_cm', mod: 'app_cm', name: 'Student' },
+		exprFilter: 'none',
 		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
 		actions: ['noa_list_new'],
 		fields: [
@@ -405,7 +656,6 @@ async function formsProviderStudent() {
 				columnName: 'firstName',
 				dbOrderList: 20,
 				dbOrderSelect: 30,
-				isDbListOrderField: true,
 				isLinkMember: true
 			},
 			{
@@ -413,7 +663,6 @@ async function formsProviderStudent() {
 				columnName: 'lastName',
 				dbOrderList: 10,
 				dbOrderSelect: 40,
-				isDbListOrderField: true,
 				isLinkMember: true
 			},
 			{
@@ -443,11 +692,6 @@ async function formsProviderStudent() {
 				isDbFilter: true,
 				isDisplay: false,
 				dbOrderSelect: 10
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'computed_person_fullname_uppercase',
-				dbOrderSelect: 15
 			},
 			{
 				codeElement: 'label',
@@ -629,7 +873,9 @@ async function formsProviderStudent() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'owner',
-				dbOrderSelect: 215
+				dbOrderSelect: 215,
+				exprPreset:
+					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,organization>)'
 			},
 			{
 				codeAccess: 'readOnly',
@@ -707,6 +953,31 @@ async function navProvider() {
 		codeIcon: 'application',
 		page: '/home/app',
 		dataObj: 'form_training_provider_course_detail',
+		creator: 'user_sys'
+	})
+
+	await addNodeObj({
+		owner: 'app_cm_training',
+		parentNodeName: 'node_training_provider_course_detail',
+		codeType: 'object',
+		name: 'node_training_provider_cohort_list',
+		header: 'Cohorts',
+		order: 10,
+		codeIcon: 'application',
+		page: '/home/app',
+		dataObj: 'form_training_provider_cohort_list',
+		creator: 'user_sys'
+	})
+	await addNodeObj({
+		owner: 'app_cm_training',
+		parentNodeName: 'node_training_provider_cohort_list',
+		codeType: 'object',
+		name: 'node_training_provider_cohort_detail',
+		header: 'Cohort',
+		order: 10,
+		codeIcon: 'application',
+		page: '/home/app',
+		dataObj: 'form_training_provider_cohort_detail',
 		creator: 'user_sys'
 	})
 

@@ -1,10 +1,12 @@
-import { getNavStatus, setNavParms, setNavStatusListRows } from '$comps/nav/navStore'
+import { setNavParms, setNavStatusListRows } from '$comps/nav/navStore'
 import {
-	getParms,
+	getData,
 	processDataObj,
 	setNavNode,
 	setNavStatus,
 	treeCollapseBranchSibling,
+	treeCollapseNodes,
+	treeGetFirstChild,
 	treeGetNodeParent,
 	treeRetrieveBranch
 } from '$comps/nav/navStore'
@@ -23,17 +25,17 @@ const FILENAME = '/$comps/nav/NavObjActions.ts'
 
 export async function objActionListEdit(
 	nodeParent: NavTreeNode,
-	data: Record<string, FieldValue>,
+	rowData: Record<string, FieldValue>,
 	row: number
 ) {
 	if (nodeParent.nodeObj.dataObj) {
 		await treeRetrieveBranch(nodeParent, false)
-		const nodeChild: NavTreeNode = getNodeFirstChild(nodeParent)
+		const nodeChild: NavTreeNode = treeGetFirstChild(nodeParent)
 
 		nodeChild.nodeObj.dataObj = await processDataObj(
 			nodeChild,
 			DataObjProcessType.select,
-			getParms(data)
+			getData(nodeParent, rowData)
 		)
 
 		if (nodeChild.nodeObj.dataObj) {
@@ -46,78 +48,65 @@ export async function objActionListEdit(
 			setNavStatus(newStatus)
 
 			await treeRetrieveBranch(nodeChild, false)
-			setNavNode(false, nodeChild)
+			setNavNode(nodeChild, false)
 		}
 	}
 }
 
 export async function objActionListNew(nodeParent: NavTreeNode) {
 	await treeRetrieveBranch(nodeParent, true)
-	const node: NavTreeNode = getNodeFirstChild(nodeParent)
-	node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.preset, getParms())
-	setNavNode(true, node)
+	const node: NavTreeNode = treeGetFirstChild(nodeParent)
+	node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.preset, getData(node))
+	setNavNode(node, true)
 }
 
-export async function objActionDetailDelete(node: NavTreeNode, parms: NavParms) {
-	// delete current node-detail
-	if (parms.getValue('id')) {
-		node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.delete, getParms(parms))
-	}
+export async function objActionDetailDelete(node: NavTreeNode, objData: NavParms) {
+	node.nodeObj.dataObj = await processDataObj(
+		node,
+		DataObjProcessType.delete,
+		getData(node, objData)
+	)
 
 	// return to parent list, without deleted record
 	const parentNode = await getNodeParent(node)
 	treeCollapseBranchSibling(parentNode)
-	setNavNode(false, parentNode)
+	setNavNode(parentNode, false)
 }
 
 export async function objActionDetailNew(node: NavTreeNode) {
-	const dataObj: DataObj = await processDataObj(node, DataObjProcessType.preset, getParms())
-	console.log('objActionDetailNew.dataObj:', dataObj)
-	setNavParms(dataObj, true)
-
-	// node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.preset, getParms())
-	// setNavNode(true, node)
+	treeCollapseNodes(node)
+	node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.preset, getData(node))
+	setNavNode(node, true)
 }
 
-export async function objActionDetailSaveInsert(node: NavTreeNode, parms: NavParms) {
-	const newRecordDataObj: DataObj = await processDataObj(
+export async function objActionDetailSaveInsert(node: NavTreeNode, objData: NavParms) {
+	node.nodeObj.dataObj = await processDataObj(
 		node,
 		DataObjProcessType.saveInsert,
-		getParms(parms)
+		getData(node, objData)
 	)
 
-	if (newRecordDataObj.data.hasOwnProperty('id')) {
+	if (node.nodeObj.dataObj?.data.hasOwnProperty('id')) {
 		// successful insert - retrieve parent list, find new node in list, set row navigator
 		const parentNode = await getNodeParent(node)
 		const parentNodeData = parentNode.nodeObj.dataObj.data
 		const newRecordIdx = parentNodeData.findIndex((d: any) => {
-			return d.id === newRecordDataObj.data.id
+			return d.id === node.nodeObj.dataObj?.data.id
 		})
 		if (newRecordIdx >= 0) setNavStatusListRows(newRecordIdx, parentNodeData.length)
+
+		await treeRetrieveBranch(node, false)
+		setNavNode(node, false)
 	}
-	setNavParms(newRecordDataObj, false)
 }
 
-export async function objActionDetailSaveUpdate(node: NavTreeNode, parms: NavParms) {
+export async function objActionDetailSaveUpdate(node: NavTreeNode, objData: NavParms) {
 	const newDataObj: DataObj = await processDataObj(
 		node,
 		DataObjProcessType.saveUpdate,
-		getParms(parms)
+		getData(node, objData)
 	)
 	setNavParms(newDataObj, false)
-}
-
-function getNodeFirstChild(nodeParent: NavTreeNode) {
-	// <temp> 230911 - what about no first-child as form-detail?
-	if (nodeParent.children[0]) {
-		return nodeParent.children[0]
-	} else {
-		throw error(500, {
-			file: FILENAME,
-			function: 'getNodeFirstChild',
-			message: `No child nodes defined for parent: ${nodeParent.nodeObj.name}`
-		})
-	}
 }
 
 async function getNodeParent(node: NavTreeNode) {
@@ -132,7 +121,7 @@ async function getNodeParent(node: NavTreeNode) {
 	parentNode.nodeObj.dataObj = await processDataObj(
 		parentNode,
 		DataObjProcessType.select,
-		getParms()
+		getData(parentNode)
 	)
 	return parentNode
 }

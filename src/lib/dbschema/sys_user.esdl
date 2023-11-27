@@ -21,7 +21,9 @@ module sys_user {
     required person: default::Person{
        on source delete delete target if orphan;
     };
-    multi roles: sys_core::Code;
+    multi roles: sys_core::Code{
+        on target delete allow;
+      }; 
   }
 
   type User {
@@ -63,6 +65,13 @@ module sys_user {
   );
 
   # FUNCTIONS
+  function getStaffByName(firstName: str, lastName: str) -> optional Staff
+      using (select assert_single(Staff filter 
+        str_lower(.person.firstName) = str_lower(firstName) and
+        str_lower(.person.lastName) = str_lower(lastName)
+        )
+      );
+
   function getUser(userName: str) -> optional User
       using (select User filter .userName = userName);
 

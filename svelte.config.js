@@ -22,6 +22,10 @@ const config = {
 			'$server/*': 'src/lib/server/*',
 			'$utils/*': 'src/lib/utils/*'
 		}
+	},
+
+	vitePlugin: {
+		inspector: true
 	}
 }
 

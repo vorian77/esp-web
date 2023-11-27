@@ -6,18 +6,21 @@ import {
 	DataObjStatus,
 	DataObjCardinality,
 	DataObjRowChange,
-	type ResponseBody,
 	getArray,
 	NavParms,
 	NavParmsDB,
+	NavParmsRestore,
 	NavTree,
 	NavTreeNode,
 	type NodeObjRaw,
 	NodeObjType,
+	NodeObj,
+	type ProcessDataObj,
+	type ResponseBody,
+	User,
 	valueOrDefault,
-	NodeObj
+	isInstanceOf
 } from '$comps/types'
-import { User } from '$comps/types'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'
 
@@ -71,17 +74,20 @@ export async function nodeProcessLink(fromPage: string, linkNode: NavTreeNode) {
 		return
 	}
 	localNavTree.collapseReset()
-	setNavNode(false, localNavTree.rootNode)
+	setNavNode(localNavTree.rootNode, false)
 	goto(linkNode.nodeObj.page)
 }
 
 export async function nodeProcessRowManager(node: NavTreeNode, processType: DataObjRowChange) {
 	const parentNode = localNavTree.getNodeParent(node.key)
-	const data = getNewRowData(node, parentNode, processType)
+	const objData = getNewRowData(node, parentNode, processType)
+
+	localNavTree.setNodeCurrentData(objData)
+
 	const newRowDataObj: DataObj = await processDataObj(
 		node,
 		DataObjProcessType.select,
-		getParms(data)
+		getData(node, objData)
 	)
 	setNavParms(newRowDataObj, false)
 
@@ -90,9 +96,9 @@ export async function nodeProcessRowManager(node: NavTreeNode, processType: Data
 		parentNode: NavTreeNode,
 		processType: DataObjRowChange
 	): any {
-		const dataObjStatusLocal = get(navStatus)
-		const listRows = dataObjStatusLocal.listRowsTotal
-		let listRowsCurrent = dataObjStatusLocal.listRowsCurrent
+		const navStatus = getNavStatus()
+		const listRows = navStatus.listRowsTotal
+		let listRowsCurrent = navStatus.listRowsCurrent
 
 		if (node.nodeObj.dataObj && parentNode.nodeObj.dataObj) {
 			switch (processType) {
@@ -126,12 +132,16 @@ export async function nodeProcessRowManager(node: NavTreeNode, processType: Data
 }
 
 export async function nodeProcessTree(fromPage: string, node: NavTreeNode) {
-	if (isCurrentNode(node)) {
-		return
-	}
+	if (isCurrentNode(node)) return
 
 	if (node.nodeObj.dataObj) {
 		if (node.nodeObj.dataObj.cardinality === 'detail') {
+			const parentNode = localNavTree.getNodeParent(node.key)
+			const currentId = node.nodeObj.dataObj.data.id
+			const currentRow = parentNode.nodeObj.dataObj.data.findIndex((d: any) => {
+				return d.id === currentId
+			})
+			if (currentRow > -1) setNavStatusListRows(currentRow, parentNode.nodeObj.dataObj.data.length)
 			localNavTree.collapseBranchGrandChildren(node)
 		} else {
 			localNavTree.collapseBranchSiblings(node)
@@ -163,25 +173,40 @@ async function nodeProcess(fromPage: string, node: NavTreeNode) {
 			}
 
 			if (node.nodeObj.dataObj) {
-				const dataObj: DataObj = node.nodeObj.dataObj
-				switch (dataObj.cardinality) {
+				switch (node.nodeObj.dataObj.cardinality) {
 					case DataObjCardinality.list:
 						localNavTree.collapseBranchSiblings(node)
-						node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.select, getParms())
+						node.nodeObj.dataObj = await processDataObj(
+							node,
+							DataObjProcessType.select,
+							getData(node)
+						)
 						break
 
 					case DataObjCardinality.detail:
+						const nodeParent = localNavTree.getNodeParent(node.key)
+						node = treeGetFirstChild(nodeParent)
+
+						const navStatus = getNavStatus()
+						const currentRow = navStatus.listRowsCurrent
+						const currentData = nodeParent.nodeObj.dataObj.data[currentRow]
+
+						node.nodeObj.dataObj = await processDataObj(
+							node,
+							DataObjProcessType.select,
+							getData(node, currentData)
+						)
 						break
 
 					default:
 						throw error(500, {
 							file: FILENAME,
 							function: 'nodeProcess',
-							message: `No case defined for data object cardinality: ${dataObj.cardinality}`
+							message: `No case defined for data object cardinality: ${node.nodeObj.dataObj.cardinality}`
 						})
 				}
 			} else {
-				node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.select, getParms())
+				node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.select, getData(node))
 			}
 			break
 
@@ -193,7 +218,7 @@ async function nodeProcess(fromPage: string, node: NavTreeNode) {
 			})
 	}
 
-	setNavNode(false, node)
+	setNavNode(node, false)
 	if (fromPage !== node.nodeObj.page) {
 		goto(node.nodeObj.page)
 	}
@@ -201,6 +226,23 @@ async function nodeProcess(fromPage: string, node: NavTreeNode) {
 
 export function treeCollapseBranchSibling(node: NavTreeNode) {
 	localNavTree.collapseBranchSiblings(node)
+}
+export function treeCollapseNodes(node: NavTreeNode) {
+	const nodeParent = treeGetNodeParent(node)
+	localNavTree.collapseNodes(node, nodeParent)
+}
+
+export function treeGetFirstChild(nodeParent: NavTreeNode) {
+	// <temp> 230911 - what about no first-child as form-detail?
+	if (nodeParent.children[0]) {
+		return nodeParent.children[0]
+	} else {
+		throw error(500, {
+			file: FILENAME,
+			function: 'treeGetFirstChild',
+			message: `No child nodes defined for parent: ${nodeParent.nodeObj.name}`
+		})
+	}
 }
 
 export function treeGetNodeParent(node: NavTreeNode) {
@@ -227,16 +269,10 @@ async function treeRetrieveNodes(nodeObjKey: string) {
 	return response.data
 }
 
-export function getParms(data: any = undefined) {
-	let parms: any = { user: get(navUser) }
-	if (data) parms.data = data
-	return parms
-}
-
 export async function processDataObj(
 	node: NavTreeNode,
 	processType: DataObjProcessType,
-	parms: any = {}
+	data: any = {}
 ) {
 	if (!node.nodeObj.dataObjId) {
 		throw error(500, {
@@ -246,13 +282,18 @@ export async function processDataObj(
 		})
 	}
 
+	const parms: ProcessDataObj = {
+		nodeKey: node.key,
+		dataObj: node.nodeObj.dataObj,
+		dataObjId: node.nodeObj.dataObjId,
+		processType,
+		data
+	}
+
 	const responsePromise: Response = await fetch('/api/dbEdge', {
 		method: 'POST',
 		body: JSON.stringify({
 			function: 'processDataObj',
-			dataObj: node.nodeObj.dataObj,
-			dataObjId: node.nodeObj.dataObjId,
-			processType,
 			parms
 		})
 	})
@@ -260,6 +301,27 @@ export async function processDataObj(
 	const response: ResponseBody = await responsePromise.json()
 	return response.data
 }
+export function getData(node: NavTreeNode, parms: any = undefined) {
+	let data: any = { parms: undefined, tree: undefined, user: get(navUser) }
+
+	// tree data
+	let treeData: Record<string, any> = {}
+	localNavTree.listCrumbs.forEach((node: NavTreeNode) => {
+		addTreeDataNode(node, node.nodeObj?.dataObj?.data)
+	})
+	addTreeDataNode(node, parms)
+	data.tree = treeData
+
+	return data
+
+	function addTreeDataNode(node: NavTreeNode, parms: any) {
+		if (node.nodeObj.dataObj?.table) {
+			const key = node.nodeObj.dataObj?.table.module + '::' + node.nodeObj.dataObj?.table.name
+			treeData[key] = parms instanceof NavParms ? parms.data[0] : parms
+		}
+	}
+}
+
 export function getNavStatus() {
 	return Object.assign(new DataObjStatus(), get(navStatus))
 }
@@ -271,42 +333,42 @@ function isCurrentNode(node: NavTreeNode) {
 	return node.key === localNavTree.currentNode.key
 }
 
-export function setNavNode(insertMode: boolean, node: NavTreeNode) {
+export function setNavNode(node: NavTreeNode, isInsertMode: boolean) {
+	if (node.nodeObj.dataObj) node.nodeObj.dataObj.isInsertMode = isInsertMode
 	localNavTree.setNodeCurrent(node)
 	navTree.set(localNavTree)
-
-	setNavParms(node.nodeObj.dataObj, insertMode)
 }
-export function setNavParms(dataObj: DataObj | undefined, isInsertMode: boolean) {
+export function setNavParms(dataObj: DataObj, isInsertMode: boolean) {
 	setNavStatusInsertMode(isInsertMode)
-	const np = new NavParmsDB(dataObj, isInsertMode)
+
+	const np = new NavParmsDB(dataObj, isInsertMode!)
 	navParms.set(np)
 }
 export function setNavStatus(newStatus: DataObjStatus) {
 	navStatus.set(newStatus)
 }
 function setNavStatusInsertMode(isInsertMode: boolean) {
-	const currentStatus = Object.assign(new DataObjStatus(), get(navStatus))
+	const currentStatus = getNavStatus()
 	currentStatus.setInsertMode(isInsertMode)
 	navStatus.set(currentStatus)
 }
 export function setNavStatusListRows(newCurrent: number, newTotal: number) {
-	const currentStatus = Object.assign(new DataObjStatus(), get(navStatus))
+	const currentStatus = getNavStatus()
 	currentStatus.setList(newCurrent, newTotal)
 	navStatus.set(currentStatus)
 }
 export function setNavStatusObjChanged(newStatus: boolean) {
-	const currentStatus = Object.assign(new DataObjStatus(), get(navStatus))
+	const currentStatus = getNavStatus()
 	currentStatus.setObjChanged(newStatus)
 	navStatus.set(currentStatus)
 }
 export function setNavStatusObjValid(newStatus: boolean) {
-	const currentStatus = Object.assign(new DataObjStatus(), get(navStatus))
+	const currentStatus = getNavStatus()
 	currentStatus.setObjValid(newStatus)
 	navStatus.set(currentStatus)
 }
 export function setNavStatusReset() {
-	const currentStatus = Object.assign(new DataObjStatus(), get(navStatus))
+	const currentStatus = getNavStatus()
 	currentStatus.reset()
 	navStatus.set(currentStatus)
 }

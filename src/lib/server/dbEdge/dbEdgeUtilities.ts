@@ -27,9 +27,12 @@ export async function addCode(data: any) {
 			owner: e.str,
 			codeType: e.str,
 			parent: e.optional(e.json),
+			header: e.optional(e.str),
 			name: e.str,
 			order: e.int16,
-			value: e.optional(e.str),
+			valueDecimal: e.optional(e.decimal),
+			valueInteger: e.optional(e.int64),
+			valueString: e.optional(e.str),
 			creator: e.str
 		},
 		(p) => {
@@ -42,9 +45,12 @@ export async function addCode(data: any) {
 						e.cast(e.str, e.json_get(p.parent, 'code'))
 					)
 				),
+				header: p.header,
 				name: p.name,
 				order: p.order,
-				value: p.value,
+				valueDecimal: p.valueDecimal,
+				valueInteger: p.valueInteger,
+				valueString: p.valueString,
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
 				modifiedBy: e.select(e.sys_user.getUser(p.creator))
 			})
@@ -58,6 +64,7 @@ export async function addCodeType(data: any) {
 		{
 			owner: e.str,
 			parent: e.optional(e.str),
+			header: e.optional(e.str),
 			name: e.str,
 			order: e.int16,
 			creator: e.str
@@ -66,6 +73,7 @@ export async function addCodeType(data: any) {
 			return e.insert(e.sys_core.CodeType, {
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				parent: e.select(e.sys_core.getCodeType(p.parent)),
+				header: p.header,
 				name: p.name,
 				order: p.order,
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
@@ -86,7 +94,6 @@ export async function addColumn(data: any) {
 			codeDataTypePreset: e.optional(e.str),
 			edgeTypeDefn: e.optional(e.json),
 			exprPreset: e.optional(e.str),
-			exprSave: e.optional(e.str),
 			exprSelect: e.optional(e.str),
 			exprStorageKey: e.optional(e.str),
 			header: e.optional(e.str),
@@ -117,7 +124,6 @@ export async function addColumn(data: any) {
 				codeDataTypePreset: e.sys_core.getCode('ct_db_col_data_type', p.codeDataTypePreset),
 				edgeTypeDefn: p.edgeTypeDefn,
 				exprPreset: p.exprPreset,
-				exprSave: p.exprSave,
 				exprSelect: p.exprSelect,
 				exprStorageKey: p.exprStorageKey,
 				header: p.header,
@@ -173,45 +179,34 @@ export async function addDataObjAction(data: any) {
 export async function addForm(data: any) {
 	const query = e.params(
 		{
+			creator: e.str,
 			owner: e.str,
-			name: e.str,
-			header: e.optional(e.str),
-			subHeader: e.optional(e.str),
-			description: e.optional(e.str),
-			table: e.optional(e.json),
-			link: e.optional(e.json),
+			actions: e.optional(e.array(e.str)),
 			codeCardinality: e.str,
 			codeComponent: e.str,
-			isPopup: e.optional(e.bool),
-			submitButtonLabel: e.optional(e.str),
+			description: e.optional(e.str),
+			exprFilter: e.optional(e.str),
 			fields: e.optional(e.array(e.json)),
-			actions: e.optional(e.array(e.str)),
-			creator: e.str
+			header: e.optional(e.str),
+			link: e.optional(e.json),
+			isPopup: e.optional(e.bool),
+			name: e.str,
+			subHeader: e.optional(e.str),
+			submitButtonLabel: e.optional(e.str),
+			table: e.optional(e.json)
 		},
 		(p) => {
 			return e.insert(e.sys_obj.Form, {
 				owner: e.select(e.sys_core.getEnt(p.owner)),
-				name: p.name,
-				header: p.header,
-				subHeader: p.subHeader,
-				description: p.description,
-				table: e.select(
-					e.sys_db.getTable(
-						e.cast(e.str, e.json_get(p.table, 'owner')),
-						e.cast(e.str, e.json_get(p.table, 'name'))
-					)
-				),
-				link: p.link,
+				actions: e.select(e.sys_obj.DataObjAction, (OA) => ({
+					filter: e.contains(p.actions, OA.name)
+				})),
 				codeCardinality: e.select(
 					e.sys_core.getCode('ct_sys_data_obj_cardinality', p.codeCardinality)
 				),
 				codeComponent: e.select(e.sys_core.getCode('ct_sys_data_obj_component', p.codeComponent)),
-				isPopup: p.isPopup,
-				submitButtonLabel: p.submitButtonLabel,
-
-				actions: e.select(e.sys_obj.DataObjAction, (OA) => ({
-					filter: e.contains(p.actions, OA.name)
-				})),
+				description: p.description,
+				exprFilter: p.exprFilter,
 
 				fieldsDb: e.for(e.array_unpack(p.fields), (f) => {
 					return e.insert(e.sys_obj.FormFieldDb, {
@@ -238,7 +233,9 @@ export async function addForm(data: any) {
 
 						dbDataSourceKey: e.cast(e.str, e.json_get(f, 'dbDataSourceKey')),
 
-						dbExpr: e.cast(e.str, e.json_get(f, 'dbExpr')),
+						exprFilter: e.cast(e.str, e.json_get(f, 'exprFilter')),
+
+						exprPreset: e.cast(e.str, e.json_get(f, 'exprPreset')),
 
 						dbOrderList: e.cast(e.int16, e.json_get(f, 'dbOrderList')),
 
@@ -249,8 +246,6 @@ export async function addForm(data: any) {
 						isDbAllowNull: e.cast(e.bool, e.json_get(f, 'isDbAllowNull')),
 
 						isDbFilter: e.cast(e.bool, e.json_get(f, 'isDbFilter')),
-
-						isDbListOrderField: e.cast(e.bool, e.json_get(f, 'isDbListOrderField')),
 
 						isLinkMember: e.cast(e.bool, e.json_get(f, 'isLinkMember'))
 					})
@@ -276,13 +271,7 @@ export async function addForm(data: any) {
 
 						dbOrderSelect: e.cast(e.int16, e.json_get(f, 'dbOrderSelect')),
 
-						labelDynamicKey: e.cast(e.str, e.json_get(f, 'labelDynamicKey')),
-
-						labelDynamicSource: e.cast(e.str, e.json_get(f, 'labelDynamicSource')),
-
-						labelHeader: e.cast(e.str, e.json_get(f, 'labelHeader')),
-
-						labelText: e.cast(e.str, e.json_get(f, 'labelText')),
+						headerAlt: e.cast(e.str, e.json_get(f, 'headerAlt')),
 
 						height: e.cast(e.int16, e.json_get(f, 'height')),
 
@@ -298,9 +287,30 @@ export async function addForm(data: any) {
 
 						itemsListParms: e.cast(e.json, e.json_get(f, 'itemsListParms')),
 
+						labelDynamicKey: e.cast(e.str, e.json_get(f, 'labelDynamicKey')),
+
+						labelDynamicSource: e.cast(e.str, e.json_get(f, 'labelDynamicSource')),
+
+						labelHeader: e.cast(e.str, e.json_get(f, 'labelHeader')),
+
+						labelText: e.cast(e.str, e.json_get(f, 'labelText')),
+
 						width: e.cast(e.int16, e.json_get(f, 'width'))
 					})
 				}),
+
+				header: p.header,
+				isPopup: p.isPopup,
+				link: p.link,
+				name: p.name,
+				subHeader: p.subHeader,
+				submitButtonLabel: p.submitButtonLabel,
+				table: e.select(
+					e.sys_db.getTable(
+						e.cast(e.str, e.json_get(p.table, 'owner')),
+						e.cast(e.str, e.json_get(p.table, 'name'))
+					)
+				),
 
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
 				modifiedBy: e.select(e.sys_user.getUser(p.creator))
@@ -356,7 +366,9 @@ export async function addFormFieldItemsList(data: any) {
 
 						dbDataSourceKey: e.cast(e.str, e.json_get(f, 'dbDataSourceKey')),
 
-						dbExpr: e.cast(e.str, e.json_get(f, 'dbExpr')),
+						exprFilter: e.cast(e.str, e.json_get(f, 'exprFilter')),
+
+						exprPreset: e.cast(e.str, e.json_get(f, 'exprPreset')),
 
 						dbOrderList: e.cast(e.int16, e.json_get(f, 'dbOrderList')),
 
@@ -366,9 +378,7 @@ export async function addFormFieldItemsList(data: any) {
 
 						isDbAllowNull: e.cast(e.bool, e.json_get(f, 'isDbAllowNull')),
 
-						isDbFilter: e.cast(e.bool, e.json_get(f, 'isDbFilter')),
-
-						isDbListOrderField: e.cast(e.bool, e.json_get(f, 'isDbListOrderField'))
+						isDbFilter: e.cast(e.bool, e.json_get(f, 'isDbFilter'))
 					})
 				})
 			})
@@ -463,27 +473,30 @@ export async function getFormIdByName(formName: string) {
 
 export async function getFormById(formId: string) {
 	const query = e.select(e.sys_obj.Form, (form) => ({
-		id: true,
-		name: true,
-		header: true,
-		subHeader: true,
 		description: true,
-		_table: e.select(form.table, (t) => ({
-			mod: true,
-			name: true,
-			hasMgmt: true
-		})),
-		link: true,
-		_codeCardinality: form.codeCardinality.name,
-		_codeComponent: form.codeComponent.name,
+		exprFilter: true,
+		header: true,
+		id: true,
 		isPopup: true,
+		link: true,
+		name: true,
+		subHeader: true,
 		submitButtonLabel: true,
+
 		_actions: e.select(form.actions, (oa) => ({
 			name: true,
 			header: true,
 			color: true,
 			order_by: oa.order
 		})),
+		_codeCardinality: form.codeCardinality.name,
+		_codeComponent: form.codeComponent.name,
+		_table: e.select(form.table, (t) => ({
+			mod: true,
+			name: true,
+			hasMgmt: true
+		})),
+
 		_fieldsEl: e.select(form.fieldsEl, (f) => ({
 			_column: e.select(f.column, (c) => ({
 				_codeAlignment: c.codeAlignment.name,
@@ -508,21 +521,22 @@ export async function getFormById(formId: string) {
 			})),
 			_codeAccess: f.codeAccess.name,
 			_codeElement: f.codeElement.name,
-			labelDynamicKey: true,
-			labelDynamicSource: true,
-			labelHeader: true,
-			labelText: true,
-			height: true,
-			isDisplay: true,
-			isDisplayable: true,
-			items: true,
 			_itemsList: e.select(f.itemsList, (il) => ({
 				dbSelect: true,
 				name: true,
 				propertyId: true,
 				propertyLabel: true
 			})),
+			headerAlt: true,
+			height: true,
+			isDisplay: true,
+			isDisplayable: true,
+			items: true,
 			itemsListParms: true,
+			labelDynamicKey: true,
+			labelDynamicSource: true,
+			labelHeader: true,
+			labelText: true,
 			width: true,
 			order_by: f.dbOrderSelect
 		})),
@@ -531,7 +545,7 @@ export async function getFormById(formId: string) {
 			_codeDataType: f.column.codeDataType.name,
 			_codeDbDataOp: f.codeDbDataOp.name,
 			_codeDbDataSource: f.codeDbDataSource.name,
-			_expr: f.dbExpr,
+			_exprFilter: f.exprFilter,
 			_name: f.column.name,
 			dbDataSourceKey: true,
 			filter: e.op(f.isDbFilter, '=', e.bool(true))
@@ -540,23 +554,26 @@ export async function getFormById(formId: string) {
 		_fieldsDbOrder: e.select(form.fieldsDb, (f) => ({
 			_codeDataType: f.column.codeDataType.name,
 			_codeDbListDir: f.codeDbListDir.name,
-			_expr: f.dbExpr,
+			_exprFilter: f.exprFilter,
 			_name: f.column.name,
-			filter: e.op(f.isDbListOrderField, '=', e.bool(true)),
+			filter: e.op('exists', f.dbOrderList),
 			order_by: f.dbOrderList
 		})),
 
 		_fieldsDbPreset: e.select(form.fieldsDb, (f) => ({
-			_expr: e.op(f.column.exprPreset, '??', f.column.exprSelect),
+			_expr: e.op(e.op(f.column.exprPreset, '??', f.column.exprSelect), '??', f.exprPreset),
 			_name: f.column.name,
-			filter: e.op(e.op('exists', f.column.exprSelect), 'or', e.op('exists', f.column.exprPreset))
+			filter: e.op(
+				e.op(e.op('exists', f.column.exprPreset), 'or', e.op('exists', f.column.exprSelect)),
+				'or',
+				e.op('exists', f.exprPreset)
+			)
 		})),
 
 		_fieldsDbSaveInsert: e.select(form.fieldsDb, (f) => ({
 			_codeDataType: f.column.codeDataType.name,
 			_codeDbDataSource: f.codeDbDataSource.name,
 			_edgeTypeDefn: f.column.edgeTypeDefn,
-			_exprSave: f.column.exprSave,
 			_isMultiSelect: f.column.isMultiSelect,
 			_name: f.column.name,
 			dbDataSourceKey: true,
@@ -577,7 +594,6 @@ export async function getFormById(formId: string) {
 			_codeDataType: f.column.codeDataType.name,
 			_codeDbDataSource: f.codeDbDataSource.name,
 			_edgeTypeDefn: f.column.edgeTypeDefn,
-			_exprSave: f.column.exprSave,
 			_isMultiSelect: f.column.isMultiSelect,
 			_name: f.column.name,
 			dbDataSourceKey: true,

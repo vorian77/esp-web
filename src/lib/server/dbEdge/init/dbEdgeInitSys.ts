@@ -81,7 +81,10 @@ async function initSysCodes() {
 		['app_sys', 0, 'ct_sys_node_obj_type'],
 
 		['app_sys', 0, 'ct_sys_person_race'],
-		['app_sys', 0, 'ct_sys_state']
+		['app_sys', 0, 'ct_sys_role_org'],
+		['app_sys', 0, 'ct_sys_role_staff'],
+		['app_sys', 0, 'ct_sys_state'],
+		['app_sys', 0, 'ct_sys_status']
 	])
 
 	await codes([
@@ -143,11 +146,12 @@ async function initSysCodes() {
 
 		// form field - source
 		['ct_sys_form_field_source', 'app_sys', 'calc', 0],
-		['ct_sys_form_field_source', 'app_sys', 'data', 1],
-		['ct_sys_form_field_source', 'app_sys', 'env', 2],
+		['ct_sys_form_field_source', 'app_sys', 'env', 1],
+		['ct_sys_form_field_source', 'app_sys', 'form', 2],
 		['ct_sys_form_field_source', 'app_sys', 'literal', 3],
-		['ct_sys_form_field_source', 'app_sys', 'traversal', 4],
-		['ct_sys_form_field_source', 'app_sys', 'user', 5],
+		['ct_sys_form_field_source', 'app_sys', 'parms', 4],
+		['ct_sys_form_field_source', 'app_sys', 'tree', 5],
+		['ct_sys_form_field_source', 'app_sys', 'user', 6],
 
 		// node obj - icons
 		['ct_sys_node_obj_icon', 'app_sys', 'application', 0],
@@ -159,7 +163,7 @@ async function initSysCodes() {
 		['ct_sys_node_obj_type', 'app_sys', 'page', 2],
 		['ct_sys_node_obj_type', 'app_sys', 'program', 3],
 
-		// person - race
+		// sys - person - race
 		['ct_sys_person_race', 'app_sys', 'American Indian and Alaskan Native', 0],
 		['ct_sys_person_race', 'app_sys', 'Asian', 1],
 		['ct_sys_person_race', 'app_sys', 'Black or African American', 2],
@@ -169,12 +173,28 @@ async function initSysCodes() {
 		['ct_sys_person_race', 'app_sys', 'Other', 6],
 		['ct_sys_person_race', 'app_sys', 'Prefer Not To Say', 7],
 
-		// state
+		// sys - role - organization
+		['ct_sys_role_org', 'app_sys', 'cm_training_role_org_agency', 0],
+		['ct_sys_role_org', 'app_sys', 'cm_training_role_org_venue', 0],
+
+		// sys - role - staff
+		['ct_sys_role_staff', 'app_sys', 'cm_training_role_staff_admin', 0],
+		['ct_sys_role_staff', 'app_sys', 'cm_training_role_staff_agency', 0],
+		['ct_sys_role_staff', 'app_sys', 'cm_training_role_staff_instructor', 0],
+
+		// sys - state
 		['ct_sys_state', 'app_sys', 'Illinois', 0],
 		['ct_sys_state', 'app_sys', 'Maryland', 0],
 		['ct_sys_state', 'app_sys', 'Michigan', 0],
 		['ct_sys_state', 'app_sys', 'Ohio', 0],
-		['ct_sys_state', 'app_sys', 'Pennsylvania', 0]
+		['ct_sys_state', 'app_sys', 'Pennsylvania', 0],
+
+		// sys - status
+		['ct_sys_status', 'app_sys', 'Under development', 0],
+		['ct_sys_status', 'app_sys', 'Submitted', 1],
+		['ct_sys_status', 'app_sys', 'Under review', 2],
+		['ct_sys_status', 'app_sys', 'Approved', 3],
+		['ct_sys_status', 'app_sys', 'Rejected', 4]
 	])
 }
 
@@ -183,7 +203,7 @@ async function initSysFieldItemsLists() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
-			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str;parms;codeTypeName> ORDER BY .order',
+			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .order',
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_sys_code_order_index_by_codeTypeName'
@@ -192,10 +212,39 @@ async function initSysFieldItemsLists() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
-			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str;parms;codeTypeName> ORDER BY .name',
+			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .name',
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_sys_code_order_name_by_codeTypeName'
+	})
+
+	await addFormFieldItemsList({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		dbSelect:
+			'SELECT sys_core::CodeType {data := .id, display := .header} FILTER .parent.name = <str,parms,codeTypeParentName> ORDER BY .name',
+		propertyId: 'id',
+		propertyLabel: 'name',
+		name: 'il_sys_codeType_order_name_by_codeTypeParentName'
+	})
+
+	await addFormFieldItemsList({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		dbSelect:
+			'SELECT sys_core::Org { data := .id, display := .name } FILTER .roles.name = <str,parms,codeName> ORDER BY .name',
+		propertyId: 'id',
+		propertyLabel: 'name',
+		name: 'il_sys_role_org_by_codeName'
+	})
+	await addFormFieldItemsList({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		dbSelect:
+			'SELECT sys_user::Staff { data := .id, display := .person.fullName } FILTER .roles.name = <str,parms,codeName> ORDER BY str_lower(.person.lastName) then str_lower(.person.firstName)',
+		propertyId: 'id',
+		propertyLabel: 'person.fullName',
+		name: 'il_sys_role_staff_by_codeName'
 	})
 }
 
@@ -221,7 +270,7 @@ async function initSysColumns() {
 			owner: 'app_sys',
 			codeDataType: 'computed',
 			codeDataTypePreset: 'str',
-			exprSelect: `(SELECT sys_user::User {fullName := str_upper(.person.fullName)} FILTER .userName = <str;user;userName>)`,
+			exprSelect: `(SELECT sys_user::User {fullName := str_upper(.person.fullName)} FILTER .userName = <str,user,userName>)`,
 			header: 'Full Name (uppercase)',
 			isExcludeUpdate: true,
 			name: 'computed_person_fullname_uppercase'
@@ -263,8 +312,8 @@ async function initSysColumns() {
 				property: 'person.fullName',
 				table: { mod: 'sys_user', name: 'User' }
 			},
-			exprPreset: '<str;user;fullName>',
-			exprSave: '(SELECT sys_user::getUser(<str;user;userName>))',
+			exprPreset:
+				'(SELECT sys_user::User { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
 			header: 'Created By',
 			isExcludeUpdate: true,
 			name: 'createdBy'
@@ -278,8 +327,8 @@ async function initSysColumns() {
 				property: 'person.fullName',
 				table: { mod: 'sys_user', name: 'User' }
 			},
-			exprPreset: '<str;user;fullName>',
-			exprSave: '(SELECT sys_user::getUser(<str;user;userName>))',
+			exprPreset:
+				'(SELECT sys_user::User { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
 			header: 'Modified By',
 			name: 'modifiedBy'
 		})
@@ -296,7 +345,8 @@ async function initSysColumns() {
 		await addColumn({
 			creator: 'user_sys',
 			owner: 'app_sys',
-			codeDataType: 'str',
+			codeDataType: 'edgeType',
+			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
 			header: 'Status',
 			name: 'codeStatus'
 		})
@@ -324,7 +374,7 @@ async function initSysColumns() {
 		await addColumn({
 			creator: 'user_sys',
 			owner: 'app_sys',
-			codeDataType: 'bool',
+			codeDataType: 'str',
 			header: 'Active',
 			name: 'isActive'
 		})
@@ -347,13 +397,7 @@ async function initSysColumns() {
 			creator: 'user_sys',
 			owner: 'app_sys',
 			codeDataType: 'edgeType',
-			codeDataTypePreset: 'str',
-			edgeTypeDefn: {
-				property: 'name',
-				table: { mod: 'sys_core', name: 'Org' }
-			},
-			exprPreset: `(SELECT "Atlantic Impact: <str;user;fullName>")`,
-			exprSave: `(SELECT sys_core::getOrg(<str;user;organization>))`,
+			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Org' } },
 			header: 'Owner',
 			name: 'owner'
 		})
@@ -467,7 +511,7 @@ async function initTablePerson() {
 			creator: 'user_sys',
 			owner: 'app_sys',
 			codeDataType: 'json',
-			exprStorageKey: 'avatar_<raw;calc;random10>',
+			exprStorageKey: 'avatar_<raw,user,userName>',
 			header: 'Avatar',
 			name: 'avatar'
 		})

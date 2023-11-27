@@ -42,6 +42,7 @@ export type $FormλShape = $.typeutil.flatten<$DataObjλShape & {
   "submitButtonLabel": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "fieldsDb": $.LinkDesc<$FormFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "fieldsEl": $.LinkDesc<$FormFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
+  "exprFilter": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "link": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
 }>;
 type $Form = $.ObjectType<"sys_obj::Form", $FormλShape, null, [
@@ -52,6 +53,8 @@ const $Form = $.makeType<$Form>(_.spec, "c7ac7bd7-71ae-11ee-8e85-37c88c05f269", 
 const Form: $.$expr_PathNode<$.TypeSet<$Form, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Form, $.Cardinality.Many), null);
 
 export type $FormFieldDbλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
+  "exprFilter": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "exprPreset": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeDbDataOp": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeDbDataSource": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeDbListDir": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
@@ -62,7 +65,6 @@ export type $FormFieldDbλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11
   "isDbAllowNull": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "isDbListOrderField": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "fieldName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "dbExpr": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "isDbFilter": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "isLinkMember": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "<fieldsDb[is sys_obj::FormFieldItemsList]": $.LinkDesc<$FormFieldItemsList, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -77,6 +79,7 @@ const $FormFieldDb = $.makeType<$FormFieldDb>(_.spec, "c7a7a524-71ae-11ee-900c-6
 const FormFieldDb: $.$expr_PathNode<$.TypeSet<$FormFieldDb, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($FormFieldDb, $.Cardinality.Many), null);
 
 export type $FormFieldElλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
+  "headerAlt": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeAccess": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeElement": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "column": $.LinkDesc<_sys_db.$Column, $.Cardinality.One, {}, false, false,  false, false>;

@@ -30,8 +30,6 @@ export interface RawFormField {
 		_codeDataType: string
 		_codeDataTypePreset: string
 		classValue: string
-		exprPreset: string
-		exprSave: string
 		exprSelect: string
 		exprStorageKey: string
 		header: string
@@ -52,6 +50,7 @@ export interface RawFormField {
 		patternReplacement: string
 		placeHolder: string
 	}
+	headerAlt: string
 	height: number
 	isDisplay: boolean
 	isDisplayable: boolean

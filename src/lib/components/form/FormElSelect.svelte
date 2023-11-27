@@ -6,6 +6,8 @@
 
 	const fieldId = 'field' + field.index
 
+	$: if (field.items.length === 1 && !field.value.data) field.value.data = field.items[0].data
+
 	function onChangeSelect(event: Event) {
 		const newValData = event.currentTarget?.value
 		let newValDisplay = null
@@ -33,7 +35,7 @@
 	>
 		<option value={null}>Select an option...</option>
 		{#each field.items as { data: id, display: label }, index (id)}
-			<option value={id} selected={id === field.value}>
+			<option value={id} selected={id === field.value.data}>
 				{label}
 			</option>
 		{/each}

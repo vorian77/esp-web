@@ -1,22 +1,40 @@
 <script lang="ts">
 	import type { Form } from '$comps/form/form'
+	import type { DataObj } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
-	import { navParms } from '$comps/nav/navStore'
+	import { Form as FormClass } from '$comps/form/form'
+	import { navParms, setNavParms } from '$comps/nav/navStore'
 	import DataObjActions from '$comps/DataObjActions.svelte'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
 	import DataViewer from '$comps/DataViewer.svelte'
 	import { getArray } from '$utils/array.utils'
 
-	export let formObj: Form
-	export let formData: Array<{}>
+	export let dataObj: DataObj | undefined
 	export let onListRowClick = (data: any) => {}
+	let formObj: Form
 
 	const ROW_PER_PAGE = 20
-
 	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
 	const rows = handler.getRows()
 	let sort: any
+
+	$: {
+		if (dataObj) {
+			formObj = new FormClass(dataObj.defn)
+			const sortItems = formObj.defn._fieldsDbOrder
+			handler.clearSort()
+			if (sortItems) {
+				for (let i = sortItems.length - 1; i >= 0; i--) {
+					handler.applySort({
+						orderBy: sortItems[i]._name,
+						direction: sortItems[i]._codeDbListDir ? sortItems[i]._codeDbListDir : 'asc'
+					})
+				}
+			}
+			setNavParms(dataObj, false)
+		}
+	}
 
 	$: {
 		handler.setRows($navParms.data)
@@ -24,19 +42,6 @@
 		handler.clearFilters()
 		handler.clearSearch()
 		sort = handler.getSort()
-	}
-
-	$: {
-		const sortItems = formObj.defn._fieldsDbOrder
-		handler.clearSort()
-		if (sortItems) {
-			for (let i = sortItems.length - 1; i >= 0; i--) {
-				handler.applySort({
-					orderBy: sortItems[i]._name,
-					direction: sortItems[i]._codeDbListDir ? sortItems[i]._codeDbListDir : 'asc'
-				})
-			}
-		}
 	}
 </script>
 
@@ -83,7 +88,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#if formData}
+			{#if $navParms.data}
 				{#each $rows as row, i (row.id)}
 					<tr
 						on:click={() => onListRowClick({ index: i, row })}

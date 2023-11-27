@@ -26,6 +26,7 @@ module sys_obj{
   
   type Form extending DataObj {
     description: str;
+    exprFilter: str;
     multi fieldsDb: sys_obj::FormFieldDb {
       on source delete delete target;
     };
@@ -40,20 +41,20 @@ module sys_obj{
   }
 
   type FormFieldDb {
-    required column: sys_db::Column {
-      on source delete allow;
-    };
     codeDbDataOp: sys_core::Code;
     codeDbDataSource: sys_core::Code;
     codeDbListDir: sys_core::Code;
+    required column: sys_db::Column {
+      on source delete allow;
+    };
     dbDataSourceKey: str;
-    dbExpr: str;
     dbOrderList: default::nonNegative;
     dbOrderSelect: default::nonNegative;
+    exprFilter: str;
+    exprPreset: str;
     fieldName: str;
     isDbAllowNull: bool;
     isDbFilter: bool;
-    isDbListOrderField: bool;
     isLinkMember: bool;
   }
 
@@ -64,10 +65,7 @@ module sys_obj{
     codeAccess: sys_core::Code;
     codeElement: sys_core::Code;
     dbOrderSelect: default::nonNegative;
-    labelDynamicKey: str;
-    labelDynamicSource: str;
-    labelHeader: str;
-    labelText: str;
+    headerAlt: str;
     height: int16;
     isDisplay: bool;
     isDisplayable: bool;
@@ -76,6 +74,10 @@ module sys_obj{
      on source delete allow;
     };
     itemsListParms: json;
+    labelDynamicKey: str;
+    labelDynamicSource: str;
+    labelHeader: str;
+    labelText: str;
     width: int16;
   }
 

@@ -6,7 +6,6 @@ module sys_db{
     codeDataTypePreset: sys_core::Code;
     edgeTypeDefn: json;
     exprPreset: str;
-    exprSave: str;
     exprSelect: str;
     exprStorageKey: str;
     headerSide: str;
@@ -28,9 +27,9 @@ module sys_db{
   }
 
   type Table extending sys_core::Obj {
-    mod: str;
-    required hasMgmt: bool;
     multi columns: Column;
+    required hasMgmt: bool;
+    mod: str;
     constraint exclusive on ((.owner, .name));
   }
 

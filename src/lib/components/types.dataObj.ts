@@ -1,5 +1,5 @@
 import { memberOfEnum, strRequired, valueOrDefault } from '$lib/utils/utils'
-import { NavParms, NavTreeNode } from '$comps/types'
+import { NavParms, NavTreeNode, Table } from '$comps/types'
 import type Messenger from '$comps/Messenger.svelte'
 
 export class DataObj {
@@ -7,7 +7,9 @@ export class DataObj {
 	component: DataObjComponent
 	data: any
 	defn: any
+	isInsertMode: boolean | undefined
 	saveCallbacks: Array<DataObjCallback> = []
+	table: Table | undefined
 
 	constructor(defn: any) {
 		defn = valueOrDefault(defn, {})
@@ -26,6 +28,7 @@ export class DataObj {
 			DataObjComponent
 		)
 		this.defn = defn
+		if (this.defn._table) this.table = new Table(this.defn._table)
 	}
 	get objData() {
 		return new NavParms()

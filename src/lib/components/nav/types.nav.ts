@@ -1,6 +1,6 @@
 import { memberOfEnum, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 import { Field, FieldValue } from '$comps/form/field'
-import { type DataObj, DataObjCardinality, FieldElement } from '$comps/types'
+import { type DataObj, DataObjCardinality, DataObjProcessType, FieldElement } from '$comps/types'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/lib/components/nav/types.nav.ts'
@@ -95,6 +95,10 @@ export class NavTree {
 	setNodeCurrent(node: NavTreeNode) {
 		this.currentNode = node
 		this.setNodeLists(this.currentNode.key)
+	}
+
+	setNodeCurrentData(newData: any) {
+		if (this.currentNode.nodeObj.dataObj) this.currentNode.nodeObj.dataObj.data = newData
 	}
 
 	setNodeLists(currentNodeKey: string) {
@@ -205,7 +209,7 @@ export class NavParmsDB extends NavParms {
 				dataObj.data.forEach((dataRow: any) => this.parseRow(dataRow))
 			}
 		}
-		console.log('NavParmsDB.data:', this.data)
+		console.log('NavParmsDB:', this)
 	}
 	parseRow(data: any) {
 		if (!data) return
@@ -318,4 +322,12 @@ export enum NodeObjType {
 	page = 'page',
 	program = 'program',
 	root = 'root'
+}
+
+export interface ProcessDataObj {
+	nodeKey: string
+	dataObj: DataObj | undefined
+	dataObjId: string
+	processType: DataObjProcessType
+	data: any
 }

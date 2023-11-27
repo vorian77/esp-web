@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { FieldCheckbox } from '$comps/form/fieldCheckbox'
 	import type { FieldValue } from '$comps/form/field'
+	import { BinarySelect } from '$comps/types'
 	export let field: FieldCheckbox
+	let isSelected: boolean
 
 	$: {
 		if (field.isMultiSelect) {
@@ -9,6 +11,9 @@
 			if (field.value.data) vals = field.value.data.split(',')
 			field.items.forEach((i) => (i.selected = vals.includes(i.data)))
 		} else {
+			const binarySelect = new BinarySelect(field.dataType)
+			if (!field.value.data) field.value.data = binarySelect.getDefault()
+			isSelected = binarySelect.isSelected(field.value.data)
 		}
 	}
 </script>
@@ -42,8 +47,7 @@
 			id={field.name}
 			name={field.name}
 			class="mt-1 rounded-sm"
-			value="Yummy"
-			bind:checked={field.value.data}
+			bind:checked={isSelected}
 			on:click
 		/>
 		<div class="ml-2">{field.label}</div>
