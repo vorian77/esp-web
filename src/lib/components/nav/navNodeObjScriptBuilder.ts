@@ -382,18 +382,18 @@ export function getVal(field: DataFieldData, data: any, table: Table | undefined
 			const tokens = key.split('.')
 			let currentData = data
 			for (let i = 0; i < tokens.length - 1; i++) {
-				if (!currentData.hasOwnProperty(tokens[i])) return false
+				if (!currentData || !currentData.hasOwnProperty(tokens[i])) return false
 				currentData = currentData[tokens[i]]
 			}
 			const idx = tokens.length - 1
-			if (!currentData.hasOwnProperty(tokens[idx])) return false
+			if (!currentData || !currentData.hasOwnProperty(tokens[idx])) return false
 			return [true, currentData[tokens[idx]]]
 		}
 		function valueNotFound(source: DataFieldSource, data: Record<string, any>) {
 			throw error(500, {
 				file: FILENAME,
 				function: funct,
-				message: `Value not found in data: ${JSON.stringify(data)}.`
+				message: `Value is null or not found in data: ${JSON.stringify(data)}.`
 			})
 		}
 	}
