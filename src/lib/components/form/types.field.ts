@@ -9,10 +9,10 @@ export enum FieldAccess {
 
 export enum FieldElement {
 	checkbox = 'checkbox',
+	custom = 'custom',
 	date = 'date',
 	email = 'email',
 	file = 'file',
-	label = 'label',
 	number = 'number',
 	password = 'password',
 	radio = 'radio',
@@ -24,6 +24,7 @@ export enum FieldElement {
 
 export interface RawFormField {
 	_codeAccess: string
+	_codeCustomElType: string
 	_codeElement: string
 	_column: {
 		_codeAlignment: string
@@ -50,15 +51,12 @@ export interface RawFormField {
 		patternReplacement: string
 		placeHolder: string
 	}
+	customElParms: any
 	headerAlt: string
 	height: number
 	isDisplay: boolean
 	isDisplayable: boolean
 	items: Array<{ data: string; display: string }>
-	labelDynamicKey: string
-	labelDynamicSource: string
-	labelHeader: string
-	labelText: string
 	_itemsList: {
 		dbSelect: string
 		name: string

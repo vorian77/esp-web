@@ -1,7 +1,6 @@
-import { setNavParms, setNavStatusListRows } from '$comps/nav/navStore'
+import { setNavParmsDataObj, setNavStatusListRows } from '$comps/nav/navStore'
 import {
 	getData,
-	processDataObj,
 	setNavNode,
 	setNavStatus,
 	treeCollapseBranchSibling,
@@ -16,7 +15,8 @@ import {
 	DataObjStatus,
 	DataObjCardinality,
 	NavTreeNode,
-	NavParms
+	NavParms,
+	processDataObjByNode
 } from '$comps/types'
 import type { FieldValue } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
@@ -32,7 +32,7 @@ export async function objActionListEdit(
 		await treeRetrieveBranch(nodeParent, false)
 		const nodeChild: NavTreeNode = treeGetFirstChild(nodeParent)
 
-		nodeChild.nodeObj.dataObj = await processDataObj(
+		nodeChild.nodeObj.dataObj = await processDataObjByNode(
 			nodeChild,
 			DataObjProcessType.select,
 			getData(nodeParent, rowData)
@@ -56,12 +56,12 @@ export async function objActionListEdit(
 export async function objActionListNew(nodeParent: NavTreeNode) {
 	await treeRetrieveBranch(nodeParent, true)
 	const node: NavTreeNode = treeGetFirstChild(nodeParent)
-	node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.preset, getData(node))
+	node.nodeObj.dataObj = await processDataObjByNode(node, DataObjProcessType.preset, getData(node))
 	setNavNode(node, true)
 }
 
 export async function objActionDetailDelete(node: NavTreeNode, objData: NavParms) {
-	node.nodeObj.dataObj = await processDataObj(
+	node.nodeObj.dataObj = await processDataObjByNode(
 		node,
 		DataObjProcessType.delete,
 		getData(node, objData)
@@ -75,12 +75,12 @@ export async function objActionDetailDelete(node: NavTreeNode, objData: NavParms
 
 export async function objActionDetailNew(node: NavTreeNode) {
 	treeCollapseNodes(node)
-	node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.preset, getData(node))
+	node.nodeObj.dataObj = await processDataObjByNode(node, DataObjProcessType.preset, getData(node))
 	setNavNode(node, true)
 }
 
 export async function objActionDetailSaveInsert(node: NavTreeNode, objData: NavParms) {
-	node.nodeObj.dataObj = await processDataObj(
+	node.nodeObj.dataObj = await processDataObjByNode(
 		node,
 		DataObjProcessType.saveInsert,
 		getData(node, objData)
@@ -101,12 +101,12 @@ export async function objActionDetailSaveInsert(node: NavTreeNode, objData: NavP
 }
 
 export async function objActionDetailSaveUpdate(node: NavTreeNode, objData: NavParms) {
-	const newDataObj: DataObj = await processDataObj(
+	const newDataObj: DataObj = await processDataObjByNode(
 		node,
 		DataObjProcessType.saveUpdate,
 		getData(node, objData)
 	)
-	setNavParms(newDataObj, false)
+	setNavParmsDataObj(newDataObj, false)
 }
 
 async function getNodeParent(node: NavTreeNode) {
@@ -118,7 +118,7 @@ async function getNodeParent(node: NavTreeNode) {
 			message: `Unable to get parent node of node: ${node.nodeObj.name}`
 		})
 
-	parentNode.nodeObj.dataObj = await processDataObj(
+	parentNode.nodeObj.dataObj = await processDataObjByNode(
 		parentNode,
 		DataObjProcessType.select,
 		getData(parentNode)

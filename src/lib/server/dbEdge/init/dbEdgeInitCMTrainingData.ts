@@ -3,7 +3,8 @@ import {
 	addOrgs,
 	addRoleOrg,
 	addStaff,
-	addRoleStaff
+	addRoleStaff,
+	setOrgUserType
 } from '$server/dbEdge/init/dbEdgeInitUtilities'
 
 const FILE = 'init_cm_training_data'
@@ -24,10 +25,10 @@ export default async function init() {
 	})
 
 	await addOrgs([
-		['Atlantic Impact'],
-		['Atlantic Impact - School Site 1'],
-		['Atlantic Impact - School Site 2'],
-		['Atlantic Impact - School Site 3']
+		['Atlantic Impact', 'Atlantic Impact Mobile'],
+		['Atlantic Impact - School Site 1', ''],
+		['Atlantic Impact - School Site 2', ''],
+		['Atlantic Impact - School Site 3', '']
 	])
 	await addRoleOrg([
 		['Atlantic Impact', 'cm_training_role_org_agency'],
@@ -35,6 +36,8 @@ export default async function init() {
 		['Atlantic Impact - School Site 2', 'cm_training_role_org_venue'],
 		['Atlantic Impact - School Site 3', 'cm_training_role_org_venue']
 	])
+
+	await setOrgUserType([['Atlantic Impact', 'ut_cm_training_staff_provider']])
 
 	await addStaff([
 		['Stacy', 'Administrator'],

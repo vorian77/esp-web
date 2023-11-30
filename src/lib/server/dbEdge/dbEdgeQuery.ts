@@ -9,11 +9,24 @@ let client = edgedb.createClient({
 	secretKey: EDGEDB_SECRET_KEY
 })
 
+export async function queryExecute(script: string) {
+	if (!script) return {}
+	try {
+		return await client.execute(script)
+	} catch (e: any) {
+		throw error(500, {
+			file: FILENAME,
+			function: 'queryExecute',
+			message: `Invalid query: ${script} ${e.message}`
+		})
+	}
+}
+
 export async function queryMultiple(script: string) {
 	if (!script) return {}
 	try {
 		return JSON.parse(await client.queryJSON(script))
-	} catch (e) {
+	} catch (e: any) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'queryMultiple',
@@ -26,7 +39,7 @@ export async function querySingle(script: string) {
 	if (!script) return {}
 	try {
 		return JSON.parse(await client.querySingleJSON(script))
-	} catch (e) {
+	} catch (e: any) {
 		throw error(500, {
 			file: FILENAME,
 			function: 'querySingle',

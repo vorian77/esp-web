@@ -132,6 +132,7 @@ export class DataObjStatus {
 
 export enum DataObjProcessType {
 	delete = 'delete',
+	object = 'object',
 	preset = 'preset',
 	saveInsert = 'saveInsert',
 	saveUpdate = 'saveUpdate',

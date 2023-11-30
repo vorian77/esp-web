@@ -1,5 +1,14 @@
+// import bcrypt from 'bcryptjs'
+
 export function capitalizeFirstLetter(text: string) {
 	return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+export async function encrypt(text: string) {
+	// let salt = bcrypt.genSaltSync(10)
+	// let hash = bcrypt.hashSync(text, salt)
+	// return hash
+	return text
 }
 
 export function objIsEmpty(obj: any) {

@@ -3,12 +3,19 @@
 import * as $ from "../reflection";
 import * as _ from "../imports";
 import type * as _sys_core from "./sys_core";
-import type * as _default from "./default";
-import type * as _std from "./std";
 import type * as _sys_db from "./sys_db";
+import type * as _std from "./std";
+import type * as _default from "./default";
 export type $DataObjλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "codeCardinality": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
   "codeComponent": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
+  "table": $.LinkDesc<_sys_db.$Table, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "description": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "exprFilter": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "exprObject": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "isPopup": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
+  "link": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
+  "subHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "actions": $.LinkDesc<$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj[is sys_obj::NodeObj]": $.LinkDesc<$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -35,15 +42,9 @@ const $DataObjAction = $.makeType<$DataObjAction>(_.spec, "c76e660b-71ae-11ee-9c
 const DataObjAction: $.$expr_PathNode<$.TypeSet<$DataObjAction, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($DataObjAction, $.Cardinality.Many), null);
 
 export type $FormλShape = $.typeutil.flatten<$DataObjλShape & {
-  "table": $.LinkDesc<_sys_db.$Table, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "description": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "isPopup": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
-  "subHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "submitButtonLabel": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "fieldsDb": $.LinkDesc<$FormFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "fieldsEl": $.LinkDesc<$FormFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
-  "exprFilter": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "link": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
 }>;
 type $Form = $.ObjectType<"sys_obj::Form", $FormλShape, null, [
   ...$DataObj['__exclusives__'],
@@ -63,7 +64,6 @@ export type $FormFieldDbλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11
   "dbOrderList": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
   "dbOrderSelect": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
   "isDbAllowNull": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
-  "isDbListOrderField": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "fieldName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "isDbFilter": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "isLinkMember": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -80,6 +80,8 @@ const FormFieldDb: $.$expr_PathNode<$.TypeSet<$FormFieldDb, $.Cardinality.Many>,
 
 export type $FormFieldElλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
   "headerAlt": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "codeCustomElType": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "customElParms": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeAccess": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeElement": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "column": $.LinkDesc<_sys_db.$Column, $.Cardinality.One, {}, false, false,  false, false>;
@@ -91,10 +93,6 @@ export type $FormFieldElλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11
   "dbOrderSelect": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
   "itemsListParms": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "items": $.PropertyDesc<$.ArrayType<_std.$json>, $.Cardinality.AtMostOne, false, false, false, false>;
-  "labelDynamicKey": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "labelDynamicSource": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "labelHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "labelText": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "<fieldsEl[is sys_obj::Form]": $.LinkDesc<$Form, $.Cardinality.Many, {}, false, false,  false, false>;
   "<fieldsEl": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;

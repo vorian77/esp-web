@@ -1,33 +1,32 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
-	import Form from '$comps/form/FormDetail.svelte'
+	import FormDetailDrawer from '$comps/form/FormDetailDrawer.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
 
 	const drawerStore = getDrawerStore()
 
 	function closeDrawer() {
+		$drawerStore.meta.onCloseDrawer()
 		drawerStore.close()
+		$drawerStore.id = undefined
 	}
 	function onformCancelled() {
-		$drawerStore.meta.onCloseDrawer()
+		alert('onformCancelled...')
 		closeDrawer()
 	}
 	function onKeyDown(event: KeyboardEvent) {
-		if (event.key === 'Escape') {
-			closeDrawer()
-		}
+		if (!$drawerStore.id) return
+		if (event.key === 'Escape') closeDrawer()
 	}
 </script>
 
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'auth'}
 		<div>
-			<Form
-				surface="esp-card-space-y"
+			<FormDetailDrawer
 				bind:formObj={$drawerStore.meta.formObj}
 				on:formCancelled={onformCancelled}
-				on:formSubmitted={$drawerStore.meta.onFormSubmitted}
-				on:form-link={$drawerStore.meta.onFormLink}
+				on:customFieldAction={$drawerStore.meta.onCustomFieldAction}
 			/>
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}

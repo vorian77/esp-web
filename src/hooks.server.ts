@@ -49,10 +49,10 @@ export async function handle({ event, resolve }) {
 	}
 
 	// confirm legal disclosure
-	if (!event.locals.user.cm_ssr_disclosure) {
-		console.log(FILENAME, 'redirect - not disclosed...')
-		throw redirect(303, '/legalDisclosure')
-	}
+	// if (!event.locals.user.cm_ssr_disclosure) {
+	// 	console.log(FILENAME, 'redirect - not disclosed...')
+	// 	throw redirect(303, '/legalDisclosure')
+	// }
 
 	// security protected routes
 	return resolve(event)

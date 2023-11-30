@@ -197,22 +197,23 @@ export class NavParms {
 }
 
 export class NavParmsDB extends NavParms {
-	constructor(dataObj: DataObj | undefined, isInsertMode: boolean) {
+	constructor(data: any, cardinality: DataObjCardinality, isInsertMode: boolean) {
 		super()
 		this.isInsertMode = isInsertMode
-		if (dataObj?.data) {
-			this.cardinality = dataObj.cardinality
+
+		if (data) {
+			this.cardinality = cardinality
 
 			if (this.cardinality === DataObjCardinality.detail) {
-				this.parseRow(dataObj.data)
+				this.parseRow(data)
 			} else {
-				dataObj.data.forEach((dataRow: any) => this.parseRow(dataRow))
+				if (data.length > 0) data.forEach((dataRow: any) => this.parseRow(dataRow))
 			}
 		}
 		console.log('NavParmsDB:', this)
 	}
 	parseRow(data: any) {
-		if (!data) return
+		if (!data || Object.entries(data).length === 0) return
 		this.addRow()
 
 		for (const key in data) {
@@ -243,9 +244,8 @@ export class NavParmsObjDetail extends NavParms {
 		this.cardinality = DataObjCardinality.detail
 		this.addRow()
 		objFields.forEach((f) => {
-			if (f.element !== FieldElement.label) this.addItem(f.name, f.value?.data, f.value?.display)
+			if (f.element !== FieldElement.custom) this.addItem(f.name, f.value?.data, f.value?.display)
 		})
-		console.log('NavParmsObjDetail.data:', this.data)
 	}
 }
 
@@ -325,9 +325,8 @@ export enum NodeObjType {
 }
 
 export interface ProcessDataObj {
-	nodeKey: string
 	dataObj: DataObj | undefined
-	dataObjId: string
+	dataObjID: string // used for processing by ID or Name
 	processType: DataObjProcessType
 	data: any
 }

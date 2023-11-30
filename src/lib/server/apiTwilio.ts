@@ -30,7 +30,7 @@ export async function sendText(phoneNbrTo: string, textBody: string) {
 			file: FILENAME,
 			function: 'sendText',
 			message:
-				`Attemt to send text failed...` +
+				`Attempt to send text failed...` +
 				'\n' +
 				'Error: ' +
 				JSON.stringify(err) +

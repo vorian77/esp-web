@@ -2,20 +2,21 @@
 	import { navTree, navUser } from '$comps/nav/navStore'
 	import { type DataObj, type NodeObj, NavTree, type NavTreeNode } from '$comps/types'
 	import { capitalizeFirstLetter } from '$comps/types'
-	import NodeFormList from '$comps/nav/NodeFormList.svelte'
-	import NodeFormDetail from '$comps/nav/NodeFormDetail.svelte'
+	import FormListNode from '$comps/form/FormListNode.svelte'
+	import FormDetailNode from '$comps/form/FormDetailNode.svelte'
+	import { setContext } from 'svelte'
 
 	const DEFAULT_COMPONENT = 'Home'
 
 	const comps = {
-		FormList: NodeFormList,
-		FormDetail: NodeFormDetail
+		FormList: FormListNode,
+		FormDetail: FormDetailNode
 	}
 
 	let navTreeLocal: NavTree
 	let navTreeNode: NavTreeNode | undefined
 	let nodeObj: NodeObj | undefined
-	let dataObj: DataObj | null
+	let dataObj: DataObj | undefined
 	let compName = ''
 	let compCurrent: any
 	let nodeType = ''
@@ -33,14 +34,12 @@
 		nodeType = capitalizeFirstLetter(nodeObj ? nodeObj.type : 'unknown')
 	}
 
-	function scrollToTop() {
-		scrollContainer.scrollIntoView()
-	}
+	setContext('scrollToTop', () => scrollContainer.scrollIntoView())
 </script>
 
 <div bind:this={scrollContainer}>
 	{#if compName}
-		<svelte:component this={compCurrent} treeNode={navTreeNode} {scrollToTop} />
+		<svelte:component this={compCurrent} treeNode={navTreeNode} />
 	{:else if !isRootNavTreeNode && nodeObj?.header}
 		<h1 class="h1">{nodeType}: {nodeObj.header}</h1>
 	{/if}

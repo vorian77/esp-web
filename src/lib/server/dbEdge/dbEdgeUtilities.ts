@@ -183,9 +183,12 @@ export async function addForm(data: any) {
 			owner: e.str,
 			actions: e.optional(e.array(e.str)),
 			codeCardinality: e.str,
+			codeCustomElType: e.optional(e.array(e.str)),
 			codeComponent: e.str,
+			customElParms: e.optional(e.json),
 			description: e.optional(e.str),
 			exprFilter: e.optional(e.str),
+			exprObject: e.optional(e.str),
 			fields: e.optional(e.array(e.json)),
 			header: e.optional(e.str),
 			link: e.optional(e.json),
@@ -197,7 +200,6 @@ export async function addForm(data: any) {
 		},
 		(p) => {
 			return e.insert(e.sys_obj.Form, {
-				owner: e.select(e.sys_core.getEnt(p.owner)),
 				actions: e.select(e.sys_obj.DataObjAction, (OA) => ({
 					filter: e.contains(p.actions, OA.name)
 				})),
@@ -207,6 +209,7 @@ export async function addForm(data: any) {
 				codeComponent: e.select(e.sys_core.getCode('ct_sys_data_obj_component', p.codeComponent)),
 				description: p.description,
 				exprFilter: p.exprFilter,
+				exprObject: p.exprObject,
 
 				fieldsDb: e.for(e.array_unpack(p.fields), (f) => {
 					return e.insert(e.sys_obj.FormFieldDb, {
@@ -262,12 +265,21 @@ export async function addForm(data: any) {
 							)
 						),
 
+						codeCustomElType: e.select(
+							e.sys_core.getCode(
+								'ct_sys_form_field_element_custom_type',
+								e.cast(e.str, e.json_get(f, 'codeCustomElType'))
+							)
+						),
+
 						codeElement: e.select(
 							e.sys_core.getCode(
 								'ct_sys_form_field_element',
 								e.cast(e.str, e.json_get(f, 'codeElement'))
 							)
 						),
+
+						customElParms: e.cast(e.json, e.json_get(f, 'customElParms')),
 
 						dbOrderSelect: e.cast(e.int16, e.json_get(f, 'dbOrderSelect')),
 
@@ -287,14 +299,6 @@ export async function addForm(data: any) {
 
 						itemsListParms: e.cast(e.json, e.json_get(f, 'itemsListParms')),
 
-						labelDynamicKey: e.cast(e.str, e.json_get(f, 'labelDynamicKey')),
-
-						labelDynamicSource: e.cast(e.str, e.json_get(f, 'labelDynamicSource')),
-
-						labelHeader: e.cast(e.str, e.json_get(f, 'labelHeader')),
-
-						labelText: e.cast(e.str, e.json_get(f, 'labelText')),
-
 						width: e.cast(e.int16, e.json_get(f, 'width'))
 					})
 				}),
@@ -303,6 +307,7 @@ export async function addForm(data: any) {
 				isPopup: p.isPopup,
 				link: p.link,
 				name: p.name,
+				owner: e.select(e.sys_core.getEnt(p.owner)),
 				subHeader: p.subHeader,
 				submitButtonLabel: p.submitButtonLabel,
 				table: e.select(
@@ -475,6 +480,7 @@ export async function getFormById(formId: string) {
 	const query = e.select(e.sys_obj.Form, (form) => ({
 		description: true,
 		exprFilter: true,
+		exprObject: true,
 		header: true,
 		id: true,
 		isPopup: true,
@@ -520,6 +526,7 @@ export async function getFormById(formId: string) {
 				placeHolder: true
 			})),
 			_codeAccess: f.codeAccess.name,
+			_codeCustomElType: f.codeCustomElType.name,
 			_codeElement: f.codeElement.name,
 			_itemsList: e.select(f.itemsList, (il) => ({
 				dbSelect: true,
@@ -527,16 +534,13 @@ export async function getFormById(formId: string) {
 				propertyId: true,
 				propertyLabel: true
 			})),
+			customElParms: true,
 			headerAlt: true,
 			height: true,
 			isDisplay: true,
 			isDisplayable: true,
 			items: true,
 			itemsListParms: true,
-			labelDynamicKey: true,
-			labelDynamicSource: true,
-			labelHeader: true,
-			labelText: true,
 			width: true,
 			order_by: f.dbOrderSelect
 		})),
@@ -649,13 +653,18 @@ export async function getNodeObjsByParent(parentNodeId: string) {
 	return await query.run(client)
 }
 
-export async function getUserByUserName(userName: string) {
+export async function getUserByUserId(userId: string) {
 	const query = e.select(e.sys_user.User, (u) => ({
 		id: true,
 		lastName: u.person.lastName,
 		firstName: u.person.firstName,
 		fullName: u.person.fullName,
 		userName: true,
+		org: e.select(e.sys_core.Org, (org) => ({
+			name: true,
+			appName: true,
+			filter_single: e.op(org.id, '=', u.owner.id)
+		})),
 		resource_widgets: e.select(u.userTypes.resources.is(e.sys_user.Widget), (ut) => ({
 			id: true,
 			name: true
@@ -671,7 +680,20 @@ export async function getUserByUserName(userName: string) {
 			order: true,
 			order_by: ut.order
 		})),
-		filter_single: e.op(u.userName, '=', userName)
+		filter_single: e.op(u.id, '=', e.cast(e.uuid, userId))
 	}))
 	return await query.run(client)
+}
+
+export async function getUserByUserName(userName: string) {
+	const query = e.select(e.sys_user.User, (u) => ({
+		id: true,
+		filter_single: e.op(u.userName, '=', userName)
+	}))
+	const user = await query.run(client)
+	if (user) {
+		return await getUserByUserId(user.id)
+	} else {
+		return undefined
+	}
 }

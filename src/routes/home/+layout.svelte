@@ -22,7 +22,7 @@
 	const NAV_COLOR = '#3b79e1'
 	const ROOT_LINK = '/home'
 
-	const user: User = getUser()
+	const user: User | undefined = getUser()
 
 	let saveStore = false
 	let navTreeLocal: NavTree
@@ -81,8 +81,8 @@
 				</div>
 
 				<div role="button" tabindex="0" class="text-black" on:click={goHome} on:keyup={goHome}>
-					{#if user.app_name}
-						{user.app_name}
+					{#if user?.org?.appName}
+						{user.org.appName}
 					{/if}
 				</div>
 			</svelte:fragment>
@@ -90,7 +90,12 @@
 				<div role="button" tabindex="0" class="mr-2" on:click={navRight} on:keyup={navRight}>
 					<!-- <div role="button" tabindex="0" class="mr-2" use:popup={popupClick}> -->
 					<!-- <button class="btn variant-filled" use:popup={popupClick}>Click</button> -->
-					<Avatar initials={user.initials} width="w-9" background="bg-primary-400" />
+
+					<Avatar
+						initials={user ? user.initials : undefined}
+						width="w-9"
+						background="bg-primary-400"
+					/>
 				</div>
 			</svelte:fragment>
 		</AppBar>

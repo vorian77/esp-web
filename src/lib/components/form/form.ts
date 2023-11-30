@@ -2,12 +2,13 @@ import {
 	getArrayOfModels,
 	memberOfEnum,
 	memberOfEnumOrDefault,
+	strOptional,
 	strRequired,
 	valueOrDefault
 } from '$lib/utils/utils'
 import { type Field, FieldValue } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
-import { FieldLabel } from '$comps/form/fieldLabel'
+import { FieldCustom } from '$comps/form/fieldCustom'
 import { FieldInput } from '$comps/form/fieldInput'
 import { FieldList } from '$comps/form/fieldList'
 import { FieldFile } from '$comps/form/fieldFile'
@@ -28,6 +29,7 @@ import {
 	ValidationStatus,
 	Validity,
 	ValidityError,
+	ValidityErrorLevel,
 	ValidityField
 } from '$comps/types'
 import { error } from '@sveltejs/kit'
@@ -35,39 +37,45 @@ import { error } from '@sveltejs/kit'
 const FILENAME = '/$comps/form/form.ts/'
 
 export class Form extends DataObj {
-	name: string
-	header: string
-	subHeader: string
-	description: string
-	submitButtonLabel: string
-	isPopup: boolean
-	fields: Array<Field>
 	actions: Array<FormDataObjAction>
-	source: FormSource | undefined
+	description: string
+	exprObject: string | undefined
+	fields: Array<Field>
+	header: string
 	height: string
-	footerText: Array<FormFooterText>
-	footerLinks: Array<FormFooterLink>
-	pageData: {} | undefined
-	values: any // replace with fields.values
-	submitResponse: {} | undefined
+	isPopup: boolean
+	name: string
+	subHeader: string
 	validToSave: boolean
 
-	constructor(defn: any) {
+	footerLinks: Array<FormFooterLink>
+	footerText: Array<FormFooterText>
+	pageData: {} | undefined
+	source: FormSource | undefined
+	submitButtonLabel: string
+	submitResponse: {} | undefined
+	values: any // replace with fields.values
+
+	constructor(dataObj: DataObj) {
+		const defn = dataObj.defn
 		super(defn)
-		defn = valueOrDefault(defn, {})
-		this.name = strRequired(defn.name, 'Form', 'name')
-		this.header = valueOrDefault(defn.header, '')
-		this.subHeader = valueOrDefault(defn.subHeader, '')
-		this.description = valueOrDefault(defn.description, '')
-		this.isPopup = valueOrDefault(defn.isPopup, false)
-		this.fields = this.initFields(defn._fieldsEl)
+		this.data = dataObj.data
+		this.isInsertMode = dataObj.isInsertMode
+
 		this.actions = this.initDataObjActions(defn._actions)
+		this.description = valueOrDefault(defn.description, '')
+		this.exprObject = strOptional(defn.exprObject, 'Form', 'exprObject')
+		this.fields = this.initFields(defn._fieldsEl)
+		this.header = valueOrDefault(defn.header, '')
 		this.height = valueOrDefault(defn.height, '')
-		this.footerText = getArrayOfModels(FormFooterText, defn.footerText)
-		this.footerLinks = getArrayOfModels(FormFooterLink, defn.footerLinks)
+		this.isPopup = valueOrDefault(defn.isPopup, false)
+		this.name = strRequired(defn.name, 'Form', 'name')
+		this.subHeader = valueOrDefault(defn.subHeader, '')
 		this.validToSave = true
 
 		// not using?
+		this.footerLinks = getArrayOfModels(FormFooterLink, defn.footerLinks)
+		this.footerText = getArrayOfModels(FormFooterText, defn.footerText)
 		this.pageData = valueOrDefault(defn.pageData, {})
 		this.source = defn.source ? new FormSource(defn.source) : undefined
 		this.submitButtonLabel = valueOrDefault(defn.submitButtonLabel, '')
@@ -82,28 +90,26 @@ export class Form extends DataObj {
 
 		if (Array.isArray(data)) data = data[0]
 
-		if (data) {
-			if (parms.isInsertMode) {
-				this.fields.forEach((f) => {
-					if (data.hasOwnProperty(f.name)) {
-						f.value.update(data[f.name].data, data[f.name].display)
-					} else {
-						f.value.update(null, null)
-					}
-					f.valueSelected = new FieldValue(f.value.data, f.value.display)
-				})
-			} else {
-				// selected
-				this.fields.forEach((f) => {
-					console.log()
-					if (data.hasOwnProperty(f.name)) {
-						f.value.update(data[f.name].data, data[f.name].display)
-					}
-					f.valueSelected = new FieldValue(f.value.data, f.value.display)
-				})
-			}
-			this.validToSave = this.preValidate()
+		if (parms.isInsertMode) {
+			this.fields.forEach((f) => {
+				if (data && data.hasOwnProperty(f.name)) {
+					f.value.update(data[f.name].data, data[f.name].display)
+				} else {
+					f.value.update(null, null)
+				}
+				f.valueSelected = new FieldValue(f.value.data, f.value.display)
+			})
+		} else {
+			// selected
+			this.fields.forEach((f) => {
+				console.log()
+				if (data.hasOwnProperty(f.name)) {
+					f.value.update(data[f.name].data, data[f.name].display)
+				}
+				f.valueSelected = new FieldValue(f.value.data, f.value.display)
+			})
 		}
+		this.validToSave = this.preValidate()
 	}
 
 	initDataObjActions(actions: any) {
@@ -144,12 +150,12 @@ export class Form extends DataObj {
 					newField = new FieldCheckbox(field, index)
 					break
 
-				case FieldElement.file:
-					newField = new FieldFile(field, index)
+				case FieldElement.custom:
+					newField = new FieldCustom(field, index)
 					break
 
-				case FieldElement.label:
-					newField = new FieldLabel(field, index)
+				case FieldElement.file:
+					newField = new FieldFile(field, index)
 					break
 
 				case FieldElement.radio:
@@ -179,10 +185,14 @@ export class Form extends DataObj {
 		return this.fields.findIndex((f) => f.name == fieldName)
 	}
 
-	getFormElement(): HTMLFormElement | undefined {
-		const formName = 'form_' + this.name
-		const formEl = document.getElementById(formName)
-		return formEl ? formEl : undefined
+	getFieldValue(fieldName: string) {
+		const idx = this.getFieldIdx(fieldName)
+		return idx < 0 ? undefined : this.fields[idx].value
+	}
+
+	setFieldValue(fieldName: string, value: FieldValue) {
+		const idx = this.getFieldIdx(fieldName)
+		if (idx > -1) this.fields[idx].value = value
 	}
 
 	hasChanged() {
@@ -190,34 +200,6 @@ export class Form extends DataObj {
 			return f.hasChanged
 		})
 	}
-
-	// async submitForm() {
-	// 	if (!this.source) {
-	// 		return FormSourceResponse({})
-	// 	}
-
-	// 	const responsePromise: Response = await fetch(this.source.processURL, {
-	// 		method: 'POST',
-	// 		body: JSON.stringify({
-	// 			action: 'form_submit',
-	// 			formName: this.name,
-	// 			source: this.source,
-	// 			data: { ...this.dataGet(), ...this.pageData }
-	// 		})
-	// 	})
-	// 	const response = await responsePromise.json()
-
-	// 	// process response
-	// 	if (response.message) {
-	// 		alert(response.message)
-	// 	}
-	// 	if (response.success) {
-	// 		this.submitResponse = { ...this.values, ...response.data }
-	// 	} else {
-	// 		this.submitResponse = {}
-	// 	}
-	// 	return FormSourceResponse(response)
-	// }
 
 	preValidate(): boolean {
 		let formStatus: ValidationStatus = ValidationStatus.valid
@@ -240,12 +222,10 @@ export class Form extends DataObj {
 						formStatus = ValidationStatus.invalid
 						fieldValid = false
 						const v = f.fieldMissingData(f.index)
-						f.validity = v.validityFields[0].validity
+						f.validity = new Validity(ValidityError.missingData, ValidityErrorLevel.silent)
 					}
 				}
-				if (fieldValid) {
-					f.validity = new Validity()
-				}
+				if (fieldValid) f.validity = new Validity()
 			}
 		})
 		return formStatus === ValidationStatus.valid

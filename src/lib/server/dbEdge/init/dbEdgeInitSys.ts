@@ -73,6 +73,7 @@ async function initSysCodes() {
 
 		['app_sys', 0, 'ct_sys_form_field_access'],
 		['app_sys', 0, 'ct_sys_form_field_element'],
+		['app_sys', 0, 'ct_sys_form_field_element_custom_type'],
 		['app_sys', 0, 'ct_sys_form_field_list_dir'],
 		['app_sys', 0, 'ct_sys_form_field_op'],
 		['app_sys', 0, 'ct_sys_form_field_source'],
@@ -124,11 +125,11 @@ async function initSysCodes() {
 
 		// form field - element
 		['ct_sys_form_field_element', 'app_sys', 'checkbox', 0],
-		['ct_sys_form_field_element', 'app_sys', 'date', 1],
-		['ct_sys_form_field_element', 'app_sys', 'email', 2],
-		['ct_sys_form_field_element', 'app_sys', 'file', 3],
-		['ct_sys_form_field_element', 'app_sys', 'input', 4],
-		['ct_sys_form_field_element', 'app_sys', 'label', 5],
+		['ct_sys_form_field_element', 'app_sys', 'custom', 1],
+		['ct_sys_form_field_element', 'app_sys', 'date', 2],
+		['ct_sys_form_field_element', 'app_sys', 'email', 3],
+		['ct_sys_form_field_element', 'app_sys', 'file', 4],
+		['ct_sys_form_field_element', 'app_sys', 'input', 5],
 		['ct_sys_form_field_element', 'app_sys', 'number', 6],
 		['ct_sys_form_field_element', 'app_sys', 'password', 7],
 		['ct_sys_form_field_element', 'app_sys', 'radio', 8],
@@ -136,6 +137,13 @@ async function initSysCodes() {
 		['ct_sys_form_field_element', 'app_sys', 'tel', 10],
 		['ct_sys_form_field_element', 'app_sys', 'text', 11],
 		['ct_sys_form_field_element', 'app_sys', 'textArea', 12],
+
+		// form field - cusotm element type
+		['ct_sys_form_field_element_custom_type', 'app_sys', 'button', 0],
+		['ct_sys_form_field_element_custom_type', 'app_sys', 'header', 0],
+		['ct_sys_form_field_element_custom_type', 'app_sys', 'link', 0],
+		['ct_sys_form_field_element_custom_type', 'app_sys', 'text', 0],
+		['ct_sys_form_field_element_custom_type', 'app_sys', 'textDynamic', 0],
 
 		// form field - list direction
 		['ct_sys_form_field_list_dir', 'app_sys', 'asc', 0],
@@ -259,11 +267,11 @@ async function initSysColumns() {
 			creator: 'user_sys',
 			owner: 'app_sys',
 			codeDataType: 'str',
-			header: 'special_label',
+			header: 'custom_element',
 			isExcludeInsert: true,
 			isExcludeSelect: true,
 			isExcludeUpdate: true,
-			name: 'special_label'
+			name: 'custom_element'
 		})
 		await addColumn({
 			creator: 'user_sys',
@@ -511,7 +519,7 @@ async function initTablePerson() {
 			creator: 'user_sys',
 			owner: 'app_sys',
 			codeDataType: 'json',
-			exprStorageKey: 'avatar_<raw,user,userName>',
+			exprStorageKey: 'avatar_<raw,calc,random10>',
 			header: 'Avatar',
 			name: 'avatar'
 		})

@@ -1,4 +1,5 @@
 import initSys from '$server/dbEdge/init/dbEdgeInitSys'
+import initSysAuth from '$server/dbEdge/init/dbEdgeInitSysAuth'
 import initCM from '$server/dbEdge/init/dbEdgeInitCM'
 import initCMTraining from '$server/dbEdge/init/dbEdgeInitCMTraining'
 import initCMTrainingData from '$server/dbEdge/init/dbEdgeInitCMTrainingData'
@@ -16,6 +17,7 @@ const FILE = '/server/dbEdge/init'
 export async function init() {
 	// <temp>  230908 - database init
 	// await initSys()
+	// await initSysAuth()
 	// await initCM()
 	// await initCMTraining()
 	// await initCMTrainingData()
@@ -42,7 +44,6 @@ async function initReviewQuery() {
 
 async function initReviewForm() {
 	// console.log()
-	// console.log('user:', await getUserByUserName('user_sys'))
 	// console.log('getForm...')
 	// const formId = await getFormIdByName('form_training_provider_student_list')
 	// const formId = await getFormIdByName('form_training_provider_student_detail')

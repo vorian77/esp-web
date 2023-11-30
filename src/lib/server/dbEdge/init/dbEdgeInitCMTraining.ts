@@ -694,10 +694,11 @@ async function formsProviderStudent() {
 				dbOrderSelect: 10
 			},
 			{
-				codeElement: 'label',
-				columnName: 'special_label',
-				dbOrderSelect: 20,
-				labelHeader: 'Personal'
+				codeElement: 'custom',
+				codeCustomElType: 'header',
+				columnName: 'custom_element',
+				customElParms: { label: 'Personal' },
+				dbOrderSelect: 20
 			},
 			{
 				columnName: 'firstName',
@@ -784,10 +785,11 @@ async function formsProviderStudent() {
 				width: 300
 			},
 			{
-				codeElement: 'label',
-				columnName: 'special_label',
-				dbOrderSelect: 110,
-				labelHeader: 'Contact'
+				codeElement: 'custom',
+				codeCustomElType: 'header',
+				columnName: 'custom_element',
+				customElParms: { label: 'Contact' },
+				dbOrderSelect: 110
 			},
 			{
 				codeAccess: 'optional',
@@ -837,10 +839,11 @@ async function formsProviderStudent() {
 				isLinkMember: true
 			},
 			{
-				codeElement: 'label',
-				columnName: 'special_label',
-				dbOrderSelect: 190,
-				labelHeader: 'Other'
+				codeElement: 'custom',
+				codeCustomElType: 'header',
+				columnName: 'custom_element',
+				customElParms: { label: 'Other' },
+				dbOrderSelect: 190
 			},
 			{
 				codeAccess: 'optional',

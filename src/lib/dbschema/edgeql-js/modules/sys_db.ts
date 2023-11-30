@@ -48,6 +48,7 @@ export type $TableλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "columns": $.LinkDesc<$Column, $.Cardinality.Many, {}, false, false,  false, false>;
   "mod": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "<table[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<table[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<table": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Table = $.ObjectType<"sys_db::Table", $TableλShape, null, [

@@ -260,6 +260,7 @@ export async function addOrgs(params: any) {
 			return e.insert(e.sys_core.Org, {
 				owner: e.select(e.sys_core.getRoot()),
 				name: e.cast(e.str, i[0]),
+				appName: e.cast(e.str, i[1]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -315,14 +316,31 @@ export async function addRoleStaff(params: any) {
 	return await query.run(client, { data: params })
 }
 
+export async function setOrgUserType(params: any) {
+	const query = e.params({ data: e.json }, (params) => {
+		return e.for(e.json_array_unpack(params.data), (i) => {
+			return e.update(e.sys_core.getOrg(e.cast(e.str, i[0])), (o) => ({
+				set: {
+					userTypeDefault: e.select(e.sys_user.getUserType(e.cast(e.str, i[1])))
+				}
+			}))
+		})
+	})
+	return await query.run(client, { data: params })
+}
+
 export async function resetDB(owner: string | undefined = undefined) {
 	let query = ''
 	const tables: Array<string> = []
 
+	query = `
+	delete app_cm_training::Cohort;
+	delete app_cm_training::Course;
+	delete app_cm::Student;
+	delete sys_user::User filter .userName not in {'user_sys', 'user_ai'};`
+
 	// tables in delete order
-	tables.push('app_cm_training::Cohort')
-	tables.push('app_cm_training::Course')
-	tables.push('app_cm::Student')
+
 	tables.push('sys_obj::NodeObj')
 	tables.push('sys_obj::Form')
 	tables.push('sys_obj::FormFieldItemsList')

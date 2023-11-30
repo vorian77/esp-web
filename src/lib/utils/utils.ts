@@ -1,6 +1,7 @@
 export * from '$utils/appstore.utils'
 export * from '$utils/array.utils'
 export * from '$utils/date.utils'
+export * from '$utils/db.utils'
 export * from '$utils/error.utils'
 export * from '$utils/model.utils'
 export * from '$utils/pipe.utils'

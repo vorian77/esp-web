@@ -8,11 +8,11 @@
 
 	const FILENAME = '$routes/home/+page.svelte'
 
-	const user: User = getUser()
+	const user: User | undefined = getUser()
 
-	let showSysUser: boolean = user.hasResourceWidget('widget_sys_user')
-	let showCMUser: boolean = user.hasResourceWidget('widget_cm_user')
-	let showCMQuote: boolean = user.hasResourceWidget('widget_cm_quotes')
+	let showSysUser: boolean = user ? user.hasResourceWidget('widget_sys_user') : false
+	let showCMUser: boolean = user ? user.hasResourceWidget('widget_cm_user') : false
+	let showCMQuote: boolean = user ? user.hasResourceWidget('widget_cm_quotes') : false
 </script>
 
 {#if showSysUser}

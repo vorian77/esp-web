@@ -79,5 +79,6 @@ module sys_user {
     using (select UserType filter .name = userTypeName);
 
   function getWidget(widgetName: str) -> optional Widget
-    using (select Widget filter .name = widgetName);   
+    using (select Widget filter .name = widgetName);
+
 }

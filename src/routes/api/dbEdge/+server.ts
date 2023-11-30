@@ -1,5 +1,10 @@
 import { getServerResponse } from '$comps/types'
-import { processDataObj, getNodeObjsByParent } from '$server/dbEdge/types.edgeDB.server'
+import {
+	processByObject,
+	processByDataObjId,
+	processByDataObjName,
+	getNodeObjsByParent
+} from '$server/dbEdge/types.edgeDB.server'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/routes/api/dbEdge/server.ts'
@@ -7,13 +12,17 @@ const FILENAME = '/routes/api/dbEdge/server.ts'
 export async function POST({ request }) {
 	const requestData = await request.json()
 	switch (requestData.function) {
-		case 'processDataObj':
-			return getServerResponse(await processDataObj(requestData.parms))
-			break
-
 		case 'getNodeObjsByParent':
 			return getServerResponse(await getNodeObjsByParent(requestData.parentNodeId))
-			break
+
+		case 'processByDataObjId':
+			return getServerResponse(await processByDataObjId(requestData.parms))
+
+		case 'processByDataObjName':
+			return getServerResponse(await processByDataObjName(requestData.parms))
+
+		case 'processByObject':
+			return getServerResponse(await processByObject(requestData.parms))
 
 		default:
 			throw error(500, {

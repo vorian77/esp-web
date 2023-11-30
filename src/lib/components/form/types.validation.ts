@@ -61,7 +61,8 @@ export enum ValidityError {
 	matchColumn = 'matchcolumn'
 }
 export enum ValidityErrorLevel {
+	error = 'error',
+	silent = 'silent',
 	none = 'none',
-	warning = 'warning',
-	error = 'error'
+	warning = 'warning'
 }

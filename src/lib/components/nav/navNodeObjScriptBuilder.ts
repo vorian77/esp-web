@@ -9,13 +9,14 @@ import {
 	valueOrDefault
 } from '$lib/utils/utils'
 import { type DataObjProcessType } from '$comps/types'
-import { error } from '@sveltejs/kit'
 import { FieldValue } from '$comps/form/field'
+import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/types.edgeDB.ts'
 
 export class EdgeQL {
 	exprFilter: string | undefined
+	exprObject: string | undefined
 	fieldsID: Array<DataFieldDataId>
 	fieldsOrder: Array<DataFieldOrder>
 	fieldsPreset: Array<DataFieldPreset>
@@ -24,15 +25,13 @@ export class EdgeQL {
 	fieldsSelectUser: Array<DataFieldSelect>
 	fieldsSelectSys: Array<DataFieldSelect>
 	link: EdgeType | undefined
-	nodeKey: string
 	objName: string
 	table: Table
 
-	constructor(nodeKey: string, nodeObjDefn: any) {
-		this.nodeKey = nodeKey
-
-		const obj = valueOrDefault(nodeObjDefn, {})
+	constructor(dataObjDefn: any) {
+		const obj = valueOrDefault(dataObjDefn, {})
 		this.exprFilter = strOptional(obj.exprFilter, 'EdgeQL', 'exprFilter')
+		this.exprObject = strOptional(obj.exprObject, 'EdgeQL', 'exprObject')
 
 		this.fieldsID = this.initFields(obj._fieldsDbId, DataFieldDataId)
 		this.fieldsOrder = this.initFields(obj._fieldsDbOrder, DataFieldOrder)
@@ -46,9 +45,10 @@ export class EdgeQL {
 		this.objName = obj.name
 		this.table = new Table(obj._table)
 
-		console.log()
-		console.log('EdgeQL...')
+		// console.log()
+		// console.log('EdgeQL...')
 		// console.log('exprFilter:', this.exprFilter)
+		// console.log('exprObject:', this.exprObject)
 
 		// console.log('raw-defn:', obj)
 		// console.log('raw-fieldsID:', obj._fieldsDbId)
@@ -85,10 +85,10 @@ export class EdgeQL {
 	}
 
 	private logScript(type: string, script: string) {
-		console.log()
-		console.log(`getScript: ${type}...`)
-		console.log(script)
-		console.log()
+		// console.log()
+		// console.log(`getScript: ${type}...`)
+		// console.log(script)
+		// console.log()
 	}
 
 	getScriptDataItems(dbSelect: string, data: any) {
@@ -100,6 +100,19 @@ export class EdgeQL {
 		const script = 'DELETE ' + this.table.getObject() + queryFilter
 		this.logScript('delete', script)
 		return script
+	}
+	getScriptObjectExpr(data: any) {
+		if (this.exprObject) {
+			const script = getValExpr(this.exprObject, data)
+			this.logScript('objectExpression', script)
+			return script
+		} else {
+			throw error(500, {
+				file: FILENAME,
+				function: 'getScriptObjectExpr',
+				message: `No object expression provided for object: ${this.objName}`
+			})
+		}
 	}
 
 	getScriptPreset(data: any) {
@@ -320,7 +333,10 @@ export function getVal(field: DataFieldData, data: any, table: Table | undefined
 				return field.sourceKey
 
 			case DataFieldSource.parms:
-				return data[field.sourceKey]
+				return data.parms[field.sourceKey]
+
+			case DataFieldSource.system:
+				return data.system[field.sourceKey]
 
 			case DataFieldSource.tree:
 				const tokens = field.sourceKey.split(';')
@@ -458,12 +474,17 @@ export function getValExpr(expr: string, data: any): string {
 	const newExpr = expr.replace(regex, (t) => {
 		const token = t.slice(1, t.length - 1)
 		const tokenItems = token.split(',')
-		const exprField = new DataFieldData({
-			_codeDataType: tokenItems[0],
-			_codeDbDataSource: tokenItems[1],
-			dbDataSourceKey: tokenItems[2]
-		})
-		return getVal(exprField, data)
+		if (tokenItems.length === 3) {
+			const exprField = new DataFieldData({
+				_codeDataType: tokenItems[0],
+				_codeDbDataSource: tokenItems[1],
+				dbDataSourceKey: tokenItems[2]
+			})
+			return getVal(exprField, data)
+		} else {
+			// ignore
+			return '<' + token + '>'
+		}
 	})
 	return newExpr
 }
@@ -639,10 +660,10 @@ export enum DataFieldOp {
 }
 export enum DataFieldSource {
 	calc = 'calc',
-	env = 'env',
 	form = 'form',
 	literal = 'literal',
 	parms = 'parms',
+	system = 'system',
 	tree = 'tree',
 	user = 'user'
 }

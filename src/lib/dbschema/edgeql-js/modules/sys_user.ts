@@ -120,8 +120,10 @@ export type $UserTypeλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "resources": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes[is sys_user::SYS_USER]": $.LinkDesc<$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes[is sys_user::User]": $.LinkDesc<$User, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<userTypeDefault[is sys_core::Org]": $.LinkDesc<_sys_core.$Org, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes[is sys_user::SYS_USER_ID]": $.LinkDesc<$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes[is sys_user::currentUser]": $.LinkDesc<$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<userTypeDefault": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<userTypes": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $UserType = $.ObjectType<"sys_user::UserType", $UserTypeλShape, null, [

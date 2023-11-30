@@ -3,7 +3,7 @@
 	import type { DataObj } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import { Form as FormClass } from '$comps/form/form'
-	import { navParms, setNavParms } from '$comps/nav/navStore'
+	import { navParms, setNavParmsDataObj } from '$comps/nav/navStore'
 	import DataObjActions from '$comps/DataObjActions.svelte'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
@@ -12,6 +12,7 @@
 
 	export let dataObj: DataObj | undefined
 	export let onListRowClick = (data: any) => {}
+	let scrollToTop = () => {}
 	let formObj: Form
 
 	const ROW_PER_PAGE = 20
@@ -21,7 +22,7 @@
 
 	$: {
 		if (dataObj) {
-			formObj = new FormClass(dataObj.defn)
+			formObj = new FormClass(dataObj)
 			const sortItems = formObj.defn._fieldsDbOrder
 			handler.clearSort()
 			if (sortItems) {
@@ -32,7 +33,7 @@
 					})
 				}
 			}
-			setNavParms(dataObj, false)
+			setNavParmsDataObj(dataObj, false)
 		}
 	}
 

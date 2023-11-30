@@ -108,6 +108,7 @@ export type $CodeλShape = $.typeutil.flatten<$ObjλShape & {
   "<codeDbListDir[is sys_obj::FormFieldDb]": $.LinkDesc<_sys_obj.$FormFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeMultiRqmts[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeSector[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeCustomElType[is sys_obj::FormFieldEl]": $.LinkDesc<_sys_obj.$FormFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeRace[is Person]": $.LinkDesc<_default.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeState[is Person]": $.LinkDesc<_default.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDataTypePreset[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -115,6 +116,7 @@ export type $CodeλShape = $.typeutil.flatten<$ObjλShape & {
   "<codeAlignment": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeCardinality": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeComponent": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeCustomElType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDataType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDataTypePreset": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDbDataOp": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -162,11 +164,13 @@ const $CodeType = $.makeType<$CodeType>(_.spec, "c716db26-71ae-11ee-b947-8b58668
 const CodeType: $.$expr_PathNode<$.TypeSet<$CodeType, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($CodeType, $.Cardinality.Many), null);
 
 export type $OrgλShape = $.typeutil.flatten<$EntλShape & {
+  "appName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "state": $.LinkDesc<$CodeType, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "addr1": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "addr2": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "city": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "zip": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "userTypeDefault": $.LinkDesc<_sys_user.$UserType, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "<venue[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<provider[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;

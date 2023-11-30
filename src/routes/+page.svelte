@@ -10,35 +10,50 @@
 	export let data
 	let pageCurrent = ''
 
-	function login() {
+	async function expressLogin() {
 		// <temp> 231026 express login
-		initUser(data.user)
-		goto('/home')
+
+		const responsePromise: Response = await fetch('/auth', {
+			method: 'POST',
+			body: JSON.stringify({
+				action: 'express_login'
+			})
+		})
+		const resp = await responsePromise.json()
+		if (resp) {
+			const user = resp.data
+			initUser(user)
+			goto('/home')
+		}
 	}
 </script>
 
-<AuthPage bind:data bind:pageCurrent />
+<AuthPage {data} bind:pageCurrent />
 
 <div id="full-screen" class="container">
 	<div class="content">
 		<img class="mx-auto" src={logo} width="260" alt="Organization logo" />
 
 		<div class="flex-box">
-			<button type="button" class="btn variant-filled-secondary w-full mt-1" on:click={login}>
+			<button
+				type="button"
+				class="btn variant-filled-secondary w-full mt-1"
+				on:click={expressLogin}
+			>
 				Express Login
 			</button>
 
 			<button
 				type="button"
 				class="btn variant-filled-primary w-full mt-10"
-				on:click={() => (pageCurrent = 'auth_signup')}
+				on:click={() => (pageCurrent = 'form_auth_signup')}
 			>
 				Get Started!
 			</button>
 			<button
 				type="button"
 				class="btn variant-ringed-primary w-full mt-1"
-				on:click={() => (pageCurrent = 'auth_login')}
+				on:click={() => (pageCurrent = 'form_auth_login')}
 			>
 				Log in
 			</button>

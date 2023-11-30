@@ -87,11 +87,13 @@ export namespace sys_core {
     "order": number;
   }
   export interface Org extends Ent {
+    "appName"?: string | null;
     "state"?: CodeType | null;
     "addr1"?: string | null;
     "addr2"?: string | null;
     "city"?: string | null;
     "zip"?: string | null;
+    "userTypeDefault"?: sys_user.UserType | null;
   }
 }
 export namespace app_cm_training {
@@ -422,6 +424,13 @@ export namespace sys_obj {
   export interface DataObj extends sys_core.Obj {
     "codeCardinality": sys_core.Code;
     "codeComponent": sys_core.Code;
+    "table"?: sys_db.Table | null;
+    "description"?: string | null;
+    "exprFilter"?: string | null;
+    "exprObject"?: string | null;
+    "isPopup"?: boolean | null;
+    "link"?: unknown | null;
+    "subHeader"?: string | null;
     "actions": DataObjAction[];
   }
   export interface DataObjAction extends sys_core.Obj {
@@ -429,15 +438,9 @@ export namespace sys_obj {
     "color"?: string | null;
   }
   export interface Form extends DataObj {
-    "table"?: sys_db.Table | null;
-    "description"?: string | null;
-    "isPopup"?: boolean | null;
-    "subHeader"?: string | null;
     "submitButtonLabel"?: string | null;
     "fieldsDb": FormFieldDb[];
     "fieldsEl": FormFieldEl[];
-    "exprFilter"?: string | null;
-    "link"?: unknown | null;
   }
   export interface FormFieldDb extends std.$Object {
     "exprFilter"?: string | null;
@@ -450,13 +453,14 @@ export namespace sys_obj {
     "dbOrderList"?: number | null;
     "dbOrderSelect"?: number | null;
     "isDbAllowNull"?: boolean | null;
-    "isDbListOrderField"?: boolean | null;
     "fieldName"?: string | null;
     "isDbFilter"?: boolean | null;
     "isLinkMember"?: boolean | null;
   }
   export interface FormFieldEl extends std.$Object {
     "headerAlt"?: string | null;
+    "codeCustomElType"?: sys_core.Code | null;
+    "customElParms"?: unknown | null;
     "codeAccess"?: sys_core.Code | null;
     "codeElement"?: sys_core.Code | null;
     "column": sys_db.Column;
@@ -468,10 +472,6 @@ export namespace sys_obj {
     "dbOrderSelect"?: number | null;
     "itemsListParms"?: unknown | null;
     "items"?: unknown[] | null;
-    "labelDynamicKey"?: string | null;
-    "labelDynamicSource"?: string | null;
-    "labelHeader"?: string | null;
-    "labelText"?: string | null;
   }
   export interface FormFieldItemsList extends sys_core.Obj {
     "fieldsDb": FormFieldDb[];

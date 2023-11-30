@@ -12,9 +12,16 @@ module sys_obj{
   }
 
   abstract type DataObj extending sys_core::Obj {
+    multi actions: DataObjAction;
     required codeCardinality: sys_core::Code;
     required codeComponent: sys_core::Code;
-    multi actions: DataObjAction;
+    description: str;
+    exprFilter: str;
+    exprObject: str;
+    isPopup: bool;
+    link: json;
+    subHeader: str;
+    table: sys_db::Table;  
     constraint exclusive on (.name);
   } 
 
@@ -25,19 +32,13 @@ module sys_obj{
   }
   
   type Form extending DataObj {
-    description: str;
-    exprFilter: str;
     multi fieldsDb: sys_obj::FormFieldDb {
       on source delete delete target;
     };
     multi fieldsEl: sys_obj::FormFieldEl {
       on source delete delete target;
     };
-    isPopup: bool;
-    link: json;
-    subHeader: str;
     submitButtonLabel: str;
-    table: sys_db::Table;
   }
 
   type FormFieldDb {
@@ -63,7 +64,9 @@ module sys_obj{
       on source delete allow;
     };   
     codeAccess: sys_core::Code;
+    codeCustomElType: sys_core::Code;
     codeElement: sys_core::Code;
+    customElParms: json;
     dbOrderSelect: default::nonNegative;
     headerAlt: str;
     height: int16;
@@ -74,10 +77,7 @@ module sys_obj{
      on source delete allow;
     };
     itemsListParms: json;
-    labelDynamicKey: str;
-    labelDynamicSource: str;
-    labelHeader: str;
-    labelText: str;
+
     width: int16;
   }
 

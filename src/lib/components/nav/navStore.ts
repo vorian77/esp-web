@@ -6,6 +6,7 @@ import {
 	DataObjStatus,
 	DataObjCardinality,
 	DataObjRowChange,
+	DbData,
 	getArray,
 	NavParms,
 	NavParmsDB,
@@ -15,7 +16,8 @@ import {
 	type NodeObjRaw,
 	NodeObjType,
 	NodeObj,
-	type ProcessDataObj,
+	processByDataObjName,
+	processDataObjByNode,
 	type ResponseBody,
 	User,
 	valueOrDefault,
@@ -39,7 +41,7 @@ export function initUser(newUser: any) {
 
 export function getUser() {
 	const user = get(navUser)
-	return user ? new User(user) : undefined
+	return user && Object.keys(user).length > 0 ? new User(user) : undefined
 }
 
 export async function initNav(user: any) {
@@ -84,12 +86,12 @@ export async function nodeProcessRowManager(node: NavTreeNode, processType: Data
 
 	localNavTree.setNodeCurrentData(objData)
 
-	const newRowDataObj: DataObj = await processDataObj(
+	const newRowDataObj: DataObj = await processDataObjByNode(
 		node,
 		DataObjProcessType.select,
 		getData(node, objData)
 	)
-	setNavParms(newRowDataObj, false)
+	setNavParmsDataObj(newRowDataObj, false)
 
 	function getNewRowData(
 		node: NavTreeNode,
@@ -176,7 +178,7 @@ async function nodeProcess(fromPage: string, node: NavTreeNode) {
 				switch (node.nodeObj.dataObj.cardinality) {
 					case DataObjCardinality.list:
 						localNavTree.collapseBranchSiblings(node)
-						node.nodeObj.dataObj = await processDataObj(
+						node.nodeObj.dataObj = await processDataObjByNode(
 							node,
 							DataObjProcessType.select,
 							getData(node)
@@ -191,7 +193,7 @@ async function nodeProcess(fromPage: string, node: NavTreeNode) {
 						const currentRow = navStatus.listRowsCurrent
 						const currentData = nodeParent.nodeObj.dataObj.data[currentRow]
 
-						node.nodeObj.dataObj = await processDataObj(
+						node.nodeObj.dataObj = await processDataObjByNode(
 							node,
 							DataObjProcessType.select,
 							getData(node, currentData)
@@ -206,7 +208,11 @@ async function nodeProcess(fromPage: string, node: NavTreeNode) {
 						})
 				}
 			} else {
-				node.nodeObj.dataObj = await processDataObj(node, DataObjProcessType.select, getData(node))
+				node.nodeObj.dataObj = await processDataObjByNode(
+					node,
+					DataObjProcessType.select,
+					getData(node)
+				)
 			}
 			break
 
@@ -269,55 +275,20 @@ async function treeRetrieveNodes(nodeObjKey: string) {
 	return response.data
 }
 
-export async function processDataObj(
-	node: NavTreeNode,
-	processType: DataObjProcessType,
-	data: any = {}
-) {
-	if (!node.nodeObj.dataObjId) {
-		throw error(500, {
-			file: FILENAME,
-			function: 'processDataObj',
-			message: `No dataObjId provided for nodeObj: ${node.nodeObj.name}`
-		})
-	}
-
-	const parms: ProcessDataObj = {
-		nodeKey: node.key,
-		dataObj: node.nodeObj.dataObj,
-		dataObjId: node.nodeObj.dataObjId,
-		processType,
-		data
-	}
-
-	const responsePromise: Response = await fetch('/api/dbEdge', {
-		method: 'POST',
-		body: JSON.stringify({
-			function: 'processDataObj',
-			parms
-		})
-	})
-
-	const response: ResponseBody = await responsePromise.json()
-	return response.data
-}
-export function getData(node: NavTreeNode, parms: any = undefined) {
-	let data: any = { parms: undefined, tree: undefined, user: get(navUser) }
-
+export function getData(node: NavTreeNode, initData: any = undefined) {
 	// tree data
-	let treeData: Record<string, any> = {}
+	let tree: Record<string, any> = {}
 	localNavTree.listCrumbs.forEach((node: NavTreeNode) => {
 		addTreeDataNode(node, node.nodeObj?.dataObj?.data)
 	})
-	addTreeDataNode(node, parms)
-	data.tree = treeData
+	addTreeDataNode(node, initData)
 
-	return data
+	return new DbData({ user: get(navUser), tree })
 
-	function addTreeDataNode(node: NavTreeNode, parms: any) {
+	function addTreeDataNode(node: NavTreeNode, initData: any) {
 		if (node.nodeObj.dataObj?.table) {
 			const key = node.nodeObj.dataObj?.table.module + '::' + node.nodeObj.dataObj?.table.name
-			treeData[key] = parms instanceof NavParms ? parms.data[0] : parms
+			tree[key] = initData instanceof NavParms ? initData.data[0] : initData
 		}
 	}
 }
@@ -338,11 +309,12 @@ export function setNavNode(node: NavTreeNode, isInsertMode: boolean) {
 	localNavTree.setNodeCurrent(node)
 	navTree.set(localNavTree)
 }
-export function setNavParms(dataObj: DataObj, isInsertMode: boolean) {
+export function setNavParms(data: any, cardinality: DataObjCardinality, isInsertMode: boolean) {
 	setNavStatusInsertMode(isInsertMode)
-
-	const np = new NavParmsDB(dataObj, isInsertMode!)
-	navParms.set(np)
+	navParms.set(new NavParmsDB(data, cardinality, isInsertMode))
+}
+export function setNavParmsDataObj(dataObj: DataObj, isInsertMode: boolean) {
+	setNavParms(dataObj.data, dataObj.cardinality, isInsertMode)
 }
 export function setNavStatus(newStatus: DataObjStatus) {
 	navStatus.set(newStatus)

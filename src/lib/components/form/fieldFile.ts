@@ -6,8 +6,6 @@ import { get } from 'svelte/store'
 
 const FILENAME = '$comps/Form/fieldFile.ts'
 
-const user = new User(get(navUser))
-
 export class FieldFile extends Field {
 	storageKeyExpr: string
 	width: number
@@ -20,7 +18,7 @@ export class FieldFile extends Field {
 	}
 
 	getKey() {
-		return getValExpr(this.storageKeyExpr, { user: user.user })
+		return getValExpr(this.storageKeyExpr, {})
 	}
 
 	validate(dataValue: any): Validation {
