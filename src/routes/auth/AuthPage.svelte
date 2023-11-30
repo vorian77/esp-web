@@ -80,7 +80,7 @@
 					case 'form_auth_verify_phone_mobile':
 						const securityCode: FieldValue = forms[value].getFieldValue('authSecurityCode')
 						if (securityCode.display !== authSecurityCode.toString()) {
-							alert('The security code you entered is not correct. Please try aggain')
+							alert('The security code you entered is not correct. Please try again')
 							return
 						}
 						await process(formProcess)

@@ -11,10 +11,6 @@ export async function encrypt(text: string) {
 	return text
 }
 
-export function objIsEmpty(obj: any) {
-	return Object.keys(obj).length === 0 && obj.constructor === Object
-}
-
 export function valueHasChanged(vSource: any, vCurrent: any): boolean {
 	if (typeof vSource == 'boolean' || typeof vCurrent === 'boolean') {
 		return noVal(vSource) ? true : vSource !== vCurrent

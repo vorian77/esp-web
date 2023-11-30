@@ -541,7 +541,7 @@ async function formsProviderCohort() {
 				columnName: 'owner',
 				dbOrderSelect: 15,
 				exprPreset:
-					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,organization>)'
+					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,org.name>)'
 			},
 			{
 				columnName: 'name',
@@ -878,7 +878,7 @@ async function formsProviderStudent() {
 				columnName: 'owner',
 				dbOrderSelect: 215,
 				exprPreset:
-					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,organization>)'
+					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,org.name>)'
 			},
 			{
 				codeAccess: 'readOnly',

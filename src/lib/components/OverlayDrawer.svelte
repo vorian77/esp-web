@@ -11,7 +11,6 @@
 		$drawerStore.id = undefined
 	}
 	function onformCancelled() {
-		alert('onformCancelled...')
 		closeDrawer()
 	}
 	function onKeyDown(event: KeyboardEvent) {

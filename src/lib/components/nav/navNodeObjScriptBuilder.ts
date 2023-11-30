@@ -312,6 +312,8 @@ export function getVal(field: DataFieldData, data: any, table: Table | undefined
 	return getValDB(field, valRaw)
 
 	function getValRaw(field: DataFieldData, data: any) {
+		const funct = `getVal.getValRaw: field: ${field.name} - source: ${field.codeSource} - sourceKey: ${field.sourceKey}`
+
 		switch (field.codeSource) {
 			case DataFieldSource.calc:
 				switch (field.sourceKey) {
@@ -319,60 +321,80 @@ export function getVal(field: DataFieldData, data: any, table: Table | undefined
 						return parseInt(Math.random().toFixed(10).replace('0.', ''))
 
 					default:
-						throw error(500, {
-							file: FILENAME,
-							function: 'getValRaw',
-							message: `No case defined for DataFieldSource.calc: ${field.sourceKey}`
-						})
+						valueNotFound(DataFieldSource.calc, {})
 				}
 
 			case DataFieldSource.form:
-				if (table) return getTreeValue(table.getObject(), field.sourceKey)
+				if (table) return getValueTree(table.getObject(), field.sourceKey)
+				throw error(500, {
+					file: FILENAME,
+					function: funct,
+					message: `Table required, but not defined.`
+				})
 
 			case DataFieldSource.literal:
 				return field.sourceKey
 
 			case DataFieldSource.parms:
-				return data.parms[field.sourceKey]
+				return getValue(DataFieldSource.parms, data.parms, field.sourceKey)
 
 			case DataFieldSource.system:
-				return data.system[field.sourceKey]
+				return getValue(DataFieldSource.system, data.system, field.sourceKey)
 
 			case DataFieldSource.tree:
 				const tokens = field.sourceKey.split(';')
 				if (tokens.length === 2) {
 					const keyNode = tokens[0]
 					const keyValue = tokens[1]
-					return getTreeValue(keyNode, keyValue)
+					return getValueTree(keyNode, keyValue)
 				} else {
 					throw error(500, {
 						file: FILENAME,
-						function: `getValRaw.source: ${field.codeSource}`,
-						message: `Invalid sourceKey: ${field.sourceKey}`
+						function: funct,
+						message: `Invalid sourceKey. Should be 2 values separated by ";".`
 					})
 				}
 
 			case DataFieldSource.user:
-				return data.user[field.sourceKey]
+				return getValue(DataFieldSource.user, data.user, field.sourceKey)
 
 			default:
 				throw error(500, {
 					file: FILENAME,
-					function: 'getValRaw',
+					function: funct,
 					message: `No case defined for source: ${field.codeSource}`
 				})
 		}
-		function getTreeValue(keyNode: string, keyValue: string) {
-			console.log('getTreeValue.tree:', data.tree)
-			try {
-				return data.tree[keyNode][keyValue]
-			} catch (err) {
-				throw error(500, {
-					file: FILENAME,
-					function: 'getTreeValue',
-					message: `Missing data tree value for keyNode: ${keyNode} keyValue: ${keyValue}`
-				})
+		function getValueTree(keyNode: string, keyValue: string) {
+			if (data.tree.hasOwnProperty(keyNode))
+				return getValue(DataFieldSource.tree, data.tree[keyNode], keyValue)
+			throw error(500, {
+				file: FILENAME,
+				function: funct,
+				message: `Missing data tree key node: ${keyNode}`
+			})
+		}
+		function getValue(source: DataFieldSource, data: Record<string, any>, key: string) {
+			const result = getValueNested(data, key)
+			return result ? result[1] : valueNotFound(source, data)
+		}
+		function getValueNested(data: Record<string, any>, key: string) {
+			const tokens = key.split('.')
+			let currentData = data
+			for (let i = 0; i < tokens.length - 1; i++) {
+				if (!currentData.hasOwnProperty(tokens[i])) return false
+				currentData = currentData[tokens[i]]
 			}
+			const idx = tokens.length - 1
+			if (!currentData.hasOwnProperty(tokens[idx])) return false
+			return [true, currentData[tokens[idx]]]
+		}
+		function valueNotFound(source: DataFieldSource, data: Record<string, any>) {
+			throw error(500, {
+				file: FILENAME,
+				function: funct,
+				message: `Value not found in data: ${JSON.stringify(data)}.`
+			})
 		}
 	}
 
