@@ -1012,12 +1012,24 @@ async function navProvider() {
 		owner: 'app_cm_training',
 		parentNodeName: 'node_training_provider_student_detail',
 		codeType: 'object',
-		name: 'node_training_provider_referral_list',
-		header: 'Referrals',
+		name: 'node_training_provider_service_flow_list',
+		header: 'Service Flows',
 		order: 10,
 		codeIcon: 'application',
 		page: '/home/app',
-		dataObj: 'form_training_provider_referral_list',
+		dataObj: 'form_cm_service_flow_list',
+		creator: 'user_sys'
+	})
+	await addNodeObj({
+		owner: 'app_cm_training',
+		parentNodeName: 'node_training_provider_service_flow_list',
+		codeType: 'object',
+		name: 'node_training_provider_service_flow_detail',
+		header: 'Service Flow',
+		order: 10,
+		codeIcon: 'application',
+		page: '/home/app',
+		dataObj: 'form_cm_service_flow_detail',
 		creator: 'user_sys'
 	})
 	await addNodeObj({

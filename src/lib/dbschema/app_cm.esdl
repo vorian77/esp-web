@@ -6,6 +6,30 @@ module app_cm {
     };
     required agencyId: str;
   }
+
+  type ServiceFlow extending sys_core::Obj {}
+
+  type ClientServiceFlow extending sys_user::Mgmt {
+    required student: Student;
+    required serviceFlow: ServiceFlow;
+    required codeStatus: sys_core::Code;
+    dateStartEst: cal::local_date;
+    dateStart: cal::local_date;
+    dateEndEst: cal::local_date;
+    dateEnd: cal::local_date;
+    note: str;
+  }
+
+  type ClientData extending sys_user::Mgmt {
+    required clientServiceFlow: ClientServiceFlow;
+  }
+
+  type ClientNote extending ClientData {
+    required date: cal::local_date;
+    required codeType: sys_core::Code;
+    required codePrivacy: sys_core::Code;
+    note: str;
+  }
 }
 
 module app_cm_training {
@@ -38,6 +62,22 @@ module app_cm_training {
     staffAgency: sys_user::Staff;
     staffInstructor: sys_user::Staff;
     venue: sys_core::Org;
+  }
+
+  type ClientCohort extending app_cm::ClientData {
+    required cohort: Cohort;
+    required codeStatus: sys_core::Code;
+    dateStart: cal::local_date;
+    dateEnd: cal::local_date;
+    multi codeOutcomes: sys_core::Code;
+    note: str;
+  }
+
+  type ClientCohortAttd extending app_cm::ClientData {
+    required clientCohort: ClientCohort;
+    required date: cal::local_date;
+    required duration: decimal;
+    note: str;
   }
 
   # FUNCTIONS

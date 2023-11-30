@@ -64,6 +64,7 @@ export default async function init() {
 	await dataCourses()
 	await dataCohorts()
 	await dataStudents()
+	await dataServiceFlows()
 	// await review(FILE, reviewQuery)
 	console.log(`${FILE}.end`)
 }
@@ -153,4 +154,21 @@ async function dataStudents() {
       modifiedBy := myCreator
     });
   `)
+}
+
+async function dataServiceFlows() {
+	await execute(`
+      with
+      myCreator := (select sys_user::getUser('user_ai'))
+      for x in {
+        ('sf_cm_training', 'Training'),        
+      }
+      union (insert app_cm::ServiceFlow {
+        owner := (select sys_core::getOrg('System')),
+        name := x.0,
+        header := x.1,
+        createdBy := myCreator,
+        modifiedBy := myCreator
+      });
+    `)
 }

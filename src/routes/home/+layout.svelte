@@ -111,7 +111,7 @@
 	</svelte:fragment>
 
 	<div class="mx-3 mt-2">
-		<DataViewer header="navStatus" data={$navStatus} />
+		<!-- <DataViewer header="navStatus" data={$navStatus} /> -->
 		<slot />
 	</div>
 

@@ -363,6 +363,7 @@ export function getVal(field: DataFieldData, data: any, table: Table | undefined
 				})
 		}
 		function getTreeValue(keyNode: string, keyValue: string) {
+			console.log('getTreeValue.tree:', data.tree)
 			try {
 				return data.tree[keyNode][keyValue]
 			} catch (err) {

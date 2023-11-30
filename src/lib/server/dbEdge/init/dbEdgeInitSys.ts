@@ -9,6 +9,7 @@ import {
 	review
 } from '$server/dbEdge/types.edgeDB.server'
 import {
+	addOrgs,
 	apps,
 	codeTypes,
 	codes,
@@ -61,6 +62,8 @@ async function initSysCore() {
 	})
 
 	await apps([['app_sys'], ['app_db']])
+
+	await addOrgs([['System', 'System App']])
 }
 
 async function initSysCodes() {
@@ -369,8 +372,22 @@ async function initSysColumns() {
 			creator: 'user_sys',
 			owner: 'app_sys',
 			codeDataType: 'date',
+			header: 'Estimated End Date',
+			name: 'dateEndEst'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'date',
 			header: 'Start Date',
 			name: 'dateStart'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'date',
+			header: 'Estimated Start Date',
+			name: 'dateStartEst'
 		})
 		await addColumn({
 			creator: 'user_sys',
@@ -378,6 +395,13 @@ async function initSysColumns() {
 			codeDataType: 'str',
 			header: 'Description',
 			name: 'description'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Header',
+			name: 'header'
 		})
 		await addColumn({
 			creator: 'user_sys',

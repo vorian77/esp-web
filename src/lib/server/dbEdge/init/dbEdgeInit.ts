@@ -16,11 +16,11 @@ const FILE = '/server/dbEdge/init'
 
 export async function init() {
 	// <temp>  230908 - database init
-	// await initSys()
-	// await initSysAuth()
-	// await initCM()
-	// await initCMTraining()
-	// await initCMTrainingData()
+	await initSys()
+	await initSysAuth()
+	await initCM()
+	await initCMTraining()
+	await initCMTrainingData()
 	// await initMOED_cm()
 	// await initReviewQuery()
 	// await initReviewForm()

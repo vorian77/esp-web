@@ -334,13 +334,18 @@ export async function resetDB(owner: string | undefined = undefined) {
 	const tables: Array<string> = []
 
 	query = `
+	delete app_cm_training::ClientCohortAttd;
+	delete app_cm_training::ClientCohort;
+	delete app_cm::ClientNote;
+	delete app_cm::ClientServiceFlow;
+	delete app_cm::Student;
+	
 	delete app_cm_training::Cohort;
 	delete app_cm_training::Course;
-	delete app_cm::Student;
+	delete app_cm::ServiceFlow;
 	delete sys_user::User filter .userName not in {'user_sys', 'user_ai'};`
 
 	// tables in delete order
-
 	tables.push('sys_obj::NodeObj')
 	tables.push('sys_obj::Form')
 	tables.push('sys_obj::FormFieldItemsList')

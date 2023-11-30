@@ -187,5 +187,5 @@
 	}
 </script>
 
-<DataViewer header="CurrentPage" data={pageCurrent} />
-<DataViewer header="Code" data={authSecurityCode} />
+<!-- <DataViewer header="CurrentPage" data={pageCurrent} />
+<DataViewer header="Code" data={authSecurityCode} /> -->
