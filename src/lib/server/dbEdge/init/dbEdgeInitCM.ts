@@ -57,7 +57,7 @@ async function initCore() {
 	])
 
 	await tables([
-		['app_cm', 'app_cm', 'Student', true],
+		['app_cm', 'app_cm', 'Client', true],
 		['app_cm', 'app_cm', 'ClientServiceFlow', true],
 		['app_cm', 'app_cm', 'ClientCohort', true],
 		['app_cm', 'app_cm', 'ClientCohortAttd', true],
@@ -76,44 +76,67 @@ async function initCore() {
 
 async function initColumns() {
 	await addColumn({
-		owner: 'app_cm',
 		codeDataType: 'str',
+		creator: 'user_sys',
 		header: 'Agency ID',
 		name: 'agencyId',
-		placeHolder: 'Enter agency ID',
-		creator: 'user_sys'
+		owner: 'app_cm',
+		placeHolder: 'Enter agency ID'
 	})
 	await addColumn({
-		owner: 'app_cm',
-		codeDataType: 'str',
+		codeDataType: 'edgeType',
+		codeDataTypePreset: 'str',
+		creator: 'user_sys',
+		edgeTypeDefn: {
+			property: 'person.fullName',
+			table: { mod: 'app_cm', name: 'Client' }
+		},
+		exprPreset:
+			'(SELECT app_cm::Client { data := .id, display := .person.fullName } FILTER .id = <uuid,tree,app_cm::Client;id>)',
+		header: 'Client',
+		name: 'client',
+		owner: 'app_cm'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Referral Date',
+		name: 'dateReferral'
+	})
+	await addColumn({
+		codeDataType: 'edgeType',
+		creator: 'user_sys',
+		edgeTypeDefn: { property: 'header', table: { mod: 'app_cm', name: 'ServiceFlow' } },
 		header: 'Service Flow',
 		name: 'serviceFlow',
-		placeHolder: 'Enter service flow',
-		creator: 'user_sys'
+		owner: 'app_cm'
 	})
 	await addColumn({
-		owner: 'app_cm',
-		codeDataType: 'str',
-		header: 'Student',
-		name: 'student',
-		placeHolder: 'Enter student',
-		creator: 'user_sys'
+		codeDataType: 'computed',
+		codeDataTypePreset: 'str',
+		creator: 'user_sys',
+		exprSelect: `.serviceFlow { data := .id, display := .header }`,
+		header: 'Service Flow',
+		isExcludeUpdate: true,
+		name: 'serviceFlowComputed',
+		owner: 'app_cm'
 	})
 }
 
 async function initTableColumns() {
 	await tableColumns([
-		['app_cm', 'Student', 'agencyId'],
-		['app_cm', 'Student', 'createdAt'],
-		['app_cm', 'Student', 'createdBy'],
-		['app_cm', 'Student', 'email'],
-		['app_cm', 'Student', 'firstName'],
-		['app_cm', 'Student', 'fullName'],
-		['app_cm', 'Student', 'id'],
-		['app_cm', 'Student', 'lastName'],
-		['app_cm', 'Student', 'modifiedAt'],
-		['app_cm', 'Student', 'modifiedBy'],
-		['app_cm', 'Student', 'note']
+		['app_cm', 'Client', 'agencyId'],
+		['app_cm', 'Client', 'createdAt'],
+		['app_cm', 'Client', 'createdBy'],
+		['app_cm', 'Client', 'email'],
+		['app_cm', 'Client', 'firstName'],
+		['app_cm', 'Client', 'fullName'],
+		['app_cm', 'Client', 'id'],
+		['app_cm', 'Client', 'lastName'],
+		['app_cm', 'Client', 'modifiedAt'],
+		['app_cm', 'Client', 'modifiedBy'],
+		['app_cm', 'Client', 'note']
 	])
 }
 
@@ -133,7 +156,7 @@ async function initServiceFlow() {
 			mod: 'app_cm',
 			name: 'ClientServiceFlow'
 		},
-		exprFilter: '.student.id = <uuid,tree,app_cm::Student;id>',
+		exprFilter: '.client.id = <uuid,tree,app_cm::Client;id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -144,18 +167,40 @@ async function initServiceFlow() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'dateStart',
-				dbOrderSelect: 40
+				columnName: 'serviceFlowComputed',
+				dbOrderSelect: 20
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'dateEnd',
+				columnName: 'dateReferral',
+				dbOrderSelect: 30
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateStartEst',
+				dbOrderSelect: 40,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateStart',
 				dbOrderSelect: 50
 			},
 			{
 				codeAccess: 'readOnly',
+				columnName: 'dateEndEst',
+				dbOrderSelect: 60,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateEnd',
+				dbOrderSelect: 70
+			},
+			{
+				codeAccess: 'readOnly',
 				columnName: 'note',
-				dbOrderSelect: 60
+				dbOrderSelect: 80
 			}
 		]
 	})
@@ -168,28 +213,62 @@ async function initServiceFlow() {
 		codeCardinality: 'detail',
 		name: 'form_cm_service_flow_detail',
 		header: 'Service Flow',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'ServiceFlow' },
+		table: { owner: 'app_cm', mod: 'app_cm', name: 'ClientServiceFlow' },
 		actions: ['noa_detail_save', 'noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
-				codeAccess: 'optional',
+				codeAccess: 'readOnly',
+				columnName: 'client',
+				dbOrderSelect: 10
+			},
+			{
+				codeElement: 'select',
+				columnName: 'serviceFlow',
+				dbOrderSelect: 20,
+				itemsList: 'il_cm_service_flow'
+			},
+			{
 				codeElement: 'select',
 				columnName: 'codeStatus',
-				dbOrderSelect: 50,
+				dbOrderSelect: 30,
+				exprPreset: `(SELECT sys_core::Code { data := .id, display := .name } FILTER .codeType.name = 'ct_cm_service_flow_status' and .name = 'Pending')`,
 				itemsList: 'il_sys_code_order_index_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_service_flow_status' }
+			},
+			{
+				codeElement: 'date',
+				columnName: 'dateReferral',
+				dbOrderSelect: 35
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
 				columnName: 'dateStartEst',
-				dbOrderSelect: 170
+				dbOrderSelect: 40
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'date',
+				columnName: 'dateStart',
+				dbOrderSelect: 50
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'date',
+				columnName: 'dateEndEst',
+				dbOrderSelect: 60
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'date',
+				columnName: 'dateEnd',
+				dbOrderSelect: 70
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
-				dbOrderSelect: 170
+				dbOrderSelect: 80
 			},
 			{
 				codeAccess: 'readOnly',

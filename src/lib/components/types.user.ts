@@ -1,11 +1,5 @@
 import { nbrOptional, nbrRequired, strRequired, valueOrDefault } from '$utils/utils'
 
-export enum UserType {
-	student = 'student',
-	staff = 'staff',
-	admin = 'admin'
-}
-
 export class User {
 	user: any
 	firstName: string

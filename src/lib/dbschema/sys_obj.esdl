@@ -77,7 +77,6 @@ module sys_obj{
      on source delete allow;
     };
     itemsListParms: json;
-
     width: int16;
   }
 

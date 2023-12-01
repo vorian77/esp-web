@@ -85,10 +85,11 @@ export class EdgeQL {
 	}
 
 	private logScript(type: string, script: string) {
-		// console.log()
-		// console.log(`getScript: ${type}...`)
-		// console.log(script)
-		// console.log()
+		if (!script) return
+		console.log()
+		console.log(`getScript: ${type}...`)
+		console.log(script)
+		console.log()
 	}
 
 	getScriptDataItems(dbSelect: string, data: any) {

@@ -1,5 +1,5 @@
 module app_cm {
-  type Student extending sys_user::Mgmt {
+  type Client extending sys_user::Mgmt {
     required owner: sys_core::Org;
     required person: default::Person{
       on source delete delete target if orphan;
@@ -10,9 +10,10 @@ module app_cm {
   type ServiceFlow extending sys_core::Obj {}
 
   type ClientServiceFlow extending sys_user::Mgmt {
-    required student: Student;
+    required client: Client;
     required serviceFlow: ServiceFlow;
     required codeStatus: sys_core::Code;
+    required dateReferral: cal::local_date;
     dateStartEst: cal::local_date;
     dateStart: cal::local_date;
     dateEndEst: cal::local_date;

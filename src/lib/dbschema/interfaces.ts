@@ -37,11 +37,31 @@ export namespace sys_user {
   export interface currentUser extends User {}
 }
 export namespace app_cm {
-  export interface Student extends sys_user.Mgmt {
+  export interface Client extends sys_user.Mgmt {
     "agencyId": string;
     "person": Person;
     "owner": sys_core.Org;
   }
+  export interface ClientData extends sys_user.Mgmt {
+    "clientServiceFlow": ClientServiceFlow;
+  }
+  export interface ClientNote extends ClientData {
+    "codePrivacy": sys_core.Code;
+    "codeType": sys_core.Code;
+    "date": edgedb.LocalDate;
+    "note"?: string | null;
+  }
+  export interface ClientServiceFlow extends sys_user.Mgmt {
+    "codeStatus": sys_core.Code;
+    "serviceFlow": ServiceFlow;
+    "dateEnd"?: edgedb.LocalDate | null;
+    "dateEndEst"?: edgedb.LocalDate | null;
+    "dateStart"?: edgedb.LocalDate | null;
+    "dateStartEst"?: edgedb.LocalDate | null;
+    "note"?: string | null;
+    "client": Client;
+  }
+  export interface ServiceFlow extends sys_core.Obj {}
 }
 export interface Person extends std.$Object {
   "addr1"?: string | null;
@@ -97,6 +117,20 @@ export namespace sys_core {
   }
 }
 export namespace app_cm_training {
+  export interface ClientCohort extends app_cm.ClientData {
+    "codeOutcomes": sys_core.Code[];
+    "codeStatus": sys_core.Code;
+    "cohort": Cohort;
+    "dateEnd"?: edgedb.LocalDate | null;
+    "dateStart"?: edgedb.LocalDate | null;
+    "note"?: string | null;
+  }
+  export interface ClientCohortAttd extends app_cm.ClientData {
+    "clientCohort": ClientCohort;
+    "date": edgedb.LocalDate;
+    "duration": string;
+    "note"?: string | null;
+  }
   export interface Cohort extends sys_core.Obj {
     "codeStatus"?: sys_core.Code | null;
     "course": Course;
@@ -458,6 +492,8 @@ export namespace sys_obj {
     "isLinkMember"?: boolean | null;
   }
   export interface FormFieldEl extends std.$Object {
+    "exprSelect"?: string | null;
+    "nameAlt"?: string | null;
     "headerAlt"?: string | null;
     "codeCustomElType"?: sys_core.Code | null;
     "customElParms"?: unknown | null;
@@ -515,7 +551,11 @@ export interface types {
     "currentUser": sys_user.currentUser;
   };
   "app_cm": {
-    "Student": app_cm.Student;
+    "Client": app_cm.Client;
+    "ClientData": app_cm.ClientData;
+    "ClientNote": app_cm.ClientNote;
+    "ClientServiceFlow": app_cm.ClientServiceFlow;
+    "ServiceFlow": app_cm.ServiceFlow;
   };
   "default": {
     "Person": Person;
@@ -530,6 +570,8 @@ export interface types {
     "Org": sys_core.Org;
   };
   "app_cm_training": {
+    "ClientCohort": app_cm_training.ClientCohort;
+    "ClientCohortAttd": app_cm_training.ClientCohortAttd;
     "Cohort": app_cm_training.Cohort;
     "Course": app_cm_training.Course;
   };

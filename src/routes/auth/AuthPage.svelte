@@ -168,14 +168,14 @@
 		authSecurityCode = Math.floor(Math.random() * (max - min + 1)) + min
 		authSecurityCodePhone = phoneMobile
 
-		await fetch('/auth', {
-			method: 'POST',
-			body: JSON.stringify({
-				action: 'sms_send',
-				phoneMobile: authSecurityCodePhone,
-				message: `Mobile phone number verification code: ${authSecurityCode}`
-			})
-		})
+		// await fetch('/auth', {
+		// 	method: 'POST',
+		// 	body: JSON.stringify({
+		// 		action: 'sms_send',
+		// 		phoneMobile: authSecurityCodePhone,
+		// 		message: `Mobile phone number verification code: ${authSecurityCode}`
+		// 	})
+		// })
 	}
 	export async function getUser(userId: string) {
 		const responsePromise = await fetch('/api/user', {
@@ -187,5 +187,5 @@
 	}
 </script>
 
-<!-- <DataViewer header="CurrentPage" data={pageCurrent} />
-<DataViewer header="Code" data={authSecurityCode} /> -->
+<!-- <DataViewer header="CurrentPage" data={pageCurrent} /> -->
+<!-- <DataViewer header="Code" data={authSecurityCode} /> -->

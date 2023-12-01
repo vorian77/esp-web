@@ -5,8 +5,8 @@ import * as _ from "../imports";
 import type * as _std from "./std";
 import type * as _cal from "./cal";
 import type * as _sys_core from "./sys_core";
-import type * as _app_cm from "./app_cm";
 import type * as _sys_user from "./sys_user";
+import type * as _app_cm from "./app_cm";
 export type $Name = $.ScalarType<"std::str", string>;
 const Name: $.scalarTypeWithConstructor<_std.$str, never> = $.makeType<$.scalarTypeWithConstructor<_std.$str, never>>(_.spec, "c779e93d-71ae-11ee-a35f-53945e85672e", _.syntax.literal);
 
@@ -31,12 +31,12 @@ export type $PersonλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83f
   "codeState": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeRace": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "avatar": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
-  "<person[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::Staff]": $.LinkDesc<_sys_user.$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::User]": $.LinkDesc<_sys_user.$User, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::SYS_USER_ID]": $.LinkDesc<_sys_user.$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::SYS_USER]": $.LinkDesc<_sys_user.$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::currentUser]": $.LinkDesc<_sys_user.$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is app_cm::Client]": $.LinkDesc<_app_cm.$Client, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Person = $.ObjectType<"default::Person", $PersonλShape, null, [

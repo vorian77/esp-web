@@ -329,7 +329,7 @@ export async function setOrgUserType(params: any) {
 	return await query.run(client, { data: params })
 }
 
-export async function resetDB(owner: string | undefined = undefined) {
+export async function resetDB() {
 	let query = ''
 	const tables: Array<string> = []
 
@@ -338,7 +338,7 @@ export async function resetDB(owner: string | undefined = undefined) {
 	delete app_cm_training::ClientCohort;
 	delete app_cm::ClientNote;
 	delete app_cm::ClientServiceFlow;
-	delete app_cm::Student;
+	delete app_cm::Client;
 	
 	delete app_cm_training::Cohort;
 	delete app_cm_training::Course;
@@ -362,17 +362,10 @@ export async function resetDB(owner: string | undefined = undefined) {
 
 	tables.forEach((t) => {
 		if (query) query += ' '
-		query += 'delete ' + t
-		if (owner) query += ` filter .owner.name = '${owner}'`
-		query += ';'
+		query += 'delete ' + t + ';'
 	})
 
-	if (!owner) query += ' delete default::Person; delete sys_core::ObjRoot;'
-
-	// console.log()
-	// console.log(`reset.query: (${owner ? owner : ''})`)
-	// console.log(query)
-	// console.log()
-
+	query += ' delete default::Person; delete sys_core::ObjRoot;'
+	// console.log('resetDB.query:', query)
 	await execute(query)
 }

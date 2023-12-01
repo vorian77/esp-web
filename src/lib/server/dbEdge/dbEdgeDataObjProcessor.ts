@@ -12,6 +12,7 @@ import {
 	DataObj,
 	DataObjCardinality,
 	DbData,
+	formatDate,
 	formatDateTime,
 	memberOfEnum,
 	type ProcessDataObj,
@@ -159,6 +160,7 @@ async function processSelect(query: EdgeQL, dataObj: DataObj, data: any) {
 async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 	if (!dataObj.data || Object.keys(dataObj.data).length === 0) return {}
 	let data: Array<Record<string, any>> = dataObj.data
+	// console.log('processDataPost.0:', data)
 
 	for (const field of dataObj.defn._fieldsEl) {
 		await getDataItems(query, field)
@@ -173,10 +175,12 @@ async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 					field._column._codeDataType,
 					field._column._codeDataTypePreset
 				)
+				if (Array.isArray(data[index][fieldName]))
+					data[index][fieldName] = data[index][fieldName][0]
 			}
 		})
 	}
-	console.log('processDataPost.return:', data)
+	console.log('processDataPost.final:', data)
 
 	return dataObj.cardinality === DataObjCardinality.list ? data : data[0]
 
@@ -209,8 +213,11 @@ async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 				)
 				return formatDataForDisplay(field, value, dataTypePreset)
 
+			case DataFieldDataType.date:
+				return !value ? '' : value
+
 			case DataFieldDataType.datetime:
-				return formatDateTime(value)
+				return !value ? '' : formatDateTime(value)
 
 			case DataFieldDataType.edgeType:
 				if (field._column.isMultiSelect) {
@@ -233,6 +240,7 @@ async function processDataPost(query: EdgeQL, dataObj: DataObj) {
 
 			case DataFieldDataType.str:
 				return !value ? '' : value
+
 			default:
 				return value
 		}

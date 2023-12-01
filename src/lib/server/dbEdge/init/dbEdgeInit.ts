@@ -45,8 +45,6 @@ async function initReviewQuery() {
 async function initReviewForm() {
 	// console.log()
 	// console.log('getForm...')
-	// const formId = await getFormIdByName('form_training_provider_student_list')
-	// const formId = await getFormIdByName('form_training_provider_student_detail')
 	// console.log('formId:', formId)
 	// const form = await getFormById(formId!.id)
 	// console.log('form:', form)

@@ -448,10 +448,10 @@ export async function addOrg(data: any) {
 export async function addUser(data: any) {
 	const query = e.params(
 		{
-			firstName: e.str,
-			lastName: e.str,
 			userName: e.str,
-			password: e.str
+			password: e.str,
+			firstName: e.str,
+			lastName: e.str
 		},
 		(p) => {
 			return e.insert(e.sys_user.User, {
@@ -462,6 +462,50 @@ export async function addUser(data: any) {
 				}),
 				userName: p.userName,
 				password: p.password
+			})
+		}
+	)
+	return await query.run(client, data)
+}
+
+// await addUserOrg({
+// 	orgName: 'Atlantic Impact',
+// 	userName: 'user_ai',
+// 	password: '!alfjasf*!@#$$*&',
+// 	firstName: 'Atlantic',
+// 	lastName: 'Impact'
+// })
+
+export async function addUserOrg(data: any) {
+	const org = e.select(e.sys_core.Org, (org) => ({
+		filter_single: e.op(org.name, '=', data.orgName)
+	}))
+	const person = e.select(e.sys_user.User, (user) => ({
+		_id: user.person.id,
+		filter_single: e.op(user.userName, '=', data.userName)
+	}))
+	const userType = e.select(e.sys_user.UserType, (ut) => ({
+		filter_single: e.op(ut.id, '=', e.cast(e.uuid, org.userTypeDefault.id))
+	}))
+
+	const query = e.params(
+		{
+			orgName: e.str,
+			userName: e.str,
+			password: e.str,
+			firstName: e.str,
+			lastName: e.str
+		},
+		(p) => {
+			return e.insert(e.sys_user.User, {
+				owner: e.set(org),
+				userName: p.userName,
+				password: p.password,
+				person: e.insert(e.default.Person, {
+					firstName: p.firstName,
+					lastName: p.lastName
+				}),
+				userTypes: e.set(userType)
 			})
 		}
 	)

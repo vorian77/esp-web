@@ -681,7 +681,7 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is schema::Extension]": $.LinkDesc<$Extension, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_obj::FormFieldEl]": $.LinkDesc<_sys_obj.$FormFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_user::Staff]": $.LinkDesc<_sys_user.$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::Client]": $.LinkDesc<_app_cm.$Client, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_user::User]": $.LinkDesc<_sys_user.$User, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_user::SYS_USER]": $.LinkDesc<_sys_user.$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_obj::FormFieldItemsList]": $.LinkDesc<_sys_obj.$FormFieldItemsList, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -708,6 +708,12 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is sys_obj::NodeObj]": $.LinkDesc<_sys_obj.$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::ServiceFlow]": $.LinkDesc<_app_cm.$ServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::ClientServiceFlow]": $.LinkDesc<_app_cm.$ClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm_training::ClientCohortAttd]": $.LinkDesc<_app_cm_training.$ClientCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::ClientData]": $.LinkDesc<_app_cm.$ClientData, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::ClientNote]": $.LinkDesc<_app_cm.$ClientNote, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm_training::ClientCohort]": $.LinkDesc<_app_cm_training.$ClientCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<intersection_of": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

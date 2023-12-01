@@ -7,8 +7,8 @@ import type * as _sys_user from "./sys_user";
 import type * as _sys_obj from "./sys_obj";
 import type * as _sys_db from "./sys_db";
 import type * as _app_cm_training from "./app_cm_training";
-import type * as _default from "./default";
 import type * as _app_cm from "./app_cm";
+import type * as _default from "./default";
 export type $ObjRootλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
   "header": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "name": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
@@ -33,6 +33,7 @@ export type $ObjRootλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83
   "<owner[is sys_user::currentUser]": $.LinkDesc<_sys_user.$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_obj::Form]": $.LinkDesc<_sys_obj.$Form, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_core::Org]": $.LinkDesc<$Org, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<owner[is app_cm::ServiceFlow]": $.LinkDesc<_app_cm.$ServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
@@ -111,7 +112,12 @@ export type $CodeλShape = $.typeutil.flatten<$ObjλShape & {
   "<codeCustomElType[is sys_obj::FormFieldEl]": $.LinkDesc<_sys_obj.$FormFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeRace[is Person]": $.LinkDesc<_default.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeState[is Person]": $.LinkDesc<_default.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeStatus[is app_cm::ClientServiceFlow]": $.LinkDesc<_app_cm.$ClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeOutcomes[is app_cm_training::ClientCohort]": $.LinkDesc<_app_cm_training.$ClientCohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeStatus[is app_cm_training::ClientCohort]": $.LinkDesc<_app_cm_training.$ClientCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDataTypePreset[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codePrivacy[is app_cm::ClientNote]": $.LinkDesc<_app_cm.$ClientNote, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeType[is app_cm::ClientNote]": $.LinkDesc<_app_cm.$ClientNote, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAccess": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAlignment": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeCardinality": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -129,6 +135,8 @@ export type $CodeλShape = $.typeutil.flatten<$ObjλShape & {
   "<codeMultiItemsIncluded": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeMultiItemsNotIncluded": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeMultiRqmts": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeOutcomes": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codePrivacy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeRace": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeSector": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeState": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -173,7 +181,7 @@ export type $OrgλShape = $.typeutil.flatten<$EntλShape & {
   "userTypeDefault": $.LinkDesc<_sys_user.$UserType, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "<venue[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<provider[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<owner[is app_cm::Student]": $.LinkDesc<_app_cm.$Student, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<owner[is app_cm::Client]": $.LinkDesc<_app_cm.$Client, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<provider": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<venue": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

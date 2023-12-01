@@ -1,4 +1,4 @@
-import { addOrg, addUser, execute, review } from '$server/dbEdge/types.edgeDB.server'
+import { addOrg, addUser, addUserOrg, execute, review } from '$server/dbEdge/types.edgeDB.server'
 import {
 	addOrgs,
 	addRoleOrg,
@@ -15,14 +15,6 @@ let reviewQuery = ''
 export default async function init() {
 	console.log()
 	console.log(`${FILE}.start...`)
-	await reset()
-
-	await addUser({
-		firstName: 'Atlantic',
-		lastName: 'Impact',
-		userName: 'user_ai',
-		password: '!alfjasf*!@#$$*&'
-	})
 
 	await addOrgs([
 		['Atlantic Impact', 'Atlantic Impact Mobile'],
@@ -38,6 +30,21 @@ export default async function init() {
 	])
 
 	await setOrgUserType([['Atlantic Impact', 'ut_cm_training_staff_provider']])
+
+	await addUser({
+		userName: 'user_ai',
+		password: '!alfjasf*!@#$$*&',
+		firstName: 'Atlantic',
+		lastName: 'Impact'
+	})
+
+	await addUserOrg({
+		orgName: 'Atlantic Impact',
+		userName: '2487985578',
+		password: 'JakeDog#1',
+		firstName: 'Phyllip',
+		lastName: 'Hall'
+	})
 
 	await addStaff([
 		['Stacy', 'Administrator'],
@@ -65,19 +72,12 @@ export default async function init() {
 	await dataCohorts()
 	await dataStudents()
 	await dataServiceFlows()
+	await dataClientServiceFlows()
 	// await review(FILE, reviewQuery)
 	console.log(`${FILE}.end`)
 }
 
-reviewQuery = `select app_cm::Student {*, person: {id, firstName, lastName, email}}`
-
-async function reset() {
-	await execute(`
-  delete app_cm::Student;
-  delete sys_user::User filter .userName ='user_ai'
-
-`)
-}
+reviewQuery = `select app_cm::Client {*, person: {id, firstName, lastName, email}}`
 
 async function dataCourses() {
 	await execute(`
@@ -128,21 +128,21 @@ async function dataStudents() {
     with
     myCreator := (select sys_user::getUser('user_ai'))
     for x in {
-      ('AE-195500', 'Jose', 'Prater', 'jp@gmail.com'),
-      ('AE-196800', 'Jeron', 'Johnson', 'jj@gmail.com'),
-      ('AE-197100', 'Sara', 'Payne', 'sp@gmail.com'),
-      ('AE-197300', 'Elonda', 'Cruder', 'ec@gmail.com'),
-      ('AE-197400', 'Christopher', 'Calhoun', 'cc@gmail.com'),
-      ('AE-197500', 'Regory', 'Elliott', 're@gmail.com'),
-      ('AE-197800', 'Farrah', 'May', 'fm@gmail.com'),
-      ('AE-197900', 'Gerrell', 'Johnson', 'gj@gmail.com'),
-      ('AE-197900', 'Cornelius', 'Williams', 'cw@gmail.com'),
-      ('AE-197000', 'Chakiya', 'Long', 'cl@gmail.com'),
-      ('AE-197700', 'William', 'Cobb', 'wc@gmail.com'),
-      ('AE-197700', 'Italo', 'Rodriguez', 'ir@gmail.com'),
+      ('AE-195100', 'Jose', 'Prater', 'jp@gmail.com'),
+      ('AE-195200', 'Jeron', 'Johnson', 'jj@gmail.com'),
+      ('AE-195300', 'Sara', 'Payne', 'sp@gmail.com'),
+      ('AE-195400', 'Elonda', 'Cruder', 'ec@gmail.com'),
+      ('AE-195500', 'Christopher', 'Calhoun', 'cc@gmail.com'),
+      ('AE-195600', 'Regory', 'Elliott', 're@gmail.com'),
+      ('AE-195700', 'Farrah', 'May', 'fm@gmail.com'),
+      ('AE-195800', 'Gerrell', 'Johnson', 'gj@gmail.com'),
+      ('AE-195900', 'Cornelius', 'Williams', 'cw@gmail.com'),
+      ('AE-196000', 'Chakiya', 'Long', 'cl@gmail.com'),
+      ('AE-196100', 'William', 'Cobb', 'wc@gmail.com'),
+      ('AE-196200', 'Italo', 'Rodriguez', 'ir@gmail.com'),
       
     }
-    union (insert app_cm::Student {
+    union (insert app_cm::Client {
       owner := (select sys_core::getOrg('Atlantic Impact')),
       agencyId := x.0,
       person := (insert default::Person {
@@ -161,12 +161,34 @@ async function dataServiceFlows() {
       with
       myCreator := (select sys_user::getUser('user_ai'))
       for x in {
-        ('sf_cm_training', 'Training'),        
+        ('sf_cm_training', 'DESC'), 
+        ('sf_cm_osha', 'OSHA'),       
       }
       union (insert app_cm::ServiceFlow {
         owner := (select sys_core::getOrg('System')),
         name := x.0,
         header := x.1,
+        createdBy := myCreator,
+        modifiedBy := myCreator
+      });
+    `)
+}
+
+async function dataClientServiceFlows() {
+	await execute(`
+      with
+      myCreator := (select sys_user::getUser('user_ai'))
+      for x in {
+        ('AE-195500', 'sf_cm_training', '2023-11-05', 'Note 1'),
+        ('AE-195500', 'sf_cm_osha', '2023-11-15', 'Note 2'),
+        ('AE-196100', 'sf_cm_training', '2023-12-01', 'Note 3'),        
+      }
+      union (insert app_cm::ClientServiceFlow {
+        client := (select assert_single((select app_cm::Client filter .agencyId = x.0))),
+        serviceFlow := (select assert_single((select app_cm::ServiceFlow filter .name = x.1))),
+        codeStatus := (select assert_single((select sys_core::Code filter .codeType.name = 'ct_cm_service_flow_status' and .name = 'Pending'))),
+        dateReferral := <cal::local_date>x.2,
+        note := x.3,
         createdBy := myCreator,
         modifiedBy := myCreator
       });

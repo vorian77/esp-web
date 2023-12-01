@@ -79,6 +79,8 @@ const $FormFieldDb = $.makeType<$FormFieldDb>(_.spec, "c7a7a524-71ae-11ee-900c-6
 const FormFieldDb: $.$expr_PathNode<$.TypeSet<$FormFieldDb, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($FormFieldDb, $.Cardinality.Many), null);
 
 export type $FormFieldElλShape = $.typeutil.flatten<_std.$Object_6b06be9b27fe11ee83ff159af7e1bb81λShape & {
+  "exprSelect": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "nameAlt": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "headerAlt": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeCustomElType": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "customElParms": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;

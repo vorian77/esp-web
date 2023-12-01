@@ -2,9 +2,41 @@
 
 import * as $ from "../reflection";
 import * as _ from "../imports";
+import type * as _app_cm from "./app_cm";
 import type * as _sys_core from "./sys_core";
-import type * as _sys_user from "./sys_user";
+import type * as _cal from "./cal";
 import type * as _std from "./std";
+import type * as _sys_user from "./sys_user";
+export type $ClientCohortλShape = $.typeutil.flatten<_app_cm.$ClientDataλShape & {
+  "codeOutcomes": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
+  "codeStatus": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
+  "cohort": $.LinkDesc<$Cohort, $.Cardinality.One, {}, false, false,  false, false>;
+  "dateEnd": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "dateStart": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "<clientCohort[is app_cm_training::ClientCohortAttd]": $.LinkDesc<$ClientCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<clientCohort": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+}>;
+type $ClientCohort = $.ObjectType<"app_cm_training::ClientCohort", $ClientCohortλShape, null, [
+  ..._app_cm.$ClientData['__exclusives__'],
+]>;
+const $ClientCohort = $.makeType<$ClientCohort>(_.spec, "66168384-8faa-11ee-98ae-290ecec76018", _.syntax.literal);
+
+const ClientCohort: $.$expr_PathNode<$.TypeSet<$ClientCohort, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($ClientCohort, $.Cardinality.Many), null);
+
+export type $ClientCohortAttdλShape = $.typeutil.flatten<_app_cm.$ClientDataλShape & {
+  "clientCohort": $.LinkDesc<$ClientCohort, $.Cardinality.One, {}, false, false,  false, false>;
+  "date": $.PropertyDesc<_cal.$local_date, $.Cardinality.One, false, false, false, false>;
+  "duration": $.PropertyDesc<_std.$decimal, $.Cardinality.One, false, false, false, false>;
+  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+}>;
+type $ClientCohortAttd = $.ObjectType<"app_cm_training::ClientCohortAttd", $ClientCohortAttdλShape, null, [
+  ..._app_cm.$ClientData['__exclusives__'],
+]>;
+const $ClientCohortAttd = $.makeType<$ClientCohortAttd>(_.spec, "661b166b-8faa-11ee-bf27-37fc298d68b5", _.syntax.literal);
+
+const ClientCohortAttd: $.$expr_PathNode<$.TypeSet<$ClientCohortAttd, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($ClientCohortAttd, $.Cardinality.Many), null);
+
 export type $CohortλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "codeStatus": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "course": $.LinkDesc<$Course, $.Cardinality.One, {}, false, false,  false, false>;
@@ -16,6 +48,8 @@ export type $CohortλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "isCohortRequired": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "schedule": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "<cohort[is app_cm_training::ClientCohort]": $.LinkDesc<$ClientCohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<cohort": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Cohort = $.ObjectType<"app_cm_training::Cohort", $CohortλShape, null, [
   ..._sys_core.$Obj['__exclusives__'],
@@ -76,14 +110,18 @@ function getCMTrainingCourse(...args: any[]) {
 
 
 
-export { $Cohort, Cohort, $Course, Course };
+export { $ClientCohort, ClientCohort, $ClientCohortAttd, ClientCohortAttd, $Cohort, Cohort, $Course, Course };
 
 type __defaultExports = {
+  "ClientCohort": typeof ClientCohort;
+  "ClientCohortAttd": typeof ClientCohortAttd;
   "Cohort": typeof Cohort;
   "Course": typeof Course;
   "getCMTrainingCourse": typeof getCMTrainingCourse
 };
 const __defaultExports: __defaultExports = {
+  "ClientCohort": ClientCohort,
+  "ClientCohortAttd": ClientCohortAttd,
   "Cohort": Cohort,
   "Course": Course,
   "getCMTrainingCourse": getCMTrainingCourse

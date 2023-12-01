@@ -40,14 +40,12 @@ export default async function initSys() {
 	await initSysDataObjActions()
 	await initTablePerson()
 	await initSysApp()
-	await initReviewQuery()
+	// await initReviewQuery()
 	console.log(`${FILE}.end`)
 }
 
 async function initReviewQuery() {
 	let reviewQuery = ''
-	// reviewQuery ='select sys_obj::Form {**} filter .name = "form_training_provider_student_list"'
-	// reviewQuery = 'select sys_core::CodeType {id, name, order, parent}'
 	await review(FILE + '.2', reviewQuery)
 }
 
@@ -279,6 +277,15 @@ async function initSysColumns() {
 		await addColumn({
 			creator: 'user_sys',
 			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'custom_select',
+			isExcludeInsert: true,
+			isExcludeUpdate: true,
+			name: 'custom_select'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
 			codeDataType: 'computed',
 			codeDataTypePreset: 'str',
 			exprSelect: `(SELECT sys_user::User {fullName := str_upper(.person.fullName)} FILTER .userName = <str,user,userName>)`,
@@ -315,10 +322,9 @@ async function initSysColumns() {
 			name: 'modifiedAt'
 		})
 		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
 			codeDataType: 'edgeType',
 			codeDataTypePreset: 'str',
+			creator: 'user_sys',
 			edgeTypeDefn: {
 				property: 'person.fullName',
 				table: { mod: 'sys_user', name: 'User' }
@@ -327,13 +333,13 @@ async function initSysColumns() {
 				'(SELECT sys_user::User { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
 			header: 'Created By',
 			isExcludeUpdate: true,
-			name: 'createdBy'
+			name: 'createdBy',
+			owner: 'app_sys'
 		})
 		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
 			codeDataType: 'edgeType',
 			codeDataTypePreset: 'str',
+			creator: 'user_sys',
 			edgeTypeDefn: {
 				property: 'person.fullName',
 				table: { mod: 'sys_user', name: 'User' }
@@ -341,7 +347,8 @@ async function initSysColumns() {
 			exprPreset:
 				'(SELECT sys_user::User { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
 			header: 'Modified By',
-			name: 'modifiedBy'
+			name: 'modifiedBy',
+			owner: 'app_sys'
 		})
 	}
 
@@ -354,12 +361,12 @@ async function initSysColumns() {
 			name: 'codeCategory'
 		})
 		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
 			codeDataType: 'edgeType',
+			creator: 'user_sys',
 			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
 			header: 'Status',
-			name: 'codeStatus'
+			name: 'codeStatus',
+			owner: 'app_sys'
 		})
 		await addColumn({
 			creator: 'user_sys',
@@ -426,12 +433,12 @@ async function initSysColumns() {
 		})
 
 		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
 			codeDataType: 'edgeType',
+			creator: 'user_sys',
 			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Org' } },
 			header: 'Owner',
-			name: 'owner'
+			name: 'owner',
+			owner: 'app_sys'
 		})
 	}
 }
@@ -562,20 +569,20 @@ async function initTablePerson() {
 			name: 'city'
 		})
 		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
 			codeDataType: 'edgeType',
+			creator: 'user_sys',
 			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
 			header: 'Race',
-			name: 'codeRace'
+			name: 'codeRace',
+			owner: 'app_sys'
 		})
 		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
 			codeDataType: 'edgeType',
+			creator: 'user_sys',
 			edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
 			header: 'State',
-			name: 'codeState'
+			name: 'codeState',
+			owner: 'app_sys'
 		})
 		await addColumn({
 			creator: 'user_sys',

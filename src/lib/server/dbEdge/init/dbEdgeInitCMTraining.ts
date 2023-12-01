@@ -36,8 +36,7 @@ export default async function init() {
 	console.log(`${FILE}.end`)
 }
 
-const reviewQuery =
-	'select sys_obj::Form {name, fieldsDb:{**}, fieldsEl:{**}} filter .name = "form_training_provider_student_list"'
+const reviewQuery = ''
 
 async function initCore() {
 	await apps([['app_cm_training']])
@@ -404,7 +403,6 @@ async function formsProviderCourse() {
 				itemsList: 'il_sys_code_order_index_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_sys_status' }
 			},
-
 			{
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
@@ -631,7 +629,7 @@ async function formsProviderStudent() {
 		name: 'form_training_provider_student_list',
 		header: 'Students',
 		subHeader: 'All students enrolled in any courses.',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'Student' },
+		table: { owner: 'app_cm', mod: 'app_cm', name: 'Client' },
 		exprFilter: 'none',
 		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
 		actions: ['noa_list_new'],
@@ -682,7 +680,7 @@ async function formsProviderStudent() {
 		codeCardinality: 'detail',
 		name: 'form_training_provider_student_detail',
 		header: 'Student',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'Student' },
+		table: { owner: 'app_cm', mod: 'app_cm', name: 'Client' },
 		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
 		actions: ['noa_detail_save', 'noa_detail_new', 'noa_detail_delete'],
 		fields: [

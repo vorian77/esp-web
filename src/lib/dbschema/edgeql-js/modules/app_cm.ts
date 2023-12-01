@@ -6,26 +6,94 @@ import type * as _sys_user from "./sys_user";
 import type * as _std from "./std";
 import type * as _default from "./default";
 import type * as _sys_core from "./sys_core";
-export type $StudentλShape = $.typeutil.flatten<_sys_user.$MgmtλShape & {
+import type * as _cal from "./cal";
+import type * as _app_cm_training from "./app_cm_training";
+export type $ClientλShape = $.typeutil.flatten<_sys_user.$MgmtλShape & {
   "agencyId": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
   "person": $.LinkDesc<_default.$Person, $.Cardinality.One, {}, false, false,  false, false>;
   "owner": $.LinkDesc<_sys_core.$Org, $.Cardinality.One, {}, false, false,  false, false>;
+  "<client[is app_cm::ClientServiceFlow]": $.LinkDesc<$ClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<client": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
-type $Student = $.ObjectType<"app_cm::Student", $StudentλShape, null, [
+type $Client = $.ObjectType<"app_cm::Client", $ClientλShape, null, [
   ..._sys_user.$Mgmt['__exclusives__'],
 ]>;
-const $Student = $.makeType<$Student>(_.spec, "f579cecf-8229-11ee-9f43-ab5bce31b5c4", _.syntax.literal);
+const $Client = $.makeType<$Client>(_.spec, "f579cecf-8229-11ee-9f43-ab5bce31b5c4", _.syntax.literal);
 
-const Student: $.$expr_PathNode<$.TypeSet<$Student, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Student, $.Cardinality.Many), null);
+const Client: $.$expr_PathNode<$.TypeSet<$Client, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Client, $.Cardinality.Many), null);
+
+export type $ClientDataλShape = $.typeutil.flatten<_sys_user.$MgmtλShape & {
+  "clientServiceFlow": $.LinkDesc<$ClientServiceFlow, $.Cardinality.One, {}, false, false,  false, false>;
+}>;
+type $ClientData = $.ObjectType<"app_cm::ClientData", $ClientDataλShape, null, [
+  ..._sys_user.$Mgmt['__exclusives__'],
+]>;
+const $ClientData = $.makeType<$ClientData>(_.spec, "edaddbf1-8fa9-11ee-839f-1724c29a417c", _.syntax.literal);
+
+const ClientData: $.$expr_PathNode<$.TypeSet<$ClientData, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($ClientData, $.Cardinality.Many), null);
+
+export type $ClientNoteλShape = $.typeutil.flatten<$ClientDataλShape & {
+  "codePrivacy": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
+  "codeType": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
+  "date": $.PropertyDesc<_cal.$local_date, $.Cardinality.One, false, false, false, false>;
+  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+}>;
+type $ClientNote = $.ObjectType<"app_cm::ClientNote", $ClientNoteλShape, null, [
+  ...$ClientData['__exclusives__'],
+]>;
+const $ClientNote = $.makeType<$ClientNote>(_.spec, "edb10ba8-8fa9-11ee-9475-6dd31b7bdc06", _.syntax.literal);
+
+const ClientNote: $.$expr_PathNode<$.TypeSet<$ClientNote, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($ClientNote, $.Cardinality.Many), null);
+
+export type $ClientServiceFlowλShape = $.typeutil.flatten<_sys_user.$MgmtλShape & {
+  "codeStatus": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
+  "serviceFlow": $.LinkDesc<$ServiceFlow, $.Cardinality.One, {}, false, false,  false, false>;
+  "dateEnd": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "dateEndEst": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "dateStart": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "dateStartEst": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "client": $.LinkDesc<$Client, $.Cardinality.One, {}, false, false,  false, false>;
+  "<clientServiceFlow[is app_cm_training::ClientCohortAttd]": $.LinkDesc<_app_cm_training.$ClientCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<clientServiceFlow[is app_cm::ClientData]": $.LinkDesc<$ClientData, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<clientServiceFlow[is app_cm::ClientNote]": $.LinkDesc<$ClientNote, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<clientServiceFlow[is app_cm_training::ClientCohort]": $.LinkDesc<_app_cm_training.$ClientCohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<clientServiceFlow": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+}>;
+type $ClientServiceFlow = $.ObjectType<"app_cm::ClientServiceFlow", $ClientServiceFlowλShape, null, [
+  ..._sys_user.$Mgmt['__exclusives__'],
+]>;
+const $ClientServiceFlow = $.makeType<$ClientServiceFlow>(_.spec, "88d7af55-8fa8-11ee-8a55-9d463fc8b30b", _.syntax.literal);
+
+const ClientServiceFlow: $.$expr_PathNode<$.TypeSet<$ClientServiceFlow, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($ClientServiceFlow, $.Cardinality.Many), null);
+
+export type $ServiceFlowλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
+  "<serviceFlow[is app_cm::ClientServiceFlow]": $.LinkDesc<$ClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<serviceFlow": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+}>;
+type $ServiceFlow = $.ObjectType<"app_cm::ServiceFlow", $ServiceFlowλShape, null, [
+  ..._sys_core.$Obj['__exclusives__'],
+]>;
+const $ServiceFlow = $.makeType<$ServiceFlow>(_.spec, "88d4213f-8fa8-11ee-80a9-57c219054d1c", _.syntax.literal);
+
+const ServiceFlow: $.$expr_PathNode<$.TypeSet<$ServiceFlow, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($ServiceFlow, $.Cardinality.Many), null);
 
 
 
-export { $Student, Student };
+export { $Client, Client, $ClientData, ClientData, $ClientNote, ClientNote, $ClientServiceFlow, ClientServiceFlow, $ServiceFlow, ServiceFlow };
 
 type __defaultExports = {
-  "Student": typeof Student
+  "Client": typeof Client;
+  "ClientData": typeof ClientData;
+  "ClientNote": typeof ClientNote;
+  "ClientServiceFlow": typeof ClientServiceFlow;
+  "ServiceFlow": typeof ServiceFlow
 };
 const __defaultExports: __defaultExports = {
-  "Student": Student
+  "Client": Client,
+  "ClientData": ClientData,
+  "ClientNote": ClientNote,
+  "ClientServiceFlow": ClientServiceFlow,
+  "ServiceFlow": ServiceFlow
 };
 export default __defaultExports;
