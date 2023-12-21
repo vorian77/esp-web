@@ -52,7 +52,6 @@ export class DataObj {
 	saveCallbacks: Array<DataObjCallback> = []
 	subHeader: string
 	table: Table | undefined
-	renderType: DataObjRenderType
 	constructor(dataObjRaw: DataObjRaw) {
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
 		this.actions = this.initActions(dataObjRaw._actions)
@@ -79,13 +78,6 @@ export class DataObj {
 		this.orderItems = this.initOrderItems(dataObjRaw._fieldsDbOrder)
 		this.isPopup = valueOrDefault(dataObjRaw.isPopup, false)
 		this.name = strRequired(dataObjRaw.name, 'DataObj', 'name')
-		this.renderType = memberOfEnum(
-			dataObjRaw._codeRenderType,
-			'DataObj',
-			'component',
-			'DataObjType',
-			DataObjRenderType
-		)
 		if (dataObjRaw._table) this.table = new Table(dataObjRaw._table)
 		this.subHeader = valueOrDefault(dataObjRaw.subHeader, '')
 	}
@@ -333,7 +325,6 @@ export interface DataObjRaw {
 	_actions: any
 	_codeCardinality: string
 	_codeComponent: string
-	_codeRenderType: string
 	_fieldsEl: any
 	_fieldsElCrumb: any
 	_fieldsDbId: any
@@ -398,9 +389,6 @@ export enum DataObjComponent {
 	Home = 'Home',
 	FormList = 'FormList',
 	FormDetail = 'FormDetail'
-}
-export enum DataObjRenderType {
-	form = 'form'
 }
 export enum NavRowActionType {
 	first = 'first',

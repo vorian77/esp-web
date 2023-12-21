@@ -22,7 +22,6 @@ module sys_obj{
     multi actions: DataObjAction;
     required codeCardinality: sys_core::Code;
     required codeComponent: sys_core::Code;
-    required codeRenderType: sys_core::Code;
     description: str;
     exprFilter: str;
     exprObject: str;

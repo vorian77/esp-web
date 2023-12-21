@@ -74,7 +74,6 @@ async function dataObjLogin() {
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		codeRenderType: 'form',
 		exprObject: `WITH 
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
@@ -138,7 +137,6 @@ async function dataObjReset() {
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		codeRenderType: 'form',
 		exprObject: `WITH
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
@@ -206,7 +204,6 @@ async function dataObjSignup() {
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		codeRenderType: 'form',
 		exprObject: `WITH 
 		orgName := <str,system,org_name>,
 		org := (SELECT sys_core::Org FILTER .name = orgName),
@@ -316,7 +313,6 @@ async function dataObjVerify() {
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		codeRenderType: 'form',
 		header: 'Verify Mobile Phone Number',
 		isPopup: true,
 		name: 'data_obj_auth_verify_phone_mobile',

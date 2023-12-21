@@ -73,7 +73,8 @@
 		while (stateStack.length > 0) {
 			const state = statePop()
 			console.log('triggerState:', { state, appStatus: getAppStatus() })
-			if (state.checkObjChanged && getAppStatus().objHasChanged) {
+			const confirm = state.token instanceof NavStateTokenAppObjAction && state.token.confirm
+			if ((state.checkObjChanged && getAppStatus().objHasChanged) || confirm) {
 				await askB4Transition(state)
 			} else {
 				if (
@@ -92,11 +93,12 @@
 					const result: ResponseBody = await processQuery(queryParm)
 					if (result.success) {
 						state.token.dataObjData = result.data.dataObjData
-						resetAppStatus()
-						console.log('processObj.result.success:', { result, appStatus: getAppStatus() })
+						console.log('processObj.success.result:', { result })
 					} else {
+						// process query failure?
 					}
 				}
+				resetAppStatus()
 				stateGlobal = state
 			}
 		}
@@ -151,7 +153,7 @@
 				? state.token.confirm
 				: new NavStateTokenAppObjActionConfirm(
 						'Discard Changes',
-						'Are you sure you want discard your changes?',
+						'Are you sure you want to discard your changes?',
 						'Discard Changes'
 				  )
 		const modal: ModalSettings = {
@@ -162,6 +164,8 @@
 			buttonTextConfirm: confirm.buttonConfirmLabel,
 			response: async (r: boolean) => {
 				if (r) {
+					if (state.token instanceof NavStateTokenAppObjAction && state.token.confirm)
+						delete state.token.confirm
 					resetAppStatus()
 					stateAdd(state)
 				}

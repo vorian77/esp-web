@@ -166,7 +166,6 @@ async function initServiceFlow() {
 		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
-		codeRenderType: 'form',
 		name: 'data_obj_cm_service_flow_list',
 		header: 'Service Flows',
 		table: {
@@ -236,7 +235,6 @@ async function initServiceFlow() {
 		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		codeRenderType: 'form',
 		name: 'data_obj_cm_service_flow_detail',
 		header: 'Service Flow',
 		table: { owner: 'app_cm', mod: 'app_cm', name: 'ClientServiceFlow' },

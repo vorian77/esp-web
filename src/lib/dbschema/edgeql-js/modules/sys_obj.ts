@@ -19,7 +19,6 @@ export type $DataObjλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "actions": $.LinkDesc<$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
   "fieldsDb": $.LinkDesc<$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "fieldsEl": $.LinkDesc<$DataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
-  "codeRenderType": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
   "<dataObj[is sys_obj::NodeObj]": $.LinkDesc<$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;

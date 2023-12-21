@@ -107,7 +107,6 @@ export type $CodeλShape = $.typeutil.flatten<$ObjλShape & {
   "<codeSector[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeStatus[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
   "<roles[is sys_core::App]": $.LinkDesc<$App, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<codeRenderType[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDbDataOp[is sys_obj::DataObjFieldDb]": $.LinkDesc<_sys_obj.$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDbListDir[is sys_obj::DataObjFieldDb]": $.LinkDesc<_sys_obj.$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeCustomElType[is sys_obj::DataObjFieldEl]": $.LinkDesc<_sys_obj.$DataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -134,7 +133,6 @@ export type $CodeλShape = $.typeutil.flatten<$ObjλShape & {
   "<codeMultiRqmts": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeOutcomes": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeRace": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<codeRenderType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeSector": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeState": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeStatus": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

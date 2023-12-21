@@ -60,7 +60,6 @@ export async function getDataObjById(dataObjId: string) {
 			_actions,
 			_codeCardinality: do1.codeCardinality.name,
 			_codeComponent: do1.codeComponent.name,
-			_codeRenderType: do1.codeRenderType.name,
 			_table: e.select(do1.table, (t) => ({
 				mod: true,
 				name: true,

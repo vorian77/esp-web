@@ -491,7 +491,6 @@ export namespace sys_obj {
     "actions": DataObjAction[];
     "fieldsDb": DataObjFieldDb[];
     "fieldsEl": DataObjFieldEl[];
-    "codeRenderType": sys_core.Code;
   }
   export interface DataObjAction extends sys_core.Obj {
     "color"?: string | null;

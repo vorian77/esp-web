@@ -1,12 +1,9 @@
 <script lang="ts">
 	import {
-		capitalizeFirstLetter,
 		DataObj,
 		DataObjAction,
 		type DataObjData,
-		DataObjProcessType,
 		DataObjStatus,
-		type DataRowRecord,
 		DataRowStatus,
 		NavState,
 		NavStateComponent,
@@ -16,7 +13,7 @@
 		QueryParmDataRow,
 		ToastType
 	} from '$comps/types'
-	import { appObjStatusStore, resetAppStatus } from '$comps/nav/app'
+	import { appObjStatusStore } from '$comps/nav/app'
 	import Messenger from '$comps/Messenger.svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -53,7 +50,6 @@
 				break
 
 			case 'noa_detail_cancel':
-				resetAppStatus()
 				objActionWithoutData(NavStateTokenActionType.back, false, false)
 				break
 
@@ -61,30 +57,20 @@
 				if (dataRow.status === DataRowStatus.created) {
 					objActionWithoutData(NavStateTokenActionType.back, true, false)
 				} else {
-					// if (parms.status.isInsertMode) {
-					// 	if (parms.status.objHasChanged) {
-					// 		msg = 'Are you sure you want to discard this record?'
-					// 	}
-					// } else {
-					// 	msg = 'Are you sure you want to delete this record (this action cannot be undone)?'
-					// }
 					const confirm = new NavStateTokenAppObjActionConfirm(
 						'Confirm Delete',
-						`Are you sure you want to delete this ${dataObj.renderType}?`,
+						`Are you sure you want to delete this record (this action cannot be reversed)?`,
 						'Delete Record'
 					)
-					objActionWithData(NavStateTokenActionType.detailDelete, true, true, dataRow)
+					objActionWithData(NavStateTokenActionType.detailDelete, true, true, dataRow, confirm)
 				}
 				break
 
 			case 'noa_detail_new':
-				// resetAppStatus()
-				objActionWithoutData(NavStateTokenActionType.detailNew, false, false)
+				objActionWithoutData(NavStateTokenActionType.detailNew, true, false)
 				break
 
 			case 'noa_detail_save':
-				console.log('DataObjActions.noa_detail_save:', dataRow)
-				console.log('noa_detail_save:', { data: dataRow })
 				if (dataRow.status) {
 					messenger.toast(ToastType.warning, `Saving...`)
 					if ([DataRowStatus.retrieved, DataRowStatus.updated].includes(dataRow.status)) {
