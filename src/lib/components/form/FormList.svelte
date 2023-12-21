@@ -1,16 +1,13 @@
 <script lang="ts">
+	import { DataObj, SurfaceType } from '$comps/types'
 	import {
-		DataObj,
-		type DataRowRecord,
 		NavState,
 		NavStateComponent,
-		NavStateTokenAppObjAction,
-		NavStateTokenActionType,
-		QueryParmDataRow,
-		setSelectedRecords,
-		SurfaceType
-	} from '$comps/types'
-	import type { DataObjData } from '$comps/types'
+		TokenAppObjAction,
+		AppObjActionType
+	} from '$comps/nav/types.app'
+	import { QueryParmDataRow, setSelectedRecords } from '$comps/dataObj/types.query'
+	import type { DataObjData } from '$comps/dataObj/types.query'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
 	import { navParmsStore, setNavParmsDataObj } from '$comps/nav/app'
@@ -34,7 +31,7 @@
 	type DataRow = Record<string, any>
 
 	$: {
-		const dataFormatted = dataObjData.map((row: QueryParmDataRow) => {
+		const dataFormatted: any = dataObjData.map((row: QueryParmDataRow) => {
 			let newRow: DataRow = {}
 			for (let key in row.record) {
 				newRow[key] = row.record[key].display
@@ -63,8 +60,8 @@
 			new NavState({
 				checkObjChanged: false,
 				component: NavStateComponent.objAction,
-				token: new NavStateTokenAppObjAction({
-					actionType: NavStateTokenActionType.listEdit,
+				token: new TokenAppObjAction({
+					actionType: AppObjActionType.listEdit,
 					dataObjData: setSelectedRecords(dataObjData, [row.id]),
 					dataObjRaw: dataObj.dataObjRaw,
 					dbProcess: false

@@ -14,14 +14,14 @@
 		FieldAccess,
 		FieldElement,
 		DataObj,
-		type DataObjData,
-		NavState,
 		SurfaceType,
 		Validation,
 		ValidityField,
 		ValidityErrorLevel,
 		ValidityError
 	} from '$comps/types'
+	import type { NavState } from '$comps/nav/types.app'
+	import type { DataObjData } from '$comps/dataObj/types.query'
 	import { setAppStatusObjChanged, setAppStatusObjValid } from '$comps/nav/app'
 	import DataViewer from '$comps/DataViewer.svelte'
 	import { disableScrollHandling } from '$app/navigation'

@@ -8,7 +8,8 @@ import {
 	strRequired,
 	valueOrDefault
 } from '$lib/utils/utils'
-import type { DataObjRaw, QueryParmData, QueryParmDataValue } from '$comps/types'
+import type { DataObjRaw } from '$comps/types'
+import type { QueryParmData, QueryParmDataValue } from '$comps/dataObj/types.query'
 import { FieldValue } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
 

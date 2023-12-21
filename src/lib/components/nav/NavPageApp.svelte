@@ -3,27 +3,24 @@
 	import { TabGroup, Tab } from '@skeletonlabs/skeleton'
 	import FormListApp from '$comps/form/FormListApp.svelte'
 	import FormDetailApp from '$comps/form/FormDetailApp.svelte'
-	import {
-		App,
+	import { DataObj, DataObjStatus, SurfaceType } from '$comps/types'
+	import type {
 		AppLevel,
 		AppLevelCrumb,
 		AppLevelParent,
+		AppLevelRowStatus
+	} from '$comps/nav/types.app'
+	import { type DataObjData, DataRowStatus, QueryParmDataRow } from '$comps/dataObj/types.query'
+	import {
+		App,
 		AppLevelTab,
-		DataObj,
-		type DataObjData,
-		DataObjStatus,
-		DataRowStatus,
+		AppObjActionType,
 		NavState,
 		NavStateComponent,
-		NavStateTokenActionType,
-		NavStateTokenAppTab,
-		NavStateTokenAppObjAction,
-		QueryParmDataRow,
-		SurfaceType
-	} from '$comps/types'
-	import type { AppLevelRowStatus } from '$comps/types'
+		TokenAppTab,
+		TokenAppObjAction
+	} from '$comps/nav/types.app'
 	import { appObjStatusStore, resetAppState } from '$comps/nav/app'
-	import NavBack from '$comps/nav/NavBack.svelte'
 	import NavCrumbs from '$comps/nav/NavCrumbs.svelte'
 	import NavRow from '$comps/nav/NavRow.svelte'
 	import { error } from '@sveltejs/kit'
@@ -82,7 +79,7 @@
 
 			case NavStateComponent.objAction:
 				switch (state.token.actionType) {
-					case NavStateTokenActionType.back:
+					case AppObjActionType.back:
 						if (app.levels.length === 1) {
 							stateAdd(
 								new NavState({
@@ -96,7 +93,7 @@
 						}
 						break
 
-					case NavStateTokenActionType.detailDelete:
+					case AppObjActionType.detailDelete:
 						currLevel = app.getCurrLevel()
 						if (currLevel.parentList) {
 							currLevelParent = currLevel.parentList
@@ -106,7 +103,7 @@
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 						break
 
-					case NavStateTokenActionType.detailNew:
+					case AppObjActionType.detailNew:
 						currLevel = app.getCurrLevel()
 						currTab = currLevel.getCurrTab()
 						await AppLevelTab.retrieve(currTab, true, app.getPresetParms())
@@ -114,17 +111,17 @@
 						dataObjUpdate = new DataObjUpdate(false, false, true)
 						break
 
-					case NavStateTokenActionType.detailSaveInsert:
+					case AppObjActionType.detailSaveInsert:
 						await detailSave(state.token)
 						currLevel = app.getCurrLevel()
 						if (currLevel.parentList) currLevel.resetTabs(true, currLevel.parentList.getData())
 						break
 
-					case NavStateTokenActionType.detailSaveUpdate:
+					case AppObjActionType.detailSaveUpdate:
 						await detailSave(state.token)
 						break
 
-					case NavStateTokenActionType.listEdit:
+					case AppObjActionType.listEdit:
 						if (!state.token.dataObjData) return
 						data = state.token.dataObjData
 						rowNbr = data.findIndex((row: QueryParmDataRow) => {
@@ -135,7 +132,7 @@
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 						break
 
-					case NavStateTokenActionType.listNew:
+					case AppObjActionType.listNew:
 						if (!(await app.addLevel())) return
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 						break
@@ -205,12 +202,12 @@
 		stateAdd(
 			new NavState({
 				component: NavStateComponent.tab,
-				token: new NavStateTokenAppTab(event.target.value)
+				token: new TokenAppTab(event.target.value)
 			})
 		)
 	}
 
-	async function detailSave(token: NavStateTokenAppObjAction) {
+	async function detailSave(token: TokenAppObjAction) {
 		currLevel = app.getCurrLevel()
 		currTab = currLevel.getCurrTab()
 		await currTab.update(token.dataObjData)

@@ -16,7 +16,7 @@ export function booleanOrFalse(val: any, name: string) {
 		})
 	}
 }
-export function hasPropertyOf(clazz, obj) {
+export function hasPropertyOf(clazz: any, obj: any) {
 	const model = new clazz()
 	const modelKeys = Object.keys(model)
 
@@ -28,7 +28,7 @@ export function hasPropertyOf(clazz, obj) {
 	}
 	return false
 }
-export function isInstanceOf(clazz, obj) {
+export function isInstanceOf(clazz: any, obj: any) {
 	const model = new clazz()
 	const modelKeys = Object.keys(model)
 
@@ -91,7 +91,7 @@ export function memberOfEnumIfExists(
 	}
 	return memberOfEnum(val, fieldName, className, enumName, enumObj)
 }
-export function nbrOptional(val, name) {
+export function nbrOptional(val: any, name: string) {
 	if (!val) {
 		return undefined
 	}

@@ -1,12 +1,6 @@
 import type { FieldValue } from '$comps/form/field'
-import {
-	getUser,
-	NavStateTokenActionType,
-	required,
-	strOptional,
-	strRequired,
-	valueOrDefault
-} from '$comps/types'
+import { getUser, required, strOptional, strRequired, valueOrDefault } from '$comps/types'
+import type { AppObjActionType } from '$comps/nav/types.app'
 import { DataObj, DataObjProcessType } from '$comps/types'
 import type { DataObjRaw } from '$comps/types'
 
@@ -26,14 +20,14 @@ export enum DataRowStatus {
 
 export class QueryParm {
 	action: QueryParmAction
-	actionType: NavStateTokenActionType
+	actionType: AppObjActionType
 	data: QueryParmData
 	dataObjId: string | undefined
 	dataObjRaw: DataObjRaw | undefined
 	constructor(
 		dataObj: { dataObjId: string | undefined; dataObjRaw: DataObjRaw | undefined },
 		action: QueryParmAction,
-		actionType: NavStateTokenActionType,
+		actionType: AppObjActionType,
 		data: QueryParmData
 	) {
 		this.action = action

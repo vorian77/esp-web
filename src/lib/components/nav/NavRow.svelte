@@ -3,8 +3,8 @@
 		type AppLevelRowStatus,
 		NavState,
 		NavStateComponent,
-		NavStateTokenAppRow
-	} from '$comps/types'
+		TokenAppRow
+	} from '$comps/nav/types.app'
 	import { NavRowActionType } from '$comps/types'
 	import NavRowAction from '$comps/nav/NavRowAction.svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -17,7 +17,7 @@
 		stateAdd(
 			new NavState({
 				component: NavStateComponent.row,
-				token: new NavStateTokenAppRow(rowAction)
+				token: new TokenAppRow(rowAction)
 			})
 		)
 	}

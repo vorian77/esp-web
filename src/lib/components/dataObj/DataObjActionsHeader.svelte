@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { DataObj } from '$comps/types'
 	import DataObjActions from '$comps/dataObj/DataObjActions.svelte'
-	import { DataObjStatus, NavState, SurfaceType } from '$comps/types'
+	import { DataObjStatus, SurfaceType } from '$comps/types'
+	import type { NavState } from '$comps/nav/types.app'
 	import { createEventDispatcher } from 'svelte'
 	import { appObjStatusStore } from '$comps/nav/app'
 

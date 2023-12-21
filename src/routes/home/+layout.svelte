@@ -8,22 +8,14 @@
 	} from '@skeletonlabs/skeleton'
 	import type { PopupSettings } from '@skeletonlabs/skeleton'
 	import type { User } from '$comps/types'
+	import { processQuery, ResponseBody } from '$comps/types'
 	import {
-		NavStateTokenAppObjActionConfirm,
-		DbData,
-		DataObj,
-		DataObjProcessType,
+		ObjActionConfirm,
 		NavState,
 		NavStateComponent,
-		NavStateToken,
-		NavStateTokenAppObjAction,
-		processByDataObj,
-		processQuery,
-		QueryParm,
-		QueryParmAction,
-		QueryParmData,
-		ResponseBody
-	} from '$comps/types'
+		TokenAppObjAction
+	} from '$comps/nav/types.app'
+	import { QueryParm, QueryParmAction, QueryParmData } from '$comps/dataObj/types.query'
 	import { getAppStatus, resetAppStatus } from '$comps/nav/app'
 	import { getUser } from '$comps/types'
 	import NavPage from '$comps/nav/NavPage.svelte'
@@ -73,13 +65,13 @@
 		while (stateStack.length > 0) {
 			const state = statePop()
 			console.log('triggerState:', { state, appStatus: getAppStatus() })
-			const confirm = state.token instanceof NavStateTokenAppObjAction && state.token.confirm
+			const confirm = state.token instanceof TokenAppObjAction && state.token.confirm
 			if ((state.checkObjChanged && getAppStatus().objHasChanged) || confirm) {
 				await askB4Transition(state)
 			} else {
 				if (
 					state.component === NavStateComponent.objAction &&
-					state.token instanceof NavStateTokenAppObjAction &&
+					state.token instanceof TokenAppObjAction &&
 					state.token.dbProcess
 				) {
 					// process obj
@@ -149,9 +141,9 @@
 	}
 	async function askB4Transition(state: NavState) {
 		const confirm =
-			state.token instanceof NavStateTokenAppObjAction && state.token.confirm
+			state.token instanceof TokenAppObjAction && state.token.confirm
 				? state.token.confirm
-				: new NavStateTokenAppObjActionConfirm(
+				: new ObjActionConfirm(
 						'Discard Changes',
 						'Are you sure you want to discard your changes?',
 						'Discard Changes'
@@ -164,7 +156,7 @@
 			buttonTextConfirm: confirm.buttonConfirmLabel,
 			response: async (r: boolean) => {
 				if (r) {
-					if (state.token instanceof NavStateTokenAppObjAction && state.token.confirm)
+					if (state.token instanceof TokenAppObjAction && state.token.confirm)
 						delete state.token.confirm
 					resetAppStatus()
 					stateAdd(state)

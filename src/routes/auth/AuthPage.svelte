@@ -1,20 +1,10 @@
 <script lang="ts">
-	// import { Form } from '$comps/dataObj/dataObjOld'
-	// import { FieldValue } from '$comps/form/field'
 	import { get } from 'svelte/store'
 	import { goto } from '$app/navigation'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import type { ResponseBody } from '$comps/types'
-	import {
-		DataObj,
-		DataObjProcessType,
-		DbData,
-		encrypt,
-		processByDataObj,
-		processByDataObjName,
-		setUser
-	} from '$comps/types'
+	import { DataObj, encrypt, setUser } from '$comps/types'
 	import { onMount } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -134,15 +124,15 @@
 		}
 
 		// process
-		const dataObj: DataObj = await processByDataObj(
-			form,
-			DataObjProcessType.object,
-			new DbData({ system: data.system })
-		)
-		if (!dataObj) {
-			alert(msgFail)
-			return
-		}
+		// const dataObj: DataObj = await processByDataObj(
+		// 	form,
+		// 	DataObjProcessType.object,
+		// 	new DbData({ system: data.system })
+		// )
+		// if (!dataObj) {
+		// 	alert(msgFail)
+		// 	return
+		// }
 		const rtn = Array.isArray(dataObj.data) ? dataObj.data[0] : dataObj.data
 
 		if (!rtn || !rtn.hasOwnProperty('userId') || !rtn.userId) {

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import DataObjActions from '$comps/dataObj/DataObjActions.svelte'
 	import type { DataObj, SurfaceType } from '$comps/types'
-	import { DataObjStatus, NavState } from '$comps/types'
+	import { DataObjStatus } from '$comps/types'
+	import type { NavState } from '$comps/nav/types.app'
 	import { appObjStatusStore } from '$comps/nav/app'
 
 	export let stateAdd = (token: NavState) => {}

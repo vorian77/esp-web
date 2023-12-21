@@ -1,18 +1,14 @@
 <script lang="ts">
+	import { DataObj, DataObjAction, DataObjStatus, ToastType } from '$comps/types'
 	import {
-		DataObj,
-		DataObjAction,
-		type DataObjData,
-		DataObjStatus,
-		DataRowStatus,
 		NavState,
 		NavStateComponent,
-		NavStateTokenActionType,
-		NavStateTokenAppObjAction,
-		NavStateTokenAppObjActionConfirm,
-		QueryParmDataRow,
-		ToastType
-	} from '$comps/types'
+		AppObjActionType,
+		TokenAppObjAction,
+		ObjActionConfirm
+	} from '$comps/nav/types.app'
+	import { type DataObjData, DataRowStatus, QueryParmDataRow } from '$comps/dataObj/types.query'
+
 	import { appObjStatusStore } from '$comps/nav/app'
 	import Messenger from '$comps/Messenger.svelte'
 	import { error } from '@sveltejs/kit'
@@ -46,37 +42,37 @@
 
 		switch (actionName) {
 			case 'noa_back':
-				objActionWithoutData(NavStateTokenActionType.back, true, false)
+				objActionWithoutData(AppObjActionType.back, true, false)
 				break
 
 			case 'noa_detail_cancel':
-				objActionWithoutData(NavStateTokenActionType.back, false, false)
+				objActionWithoutData(AppObjActionType.back, false, false)
 				break
 
 			case 'noa_detail_delete':
 				if (dataRow.status === DataRowStatus.created) {
-					objActionWithoutData(NavStateTokenActionType.back, true, false)
+					objActionWithoutData(AppObjActionType.back, true, false)
 				} else {
-					const confirm = new NavStateTokenAppObjActionConfirm(
+					const confirm = new ObjActionConfirm(
 						'Confirm Delete',
 						`Are you sure you want to delete this record (this action cannot be reversed)?`,
 						'Delete Record'
 					)
-					objActionWithData(NavStateTokenActionType.detailDelete, true, true, dataRow, confirm)
+					objActionWithData(AppObjActionType.detailDelete, true, true, dataRow, confirm)
 				}
 				break
 
 			case 'noa_detail_new':
-				objActionWithoutData(NavStateTokenActionType.detailNew, true, false)
+				objActionWithoutData(AppObjActionType.detailNew, true, false)
 				break
 
 			case 'noa_detail_save':
 				if (dataRow.status) {
 					messenger.toast(ToastType.warning, `Saving...`)
 					if ([DataRowStatus.retrieved, DataRowStatus.updated].includes(dataRow.status)) {
-						objActionWithData(NavStateTokenActionType.detailSaveUpdate, false, true, dataRow)
+						objActionWithData(AppObjActionType.detailSaveUpdate, false, true, dataRow)
 					} else if (dataRow.status === DataRowStatus.created) {
-						objActionWithData(NavStateTokenActionType.detailSaveInsert, false, true, dataRow)
+						objActionWithData(AppObjActionType.detailSaveInsert, false, true, dataRow)
 					} else {
 						throw error(500, {
 							file: FILENAME,
@@ -97,7 +93,7 @@
 				break
 
 			case 'noa_list_new':
-				objActionWithoutData(NavStateTokenActionType.listNew, false, false)
+				objActionWithoutData(AppObjActionType.listNew, false, false)
 				break
 
 			default:
@@ -109,34 +105,34 @@
 		}
 	}
 	async function objActionWithData(
-		actionType: NavStateTokenActionType,
+		actionType: AppObjActionType,
 		checkObjChanged: boolean,
 		dbProcess: boolean,
 		dataRow: QueryParmDataRow,
-		confirm: NavStateTokenAppObjActionConfirm | undefined = undefined
+		confirm: ObjActionConfirm | undefined = undefined
 	) {
 		objAction(actionType, checkObjChanged, dbProcess, [dataRow], confirm)
 	}
 	async function objActionWithoutData(
-		actionType: NavStateTokenActionType,
+		actionType: AppObjActionType,
 		checkObjChanged: boolean,
 		dbProcess: boolean,
-		confirm: NavStateTokenAppObjActionConfirm | undefined = undefined
+		confirm: ObjActionConfirm | undefined = undefined
 	) {
 		objAction(actionType, checkObjChanged, dbProcess, undefined, confirm)
 	}
 	async function objAction(
-		actionType: NavStateTokenActionType,
+		actionType: AppObjActionType,
 		checkObjChanged: boolean,
 		dbProcess: boolean,
 		dataObjData: DataObjData | undefined,
-		confirm: NavStateTokenAppObjActionConfirm | undefined = undefined
+		confirm: ObjActionConfirm | undefined = undefined
 	) {
 		stateAdd(
 			new NavState({
 				checkObjChanged,
 				component: NavStateComponent.objAction,
-				token: new NavStateTokenAppObjAction({
+				token: new TokenAppObjAction({
 					actionType,
 					confirm,
 					dataObjData,

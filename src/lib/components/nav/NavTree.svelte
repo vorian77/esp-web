@@ -1,11 +1,6 @@
 <script lang="ts">
-	import {
-		NavState,
-		NavStateComponent,
-		NavStateTokenAppTree,
-		NavTree,
-		type NodeNav
-	} from '$comps/types'
+	import { NavTree, type NodeNav } from '$comps/types'
+	import { NavState, NavStateComponent, TokenAppTree } from '$comps/nav/types.app'
 	import type { RawNode } from '$comps/types'
 	import { apiFunctionsDBEdge, getNodes } from '$utils/db.utils'
 	import { NodeType } from '$comps/types'
@@ -77,7 +72,7 @@
 				stateAdd(
 					new NavState({
 						component: NavStateComponent.tree,
-						token: new NavStateTokenAppTree(node)
+						token: new TokenAppTree(node)
 					})
 				)
 				break

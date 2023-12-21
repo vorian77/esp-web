@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { DataObj, type DataObjData, NavState, SurfaceType } from '$comps/types'
+	import { DataObj, SurfaceType } from '$comps/types'
+	import type { NavState } from '$comps/nav/types.app'
+	import type { DataObjData } from '$comps/dataObj/types.query'
 	import FormDetail from '$comps/form/FormDetail.svelte'
 	import { getContext } from 'svelte'
 

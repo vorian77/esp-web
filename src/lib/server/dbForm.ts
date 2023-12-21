@@ -74,8 +74,8 @@ export async function getForm(formName: string, pageData = {}) {
 async function getValues(sourceName: string, formSource: {}, data: {}) {
 	const source = new FormSource(formSource)
 	const respPromise = await processForm(sourceName, source, FormSourceDBAction.select, data, true)
-	const resp = await respPromise.json()
-	return resp.data
+	// const resp = await respPromise.json()
+	// return resp.data
 }
 
 export async function processForm(

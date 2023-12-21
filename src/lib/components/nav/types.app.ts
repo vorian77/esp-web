@@ -1,32 +1,28 @@
 import {
 	DataObj,
 	DataObjCardinality,
-	DataObjProcessType,
-	DataRowStatus,
-	DbData,
+	getUser,
+	memberOfEnum,
 	NavRowActionType,
-	NavStateTokenActionType,
-	NavStateTokenAppTree,
 	Node,
 	NodeApp,
+	NodeNav,
 	NodeNavObject,
-	processByNode,
 	processQuery,
+	ResponseBody,
+	Token,
+	User,
+	valueOrDefault
+} from '$comps/types'
+import type { DataObjRaw, RawNode } from '$comps/types'
+import {
 	QueryParm,
 	QueryParmAction,
 	QueryParmData,
-	type QueryParmDataValue,
-	ResponseBody
-} from '$comps/types'
-import type {
-	DataObjData,
-	DataObjRaw,
-	DataRowRecord,
-	DbDataType,
-	NavStateTokenAppCrumbs,
-	NavStateTokenAppObjAction,
-	RawNode
-} from '$comps/types'
+	QueryParmDataRow
+} from '$comps/dataObj/types.query'
+import type { DataObjData, DataRowRecord, QueryParmDataValue } from '$comps/dataObj/types.query'
+
 import { apiFunctionsDBEdge, getNodes } from '$utils/db.utils'
 import { error } from '@sveltejs/kit'
 
@@ -39,7 +35,7 @@ export class App {
 	private constructor(newLevel: AppLevel) {
 		this.levels.push(newLevel)
 	}
-	static async init(token: NavStateTokenAppTree) {
+	static async init(token: TokenAppTree) {
 		const appNode: NodeNavObject = new NodeNavObject(token.node)
 		const nodeLevelRoot = new NodeApp({
 			header: appNode.header,
@@ -75,7 +71,7 @@ export class App {
 			}
 		}
 	}
-	async changeCrumbs(token: NavStateTokenAppCrumbs) {
+	async changeCrumbs(token: TokenAppCrumbs) {
 		const crumbIdx = token.crumbIdx
 		const backCnt = this.crumbs.length - 1 - crumbIdx
 		this.back(backCnt)
@@ -353,42 +349,31 @@ export class AppLevelTab {
 		if (retrieveData) if (!(await this.retrieve(tab, isInsertMode, presetParms))) return
 		return tab
 	}
-	static async retrieveNode(node: NodeApp, formData: DbDataType | undefined = undefined) {
-		return await processByNode(node, DataObjProcessType.select, new DbData({ form: formData }))
-	}
 	static async retrieve(
 		tab: AppLevelTab,
 		isInsertMode: boolean = false,
 		presetParms: QueryParmDataValue = {}
 	) {
 		let queryParmAction: QueryParmAction = QueryParmAction.retrieve
-		let queryParmActionType: NavStateTokenActionType = NavStateTokenActionType.none
+		let queryParmActionType: AppObjActionType = AppObjActionType.none
 		let data = {}
 
 		if (isInsertMode) {
 			queryParmAction = QueryParmAction.processAction
-			queryParmActionType = NavStateTokenActionType.detailNew
+			queryParmActionType = AppObjActionType.detailNew
 			data = { preset: presetParms }
 		} else {
 			data = { retrieve: tab.retrieveParms }
 		}
 
-		console.log('AppLevelTab.retrieve.0:', {
-			tab,
-			isInsertMode,
-			insertModeParms: presetParms,
-			data
-		})
-
-		const qp = new QueryParm(
-			{ dataObjId: tab.dataObjId, dataObjRaw: tab.dataObjRaw },
-			queryParmAction,
-			queryParmActionType,
-			new QueryParmData(data)
+		const result: ResponseBody = await processQuery(
+			new QueryParm(
+				{ dataObjId: tab.dataObjId, dataObjRaw: tab.dataObjRaw },
+				queryParmAction,
+				queryParmActionType,
+				new QueryParmData(data)
+			)
 		)
-		console.log('AppLevelTab.retrieve.1:', qp)
-
-		const result: ResponseBody = await processQuery(qp)
 		console.log('AppLevelTab.retrieve.result:', { result })
 		if (result.success) {
 			tab.dataObj = new DataObj(result.data.dataObjRaw)
@@ -402,4 +387,107 @@ export class AppLevelTab {
 	async update(dataObjData: DataObjData | undefined) {
 		if (dataObjData) this.dataObjData = dataObjData
 	}
+}
+
+export class NavState {
+	callbacks: Array<Function> | undefined
+	checkObjChanged: boolean
+	component: NavStateComponent
+	page: 'home' | 'app'
+	token: Token | undefined
+	user: User | undefined = getUser()
+	constructor(obj: any) {
+		obj = valueOrDefault(obj, {})
+		this.callbacks = obj.callbacks ? obj.callbacks : []
+		this.checkObjChanged = obj.hasOwnProperty('checkObjChanged') ? obj.checkObjChanged : true
+		this.component = NavStateComponent[obj.component as keyof typeof NavStateComponent]
+		this.page = obj.page ? obj.page : 'app'
+		this.token = obj.token ? obj.token : undefined
+	}
+}
+export enum NavStateComponent {
+	back = 'back',
+	crumbs = 'crumbs',
+	footer = 'footer',
+	objAction = 'objAction',
+	page = 'page',
+	row = 'row',
+	tab = 'tab',
+	tree = 'tree'
+}
+
+export class TokenApp extends Token {
+	constructor() {
+		super()
+	}
+}
+export class TokenAppCrumbs extends TokenApp {
+	crumbIdx: number
+	constructor(crumbIdx: number) {
+		super()
+		this.crumbIdx = crumbIdx
+	}
+}
+export class TokenAppObjAction extends TokenApp {
+	actionType: AppObjActionType
+	confirm: ObjActionConfirm | undefined
+	dataObjData: Array<QueryParmDataRow> | undefined
+	dataObjRaw: DataObjRaw | undefined
+	dbProcess: boolean
+	constructor(obj: any) {
+		super()
+		this.actionType = memberOfEnum(
+			obj.actionType,
+			'TokenAppObjAction',
+			'actionType',
+			'AppObjActionType',
+			AppObjActionType
+		)
+		this.confirm = obj.confirm ? obj.confirm : undefined
+		this.dataObjData = obj.hasOwnProperty('dataObjData') ? obj.dataObjData : undefined
+		this.dataObjRaw = obj.hasOwnProperty('dataObjRaw') ? obj.dataObjRaw : undefined
+		this.dbProcess = obj.hasOwnProperty('dbProcess') ? obj.dbProcess : true
+	}
+}
+export class ObjActionConfirm {
+	buttonConfirmLabel: string
+	msg: string
+	title: string
+	constructor(title: string, msg: string, buttonConfirmLabel: string) {
+		this.buttonConfirmLabel = buttonConfirmLabel
+		this.msg = msg
+		this.title = title
+	}
+}
+export class TokenAppRow extends TokenApp {
+	rowAction: NavRowActionType
+	constructor(rowAction: NavRowActionType) {
+		super()
+		this.rowAction = rowAction
+	}
+}
+export class TokenAppTab extends TokenApp {
+	tabIdx: number
+	constructor(tabIdx: number) {
+		super()
+		this.tabIdx = tabIdx
+	}
+}
+export class TokenAppTree extends TokenApp {
+	node: NodeNav
+	constructor(node: NodeNav) {
+		super()
+		this.node = node
+	}
+}
+
+export enum AppObjActionType {
+	back = 'back',
+	listEdit = 'listEdit',
+	listNew = 'listNew',
+	detailDelete = 'detailDelete',
+	detailNew = 'detailNew',
+	detailSaveInsert = 'detailSaveInsert',
+	detailSaveUpdate = 'detailSaveUpdate',
+	none = 'none'
 }

@@ -1,25 +1,16 @@
+import { getDataObjById, queryMultiple, querySingle } from '$server/dbEdge/types.edgeDB.server'
+import { EdgeQL, DataFieldDataType, DataObj, type DataObjRaw, formatDateTime } from '$comps/types'
+import { AppObjActionType } from '$comps/nav/types.app'
+import type { DataObjData, DataRowRecord } from '$comps/dataObj/types.query'
 import {
-	getDataObjById,
-	queryMultiple,
-	querySingle,
-	transaction
-} from '$server/dbEdge/types.edgeDB.server'
-import {
-	EdgeQL,
-	DataFieldDataType,
-	DataObj,
-	type DataObjData,
-	type DataObjRaw,
 	DataRowStatus,
-	type DataRowRecord,
-	formatDateTime,
-	NavStateTokenActionType,
 	QueryParm,
 	QueryParmData,
 	QueryParmDataRow,
 	QueryParmAction,
 	QueryResultSuccess
-} from '$comps/types'
+} from '$comps/dataObj/types.query'
+
 import { FieldValue } from '$comps/form/field'
 import type { Field } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
@@ -45,13 +36,11 @@ export async function processQuery(parm: QueryParm) {
 			break
 
 		case QueryParmAction.processAction:
-			const actionType: NavStateTokenActionType = parm.actionType
+			const actionType: AppObjActionType = parm.actionType
 			let script = ''
 			let dataRowRaw: Record<string, any> = {}
 
-			if (
-				[NavStateTokenActionType.detailNew, NavStateTokenActionType.listNew].includes(actionType)
-			) {
+			if ([AppObjActionType.detailNew, AppObjActionType.listNew].includes(actionType)) {
 				dataRowStatus = DataRowStatus.created
 				script = query.getScriptPreset(queryParmData)
 				dataRowsRaw = await queryMultiple(script)
@@ -62,13 +51,13 @@ export async function processQuery(parm: QueryParm) {
 				queryParmData.retrieve = row.record
 
 				switch (actionType) {
-					case NavStateTokenActionType.detailDelete:
+					case AppObjActionType.detailDelete:
 						dataRowStatus = DataRowStatus.deleted
 						script = query.getScriptDelete(queryParmData)
 						dataRowRaw = await querySingle(script)
 						break
 
-					case NavStateTokenActionType.detailSaveInsert:
+					case AppObjActionType.detailSaveInsert:
 						dataRowStatus = DataRowStatus.updated
 						script = query.getScriptSaveInsert(queryParmData)
 						dataRowRaw = await querySingle(script)
@@ -79,7 +68,7 @@ export async function processQuery(parm: QueryParm) {
 						dataRowsRaw = await queryMultiple(script)
 						break
 
-					case NavStateTokenActionType.detailSaveUpdate:
+					case AppObjActionType.detailSaveUpdate:
 						dataRowStatus = DataRowStatus.updated
 						script = query.getScriptSaveUpdate(queryParmData)
 						dataRowRaw = await querySingle(script)

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AppLevelCrumb, NavState, NavStateComponent, NavStateTokenAppCrumbs } from '$comps/types'
+	import { AppLevelCrumb, NavState, NavStateComponent, TokenAppCrumbs } from '$comps/nav/types.app'
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const FILENAME = '/$comps/nav/NavCrumbs.svelte'
@@ -12,7 +12,7 @@
 		stateAdd(
 			new NavState({
 				component: NavStateComponent.crumbs,
-				token: new NavStateTokenAppCrumbs(crumbIdx)
+				token: new TokenAppCrumbs(crumbIdx)
 			})
 		)
 	}

@@ -1,9 +1,4 @@
-import {
-	NavStateComponent,
-	NavStateTokenAppObjActionConfirm,
-	capitalizeFirstLetter,
-	ToastType
-} from '$comps/types'
+import { NavStateComponent, ObjActionConfirm, capitalizeFirstLetter, ToastType } from '$comps/types'
 import { triggerState } from '$comps/nav/app'
 import type Messenger from '$comps/Messenger.svelte'
 

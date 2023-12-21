@@ -1,13 +1,10 @@
 import {
-	type DataObjData,
-	DataRowStatus,
 	FieldAccess,
 	FieldElement,
 	type FieldRaw,
 	getArray,
 	memberOfEnum,
 	memberOfEnumOrDefault,
-	QueryParmDataRow,
 	strOptional,
 	strRequired,
 	Table,
@@ -20,7 +17,8 @@ import {
 	ValidityErrorLevel,
 	ValidityField
 } from '$comps/types'
-import type { DataRowRecord } from '$comps/types'
+import { DataRowStatus, QueryParmDataRow } from '$comps/dataObj/types.query'
+import type { DataObjData, DataRowRecord } from '$comps/dataObj/types.query'
 import { type Field, FieldValue } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 import { FieldCustom } from '$comps/form/fieldCustom'
