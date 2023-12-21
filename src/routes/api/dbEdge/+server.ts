@@ -1,9 +1,12 @@
 import { getServerResponse } from '$comps/types'
+import { apiFunctionsDBEdge } from '$utils/utils'
 import {
-	processByObject,
+	getNodesBranch,
+	getNodesLevel,
+	processByDataObj,
 	processByDataObjId,
 	processByDataObjName,
-	getNodeObjsByParent
+	processQuery
 } from '$server/dbEdge/types.edgeDB.server'
 import { error } from '@sveltejs/kit'
 
@@ -11,24 +14,34 @@ const FILENAME = '/routes/api/dbEdge/server.ts'
 
 export async function POST({ request }) {
 	const requestData = await request.json()
-	switch (requestData.function) {
-		case 'getNodeObjsByParent':
-			return getServerResponse(await getNodeObjsByParent(requestData.parentNodeId))
+	switch (
+		Object.keys(apiFunctionsDBEdge)[
+			Object.values(apiFunctionsDBEdge).indexOf(requestData.apiFunction)
+		]
+	) {
+		case apiFunctionsDBEdge.getNodesBranch:
+			return getServerResponse(await getNodesBranch(requestData.parentNodeId))
 
-		case 'processByDataObjId':
+		case apiFunctionsDBEdge.getNodesLevel:
+			return getServerResponse(await getNodesLevel(requestData.parentNodeId))
+
+		case apiFunctionsDBEdge.processByDataObj:
+			return getServerResponse(await processByDataObj(requestData.parms))
+
+		case apiFunctionsDBEdge.processByDataObjId:
 			return getServerResponse(await processByDataObjId(requestData.parms))
 
-		case 'processByDataObjName':
+		case apiFunctionsDBEdge.processByDataObjName:
 			return getServerResponse(await processByDataObjName(requestData.parms))
 
-		case 'processByObject':
-			return getServerResponse(await processByObject(requestData.parms))
+		case apiFunctionsDBEdge.processQuery:
+			return getServerResponse(await processQuery(requestData.parm))
 
 		default:
 			throw error(500, {
 				file: FILENAME,
 				function: 'POST',
-				message: `No case defined for function: ${requestData.function}`
+				message: `No case defined for function: ${requestData.apiFunction}`
 			})
 	}
 }

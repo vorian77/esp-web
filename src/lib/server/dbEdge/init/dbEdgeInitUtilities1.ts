@@ -106,7 +106,6 @@ export async function nodeObjHeaders(params: any) {
 				header: e.cast(e.str, i[4]),
 				order: e.cast(e.int64, i[5]),
 				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[6]))),
-				page: e.cast(e.str, i[7]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -147,7 +146,6 @@ export async function nodeObjPrograms(params: any) {
 				header: e.cast(e.str, i[3]),
 				order: e.cast(e.int64, i[4]),
 				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[5]))),
-				page: e.cast(e.str, i[6]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -334,8 +332,8 @@ export async function resetDB() {
 	const tables: Array<string> = []
 
 	query = `
-	delete app_cm_training::ClientCohortAttd;
-	delete app_cm_training::ClientCohort;
+	delete app_cm_training::CsfCohortAttd;
+	delete app_cm_training::CsfCohort;
 	delete app_cm::ClientNote;
 	delete app_cm::ClientServiceFlow;
 	delete app_cm::Client;
@@ -347,8 +345,8 @@ export async function resetDB() {
 
 	// tables in delete order
 	tables.push('sys_obj::NodeObj')
-	tables.push('sys_obj::Form')
-	tables.push('sys_obj::FormFieldItemsList')
+	tables.push('sys_obj::DataObj')
+	tables.push('sys_obj::DataObjFieldItems')
 	tables.push('sys_db::Table')
 	tables.push('sys_db::Column')
 	tables.push('sys_obj::DataObjAction')

@@ -1,7 +1,7 @@
 import {
 	FieldAccess,
 	FieldElement,
-	type RawFormField,
+	type FieldRaw,
 	Validation,
 	ValidationStatus,
 	ValidationType,
@@ -26,7 +26,7 @@ export class FieldInput extends Field {
 	patternMsg: string | undefined
 	patternReplacement: string | undefined
 	placeHolder: string
-	constructor(obj: RawFormField, index: number, fields: Array<FieldInput>) {
+	constructor(obj: FieldRaw, index: number, fields: Array<Field>) {
 		super(obj, index)
 		obj = valueOrDefault(obj, {})
 		this.placeHolder =
@@ -72,7 +72,7 @@ export class FieldInput extends Field {
 		function initMatchColumn(
 			parentMatchColumn: string,
 			thisField: FieldInput,
-			fields: Array<FieldInput>
+			fields: Array<Field>
 		) {
 			if (!parentMatchColumn) {
 				return undefined
@@ -88,7 +88,7 @@ export class FieldInput extends Field {
 						: ''
 
 				// set parent
-				fields[idxParent].matchColumn = new MatchColumn(thisField.name, thisField.index, message)
+				// fields[idxParent].matchColumn = new MatchColumn(thisField.name, thisField.index, message)
 
 				// return this field's match column
 				return new MatchColumn(parentMatchColumn, fields[idxParent].index, message)
@@ -171,40 +171,41 @@ export class FieldInput extends Field {
 		if (this.matchColumn) {
 			// get matchColumn value
 			// <temp> 231107 - add formData back to get match column value
-			const matchColumnValue = formData.get(this.matchColumn.name)
+			// const matchColumnValue = formData.get(this.matchColumn.name)
+			// const matchColumnValue = formData.get(this.matchColumn.name)
 
 			// compare values to set validiities
 			let validity: Validity
 			let validationStatus: ValidationStatus
 			let data = undefined
 
-			if (dataValue == matchColumnValue) {
-				//equal - fields are valid
-				validity = new Validity()
-				validationStatus = ValidationStatus.valid
-				data = dataValue
-			} else {
-				validationStatus = ValidationStatus.invalid
-				if (!dataValue || !matchColumnValue) {
-					// one blank field - warning
-					validity = new Validity(
-						ValidityError.matchColumn,
-						ValidityErrorLevel.warning,
-						this.matchColumn.message
-					)
-				} else {
-					// both entered and unequal - error
-					validity = new Validity(
-						ValidityError.matchColumn,
-						ValidityErrorLevel.error,
-						this.matchColumn.message
-					)
-				}
-			}
-			// set validiities
-			let validityFields: [ValidityField] = [new ValidityField(this.index, validity)]
-			validityFields.push(new ValidityField(this.matchColumn.index, validity))
-			return new Validation(ValidationType.field, validationStatus, validityFields)
+			// if (dataValue == matchColumnValue) {
+			// 	//equal - fields are valid
+			// 	validity = new Validity()
+			// 	validationStatus = ValidationStatus.valid
+			// 	data = dataValue
+			// } else {
+			// 	validationStatus = ValidationStatus.invalid
+			// 	if (!dataValue || !matchColumnValue) {
+			// 		// one blank field - warning
+			// 		validity = new Validity(
+			// 			ValidityError.matchColumn,
+			// 			ValidityErrorLevel.warning,
+			// 			this.matchColumn.message
+			// 		)
+			// 	} else {
+			// 		// both entered and unequal - error
+			// 		validity = new Validity(
+			// 			ValidityError.matchColumn,
+			// 			ValidityErrorLevel.error,
+			// 			this.matchColumn.message
+			// 		)
+			// 	}
+			// }
+			// // set validiities
+			// let validityFields: [ValidityField] = [new ValidityField(this.index, validity)]
+			// validityFields.push(new ValidityField(this.matchColumn.index, validity))
+			// return new Validation(ValidationType.field, validationStatus, validityFields)
 		}
 		// default
 		return this.fieldValid(this.index)

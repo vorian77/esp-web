@@ -1,14 +1,4 @@
 import {
-	addColumn,
-	addCode,
-	addCodeType,
-	addForm,
-	addNodeObj,
-	addUser,
-	execute,
-	review
-} from '$server/dbEdge/types.edgeDB.server'
-import {
 	apps,
 	codes,
 	codeTypes,
@@ -20,7 +10,17 @@ import {
 	userTypeResourcesWidgets,
 	tables,
 	tableColumns
-} from '$server/dbEdge/init/dbEdgeInitUtilities'
+} from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import {
+	addColumn,
+	addCode,
+	addCodeType,
+	addDataObj,
+	addNodeObj,
+	addUser,
+	execute,
+	review
+} from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_sys_auth'
 
@@ -28,7 +28,7 @@ export default async function init() {
 	console.log()
 	console.log(`${FILE}.start...`)
 	await initDB()
-	await initForms()
+	await initDataObjs()
 	// await review(FILE, reviewQuery)
 	console.log(`${FILE}.end`)
 }
@@ -61,19 +61,20 @@ async function initDB() {
 	})
 }
 
-async function initForms() {
-	await formLogin()
-	await formReset()
-	await formSignup()
-	await formVerify()
+async function initDataObjs() {
+	await dataObjLogin()
+	await dataObjReset()
+	await dataObjSignup()
+	await dataObjVerify()
 }
 
-async function formLogin() {
-	/* form_auth_login */
-	await addForm({
+async function dataObjLogin() {
+	/* data_obj_auth_login */
+	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
+		codeRenderType: 'form',
 		exprObject: `WITH 
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
@@ -82,7 +83,7 @@ async function formLogin() {
 		`,
 		header: 'Log in',
 		isPopup: true,
-		name: 'form_auth_login',
+		name: 'data_obj_auth_login',
 		owner: 'app_sys',
 		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
 		fields: [
@@ -100,7 +101,10 @@ async function formLogin() {
 				codeElement: 'custom',
 				codeCustomElType: 'button',
 				columnName: 'custom_element',
-				customElParms: { action: { type: 'submit', value: 'form_auth_login' }, label: 'Log in' },
+				customElParms: {
+					action: { type: 'submit', value: 'data_obj_auth_login' },
+					label: 'Log in'
+				},
 				dbOrderSelect: 30
 			},
 			{
@@ -108,7 +112,7 @@ async function formLogin() {
 				codeCustomElType: 'link',
 				columnName: 'custom_element',
 				customElParms: {
-					action: { type: 'page', value: 'form_auth_reset_password' },
+					action: { type: 'page', value: 'data_obj_auth_reset_password' },
 					label: 'Forgot Password?'
 				},
 				dbOrderSelect: 40
@@ -118,7 +122,7 @@ async function formLogin() {
 				codeCustomElType: 'link',
 				columnName: 'custom_element',
 				customElParms: {
-					action: { type: 'page', value: 'form_auth_signup' },
+					action: { type: 'page', value: 'data_obj_auth_signup' },
 					label: 'Sign up',
 					prefix: `Don't have an account?`
 				},
@@ -128,12 +132,13 @@ async function formLogin() {
 	})
 }
 
-async function formReset() {
-	/* form_auth_reset_password */
-	await addForm({
+async function dataObjReset() {
+	/* data_obj_auth_reset_password */
+	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
+		codeRenderType: 'form',
 		exprObject: `WITH
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
@@ -145,7 +150,7 @@ async function formReset() {
 		SELECT { userId := user.id }`,
 		header: 'Reset Password',
 		isPopup: true,
-		name: 'form_auth_reset_password',
+		name: 'data_obj_auth_reset_password',
 		owner: 'app_sys',
 		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
 		fields: [
@@ -165,7 +170,7 @@ async function formReset() {
 				codeCustomElType: 'button',
 				columnName: 'custom_element',
 				customElParms: {
-					action: { type: 'submit', value: 'form_auth_reset_password' },
+					action: { type: 'submit', value: 'data_obj_auth_reset_password' },
 					label: 'Reset Password'
 				},
 				dbOrderSelect: 30
@@ -185,7 +190,7 @@ async function formReset() {
 				codeCustomElType: 'link',
 				columnName: 'custom_element',
 				customElParms: {
-					action: { type: 'page', value: 'form_auth_signup' },
+					action: { type: 'page', value: 'data_obj_auth_signup' },
 					label: 'Sign up',
 					prefix: `Don't have an account?`
 				},
@@ -195,12 +200,13 @@ async function formReset() {
 	})
 }
 
-async function formSignup() {
-	/* form_auth_signup */
-	await addForm({
+async function dataObjSignup() {
+	/* data_obj_auth_signup */
+	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
+		codeRenderType: 'form',
 		exprObject: `WITH 
 		orgName := <str,system,org_name>,
 		org := (SELECT sys_core::Org FILTER .name = orgName),
@@ -246,7 +252,7 @@ async function formSignup() {
 		}`,
 		header: 'Sign up',
 		isPopup: true,
-		name: 'form_auth_signup',
+		name: 'data_obj_auth_signup',
 		owner: 'app_sys',
 		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
 		fields: [
@@ -273,7 +279,10 @@ async function formSignup() {
 				codeElement: 'custom',
 				codeCustomElType: 'button',
 				columnName: 'custom_element',
-				customElParms: { action: { type: 'submit', value: 'form_auth_signup' }, label: 'Sign up' },
+				customElParms: {
+					action: { type: 'submit', value: 'data_obj_auth_signup' },
+					label: 'Sign up'
+				},
 				dbOrderSelect: 50
 			},
 			{
@@ -291,7 +300,7 @@ async function formSignup() {
 				codeCustomElType: 'link',
 				columnName: 'custom_element',
 				customElParms: {
-					action: { type: 'page', value: 'form_auth_login' },
+					action: { type: 'page', value: 'data_obj_auth_login' },
 					label: 'Log in',
 					prefix: 'Already have an account?'
 				},
@@ -301,15 +310,16 @@ async function formSignup() {
 	})
 }
 
-async function formVerify() {
-	/* form_auth_verify_phone_mobile */
-	await addForm({
+async function dataObjVerify() {
+	/* data_obj_auth_verify_phone_mobile */
+	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
+		codeRenderType: 'form',
 		header: 'Verify Mobile Phone Number',
 		isPopup: true,
-		name: 'form_auth_verify_phone_mobile',
+		name: 'data_obj_auth_verify_phone_mobile',
 		owner: 'app_sys',
 		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
 		fields: [
@@ -331,7 +341,7 @@ async function formVerify() {
 				codeCustomElType: 'button',
 				columnName: 'custom_element',
 				customElParms: {
-					action: { type: 'submit', value: 'form_auth_verify_phone_mobile' },
+					action: { type: 'submit', value: 'data_obj_auth_verify_phone_mobile' },
 					label: 'Verify'
 				},
 				dbOrderSelect: 30

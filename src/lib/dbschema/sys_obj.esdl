@@ -4,44 +4,42 @@ module sys_obj{
     parent: NodeObj;
     required order: default::nonNegative;
     required codeIcon: sys_core::Code;
-    required page: str;
+    page: str;
     dataObj: sys_obj::DataObj {
       on target delete allow
     };
     constraint exclusive on (.name);
   }
 
-  abstract type DataObj extending sys_core::Obj {
+  type DataObjAction extending sys_core::Obj {
+    allTabs: bool;
+    color: str;
+    required order: default::nonNegative;
+    constraint exclusive on (.name);
+  }
+
+  type DataObj extending sys_core::Obj {
     multi actions: DataObjAction;
     required codeCardinality: sys_core::Code;
     required codeComponent: sys_core::Code;
+    required codeRenderType: sys_core::Code;
     description: str;
     exprFilter: str;
     exprObject: str;
+    multi fieldsDb: sys_obj::DataObjFieldDb {
+      on source delete delete target;
+    };
+    multi fieldsEl: sys_obj::DataObjFieldEl {
+      on source delete delete target;
+    };
     isPopup: bool;
     link: json;
     subHeader: str;
     table: sys_db::Table;  
     constraint exclusive on (.name);
   } 
-
-  type DataObjAction extending sys_core::Obj {
-    required order: default::nonNegative;
-    color: str;
-    constraint exclusive on (.name);
-  }
   
-  type Form extending DataObj {
-    multi fieldsDb: sys_obj::FormFieldDb {
-      on source delete delete target;
-    };
-    multi fieldsEl: sys_obj::FormFieldEl {
-      on source delete delete target;
-    };
-    submitButtonLabel: str;
-  }
-
-  type FormFieldDb {
+  type DataObjFieldDb {
     codeDbDataOp: sys_core::Code;
     codeDbDataSource: sys_core::Code;
     codeDbListDir: sys_core::Code;
@@ -50,7 +48,6 @@ module sys_obj{
     };
     dbDataSourceKey: str;
     dbOrderList: default::nonNegative;
-    dbOrderSelect: default::nonNegative;
     exprFilter: str;
     exprPreset: str;
     fieldName: str;
@@ -59,7 +56,7 @@ module sys_obj{
     isLinkMember: bool;
   }
 
-  type FormFieldEl {
+  type DataObjFieldEl {
     required column: sys_db::Column {
       on source delete allow;
     };   
@@ -67,24 +64,25 @@ module sys_obj{
     codeCustomElType: sys_core::Code;
     codeElement: sys_core::Code;
     customElParms: json;
+    dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
     headerAlt: str;
     height: int16;
     isDisplay: bool;
     isDisplayable: bool;
     items: array<json>;
-    itemsList: FormFieldItemsList{
+    itemsList: DataObjFieldItems{
      on source delete allow;
     };
     itemsListParms: json;
     width: int16;
   }
 
- type FormFieldItemsList extending sys_core::Obj {
+ type DataObjFieldItems extending sys_core::Obj {
     required dbSelect: str;
     required propertyId: str;
     required propertyLabel: str;
-    multi fieldsDb: sys_obj::FormFieldDb {
+    multi fieldsDb: sys_obj::DataObjFieldDb {
       on source delete delete target;
     };
     constraint exclusive on (.name);
@@ -97,8 +95,8 @@ module sys_obj{
   function getDataObjAction(dataObjActionName: str) -> optional DataObjAction
     using (select DataObjAction filter .name = dataObjActionName);        
     
-  function getFormFieldItemsList(name: str) -> optional FormFieldItemsList
-    using (select FormFieldItemsList filter .name = name);  
+  function getDataObjFieldItems(name: str) -> optional DataObjFieldItems
+    using (select DataObjFieldItems filter .name = name);  
     
   function getNodeObjByName(nodeObjName: str) -> optional NodeObj
     using (select NodeObj filter .name = nodeObjName);

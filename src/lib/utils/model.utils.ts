@@ -40,6 +40,7 @@ export function isInstanceOf(clazz, obj) {
 	}
 	return true
 }
+
 export function memberOfEnum(
 	val: string,
 	className: string,
@@ -50,11 +51,8 @@ export function memberOfEnum(
 	if (!val) {
 		throw error(500, {
 			file: className,
-			function: `memberOfEnum`,
-			message: `No value supplied for enum...
-			Field: ${fieldName}
-			Enum: ${enumName}
-			Elements:${Object.values(enumObj).toString()}`
+			function: `memberOfEnum: ${enumName} - Field: ${fieldName}`,
+			message: `No value supplied. Elements:${Object.values(enumObj).toString()}`
 		})
 	}
 	for (const value of Object.values(enumObj)) {
@@ -64,12 +62,8 @@ export function memberOfEnum(
 	}
 	throw error(500, {
 		file: className,
-		function: `memberofEnum`,
-		message: `Invalid enum value...
-		Value: (${val})
-		Field: ${fieldName}
-		Enum: ${enumName}
-		Elements:${Object.values(enumObj).toString()}`
+		function: `memberOfEnum: ${enumName} - Field: ${fieldName} - Value: ${val}`,
+		message: `Invalid enum value for Elements: ${Object.values(enumObj).toString()}`
 	})
 }
 export function memberOfEnumOrDefault(
@@ -140,14 +134,14 @@ export function nbrRequired(val: number, name: string) {
 		})
 	}
 }
-export function required(val: any, className: string, fieldName: string) {
+export function required(val: any, clazz: any, fieldName: string) {
 	if (val) {
 		return val
 	} else {
 		throw error(500, {
 			file: FILENAME,
-			function: 'required',
-			message: `Class: ${className} Field: ${fieldName} required value is undefined.`
+			function: clazz,
+			message: `Field: ${fieldName} - is required but is undefined.`
 		})
 	}
 }
@@ -162,7 +156,7 @@ export function strLower(val: string) {
 		return val.toLowerCase()
 	}
 }
-export function strOptional(val: string, className: string, field: string) {
+export function strOptional(val: string | null | undefined, className: string, field: string) {
 	if (!val) {
 		return undefined
 	}
@@ -183,6 +177,9 @@ export function strUpper(val: string) {
 	if (val) {
 		return val.toUpperCase()
 	}
+}
+export function valueIfDefined(val: any) {
+	return val !== undefined ? val : undefined
 }
 export function valueOrDefault(val: any, defaultVal: any) {
 	return val != null ? val : defaultVal

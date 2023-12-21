@@ -7,7 +7,7 @@ const FILENAME = '$server/apiUser.ts'
 
 export async function getUser(userId: string) {
 	const user = await getUserByUserId(userId)
-	console.log('apiUser:', user)
+	// console.log('apiUser:', user)
 
 	// const parms = [
 	// 	'id',

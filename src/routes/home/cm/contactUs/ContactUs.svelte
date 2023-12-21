@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Form } from '$comps/form/form'
+	import type { Form } from '$comps/dataObj/dataObjOld'
 	import { goto } from '$app/navigation'
 	export let formObj: Form
 

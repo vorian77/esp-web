@@ -1,11 +1,17 @@
-import { addOrg, addUser, addUserOrg, execute, review } from '$server/dbEdge/types.edgeDB.server'
 import {
 	addOrgs,
 	addRoleOrg,
 	addStaff,
 	addRoleStaff,
 	setOrgUserType
-} from '$server/dbEdge/init/dbEdgeInitUtilities'
+} from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import {
+	addOrg,
+	addUser,
+	addUserOrg,
+	execute,
+	review
+} from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_cm_training_data'
 const rootObjName = '*ROOTOBJ*'
@@ -109,8 +115,11 @@ async function dataCohorts() {
     myCreator := (select sys_user::getUser('user_ai'))
     for x in {
       ('Commercial Painting', 'Cohort 1', 'Under development'), 
-      ('Commercial Painting', 'Cohort 2', 'Under development'),   
-      ('Heavy Equipment (Skills for Life)', 'Cohort 1', 'Under development'),   
+      ('Heavy Equipment (Skills for Life)', 'Cohort 2', 'Under development'),   
+      ('Heavy Equipment (Skills for Life)', 'Cohort 3', 'Under development'),   
+      ('Residential and Commercial Masonry', 'Cohort 4', 'Under development'),   
+      ('Residential and Commercial Masonry', 'Cohort 5', 'Under development'),   
+      ('Residential and Commercial Masonry', 'Cohort 6', 'Under development'),   
     }
     union (insert app_cm_training::Cohort {
       owner := (select sys_core::getOrg('Atlantic Impact')),

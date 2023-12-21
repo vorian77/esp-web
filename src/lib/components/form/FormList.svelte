@@ -1,77 +1,87 @@
 <script lang="ts">
-	import type { Form } from '$comps/form/form'
-	import type { DataObj } from '$comps/types'
+	import {
+		DataObj,
+		type DataRowRecord,
+		NavState,
+		NavStateComponent,
+		NavStateTokenAppObjAction,
+		NavStateTokenActionType,
+		QueryParmDataRow,
+		setSelectedRecords,
+		SurfaceType
+	} from '$comps/types'
+	import type { DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
-	import { Form as FormClass } from '$comps/form/form'
-	import { navParms, setNavParmsDataObj } from '$comps/nav/navStore'
-	import DataObjActions from '$comps/DataObjActions.svelte'
+	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
+	import { navParmsStore, setNavParmsDataObj } from '$comps/nav/app'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
 	import DataViewer from '$comps/DataViewer.svelte'
-	import { getArray } from '$utils/array.utils'
 
-	export let dataObj: DataObj | undefined
-	export let onListRowClick = (data: any) => {}
+	export let stateAdd = (token: NavState) => {}
+	export let stateGlobal: NavState | undefined
+	export let surface: SurfaceType = SurfaceType.page
+	export let dataObj: DataObj
+	export let dataObjData: DataObjData
+
 	let scrollToTop = () => {}
-	let formObj: Form
 
 	const ROW_PER_PAGE = 20
+
 	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
 	const rows = handler.getRows()
-	let sort: any
+
+	type DataRow = Record<string, any>
 
 	$: {
-		if (dataObj) {
-			formObj = new FormClass(dataObj)
-			const sortItems = formObj.defn._fieldsDbOrder
-			handler.clearSort()
-			if (sortItems) {
-				for (let i = sortItems.length - 1; i >= 0; i--) {
-					handler.applySort({
-						orderBy: sortItems[i]._name,
-						direction: sortItems[i]._codeDbListDir ? sortItems[i]._codeDbListDir : 'asc'
-					})
-				}
+		const dataFormatted = dataObjData.map((row: QueryParmDataRow) => {
+			let newRow: DataRow = {}
+			for (let key in row.record) {
+				newRow[key] = row.record[key].display
 			}
-			setNavParmsDataObj(dataObj, false)
+			return newRow
+		})
+		handler.setRows(dataFormatted)
+		handler.setPage(1)
+		handler.clearFilters()
+		sortList()
+	}
+
+	function sortList() {
+		// apply sort items backwards
+		handler.clearSort()
+		for (let i = dataObj.orderItems.length - 1; i >= 0; i--) {
+			handler.applySort({
+				orderBy: dataObj.orderItems[i].name,
+				direction: dataObj.orderItems[i].direction
+			})
 		}
 	}
 
-	$: {
-		handler.setRows($navParms.data)
-		handler.setPage(1)
-		handler.clearFilters()
-		handler.clearSearch()
-		sort = handler.getSort()
+	async function onClick(row: DataRow) {
+		stateAdd(
+			new NavState({
+				checkObjChanged: false,
+				component: NavStateComponent.objAction,
+				token: new NavStateTokenAppObjAction({
+					actionType: NavStateTokenActionType.listEdit,
+					dataObjData: setSelectedRecords(dataObjData, [row.id]),
+					dataObjRaw: dataObj.dataObjRaw,
+					dbProcess: false
+				})
+			})
+		)
 	}
 </script>
 
-<!-- <DataViewer header="sort" data={JSON.stringify(sort, null, 2)} /> -->
-
-<div class="flex justify-between">
-	<div>
-		<h1 class="h1 {formObj.subHeader ? '' : 'mb-5'}">{formObj.header}</h1>
-	</div>
-	<div>
-		<slot name="actions" />
-		<DataObjActions {formObj} />
-	</div>
-</div>
-
-{#if formObj.subHeader}
-	<div class="mb-5">
-		<h4 class="h4 text-gray-500">
-			{formObj.subHeader}
-		</h4>
-	</div>
-{/if}
+<DataObjActionsHeader {stateAdd} {stateGlobal} {dataObj} {surface} />
 
 <Datatable {handler}>
 	<table>
 		<thead>
 			<tr>
-				{#if formObj.fields}
-					{#each formObj.fields as field, i}
+				{#if dataObj.fields}
+					{#each dataObj.fields as field}
 						{#if field.isDisplayable && field.isDisplay}
 							<Th {handler} orderBy={field.name}>{field.label}</Th>
 						{/if}
@@ -79,8 +89,8 @@
 				{/if}
 			</tr>
 			<tr>
-				{#if formObj.fields}
-					{#each formObj.fields as field, i}
+				{#if dataObj.fields}
+					{#each dataObj.fields as field}
 						{#if field.isDisplayable && field.isDisplay}
 							<ThFilter {handler} filterBy={field.name} />
 						{/if}
@@ -89,15 +99,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#if $navParms.data}
-				{#each $rows as row, i (row.id)}
-					<tr
-						on:click={() => onListRowClick({ index: i, row })}
-						on:keyup={() => onListRowClick({ index: i, row })}
-					>
-						{#each formObj.fields as field, i}
+			{#if dataObjData}
+				{#each $rows as row, i}
+					<tr on:click={() => onClick(row)} on:keyup={async () => await onClick(row)}>
+						{#each dataObj.fields as field}
 							{#if field.isDisplayable && field.isDisplay}
-								<td>{row[field.name].display}</td>
+								{@const value = row[field.name]}
+								<td>{value}</td>
 							{/if}
 						{/each}
 					</tr>
@@ -106,6 +114,9 @@
 		</tbody>
 	</table>
 </Datatable>
+
+<!-- <DataViewer header="sort" data={sort} /> -->
+<!-- <DataViewer header="dataObjData" data={dataObjData} /> -->
 
 <style>
 	thead {
@@ -122,6 +133,6 @@
 		background: #f5f5f5;
 	}
 	tr:nth-child(even) {
-		background-color: Lightgreen;
+		background-color: #84f08f;
 	}
 </style>

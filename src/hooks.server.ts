@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit'
 import { getUser } from '$server/apiUser'
 import type { ResponseBody } from '$comps/types'
+import { resetLocalStorage } from '$comps/types'
 
 const FILENAME = 'hooks.server'
 
@@ -18,6 +19,7 @@ export async function handle({ event, resolve }) {
 
 	if (event.url.pathname.startsWith('/logout')) {
 		console.log(FILENAME, 'logout...')
+		resetLocalStorage()
 		throw redirect(303, '/')
 	}
 

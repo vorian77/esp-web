@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import { Form as FormClass } from '$comps/form/form'
+	import { Form as FormClass } from '$comps/dataObj/dataObjOld'
 	import Form from '$comps/form/FormDetail.svelte'
 	import type { ResponseBody } from '$comps/types.js'
 	import { asDelete, asGet } from '$utils/utils'

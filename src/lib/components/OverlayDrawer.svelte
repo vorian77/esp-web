@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
-	import FormDetailDrawer from '$comps/form/FormDetailDrawer.svelte'
-	import NavTree from '$comps/nav/NavTree.svelte'
+	// import FormDetailDrawer from '$comps/form/FormDetailDrawer.svelte'
+	// import NavTree from '$comps/nav/NavTree.svelte'
 
 	const drawerStore = getDrawerStore()
 
@@ -22,15 +22,15 @@
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'auth'}
 		<div>
-			<FormDetailDrawer
+			<!-- <FormDetailDrawer
 				bind:formObj={$drawerStore.meta.formObj}
 				on:formCancelled={onformCancelled}
 				on:customFieldAction={$drawerStore.meta.onCustomFieldAction}
-			/>
+			/> -->
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}
 		<div class="p-2">
-			<NavTree on:processNode={closeDrawer} />
+			<!-- <NavTree on:treeChanged={closeDrawer} /> -->
 		</div>
 	{:else if $drawerStore.id === 'navRight'}
 		<div class="p-4">

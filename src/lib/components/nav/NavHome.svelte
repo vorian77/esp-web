@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { navTree, nodeProcessTree } from '$comps/nav/navStore'
-	import { NavTree } from '$comps/types'
-	import type { NavTreeNode } from '$comps/types'
+	// import { NavTree } from '$comps/types'
+	import type { Node } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 
-	let navTreeLocal: NavTree
-	let navTreeList: NavTreeNode[]
+	// let navTreeLocal: NavTree
+	let navTreeList: Node[]
 
 	$: {
-		navTreeLocal = Object.assign(new NavTree([]), $navTree)
-		navTreeList = navTreeLocal.listBranch
+		// navTreeLocal = Object.assign(new NavTree([]), $navTreeOld)
+		// navTreeList = navTreeLocal.listBranch
 	}
 
 	const FILENAME = '/$comps/nav/NavHome.svelte'
@@ -47,26 +46,26 @@
 				background-color: ${ITEM_COLORS[1]};`
 	const marginTopheader = '-mt-1'
 
-	function processNode(node: NavTreeNode) {
-		nodeProcessTree($page.url.pathname, node)
+	function processNode(node: Node) {
+		// nodeProcessTree($page.url.pathname, node)
 	}
 </script>
 
 <div id="container" style={styleContainer}>
-	{#each navTreeList as node}
+	<!-- {#each navTreeList as node}
 		<div
 			role="button"
 			tabindex="0"
-			style={node.nodeObj.page == $page.url.pathname ? styleItemActive : styleItem}
+			style={node.page == $page.url.pathname ? styleItemActive : styleItem}
 			on:click={() => processNode(node)}
 			on:keyup={() => processNode(node)}
 		>
 			<div class="mt-2">
-				<Icon name={node.nodeObj.icon} width="1.0rem" height="1.0rem" fill={NAV_COLOR} />
+				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={NAV_COLOR} />
 			</div>
 			<div class={marginTopheader}>
-				{node.nodeObj.header}
+				{node.header}
 			</div>
 		</div>
-	{/each}
+	{/each} -->
 </div>

@@ -1,13 +1,20 @@
 <script lang="ts">
-	import { Form } from '$comps/form/form'
-	import { FieldValue } from '$comps/form/field'
+	// import { Form } from '$comps/dataObj/dataObjOld'
+	// import { FieldValue } from '$comps/form/field'
 	import { get } from 'svelte/store'
 	import { goto } from '$app/navigation'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import { encrypt, type DataObj, type ResponseBody } from '$comps/types'
-	import { DataObjProcessType, DbData, processByObject, processByDataObjName } from '$comps/types'
-	import { initUser, navParms, navUser } from '$comps/nav/navStore'
+	import type { ResponseBody } from '$comps/types'
+	import {
+		DataObj,
+		DataObjProcessType,
+		DbData,
+		encrypt,
+		processByDataObj,
+		processByDataObjName,
+		setUser
+	} from '$comps/types'
 	import { onMount } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -17,25 +24,24 @@
 	export let pageCurrent = ''
 
 	let forms: any = []
-	let formProcess: Form
+	let formProcess: DataObj
 
 	onMount(() => {
-		async function initForm(formName: string) {
-			const dataObj: DataObj = await processByDataObjName(
-				formName,
-				DataObjProcessType.preset,
-				new DbData({})
-			)
-			dataObj.isInsertMode = true
-			forms[formName] = new Form(dataObj)
-		}
-
-		;[
-			'form_auth_login',
-			'form_auth_reset_password',
-			'form_auth_signup',
-			'form_auth_verify_phone_mobile'
-		].forEach((formName) => initForm(formName))
+		// async function initForm(formName: string) {
+		// 	const dataObj: DataObj = await processByDataObjName(
+		// 		formName,
+		// 		DataObjProcessType.preset,
+		// 		new DbData({})
+		// 	)
+		// 	dataObj.isInsertMode = true
+		// 	forms[formName] = new DataObj(dataObj.defn)
+		// }
+		// ;[
+		// 	'form_auth_login',
+		// 	'form_auth_reset_password',
+		// 	'form_auth_signup',
+		// 	'form_auth_verify_phone_mobile'
+		// ].forEach((formName) => initForm(formName))
 	})
 
 	let verifyFrom = ''
@@ -74,7 +80,7 @@
 			case 'submit':
 				switch (value.toLowerCase()) {
 					case 'form_auth_login':
-						await process(forms[value])
+						await processAuthCredentials(forms[value])
 						break
 
 					case 'form_auth_verify_phone_mobile':
@@ -83,7 +89,7 @@
 							alert('The security code you entered is not correct. Please try again')
 							return
 						}
-						await process(formProcess)
+						await processAuthCredentials(formProcess)
 						break
 
 					case 'form_auth_signup':
@@ -113,7 +119,7 @@
 		}
 	}
 
-	async function process(form: Form) {
+	async function processAuthCredentials(form) {
 		const msgFail = 'Something is wrong with the credentials you entered. Please try again.'
 		drawerStore.close()
 		pageCurrent = ''
@@ -124,11 +130,15 @@
 		if (password) {
 			const encryptedPassword = await encrypt(password.data)
 			// console.log('authPage.encryptedPassword:', encryptedPassword)
-			form.setFieldValue(fieldName, new FieldValue(encryptedPassword, encryptedPassword))
+			// form.setFieldValue(fieldName, new FieldValue(encryptedPassword, encryptedPassword))
 		}
 
 		// process
-		const dataObj: DataObj = await processByObject(form, { system: data.system })
+		const dataObj: DataObj = await processByDataObj(
+			form,
+			DataObjProcessType.object,
+			new DbData({ system: data.system })
+		)
 		if (!dataObj) {
 			alert(msgFail)
 			return
@@ -146,7 +156,7 @@
 				toastStore.trigger(t)
 			} else {
 				const user = await getUser(rtn.userId)
-				initUser(user)
+				setUser(user)
 
 				// set cookie
 				await fetch('/auth', {
@@ -168,14 +178,14 @@
 		authSecurityCode = Math.floor(Math.random() * (max - min + 1)) + min
 		authSecurityCodePhone = phoneMobile
 
-		// await fetch('/auth', {
-		// 	method: 'POST',
-		// 	body: JSON.stringify({
-		// 		action: 'sms_send',
-		// 		phoneMobile: authSecurityCodePhone,
-		// 		message: `Mobile phone number verification code: ${authSecurityCode}`
-		// 	})
-		// })
+		await fetch('/auth', {
+			method: 'POST',
+			body: JSON.stringify({
+				action: 'sms_send',
+				phoneMobile: authSecurityCodePhone,
+				message: `Mobile phone number verification code: ${authSecurityCode}`
+			})
+		})
 	}
 	export async function getUser(userId: string) {
 		const responsePromise = await fetch('/api/user', {

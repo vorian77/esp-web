@@ -1,4 +1,3 @@
-import { execute, review } from '$server/dbEdge/types.edgeDB.server'
 import {
 	apps,
 	codes,
@@ -11,56 +10,44 @@ import {
 	userTypeResourcesPrograms,
 	userTypeResourcesWidgets,
 	widgets
-} from '$server/dbEdge/init/dbEdgeInitUtilities'
+} from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { execute, review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_MOED_cm'
 
 export default async function init() {
 	console.log()
 	console.log(`${FILE}.start...`)
-	await reset()
 	await data()
 	await dataUserSys()
 	// await review(FILE, reviewQuery)
 	console.log(`${FILE}.end`)
 }
 
-const reviewQuery =
-	'select sys_user::UserType {name, resources[is sys_user::Widget]:{name}} filter .name = "ut_sys_admin"'
-
-async function reset() {
-	const query = `
-	delete sys_obj::NodeObj filter .owner.name = 'app_moed_cm'; 
-	delete sys_user::UserType filter .owner.name = 'app_moed_cm';
-	delete sys_core::App filter .name = 'app_moed_cm';
-	delete sys_user::User filter .userName ='user_moed'
-	`
-	await execute(query)
-}
+const reviewQuery = ''
 
 async function data() {
 	// await users([['Baltimore', 'MOED', 'user_moed', '!alfjasf*!@#$$*&']])
 
 	await apps([['app_moed_cm']])
 	await nodeObjPrograms([
-		['app_moed_cm', 'program', 'pgm_moed_cm_staff', 'CM-Staff', 20, 'application', '/home/app'],
+		['app_moed_cm', 'navProgram', 'node_pgm_moed_cm_staff', 'CM-Staff', 20, 'application'],
 		[
 			'app_moed_cm',
-			'program',
-			'pgm_moed_cm_student_applicant',
+			'navProgram',
+			'node_node_pgm_moed_cm_student_applicant',
 			'CM-Applicant',
 			30,
-			'application',
-			'/home/app'
+			'application'
 		],
-		['app_moed_cm', 'program', 'pgm_moed_cm_student', 'CM-Student', 40, 'application', '/home/app']
+		['app_moed_cm', 'navProgram', 'node_pgm_moed_cm_student', 'CM-Student', 40, 'application']
 	])
 	await nodeObjPages([
 		[
 			'app_moed_cm',
-			'pgm_moed_cm_student_applicant',
-			'page',
-			'node_cm_sa_app',
+			'node_node_pgm_moed_cm_student_applicant',
+			'navPage',
+			'node_page_cm_sa_app',
 			'Application',
 			10,
 			'application',
@@ -68,9 +55,9 @@ async function data() {
 		],
 		[
 			'app_moed_cm',
-			'pgm_moed_cm_student',
-			'page',
-			'node_cm_student_app',
+			'node_pgm_moed_cm_student',
+			'navPage',
+			'node_page_cm_student_app',
 			'Application',
 			10,
 			'application',
@@ -78,9 +65,9 @@ async function data() {
 		],
 		[
 			'app_moed_cm',
-			'pgm_moed_cm_student',
-			'page',
-			'node_cm_student_goals',
+			'node_pgm_moed_cm_student',
+			'navPage',
+			'node_page_cm_student_goals',
 			'Goals',
 			20,
 			'application',
@@ -88,9 +75,9 @@ async function data() {
 		],
 		[
 			'app_moed_cm',
-			'pgm_moed_cm_student',
-			'page',
-			'node_cm_student_messages',
+			'node_pgm_moed_cm_student',
+			'navPage',
+			'node_page_cm_student_messages',
 			'Messages',
 			30,
 			'application',
@@ -98,9 +85,9 @@ async function data() {
 		],
 		[
 			'app_moed_cm',
-			'pgm_moed_cm_student',
-			'page',
-			'node_cm_student_activities',
+			'node_pgm_moed_cm_student',
+			'navPage',
+			'node_page_cm_student_activities',
 			'Activities',
 			40,
 			'application',
@@ -108,9 +95,9 @@ async function data() {
 		],
 		[
 			'app_moed_cm',
-			'pgm_moed_cm_student',
-			'page',
-			'node_cm_student_quotes',
+			'node_pgm_moed_cm_student',
+			'navPage',
+			'node_page_cm_student_quotes',
 			'Quotes',
 			50,
 			'application',
@@ -123,9 +110,9 @@ async function data() {
 		['app_moed_cm', 'ut_moed_cm_student']
 	])
 	await userTypeResourcesPrograms([
-		['ut_moed_cm_staff', 'pgm_moed_cm_staff'],
-		['ut_moed_cm_student_applicant', 'pgm_moed_cm_student_applicant'],
-		['ut_moed_cm_student', 'pgm_moed_cm_student']
+		['ut_moed_cm_staff', 'node_pgm_moed_cm_staff'],
+		['ut_moed_cm_student_applicant', 'node_node_pgm_moed_cm_student_applicant'],
+		['ut_moed_cm_student', 'node_pgm_moed_cm_student']
 	])
 }
 
@@ -133,9 +120,9 @@ async function dataUserSys() {
 	/* sys user */
 	await userTypeResourcesApps([['ut_sys_admin', 'app_moed_cm']])
 	await userTypeResourcesPrograms([
-		['ut_sys_admin', 'pgm_moed_cm_staff'],
-		['ut_sys_admin', 'pgm_moed_cm_student_applicant'],
-		['ut_sys_admin', 'pgm_moed_cm_student']
+		['ut_sys_admin', 'node_pgm_moed_cm_staff'],
+		['ut_sys_admin', 'node_node_pgm_moed_cm_student_applicant'],
+		['ut_sys_admin', 'node_pgm_moed_cm_student']
 	])
 	await userUserType([
 		['user_sys', 'ut_moed_cm_staff'],

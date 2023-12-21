@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { Form } from '$comps/form/form'
-	import type { DataObj, NavTreeNode } from '$comps/types'
+	import { DataObj, SurfaceType } from '$comps/types'
 	import FormDetail from '$comps/form/FormDetail.svelte'
-	import { navParms, setNavParms, setNavParmsDataObj } from '$comps/nav/navStore'
+	import { setNavParms } from '$comps/nav/app'
 
-	export let formObj: Form
+	export let dataObjDefn: any
+	let dataObj = new DataObj(dataObjDefn)
 
-	$: if (formObj) setNavParms(formObj.data, formObj.cardinality, formObj.isInsertMode!)
+	// $: if (formObj) setNavParms(formObj.data, formObj.cardinality, formObj.isInsertMode!)
 </script>
 
-{#if formObj}
+{#if dataObj}
 	<div class="esp-card-space-y">
-		<FormDetail {formObj} on:formCancelled on:customFieldAction />
+		<FormDetail surface={SurfaceType.overlay} on:formCancelled on:customFieldAction />
 	</div>
 {/if}

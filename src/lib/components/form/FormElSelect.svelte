@@ -6,16 +6,17 @@
 
 	const fieldId = 'field' + field.index
 
-	$: if (field.items.length === 1 && !field.value.data) field.value.data = field.items[0].data
+	$: if (field.valueCurrent.items.length === 1 && !field.valueCurrent.data)
+		field.valueCurrent.data = field.valueCurrent.items[0].data
 
 	function onChangeSelect(event: Event) {
 		const newValData = event.currentTarget?.value
 		let newValDisplay = null
 		if (newValData) {
-			const idx = field.items.findIndex((f) => {
+			const idx = field.valueCurrent.items.findIndex((f) => {
 				return f.data === newValData
 			})
-			newValDisplay = idx > -1 ? field.items[idx].display : null
+			newValDisplay = idx > -1 ? field.valueCurrent.items[idx].display : null
 		}
 		onChange(field.name, newValData, newValDisplay)
 	}
@@ -27,15 +28,15 @@
 <label for={fieldId} class="label">
 	<span>{field.label}</span>
 	<select
-		class="select"
+		class="select rounded-lg {field.colorBackground}"
 		name={field.name}
 		id={fieldId}
-		bind:value={field.value.data}
+		bind:value={field.valueCurrent.data}
 		on:change={onChangeSelect}
 	>
 		<option value={null}>Select an option...</option>
-		{#each field.items as { data: id, display: label }, index (id)}
-			<option value={id} selected={id === field.value.data}>
+		{#each field.valueCurrent.items as { data: id, display: label }, index (id)}
+			<option value={id} selected={id === field.valueCurrent.data}>
 				{label}
 			</option>
 		{/each}
@@ -43,9 +44,9 @@
 </label>
 
 <style>
-	select {
-		@apply bg-white rounded-lg;
-	}
+	/* select {
+		@apply {field.colorBackground} rounded-lg;
+	} */
 
 	select option {
 		background: white;

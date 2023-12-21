@@ -1,27 +1,27 @@
 <script lang="ts">
 	import type { FieldCheckbox } from '$comps/form/fieldCheckbox'
 	import type { FieldValue } from '$comps/form/field'
-	import { BinarySelect } from '$comps/types'
+	import { BinarySelect, FieldAccess } from '$comps/types'
 	export let field: FieldCheckbox
 	let isSelected: boolean
 
 	$: {
 		if (field.isMultiSelect) {
 			let vals: any = []
-			if (field.value.data) vals = field.value.data.split(',')
-			field.items.forEach((i) => (i.selected = vals.includes(i.data)))
+			if (field.valueCurrent.data) vals = field.valueCurrent.data.split(',')
+			field.valueCurrent.items.forEach((i) => (i.selected = vals.includes(i.data)))
 		} else {
 			const binarySelect = new BinarySelect(field.dataType)
-			if (!field.value.data) field.value.data = binarySelect.getDefault()
-			isSelected = binarySelect.isSelected(field.value.data)
+			if (!field.valueCurrent.data) field.valueCurrent.data = binarySelect.getDefault()
+			isSelected = binarySelect.isSelected(field.valueCurrent.data)
 		}
 	}
 </script>
 
 {#if field.isMultiSelect}
-	<fieldset>
-		<legend>{field.label}</legend>
-		{#each field.items as { data: id, display: label, selected }, i (id)}
+	<legend>{field.label}</legend>
+	<fieldset class={field.access === FieldAccess.required ? 'fieldsetRequired' : 'fieldsetOptional'}>
+		{#each field.valueCurrent.items as { data: id, display: label, selected }, i (id)}
 			{@const itemName = field.name + '.' + id}
 			<div class="mt-1">
 				<label for={field.name} class="flex items-center space-x-2">
@@ -29,12 +29,12 @@
 						type="checkbox"
 						id={field.name}
 						name={itemName}
-						class="rounded-sm"
+						class="rounded-sm {i === 0 ? 'mt-2' : ''}"
 						value={id}
 						bind:checked={selected}
 						on:click
 					/>
-					<p>{label}</p>
+					<p class={i === 0 ? 'mt-2' : ''}>{label}</p>
 				</label>
 			</div>
 		{/each}

@@ -1,20 +1,7 @@
 <script lang="ts">
-	import type { Form } from '$comps/form/form'
-	import { FieldValue, type Field } from '$comps/form/field'
-	import {
-		BinarySelect,
-		FieldElement,
-		DataObj,
-		NodeObj,
-		NavParmsDB,
-		NavTreeNode,
-		Validation,
-		ValidityField,
-		ValidityErrorLevel,
-		ValidityError,
-		valueOrDefault,
-		DataFieldDataType
-	} from '$comps/types'
+	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
+	import DataObjActionsFooter from '$comps/dataObj/DataObjActionsFooter.svelte'
+	import type { FieldValue } from '$comps/form/field'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
 	import FormElFile from '$comps/form/FormElFile.svelte'
 	import FormElInp from '$comps/form/FormElInp.svelte'
@@ -22,44 +9,40 @@
 	import FormElInpRadio from '$comps/form/FormElInpRadio.svelte'
 	import FormElSelect from '$comps/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/form/FormElTextarea.svelte'
-	import FormLink from '$comps/form/FormLink.svelte'
-	import DataObjActions from '$comps/DataObjActions.svelte'
 	import {
-		navParms,
-		navStatus,
-		setNavParms,
-		setNavStatusObjChanged,
-		setNavStatusObjValid
-	} from '$comps/nav/navStore'
+		BinarySelect,
+		FieldAccess,
+		FieldElement,
+		DataObj,
+		type DataObjData,
+		NavState,
+		SurfaceType,
+		Validation,
+		ValidityField,
+		ValidityErrorLevel,
+		ValidityError
+	} from '$comps/types'
+	import { setAppStatusObjChanged, setAppStatusObjValid } from '$comps/nav/app'
 	import DataViewer from '$comps/DataViewer.svelte'
-	import { createEventDispatcher } from 'svelte'
-
-	const dispatch = createEventDispatcher()
+	import { disableScrollHandling } from '$app/navigation'
 
 	const FILENAME = '$comps/form/FormDetail.svelte'
 	const FORM_NAME = ''
 	const SUBMIT_BUTTON_NAME = 'SUBMIT_BUTTON_NAME'
 
-	export let formObj: Form
+	export let stateAdd = (token: NavState) => {}
+	export let stateGlobal: NavState | undefined
+	export let surface: SurfaceType = SurfaceType.page
+	export let dataObj: DataObj
+	export let dataObjData: DataObjData
 
-	let classPopup = ''
-	let classPopupHeader = ''
+	$: dataObj.objData = dataObjData
+	$: setAppStatusObjChanged(dataObj.statusChanged)
+	$: setAppStatusObjValid(dataObj.statusValidToSave)
 
-	$: formObj.objData = $navParms
-	$: setNavStatusObjChanged(formObj.hasChanged())
-	$: setNavStatusObjValid(formObj.validToSave)
-
-	$: {
-		classPopup = formObj.isPopup ? 'grid grid-cols-10 gap-4' : ''
-		classPopupHeader = formObj.isPopup ? 'col-span-9' : ''
-	}
-
-	function cancelForm(event: MouseEvent) {
-		dispatch('formCancelled')
-	}
-	function onChangeFile(fieldName: string, valData: any, valDisplay: any, saveCallbacks: any) {
+	function onChangeFile(fieldName: string, valData: any, valDisplay: any, saveCallback: any) {
 		setFieldVal(fieldName, valData, valDisplay)
-		formObj.saveCallbackAdd(fieldName, saveCallbacks)
+		dataObj.saveCallbackAdd(fieldName, saveCallback)
 	}
 	function onChangeInput(event: any) {
 		setFieldVal(event.target.name, event.currentTarget.value)
@@ -74,27 +57,28 @@
 		if (eventName.length === 1) {
 			// binary select
 			fieldName = eventName.toString()
-			const idx = formObj.getFieldIdx(fieldName)
+			const idx = dataObj.getFieldIdx(fieldName)
 			if (idx >= 0) {
-				const field = formObj.fields[idx]
+				const field = dataObj.fields[idx]
 				const binarySelect = new BinarySelect(field.dataType)
-				setFieldVal(fieldName, binarySelect.getValue(field.value.data))
+				setFieldVal(fieldName, binarySelect.getValue(field.valueCurrent.data))
 			}
 		} else {
 			// multi-select
 			fieldName = eventName[0]
 			const checkedItemID: string = eventName[1]
-			const idx = formObj.getFieldIdx(fieldName)
+			const idx = dataObj.getFieldIdx(fieldName)
 			if (idx >= 0) {
-				const field = formObj.fields[idx]
+				const field = dataObj.fields[idx]
 
-				const itemIdx = field.items.findIndex((i: FieldValue) => {
+				const itemIdx = field.valueCurrent.items.findIndex((i: FieldValue) => {
 					return i.data === checkedItemID
 				})
-				if (itemIdx >= 0) field.items[itemIdx].selected = !field.items[itemIdx].selected
+				if (itemIdx >= 0)
+					field.valueCurrent.items[itemIdx].selected = !field.valueCurrent.items[itemIdx].selected
 
 				let values: Array<string> = []
-				field.items.forEach((i: FieldValue) => {
+				field.valueCurrent.items.forEach((i: FieldValue) => {
 					if (i.selected) values.push(i.data)
 				})
 				setFieldVal(fieldName, values.toString())
@@ -104,101 +88,78 @@
 
 	function setFieldVal(fieldName: string, newValData: any, newValDisplay: any = undefined) {
 		if (newValDisplay === undefined) newValDisplay = newValData
-		const idx = formObj.getFieldIdx(fieldName)
+		const idx = dataObj.getFieldIdx(fieldName)
 		if (idx >= 0) {
-			formObj.fields[idx].value = new FieldValue(newValData, newValDisplay)
+			dataObj.fields[idx].valueCurrent.data = newValData
+			dataObj.fields[idx].valueCurrent.display = newValDisplay
 			validateField(idx, newValData)
+			dataObj.setStatusChanged()
 		}
 		return idx
 	}
 
 	function validateField(fieldIdx: number, value: any) {
-		const v: Validation = formObj.fields[fieldIdx].validate(value)
+		const v: Validation = dataObj.fields[fieldIdx].validate(value)
 		setValidities(v.validityFields)
 	}
 
 	function setValidities(newValidities: Array<ValidityField>) {
 		newValidities.forEach(({ index, validity }) => {
-			formObj.fields[index].validity = validity
+			dataObj.fields[index].validity = validity
 		})
-		formObj.validToSave = formObj.fields.every(
+		dataObj.statusValidToSave = dataObj.fields.every(
 			({ validity }) => validity.error == ValidityError.none
 		)
 	}
 </script>
 
-<!-- <DataViewer header="navParms" data={$navParms} /> -->
+<!-- <DataViewer
+	header="dataObjStatus"
+	data={{ changed: dataObj.statusChanged, validToSave: dataObj.statusValidToSave }}
+/> -->
 <!-- <DataViewer header="navStatus" data={$navStatus} /> -->
 
-<div class="flex justify-between">
-	<div>
-		{#if formObj.header}
-			<div class={classPopup}>
-				<div class={classPopupHeader}>
-					<h1 class="h1 {formObj.subHeader ? '' : 'mb-5'}">{formObj.header}</h1>
+<DataObjActionsHeader {stateAdd} {stateGlobal} {dataObj} {surface} on:formCancelled />
+
+<div class="mx-2 mb-6">
+	<form id={'form_' + dataObj.name} on:submit|preventDefault>
+		{#each dataObj.fields as field, idx (field.name)}
+			{#if field.isDisplayable && field.isDisplay}
+				<div class:mt-3={idx}>
+					{#if field.element === FieldElement.checkbox}
+						<FormElInpCheckbox {field} on:click={onClickCheckbox} />
+					{:else if field.element === FieldElement.custom}
+						<FormElCustom bind:field formData={dataObj.objData} on:customFieldAction />
+					{:else if field.element === FieldElement.file}
+						<FormElFile bind:field onChange={onChangeFile} />
+					{:else if [FieldElement.date, FieldElement.email, FieldElement.number, FieldElement.password, FieldElement.tel, FieldElement.text].includes(field.element)}
+						<FormElInp {field} on:change={onChangeInput} on:keyup={onChangeInput} />
+					{:else if field.element === FieldElement.radio}
+						<FormElInpRadio {field} on:change={onChangeInput} />
+					{:else if field.element === FieldElement.select}
+						<FormElSelect {field} onChange={onChangeSelect} />
+					{:else if field.element === FieldElement.textArea}
+						<FormElTextarea {field} on:change={onChangeInput} on:keyup={onChangeInput} />
+					{/if}
 				</div>
-			</div>
-		{/if}
-	</div>
-	<div class="flex">
-		<div>
-			<DataObjActions {formObj} />
-		</div>
-		<div>
-			{#if formObj.isPopup}
-				<button
-					type="button"
-					class="btn-icon btn-icon-sm variant-filled-error ml-2"
-					on:click={cancelForm}>X</button
-				>
+
+				{#if dataObj.fields[idx].validity.level == ValidityErrorLevel.error}
+					<div class="text-error-500 mb-3">
+						<p>{dataObj.fields[idx].validity.message}</p>
+					</div>
+				{:else if dataObj.fields[idx].validity.level == ValidityErrorLevel.warning}
+					<div class="text-warning-500 mb-3">
+						<p>{dataObj.fields[idx].validity.message}</p>
+					</div>
+				{/if}
+				<!-- Original Val: {field.valueSelected.data} Current Val: {field.value.data} HasChanged: {field.hasChanged} -->
 			{/if}
-		</div>
-	</div>
+		{/each}
+	</form>
 </div>
 
-{#if formObj.subHeader}
-	<div class="mb-5">
-		<p class="text-sm text-gray-500">
-			{formObj.subHeader}
-		</p>
-	</div>
-{/if}
+<DataObjActionsFooter {stateAdd} {stateGlobal} {dataObj} />
 
-<form id={'form_' + formObj.name} on:submit|preventDefault>
-	{#each formObj.fields as field, idx (field.name)}
-		{#if field.isDisplayable && field.isDisplay}
-			<div class:mt-3={idx}>
-				{#if field.element === FieldElement.checkbox}
-					<FormElInpCheckbox {field} on:click={onClickCheckbox} />
-				{:else if field.element === FieldElement.custom}
-					<FormElCustom bind:field formData={formObj.objData} on:customFieldAction />
-				{:else if field.element === FieldElement.file}
-					<FormElFile bind:field onChange={onChangeFile} />
-				{:else if [FieldElement.date, FieldElement.email, FieldElement.number, FieldElement.password, FieldElement.tel, FieldElement.text].includes(field.element)}
-					<FormElInp {field} on:change={onChangeInput} on:keyup={onChangeInput} />
-				{:else if field.element === FieldElement.radio}
-					<FormElInpRadio {field} on:change={onChangeInput} />
-				{:else if field.element === FieldElement.select}
-					<FormElSelect {field} onChange={onChangeSelect} />
-				{:else if field.element === FieldElement.textArea}
-					<FormElTextarea {field} on:change={onChangeInput} on:keyup={onChangeInput} />
-				{/if}
-			</div>
-
-			{#if formObj.fields[idx].validity.level == ValidityErrorLevel.error}
-				<div class="text-error-500 mb-3">
-					<p>{formObj.fields[idx].validity.message}</p>
-				</div>
-			{:else if formObj.fields[idx].validity.level == ValidityErrorLevel.warning}
-				<div class="text-warning-500 mb-3">
-					<p>{formObj.fields[idx].validity.message}</p>
-				</div>
-			{/if}
-			<!-- Original Val: {field.valueSelected.data} Current Val: {field.value.data} HasChanged: {field.hasChanged} -->
-		{/if}
-	{/each}
-</form>
-
-<!-- <DataViewer header="navData" data={$navData} /> -->
+<!-- <DataViewer header="dataObjData" data={dataObjData} /> -->
 <!-- <DataViewer header="dataSource" data={dataSource} /> -->
 <!-- <DataViewer header="defn" data={formObj.defn} /> -->

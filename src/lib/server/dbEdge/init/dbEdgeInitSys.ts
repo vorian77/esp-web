@@ -1,14 +1,4 @@
 import {
-	addCode,
-	addCodeType,
-	addColumn,
-	addDataObjAction,
-	addFormFieldItemsList,
-	addUser,
-	execute,
-	review
-} from '$server/dbEdge/types.edgeDB.server'
-import {
 	addOrgs,
 	apps,
 	codeTypes,
@@ -25,7 +15,17 @@ import {
 	userTypeResourcesPrograms,
 	userTypeResourcesWidgets,
 	widgets
-} from '$server/dbEdge/init/dbEdgeInitUtilities'
+} from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import {
+	addCode,
+	addCodeType,
+	addColumn,
+	addDataObjAction,
+	addDataObjFieldItems,
+	addUser,
+	execute,
+	review
+} from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'initSys'
 
@@ -69,15 +69,17 @@ async function initSysCodes() {
 		['app_db', 0, 'ct_db_col_alignment'],
 		['app_db', 0, 'ct_db_col_data_type'],
 
-		['app_sys', 0, 'ct_sys_data_obj_cardinality'],
-		['app_sys', 0, 'ct_sys_data_obj_component'],
+		['app_sys', 0, 'ct_sys_do_cardinality'],
+		['app_sys', 0, 'ct_sys_do_component'],
 
-		['app_sys', 0, 'ct_sys_form_field_access'],
-		['app_sys', 0, 'ct_sys_form_field_element'],
-		['app_sys', 0, 'ct_sys_form_field_element_custom_type'],
-		['app_sys', 0, 'ct_sys_form_field_list_dir'],
-		['app_sys', 0, 'ct_sys_form_field_op'],
-		['app_sys', 0, 'ct_sys_form_field_source'],
+		['app_sys', 0, 'ct_sys_do_field_access'],
+		['app_sys', 0, 'ct_sys_do_field_element'],
+		['app_sys', 0, 'ct_sys_do_field_element_custom_type'],
+		['app_sys', 0, 'ct_sys_do_field_list_dir'],
+		['app_sys', 0, 'ct_sys_do_field_op'],
+		['app_sys', 0, 'ct_sys_do_field_source'],
+
+		['app_sys', 0, 'ct_sys_do_render_type'],
 
 		['app_sys', 0, 'ct_sys_node_obj_icon'],
 		['app_sys', 0, 'ct_sys_node_obj_type'],
@@ -111,66 +113,71 @@ async function initSysCodes() {
 		['ct_db_col_data_type', 'app_sys', 'uuid', 11],
 
 		// data obj - cardinality
-		['ct_sys_data_obj_cardinality', 'app_sys', 'detail', 0],
-		['ct_sys_data_obj_cardinality', 'app_sys', 'list', 1],
+		['ct_sys_do_cardinality', 'app_sys', 'detail', 0],
+		['ct_sys_do_cardinality', 'app_sys', 'list', 1],
 
 		// data obj - components
-		['ct_sys_data_obj_component', 'app_sys', 'Home', 0],
-		['ct_sys_data_obj_component', 'app_sys', 'FormDetail', 1],
-		['ct_sys_data_obj_component', 'app_sys', 'FormList', 2],
+		['ct_sys_do_component', 'app_sys', 'Home', 0],
+		['ct_sys_do_component', 'app_sys', 'FormDetail', 1],
+		['ct_sys_do_component', 'app_sys', 'FormList', 2],
 
-		// form field - access
-		['ct_sys_form_field_access', 'app_sys', 'optional', 0],
-		['ct_sys_form_field_access', 'app_sys', 'readOnly', 1],
-		['ct_sys_form_field_access', 'app_sys', 'required', 2],
+		// data obj field - access
+		['ct_sys_do_field_access', 'app_sys', 'optional', 0],
+		['ct_sys_do_field_access', 'app_sys', 'readOnly', 1],
+		['ct_sys_do_field_access', 'app_sys', 'required', 2],
 
-		// form field - element
-		['ct_sys_form_field_element', 'app_sys', 'checkbox', 0],
-		['ct_sys_form_field_element', 'app_sys', 'custom', 1],
-		['ct_sys_form_field_element', 'app_sys', 'date', 2],
-		['ct_sys_form_field_element', 'app_sys', 'email', 3],
-		['ct_sys_form_field_element', 'app_sys', 'file', 4],
-		['ct_sys_form_field_element', 'app_sys', 'input', 5],
-		['ct_sys_form_field_element', 'app_sys', 'number', 6],
-		['ct_sys_form_field_element', 'app_sys', 'password', 7],
-		['ct_sys_form_field_element', 'app_sys', 'radio', 8],
-		['ct_sys_form_field_element', 'app_sys', 'select', 9],
-		['ct_sys_form_field_element', 'app_sys', 'tel', 10],
-		['ct_sys_form_field_element', 'app_sys', 'text', 11],
-		['ct_sys_form_field_element', 'app_sys', 'textArea', 12],
+		// data obj field - element
+		['ct_sys_do_field_element', 'app_sys', 'checkbox', 0],
+		['ct_sys_do_field_element', 'app_sys', 'custom', 1],
+		['ct_sys_do_field_element', 'app_sys', 'date', 2],
+		['ct_sys_do_field_element', 'app_sys', 'email', 3],
+		['ct_sys_do_field_element', 'app_sys', 'file', 4],
+		['ct_sys_do_field_element', 'app_sys', 'input', 5],
+		['ct_sys_do_field_element', 'app_sys', 'number', 6],
+		['ct_sys_do_field_element', 'app_sys', 'password', 7],
+		['ct_sys_do_field_element', 'app_sys', 'radio', 8],
+		['ct_sys_do_field_element', 'app_sys', 'select', 9],
+		['ct_sys_do_field_element', 'app_sys', 'tel', 10],
+		['ct_sys_do_field_element', 'app_sys', 'text', 11],
+		['ct_sys_do_field_element', 'app_sys', 'textArea', 12],
 
-		// form field - cusotm element type
-		['ct_sys_form_field_element_custom_type', 'app_sys', 'button', 0],
-		['ct_sys_form_field_element_custom_type', 'app_sys', 'header', 0],
-		['ct_sys_form_field_element_custom_type', 'app_sys', 'link', 0],
-		['ct_sys_form_field_element_custom_type', 'app_sys', 'text', 0],
-		['ct_sys_form_field_element_custom_type', 'app_sys', 'textDynamic', 0],
+		// data obj field - cusotm element type
+		['ct_sys_do_field_element_custom_type', 'app_sys', 'button', 0],
+		['ct_sys_do_field_element_custom_type', 'app_sys', 'header', 0],
+		['ct_sys_do_field_element_custom_type', 'app_sys', 'link', 0],
+		['ct_sys_do_field_element_custom_type', 'app_sys', 'text', 0],
+		['ct_sys_do_field_element_custom_type', 'app_sys', 'textDynamic', 0],
 
-		// form field - list direction
-		['ct_sys_form_field_list_dir', 'app_sys', 'asc', 0],
-		['ct_sys_form_field_list_dir', 'app_sys', 'desc', 1],
+		// data obj field - list direction
+		['ct_sys_do_field_list_dir', 'app_sys', 'asc', 0],
+		['ct_sys_do_field_list_dir', 'app_sys', 'desc', 1],
 
-		// form field - op
-		['ct_sys_form_field_op', 'app_sys', 'eq', 0],
+		// data obj field - op
+		['ct_sys_do_field_op', 'app_sys', 'eq', 0],
 
-		// form field - source
-		['ct_sys_form_field_source', 'app_sys', 'calc', 0],
-		['ct_sys_form_field_source', 'app_sys', 'env', 1],
-		['ct_sys_form_field_source', 'app_sys', 'form', 2],
-		['ct_sys_form_field_source', 'app_sys', 'literal', 3],
-		['ct_sys_form_field_source', 'app_sys', 'parms', 4],
-		['ct_sys_form_field_source', 'app_sys', 'tree', 5],
-		['ct_sys_form_field_source', 'app_sys', 'user', 6],
+		// data obj field - source
+		['ct_sys_do_field_source', 'app_sys', 'calc', 0],
+		['ct_sys_do_field_source', 'app_sys', 'env', 1],
+		['ct_sys_do_field_source', 'app_sys', 'literal', 2],
+		['ct_sys_do_field_source', 'app_sys', 'parms', 3],
+		['ct_sys_do_field_source', 'app_sys', 'preset', 4],
+		['ct_sys_do_field_source', 'app_sys', 'retrieve', 5],
+		['ct_sys_do_field_source', 'app_sys', 'user', 6],
+
+		// data obj - render type
+		['ct_sys_do_render_type', 'app_sys', 'form', 0],
 
 		// node obj - icons
 		['ct_sys_node_obj_icon', 'app_sys', 'application', 0],
 		['ct_sys_node_obj_icon', 'app_sys', 'root', 1],
 
 		// node obj - types
-		['ct_sys_node_obj_type', 'app_sys', 'header', 0],
-		['ct_sys_node_obj_type', 'app_sys', 'object', 1],
-		['ct_sys_node_obj_type', 'app_sys', 'page', 2],
-		['ct_sys_node_obj_type', 'app_sys', 'program', 3],
+		['ct_sys_node_obj_type', 'app_sys', 'app', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'navHeader', 1],
+		['ct_sys_node_obj_type', 'app_sys', 'navObject', 2],
+		['ct_sys_node_obj_type', 'app_sys', 'navPage', 3],
+		['ct_sys_node_obj_type', 'app_sys', 'navProgram', 4],
+		['ct_sys_node_obj_type', 'app_sys', 'navTreeRoot', 5],
 
 		// sys - person - race
 		['ct_sys_person_race', 'app_sys', 'American Indian and Alaskan Native', 0],
@@ -208,7 +215,7 @@ async function initSysCodes() {
 }
 
 async function initSysFieldItemsLists() {
-	await addFormFieldItemsList({
+	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
@@ -217,7 +224,7 @@ async function initSysFieldItemsLists() {
 		propertyLabel: 'name',
 		name: 'il_sys_code_order_index_by_codeTypeName'
 	})
-	await addFormFieldItemsList({
+	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
@@ -227,7 +234,7 @@ async function initSysFieldItemsLists() {
 		name: 'il_sys_code_order_name_by_codeTypeName'
 	})
 
-	await addFormFieldItemsList({
+	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
@@ -237,7 +244,7 @@ async function initSysFieldItemsLists() {
 		name: 'il_sys_codeType_order_name_by_codeTypeParentName'
 	})
 
-	await addFormFieldItemsList({
+	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
@@ -246,7 +253,7 @@ async function initSysFieldItemsLists() {
 		propertyLabel: 'name',
 		name: 'il_sys_role_org_by_codeName'
 	})
-	await addFormFieldItemsList({
+	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
@@ -310,6 +317,7 @@ async function initSysColumns() {
 			owner: 'app_sys',
 			codeDataType: 'datetime',
 			header: 'Created At',
+			isExcludeUpdate: true,
 			isSetBySys: true,
 			name: 'createdAt'
 		})
@@ -466,12 +474,12 @@ async function initSysDataObjActions() {
 		order: 120
 	})
 	await addDataObjAction({
+		color: 'variant-filled-error',
 		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_list_delete',
 		header: 'Delete',
-		order: 130,
-		color: 'variant-filled-error'
+		order: 130
 	})
 	await addDataObjAction({
 		creator: 'user_sys',
@@ -481,42 +489,60 @@ async function initSysDataObjActions() {
 		order: 140
 	})
 	await addDataObjAction({
+		allTabs: true,
+		color: 'none',
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_detail_cancel',
+		header: 'Cancel',
+		order: 200
+	})
+	await addDataObjAction({
+		allTabs: true,
 		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_save',
 		header: 'Save',
-		order: 200
+		order: 210
 	})
 	await addDataObjAction({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_save_new',
 		header: 'Save/New',
-		order: 210
+		order: 220
 	})
 	await addDataObjAction({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_save_as',
-		header: 'Save',
-		order: 220
+		header: 'Save As',
+		order: 230
 	})
 	await addDataObjAction({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_new',
 		header: 'New',
-		order: 230
+		order: 240
 	})
 	await addDataObjAction({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_delete',
 		header: 'Delete',
-		order: 240,
+		order: 250,
 		color: 'variant-filled-error'
 	})
-
+	await addDataObjAction({
+		allTabs: true,
+		color: 'bg-primary-300',
+		creator: 'user_sys',
+		owner: 'app_sys',
+		name: 'noa_back',
+		header: '< Back',
+		order: 5
+	})
 	await addDataObjAction({
 		creator: 'user_sys',
 		owner: 'app_sys',
@@ -653,19 +679,18 @@ async function initTablePerson() {
 
 async function initSysApp() {
 	await nodeObjPrograms([
-		['app_sys', 'program', 'pgm_sys_admin', 'SysAdmin', 10, 'application', '/home/app']
+		['app_sys', 'navProgram', 'node_pgm_sys_admin', 'SysAdmin', 10, 'application']
 	])
 
 	await nodeObjHeaders([
 		[
 			'app_sys',
-			'pgm_sys_admin',
-			'header',
-			'node_sys_utility_header',
+			'node_pgm_sys_admin',
+			'navHeader',
+			'node_hdr_sys_utility_header',
 			'Utilities',
 			40,
-			'application',
-			'/home/app'
+			'application'
 		]
 	])
 
@@ -673,8 +698,8 @@ async function initSysApp() {
 		[
 			'app_sys',
 			'node_sys_utility_header',
-			'page',
-			'node_sys_utility_quotes',
+			'navPage',
+			'node_page_sys_utility_quotes',
 			'Utility-Quotes',
 			10,
 			'application',
@@ -691,6 +716,6 @@ async function initSysApp() {
 		['ut_sys_admin', 'app_sys'],
 		['ut_sys_admin', 'app_db']
 	])
-	await userTypeResourcesPrograms([['ut_sys_admin', 'pgm_sys_admin']])
+	await userTypeResourcesPrograms([['ut_sys_admin', 'node_pgm_sys_admin']])
 	await userTypeResourcesWidgets([['ut_sys_admin', 'widget_sys_user']])
 }

@@ -1,14 +1,4 @@
 import {
-	addColumn,
-	addCode,
-	addCodeType,
-	addForm,
-	addNodeObj,
-	addUser,
-	execute,
-	review
-} from '$server/dbEdge/types.edgeDB.server'
-import {
 	apps,
 	codes,
 	codeTypes,
@@ -20,7 +10,17 @@ import {
 	userTypeResourcesWidgets,
 	tables,
 	tableColumns
-} from '$server/dbEdge/init/dbEdgeInitUtilities'
+} from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import {
+	addColumn,
+	addCode,
+	addCodeType,
+	addDataObj,
+	addNodeObj,
+	addUser,
+	execute,
+	review
+} from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_cm_training'
 
@@ -29,7 +29,7 @@ export default async function init() {
 	console.log(`${FILE}.start...`)
 	await initCore()
 	await initDB()
-	await initForms()
+	await initDataObjs()
 	await initNav()
 	await initUser()
 	// await review(FILE, reviewQuery)
@@ -140,10 +140,11 @@ async function initDB() {
 	await dbCohort()
 }
 
-async function initForms() {
-	await formsProviderCourse()
-	await formsProviderCohort()
-	await formsProviderStudent()
+async function initDataObjs() {
+	await dataObjsCmTrainingCourse()
+	await dataObjsCmTrainingCohort()
+	await dataObjsCmTrainingStudent()
+	// await dataObjsCmTrainingCsfCohort()
 }
 
 async function initNav() {
@@ -229,6 +230,14 @@ async function dbCourse() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
+		header: 'Course',
+		name: 'course'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'edgeType',
 		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Org' } },
 		header: 'Provider',
 		name: 'provider'
@@ -268,25 +277,17 @@ async function dbCourse() {
 
 async function dbCohort() {
 	await tables([['app_cm_training', 'app_cm_training', 'Cohort', true]])
-
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
-		header: 'Course',
-		name: 'course'
-	})
 }
 
-async function formsProviderCourse() {
-	/* node_training_provider_course_list */
-	await addForm({
+async function dataObjsCmTrainingCourse() {
+	/* node_obj_cm_training_course_list */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
-		name: 'form_training_provider_course_list',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_training_course_list',
 		header: 'Courses',
 		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'Course' },
 		exprFilter: 'none',
@@ -306,6 +307,7 @@ async function formsProviderCourse() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'name',
+				dbOrderCrumb: 10,
 				dbOrderList: 10,
 				dbOrderSelect: 30
 			},
@@ -317,16 +319,17 @@ async function formsProviderCourse() {
 		]
 	})
 
-	/* node_training_provider_course_detail */
-	await addForm({
+	/* node_obj_cm_training_course_detail */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		name: 'form_training_provider_course_detail',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_training_course_detail',
 		header: 'Course',
 		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'Course' },
-		actions: ['noa_detail_save', 'noa_detail_new', 'noa_detail_delete'],
+		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'optional',
@@ -448,7 +451,7 @@ async function formsProviderCourse() {
 				columnName: 'id',
 				dbOrderSelect: 180,
 				isDbFilter: true,
-				isDisplayable: true
+				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
@@ -478,21 +481,22 @@ async function formsProviderCourse() {
 	})
 }
 
-async function formsProviderCohort() {
-	/* node_training_provider_cohort_list */
-	await addForm({
+async function dataObjsCmTrainingCohort() {
+	/* node_obj_cm_training_cohort_list */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
-		name: 'form_training_provider_cohort_list',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_training_cohort_list',
 		header: 'Cohorts',
 		table: {
 			owner: 'app_cm_training',
 			mod: 'app_cm_training',
 			name: 'Cohort'
 		},
-		exprFilter: '.course.id = <uuid,tree,app_cm_training::Course;id>',
+		exprFilter: '.course.id = <uuid,retrieve,id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -504,6 +508,7 @@ async function formsProviderCohort() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'name',
+				dbOrderCrumb: 10,
 				dbOrderList: 10,
 				dbOrderSelect: 30,
 				headerAlt: 'Cohort ID'
@@ -516,23 +521,24 @@ async function formsProviderCohort() {
 		]
 	})
 
-	/* node_training_provider_cohort_detail */
-	await addForm({
+	/* node_obj_cm_training_cohort_detail */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		name: 'form_training_provider_cohort_detail',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_training_cohort_detail',
 		header: 'Cohort',
 		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'Cohort' },
-		actions: ['noa_detail_save', 'noa_detail_new', 'noa_detail_delete'],
+		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'course',
 				dbOrderSelect: 10,
 				exprPreset:
-					'(SELECT app_cm_training::Course { data := .id, display := .name } FILTER .id = <uuid,tree,app_cm_training::Course;id>)'
+					'(SELECT app_cm_training::Course { data := .id, display := .name } FILTER .id = <uuid,preset,app_cm_training::Course>)'
 			},
 			{
 				codeAccess: 'readOnly',
@@ -589,7 +595,7 @@ async function formsProviderCohort() {
 				columnName: 'id',
 				dbOrderSelect: 180,
 				isDbFilter: true,
-				isDisplayable: true
+				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
@@ -619,14 +625,15 @@ async function formsProviderCohort() {
 	})
 }
 
-async function formsProviderStudent() {
-	/* node_training_provider_student_list */
-	await addForm({
+async function dataObjsCmTrainingStudent() {
+	/* node_obj_cm_training_student_list */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
-		name: 'form_training_provider_student_list',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_training_student_list',
 		header: 'Students',
 		subHeader: 'All students enrolled in any courses.',
 		table: { owner: 'app_cm', mod: 'app_cm', name: 'Client' },
@@ -652,6 +659,7 @@ async function formsProviderStudent() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'firstName',
+				dbOrderCrumb: 10,
 				dbOrderList: 20,
 				dbOrderSelect: 30,
 				isLinkMember: true
@@ -659,6 +667,7 @@ async function formsProviderStudent() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'lastName',
+				dbOrderCrumb: 20,
 				dbOrderList: 10,
 				dbOrderSelect: 40,
 				isLinkMember: true
@@ -672,17 +681,18 @@ async function formsProviderStudent() {
 		]
 	})
 
-	/* node_training_provider_student_detail */
-	await addForm({
+	/* node_obj_cm_training_student_detail */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		name: 'form_training_provider_student_detail',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_training_student_detail',
 		header: 'Student',
 		table: { owner: 'app_cm', mod: 'app_cm', name: 'Client' },
 		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
-		actions: ['noa_detail_save', 'noa_detail_new', 'noa_detail_delete'],
+		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -697,6 +707,10 @@ async function formsProviderStudent() {
 				columnName: 'custom_element',
 				customElParms: { label: 'Personal' },
 				dbOrderSelect: 20
+			},
+			{
+				columnName: 'agencyId',
+				dbOrderSelect: 25
 			},
 			{
 				columnName: 'firstName',
@@ -771,18 +785,6 @@ async function formsProviderStudent() {
 				]
 			},
 			{
-				columnName: 'agencyId',
-				dbOrderSelect: 90
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'file',
-				columnName: 'avatar',
-				dbOrderSelect: 100,
-				isLinkMember: true,
-				width: 300
-			},
-			{
 				codeElement: 'custom',
 				codeCustomElType: 'header',
 				columnName: 'custom_element',
@@ -845,27 +847,6 @@ async function formsProviderStudent() {
 			},
 			{
 				codeAccess: 'optional',
-				codeElement: 'checkbox',
-				columnName: 'favFood',
-				dbOrderSelect: 200,
-				isLinkMember: true,
-				items: [
-					{
-						data: '10',
-						display: 'Apple'
-					},
-					{
-						data: '20',
-						display: 'Pizza'
-					},
-					{
-						data: '30',
-						display: 'Spaghetti'
-					}
-				]
-			},
-			{
-				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
 				dbOrderSelect: 210,
@@ -876,7 +857,8 @@ async function formsProviderStudent() {
 				columnName: 'owner',
 				dbOrderSelect: 215,
 				exprPreset:
-					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,org.name>)'
+					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,org.name>)',
+				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
@@ -906,16 +888,118 @@ async function formsProviderStudent() {
 	})
 }
 
+async function dataObjsCmTrainingCsfCohort() {
+	/* node_obj_cm_training_csf_cohort */
+	await addDataObj({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormList',
+		codeCardinality: 'list',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_csf_cohort_list',
+		header: 'Cohorts',
+		subHeader: "Student's course enrollments.",
+		table: { owner: 'app_cm', mod: 'app_cm', name: 'CsfCohort' },
+		exprFilter: '.clientServiceFlow.id = <uuid,retrieve,id>',
+		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
+		actions: ['noa_list_new'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'clientServiceFlow',
+				dbOrderSelect: 20
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'cohort',
+				dbOrderCrumb: 10,
+				dbOrderSelect: 30
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeStatus',
+				dbOrderSelect: 40
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateReferral',
+				dbOrderCrumb: 20,
+				dbOrderList: 10,
+				dbOrderSelect: 50
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateStart',
+				dbOrderSelect: 60
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateStart',
+				dbOrderSelect: 70
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateEnd',
+				dbOrderSelect: 80
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeOutcomes',
+				dbOrderSelect: 90
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'note',
+				dbOrderSelect: 100
+			}
+		]
+	})
+}
+
+// {
+// 	codeAccess: 'optional',
+// 	codeElement: 'checkbox',
+// 	columnName: 'favFood',
+// 	dbOrderSelect: 200,
+// 	isLinkMember: true,
+// 	items: [
+// 		{
+// 			data: '10',
+// 			display: 'Apple'
+// 		},
+// 		{
+// 			data: '20',
+// 			display: 'Pizza'
+// 		},
+// 		{
+// 			data: '30',
+// 			display: 'Spaghetti'
+// 		}
+// 	]
+// },
+// {
+// 	codeAccess: 'optional',
+// 	codeElement: 'file',
+// 	columnName: 'avatar',
+// 	dbOrderSelect: 100,
+// 	isLinkMember: true,
+// 	width: 300
+// },
+
 async function navAdmin() {
 	await nodeObjPrograms([
 		[
 			'app_cm_training',
-			'program',
-			'pgm_cm_training_staff_adm',
+			'navProgram',
+			'node_pgm_cm_training_staff_adm',
 			'AI-Role: Admin',
 			50,
-			'application',
-			'/home/app'
+			'application'
 		]
 	])
 }
@@ -924,135 +1008,136 @@ async function navProvider() {
 	await nodeObjPrograms([
 		[
 			'app_cm_training',
-			'program',
-			'pgm_cm_training_staff_provider',
+			'navProgram',
+			'node_pgm_cm_training_staff_provider',
 			'AI-Role: Provider',
 			60,
-			'application',
-			'/home/app'
+			'application'
 		]
 	])
 	await addNodeObj({
 		owner: 'app_cm_training',
-		parentNodeName: 'pgm_cm_training_staff_provider',
-		codeType: 'object',
-		name: 'node_training_provider_course_list',
+		parentNodeName: 'node_pgm_cm_training_staff_provider',
+		codeType: 'navObject',
+		name: 'node_obj_cm_training_course_list',
 		header: 'Courses',
 		order: 10,
 		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_training_provider_course_list',
+		dataObj: 'data_obj_cm_training_course_list',
 		creator: 'user_sys'
 	})
 	await addNodeObj({
 		owner: 'app_cm_training',
-		parentNodeName: 'node_training_provider_course_list',
-		codeType: 'object',
-		name: 'node_training_provider_course_detail',
+		parentNodeName: 'node_obj_cm_training_course_list',
+		codeType: 'app',
+		name: 'node_obj_cm_training_course_detail',
 		header: 'Course',
 		order: 10,
 		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_training_provider_course_detail',
+		dataObj: 'data_obj_cm_training_course_detail',
 		creator: 'user_sys'
 	})
 
 	await addNodeObj({
 		owner: 'app_cm_training',
-		parentNodeName: 'node_training_provider_course_detail',
-		codeType: 'object',
-		name: 'node_training_provider_cohort_list',
+		parentNodeName: 'node_obj_cm_training_course_detail',
+		codeType: 'app',
+		name: 'node_obj_cm_training_cohort_list',
 		header: 'Cohorts',
 		order: 10,
 		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_training_provider_cohort_list',
+		dataObj: 'data_obj_cm_training_cohort_list',
 		creator: 'user_sys'
 	})
 	await addNodeObj({
 		owner: 'app_cm_training',
-		parentNodeName: 'node_training_provider_cohort_list',
-		codeType: 'object',
-		name: 'node_training_provider_cohort_detail',
+		parentNodeName: 'node_obj_cm_training_cohort_list',
+		codeType: 'app',
+		name: 'node_obj_cm_training_cohort_detail',
 		header: 'Cohort',
 		order: 10,
 		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_training_provider_cohort_detail',
+		dataObj: 'data_obj_cm_training_cohort_detail',
+		creator: 'user_sys'
+	})
+	await addNodeObj({
+		owner: 'app_cm_training',
+		parentNodeName: 'node_pgm_cm_training_staff_provider',
+		codeType: 'navObject',
+		name: 'node_obj_cm_training_student_list',
+		header: 'Students',
+		order: 20,
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_training_student_list',
+		creator: 'user_sys'
+	})
+	await addNodeObj({
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_student_list',
+		codeType: 'app',
+		name: 'node_obj_cm_training_student_detail',
+		header: 'Student',
+		order: 10,
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_training_student_detail',
+		creator: 'user_sys'
+	})
+	await addNodeObj({
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_student_detail',
+		codeType: 'app',
+		name: 'node_obj_cm_training_service_flow_list',
+		header: 'Service Flows',
+		order: 10,
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_service_flow_list',
+		creator: 'user_sys'
+	})
+	await addNodeObj({
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_service_flow_list',
+		codeType: 'app',
+		name: 'node_obj_cm_training_service_flow_detail',
+		header: 'Service Flow',
+		order: 10,
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_service_flow_detail',
 		creator: 'user_sys'
 	})
 
 	await addNodeObj({
 		owner: 'app_cm_training',
-		parentNodeName: 'pgm_cm_training_staff_provider',
-		codeType: 'object',
-		name: 'node_training_provider_student_list',
-		header: 'Students',
-		order: 20,
-		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_training_provider_student_list',
-		creator: 'user_sys'
-	})
-	await addNodeObj({
-		owner: 'app_cm_training',
-		parentNodeName: 'node_training_provider_student_list',
-		codeType: 'object',
-		name: 'node_training_provider_student_detail',
-		header: 'Student',
+		parentNodeName: 'node_obj_cm_training_service_flow_detail',
+		codeType: 'app',
+		name: 'node_obj_cm_training_csf_cohort_list',
+		header: 'Cohort',
 		order: 10,
 		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_training_provider_student_detail',
+		dataObj: 'data_obj_cm_csf_cohort_list',
 		creator: 'user_sys'
 	})
-	await addNodeObj({
-		owner: 'app_cm_training',
-		parentNodeName: 'node_training_provider_student_detail',
-		codeType: 'object',
-		name: 'node_training_provider_service_flow_list',
-		header: 'Service Flows',
-		order: 10,
-		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_cm_service_flow_list',
-		creator: 'user_sys'
-	})
-	await addNodeObj({
-		owner: 'app_cm_training',
-		parentNodeName: 'node_training_provider_service_flow_list',
-		codeType: 'object',
-		name: 'node_training_provider_service_flow_detail',
-		header: 'Service Flow',
-		order: 10,
-		codeIcon: 'application',
-		page: '/home/app',
-		dataObj: 'form_cm_service_flow_detail',
-		creator: 'user_sys'
-	})
-	await addNodeObj({
-		owner: 'app_cm_training',
-		parentNodeName: 'pgm_cm_training_staff_provider',
-		codeType: 'object',
-		name: 'node_training_provider_invoices_list',
-		header: 'Invoices',
-		order: 30,
-		codeIcon: 'application',
-		page: '/home/app',
-		creator: 'user_sys'
-	})
+
+	// await addNodeObj({
+	// 	owner: 'app_cm_training',
+	// 	parentNodeName: 'node_pgm_cm_training_staff_provider',
+	// 	codeType: 'object',
+	// 	name: 'node_obj_cm_training_invoices_list',
+	// 	header: 'Invoices',
+	// 	order: 30,
+	// 	codeIcon: 'application',
+	// 	creator: 'user_sys'
+	// })
 }
 
 async function navStudent() {
 	await nodeObjPrograms([
 		[
 			'app_cm_training',
-			'program',
-			'pgm_cm_training_student',
+			'navProgram',
+			'node_pgm_cm_training_student',
 			'AI-Role: Student',
 			70,
-			'application',
-			'/home/app'
+			'application'
 		]
 	])
 }
@@ -1070,9 +1155,14 @@ async function initUserApp() {
 	])
 
 	await userTypeResourcesPrograms([
-		['ut_cm_training_staff_admin', 'pgm_cm_training_staff_adm'],
-		['ut_cm_training_staff_provider', 'pgm_cm_training_staff_provider'],
-		['ut_cm_training_student', 'pgm_cm_training_student']
+		['ut_cm_training_staff_admin', 'node_pgm_cm_training_staff_adm'],
+		['ut_cm_training_staff_provider', 'node_pgm_cm_training_staff_provider'],
+		['ut_cm_training_student', 'node_pgm_cm_training_student']
+	])
+
+	await userTypeResourcesWidgets([
+		['ut_cm_training_staff_admin', 'widget_sys_user'],
+		['ut_cm_training_staff_provider', 'widget_sys_user']
 	])
 
 	// await userTypeResourcesWidgets([
@@ -1087,9 +1177,9 @@ async function initUserSys() {
 	await userTypeResourcesApps([['ut_sys_admin', 'app_cm_training']])
 
 	await userTypeResourcesPrograms([
-		['ut_sys_admin', 'pgm_cm_training_staff_adm'],
-		['ut_sys_admin', 'pgm_cm_training_staff_provider'],
-		['ut_sys_admin', 'pgm_cm_training_student']
+		['ut_sys_admin', 'node_pgm_cm_training_staff_adm'],
+		['ut_sys_admin', 'node_pgm_cm_training_staff_provider'],
+		['ut_sys_admin', 'node_pgm_cm_training_student']
 	])
 
 	await userUserType([

@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { navStatus, nodeProcessLink } from '$comps/nav/navStore'
-	import { DataObjStatus, NavTree, NavTreeNode, type NodeObjRaw } from '$comps/types'
+	import { appObjStatusStore } from '$comps/nav/app'
+	import { DataObjStatus } from '$comps/types'
+	import type { NavTree, Node, RawNode } from '$comps/types'
 	import Messenger from '$comps/Messenger.svelte'
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 
-	const FILENAME = '/$comps/NavFooter.svelte'
+	const FILENAME = '/$comps/navFooter.svelte'
 
 	let messenger: Messenger
-	let currentNode: NavTreeNode
+	let currentNode: Node
 
-	$: dataObjStatusLocal = Object.assign(new DataObjStatus(), $navStatus)
+	$: appStatusLocal = Object.assign(new DataObjStatus(), $appObjStatusStore)
 
 	const navColor = '#3b79e1'
 	const itemColors = ['#f5f5f5', '#dedede']
@@ -20,7 +21,7 @@
 		['Contact Us', 'contact-us', '/home/cm/contactUs'],
 		['Account', 'profile', '/home/account']
 	]
-	let rawNodes: Array<NodeObjRaw> = []
+	let rawNodes: Array<RawNode> = []
 	nodesConfig.forEach((n: any) => {
 		const header = n[0]
 		const icon = n[1]
@@ -36,8 +37,6 @@
 			dataObjId: null
 		})
 	})
-	const navTree: NavTree = new NavTree(rawNodes)
-	const nodesFooter = navTree.listTree
 
 	// styling
 	const styleContainer = `
@@ -66,20 +65,20 @@
 				border-top: 1px solid ${navColor};`
 	const marginTopheader = 'mt-1'
 
-	async function onProcessNode(node: NavTreeNode) {
+	async function onProcessNode(node: Node) {
 		currentNode = node
-		messenger.askB4Transition(dataObjStatusLocal, true, processNode)
+		messenger.askB4Transition(appStatusLocal, true, processNode)
 	}
 
 	function processNode() {
-		nodeProcessLink($page.url.pathname, currentNode)
+		// nodeProcessLink($page.url.pathname, currentNode)
 	}
 </script>
 
 <Messenger bind:this={messenger} />
 
 <div id="container" style={styleContainer}>
-	{#each nodesFooter as node, i}
+	<!-- {#each nodesFooter as node, i}
 		<div
 			role="button"
 			tabindex="0"
@@ -94,5 +93,5 @@
 				{node.nodeObj.header}
 			</div>
 		</div>
-	{/each}
+	{/each} -->
 </div>

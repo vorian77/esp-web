@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Form } from '$comps/form/form'
-	export let formObj: Form
+	import type { DataObj } from '$comps/dataObj/dataObjOld'
+	export let formObj: DataObj
 	export let currentSite = 0
 
 	function onSelect(ent_id) {

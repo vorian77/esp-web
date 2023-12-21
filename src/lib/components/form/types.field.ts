@@ -22,7 +22,7 @@ export enum FieldElement {
 	textArea = 'textArea'
 }
 
-export interface RawFormField {
+export interface FieldRaw {
 	_codeAccess: string
 	_codeCustomElType: string
 	_codeElement: string

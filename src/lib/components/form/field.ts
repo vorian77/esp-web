@@ -1,7 +1,8 @@
 import {
-	booleanOrFalse,
+	getArray,
 	memberOfEnum,
 	memberOfEnumOrDefault,
+	required,
 	strRequired,
 	valueOrDefault
 } from '$utils/utils'
@@ -9,7 +10,7 @@ import {
 	DataFieldDataType,
 	FieldAccess,
 	FieldElement,
-	type RawFormField,
+	type FieldRaw,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -24,22 +25,25 @@ const COMPONENT = '/$comps/form/field.ts/'
 
 export class Field {
 	access: FieldAccess
+	colorBackground: string
 	dataType: DataFieldDataType
+	dataTypePreset: DataFieldDataType | undefined
 	element: FieldElement
 	hasChanged: boolean
 	isDisplay: boolean
 	isDisplayable: boolean
 	isMultiSelect: boolean
 	index: number
-	items: Array<FieldValue> = []
+	items: Array<FieldValue>
+	itemsList: FieldItemsList | undefined
 	label: string
 	labelSide: string
 	name: string
 	validity: Validity
-	value: FieldValue
-	valueSelected: FieldValue
+	valueInitial: FieldValue
+	valueCurrent: FieldValue
 
-	constructor(obj: RawFormField, index: number) {
+	constructor(obj: FieldRaw, index: number) {
 		obj = valueOrDefault(obj, {})
 		this.access = memberOfEnumOrDefault(
 			obj._codeAccess,
@@ -49,6 +53,12 @@ export class Field {
 			FieldAccess,
 			FieldAccess.required
 		)
+		this.colorBackground =
+			this.access === FieldAccess.required
+				? 'bg-blue-100'
+				: this.access == FieldAccess.readonly
+				  ? 'bg-gray-200'
+				  : 'bg-white'
 		this.dataType = memberOfEnum(
 			obj._column._codeDataType,
 			'Field',
@@ -56,6 +66,15 @@ export class Field {
 			'DataFieldDataType',
 			DataFieldDataType
 		)
+		this.dataTypePreset = obj._column._codeDataTypePreset
+			? memberOfEnum(
+					obj._column._codeDataTypePreset,
+					'Field',
+					'dataType',
+					'DataFieldDataType',
+					DataFieldDataType
+			  )
+			: undefined
 		this.element = memberOfEnumOrDefault(
 			obj._codeElement,
 			'Field',
@@ -69,36 +88,33 @@ export class Field {
 		this.isDisplay = valueOrDefault(obj.isDisplay, true)
 		this.isDisplayable = valueOrDefault(obj.isDisplayable, true)
 		this.isMultiSelect = valueOrDefault(obj._column.isMultiSelect, false)
+		this.items = this.initItems(obj.items)
+		this.itemsList = obj._itemsList
+			? new FieldItemsList(obj._itemsList, obj.itemsListParms)
+			: undefined
 		this.label = strRequired(obj.headerAlt || obj._column.header, 'Field', 'label')
 		this.labelSide = valueOrDefault(obj._column.headerSide, this.label)
 		this.name = strRequired(obj._column.name, 'Field', 'name')
 		this.validity = new Validity()
-
-		this.items = this.initListItems(obj.items)
-		this.value = new FieldValue(undefined, undefined)
-		this.valueSelected = this.value
-	}
-
-	initListItems(rawItems: any) {
-		rawItems = valueOrDefault(rawItems, [])
-
-		let newItems: Array<FieldValue> = []
-		rawItems.forEach((i: FieldValue) => {
-			newItems.push(new FieldValue(i.data, i.display))
-		})
-
-		return newItems
+		this.valueInitial = new FieldValue(undefined, undefined, [])
+		this.valueCurrent = new FieldValue(undefined, undefined, [])
 	}
 
 	getValue(formData: FormData) {
 		// overridden for FormElInpCheckbox
 		return formData.get(this.name)
 	}
-
-	setHasChanged(dataValue: any) {
-		this.hasChanged = valueHasChanged(this.valueSelected.data, dataValue)
+	initItems(items: Array<{ data: any; display: any }>) {
+		items = getArray(items)
+		let newItems: Array<FieldValue> = []
+		items.forEach((item) => {
+			newItems.push(new FieldValue(item.data, item.display, []))
+		})
+		return newItems
 	}
-
+	setHasChanged(dataValue: any) {
+		this.hasChanged = valueHasChanged(this.valueInitial.data, dataValue)
+	}
 	validate(dataValue: any): Validation {
 		this.setHasChanged(dataValue)
 
@@ -153,17 +169,49 @@ export class Field {
 	}
 }
 
+export class FieldItemsList {
+	dbSelect: string
+	name: string
+	parms: any
+	propertyId: string
+	propertyLabel: string
+	constructor(obj: any, parms: any) {
+		const clazz = 'FieldItemList'
+		obj = valueOrDefault(obj, {})
+		this.dbSelect = strRequired(obj.dbSelect, clazz, 'dbSelect')
+		this.name = strRequired(obj.name, clazz, 'name')
+		this.parms = parms
+		this.propertyId = strRequired(obj.propertyId, clazz, 'propertyId')
+		this.propertyLabel = strRequired(obj.propertyLabel, clazz, 'propertyLabel')
+	}
+}
+
+export type FieldItems = Array<FieldValue>
+
 export class FieldValue {
 	data: any
 	display: any
-	selected?: boolean
-
-	constructor(data: any, display: any, selected = undefined) {
+	items: FieldItems
+	selected: boolean | undefined
+	constructor(
+		data: any,
+		display: any,
+		items: FieldItems,
+		selected: boolean | undefined = undefined
+	) {
 		this.data = data
 		this.display = display
+		this.items = items
 		this.selected = selected
 	}
-
+	static duplicate(value: FieldValue) {
+		return new FieldValue(value.data, value.display, value.items, value.selected)
+	}
+	resetData() {
+		this.data = null
+		this.display = null
+		this.selected = undefined
+	}
 	update(newValData: any, newValDisplay: any) {
 		this.data = newValData
 		this.display = newValDisplay

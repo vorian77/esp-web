@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { type FieldCustom, FieldCustomType } from '$comps/form/fieldCustom'
-	import { navStatus } from '$comps/nav/navStore'
+	import { appObjStatusStore } from '$comps/nav/app'
 	import DataViewer from '$comps/DataViewer.svelte'
 	import { createEventDispatcher } from 'svelte'
 
@@ -17,10 +17,8 @@
 </script>
 
 {#if field.codeType === FieldCustomType.button}
-	<!-- <DataViewer header="navStatus" data={$navStatus} /> -->
-
 	{@const color = field.parms.color || 'variant-filled-primary'}
-	{@const disabled = !($navStatus.objHasChanged && $navStatus.objValidToSave)}
+	{@const disabled = !($appObjStatusStore.objHasChanged && $appObjStatusStore.objValidToSave)}
 	<button class="btn {color} w-full" {disabled} on:click={() => action(field.parms.action)}>
 		{field.parms.label}
 	</button>
@@ -48,6 +46,3 @@
 		{field.parms.label}
 	</div>
 {/if}
-
-<!-- CodeType: {field.codeType}
-Parms: {JSON.stringify(field.parms, null, 2)} -->

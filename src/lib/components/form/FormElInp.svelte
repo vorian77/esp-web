@@ -5,8 +5,7 @@
 
 	export let field: FieldInput
 
-	let classValue = 'input text-black '
-	classValue += field.access == FieldAccess.readonly ? 'bg-gray-200' : 'bg-white'
+	const classValue = 'input text-black ' + field.colorBackground
 </script>
 
 <!-- <DataViewer header="element" data={field.element} /> -->
@@ -22,7 +21,7 @@
 		hidden={field.access == FieldAccess.hidden}
 		readonly={field.access == FieldAccess.readonly}
 		class={classValue}
-		value={field.value.display}
+		value={field.valueCurrent.display}
 		class:input-warning={field.validity.level == ValidityErrorLevel.warning}
 		class:input-error={field.validity.level == ValidityErrorLevel.error}
 		on:change

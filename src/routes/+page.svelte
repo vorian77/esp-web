@@ -1,8 +1,7 @@
 <script lang="ts">
 	import AuthPage from '$routes/auth/AuthPage.svelte'
 	import logo from '$assets/YO-Baltimore-logo.png'
-
-	import { initUser } from '$comps/nav/navStore'
+	import { setUser } from '$comps/types'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -22,7 +21,7 @@
 		const resp = await responsePromise.json()
 		if (resp) {
 			const user = resp.data
-			initUser(user)
+			setUser(user)
 			goto('/home')
 		}
 	}
@@ -31,18 +30,14 @@
 <AuthPage {data} bind:pageCurrent />
 
 <div id="full-screen" class="container">
+	<button type="button" class="btn variant-filled-secondary w-full mt-1" on:click={expressLogin}>
+		Express Login
+	</button>
+
 	<div class="content">
 		<img class="mx-auto" src={logo} width="260" alt="Organization logo" />
 
 		<div class="flex-box">
-			<button
-				type="button"
-				class="btn variant-filled-secondary w-full mt-1"
-				on:click={expressLogin}
-			>
-				Express Login
-			</button>
-
 			<button
 				type="button"
 				class="btn variant-filled-primary w-full mt-10"

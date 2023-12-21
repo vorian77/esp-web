@@ -4,11 +4,8 @@
 
 	export let field: FieldTextarea
 
-	let classValue = 'rounded-lg ' + field.classValue + ' '
-	classValue += field.access == FieldAccess.readonly ? 'bg-gray-200' : 'bg-white'
-	if (field.cols === 0) {
-		classValue += ' w-full'
-	}
+	let classValue = 'rounded-lg ' + field.classValue + ' ' + field.colorBackground
+	if (field.cols === 0) classValue += ' w-full'
 </script>
 
 <label for={field.name}>{field.label}</label>
@@ -25,5 +22,5 @@
 	class:input-error={field.validity.level == ValidityErrorLevel.error}
 	on:change
 	on:keyup|preventDefault
-	bind:value={field.value.display}
+	bind:value={field.valueCurrent.display}
 />

@@ -5,60 +5,60 @@
 		getToastStore,
 		type ToastSettings
 	} from '@skeletonlabs/skeleton'
-	import { setNavStatusReset } from '$comps/nav/navStore'
-	import type { DataObjStatus, ToastType } from '$comps/types'
+	import { getAppStatus } from '$comps/nav/app'
+	import type { NavState, ToastType } from '$comps/types'
+	// import { AppStateConfirm, NavStateTokenAppObjAction } from '$comps/types'
 
 	const modalStore = getModalStore()
 	const toastStore = getToastStore()
 
-	export async function askB4Transition(
-		navStatus: DataObjStatus,
-		resetStatus: boolean,
-		callback: Function
-	) {
-		let callbacks: Array<Function> = []
-		if (resetStatus) callbacks.push(setNavStatusReset)
-		callbacks.push(callback)
-
-		if (navStatus.objHasChanged) {
-			executeOnConfirm(
-				'Discard Changes',
-				'Are you sure you want discard your changes?',
-				'Discard Changes',
-				callbacks
-			)
-		} else {
-			callbacks.forEach((c) => c())
-		}
+	export function test() {
+		console.log('messenger.test...')
 	}
 
-	export function executeOnConfirm(
-		title: string,
-		body: string,
-		buttonTextConfirm: string,
-		callbackConfirmed: any,
-		callbackCancelled: any = undefined
-	) {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title,
-			body,
-			buttonTextCancel: 'Keep Editing',
-			buttonTextConfirm,
-			response: (r: boolean) => {
-				if (r) {
-					if (Array.isArray(callbackConfirmed)) {
-						callbackConfirmed.forEach((c) => c())
-					} else {
-						callbackConfirmed()
-					}
-				} else {
-					if (callbackCancelled) callbackCancelled()
-				}
-			}
-		}
-		modalStore.trigger(modal)
+	export async function askB4Transition() {
+		// appState: NavState
+		// stateSet: Function | undefined = undefined,
+		// callbacksCancelled: Array<Function> | undefined = undefined
+		return true
+		// if (!appState.checkObjChanged || !getAppStatus().objHasChanged) return true
+		// const confirm =
+		// 	appState.token instanceof NavStateTokenAppObjAction && appState.token.confirm
+		// 		? appState.token.confirm
+		// 		: new AppStateConfirm(
+		// 				'Discard Changes',
+		// 				'Are you sure you want discard your changes?',
+		// 				'Discard Changes'
+		// 		  )
+		// return await executeOnConfirm(appState, confirm, stateSet, callbacksCancelled)
 	}
+
+	// export async function executeOnConfirm(
+	// 	appState: NavState,
+	// 	confirm: AppStateConfirm,
+	// 	stateSet: Function | undefined = undefined,
+	// 	callbacksCancelled: Array<Function> | undefined = undefined
+	// ) {
+	// 	const modal: ModalSettings = {
+	// 		type: 'confirm',
+	// 		title: confirm.title,
+	// 		body: confirm.msg,
+	// 		buttonTextCancel: 'Keep Editing',
+	// 		buttonTextConfirm: confirm.buttonConfirmLabel,
+	// 		response: async (r: boolean) => {
+	// 			if (r) {
+	// 				// await stateSet(appState)
+	// 				return true
+	// 			} else {
+	// 				return false
+	// 				// 	if (Array.isArray(callbacksCancelled))
+	// 				// 		for (const callback of callbacksCancelled) await callback()
+	// 				// }
+	// 			}
+	// 		}
+	// 	}
+	// 	modalStore.trigger(modal)
+	// }
 
 	export function msgAlert(message: string) {
 		alert(message)

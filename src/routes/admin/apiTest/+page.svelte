@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { Form as FormClass } from '$comps/form/form'
-	import Form from '$comps/form/FormDetail.svelte'
+	import { Form as FormClass } from '$comps/dataObj/dataObjOld.js'
+	import { DataObj } from '$comps/types'
+	import FormDetail from '$comps/form/FormDetail.svelte'
 
 	export let data
 
@@ -8,7 +9,7 @@
 	let formObj = new FormClass(formDefn)
 </script>
 
-<Form bind:formObj />
+<FormDetail bind:formObj />
 
 <h3>formObj.submitResponse</h3>
 <pre>{JSON.stringify(formObj.submitResponse, null, 2)}</pre>

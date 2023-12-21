@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { getUser } from '$comps/nav/navStore'
 	import type { User } from '$comps/types'
+	import { getUser } from '$comps/types'
 	import { goto } from '$app/navigation'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/legalDisclosure'
 
-	const user: User = getUser()
-	const legalDisclosure = user.cm_ssr_disclosure
+	const user: User | undefined = getUser()
+	const legalDisclosure = user ? user.cm_ssr_disclosure : undefined
 
 	async function accept() {
 		const responsePromise: Response = await fetch('/api/legalDisclosure', {

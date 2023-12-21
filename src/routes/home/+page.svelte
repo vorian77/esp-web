@@ -1,30 +1,3 @@
 <script lang="ts">
-	import { getUser } from '$comps/nav/navStore'
-	import type { User } from '$comps/types'
-	import SysUser from '$routes/home/User.svelte'
-	import CMUser from '$routes/home/UserCM.svelte'
-	import Quote from '$routes/home/Quote.svelte'
-	import NavHome from '$comps/nav/NavHome.svelte'
-
-	const FILENAME = '$routes/home/+page.svelte'
-
-	const user: User | undefined = getUser()
-
-	let showSysUser: boolean = user ? user.hasResourceWidget('widget_sys_user') : false
-	let showCMUser: boolean = user ? user.hasResourceWidget('widget_cm_user') : false
-	let showCMQuote: boolean = user ? user.hasResourceWidget('widget_cm_quotes') : false
+	//intentionaly blank
 </script>
-
-{#if showSysUser}
-	<SysUser {user} />
-{/if}
-
-{#if showCMUser}
-	<CMUser {user} />
-{/if}
-
-{#if showCMQuote}
-	<Quote />
-{/if}
-
-<NavHome />

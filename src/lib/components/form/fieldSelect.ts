@@ -1,9 +1,9 @@
 import { Field, type FieldValue } from '$comps/form/field'
 import { valueOrDefault } from '$utils/utils'
-import { type RawFormField, Validation, ValidationStatus } from '$comps/types'
+import { type FieldRaw, Validation, ValidationStatus } from '$comps/types'
 
 export class FieldSelect extends Field {
-	constructor(obj: RawFormField, index: number) {
+	constructor(obj: FieldRaw, index: number) {
 		super(obj, index)
 	}
 	validate(dataValue: any): Validation {

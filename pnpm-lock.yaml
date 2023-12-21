@@ -65,8 +65,8 @@ devDependencies:
     specifier: ^5.5.1
     version: 5.5.1
   '@edgedb/generate':
-    specifier: ^0.3.4
-    version: 0.3.4(edgedb@1.4.1)
+    specifier: ^0.4.1
+    version: 0.4.1(edgedb@1.4.1)
   '@skeletonlabs/tw-plugin':
     specifier: ^0.1.0
     version: 0.1.0(tailwindcss@3.3.5)
@@ -794,12 +794,12 @@ packages:
       '@capacitor/core': 5.5.1
     dev: false
 
-  /@edgedb/generate@0.3.4(edgedb@1.4.1):
-    resolution: {integrity: sha512-XxoBRFfTdbxC5wN8Ug7WW7SnmtyO8eVBeufzQaF+OtQgK1amVTW6AzCYsSpiRKBLjQxOdboMW+QNgsgrkb16XQ==}
+  /@edgedb/generate@0.4.1(edgedb@1.4.1):
+    resolution: {integrity: sha512-5u+NSv4nE2CNUp60xVlY21nX/mAib9nsXmf/9idnGQad2yN+DhDQrlS/OWuRAC1cLAwFwg9MyQYu2KkyGQrRpA==}
     engines: {node: '>= 12.0.0'}
     hasBin: true
     peerDependencies:
-      edgedb: ^1.3.2
+      edgedb: ^1.4.0
     dependencies:
       edgedb: 1.4.1
     dev: true

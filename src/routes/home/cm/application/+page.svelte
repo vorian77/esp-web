@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Stepper, Step } from '@skeletonlabs/skeleton'
-	import { Form as FormClass } from '$comps/form/form'
+	import { Form as FormClass } from '$comps/dataObj/dataObjOld.js'
 	import Form from '$comps/form/FormDetail.svelte'
 	import ElgDocsList from '$routes/home/cm/docs/ElgDocsList.svelte'
 	import AddressSelect from '$comps/AddressSelect.svelte'

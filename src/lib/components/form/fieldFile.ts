@@ -1,7 +1,14 @@
 import { Field } from '$comps/form/field'
 import { strRequired, valueOrDefault } from '$utils/utils'
-import { getValExpr, type RawFormField, User, Validation, ValidationStatus } from '$comps/types'
-import { navUser } from '$comps/nav/navStore'
+import {
+	appUserStore,
+	DbData,
+	getValExpr,
+	type FieldRaw,
+	User,
+	Validation,
+	ValidationStatus
+} from '$comps/types'
 import { get } from 'svelte/store'
 
 const FILENAME = '$comps/Form/fieldFile.ts'
@@ -10,7 +17,7 @@ export class FieldFile extends Field {
 	storageKeyExpr: string
 	width: number
 
-	constructor(obj: RawFormField, index: number) {
+	constructor(obj: FieldRaw, index: number) {
 		super(obj, index)
 		obj = valueOrDefault(obj, {})
 		this.storageKeyExpr = strRequired(obj._column.exprStorageKey, 'FieldFile', 'storageKeyExpr')
@@ -18,7 +25,7 @@ export class FieldFile extends Field {
 	}
 
 	getKey() {
-		return getValExpr(this.storageKeyExpr, {})
+		return getValExpr(this.storageKeyExpr, new DbData({}))
 	}
 
 	validate(dataValue: any): Validation {

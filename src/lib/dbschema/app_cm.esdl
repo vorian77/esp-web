@@ -4,7 +4,7 @@ module app_cm {
     required person: default::Person{
       on source delete delete target if orphan;
     };
-    required agencyId: str;
+    agencyId: str;
   }
 
   type ServiceFlow extending sys_core::Obj {}
@@ -21,14 +21,13 @@ module app_cm {
     note: str;
   }
 
-  type ClientData extending sys_user::Mgmt {
+  type CsfData extending sys_user::Mgmt {
     required clientServiceFlow: ClientServiceFlow;
   }
 
-  type ClientNote extending ClientData {
+  type CsfNote extending app_cm::CsfData {
     required date: cal::local_date;
     required codeType: sys_core::Code;
-    required codePrivacy: sys_core::Code;
     note: str;
   }
 }
@@ -65,21 +64,22 @@ module app_cm_training {
     venue: sys_core::Org;
   }
 
-  type ClientCohort extending app_cm::ClientData {
-    required cohort: Cohort;
+  type CsfCohort extending app_cm::CsfData {
+    required cohort: app_cm_training::Cohort;
     required codeStatus: sys_core::Code;
+    dateReferral: cal::local_date;
     dateStart: cal::local_date;
     dateEnd: cal::local_date;
     multi codeOutcomes: sys_core::Code;
     note: str;
   }
 
-  type ClientCohortAttd extending app_cm::ClientData {
-    required clientCohort: ClientCohort;
+  type CsfCohortAttd extending app_cm::CsfData {
+    required csfCohort: app_cm_training::CsfCohort;
     required date: cal::local_date;
     required duration: decimal;
     note: str;
-  }
+  }  
 
   # FUNCTIONS
   function getCMTrainingCourse(name: str) -> optional Course

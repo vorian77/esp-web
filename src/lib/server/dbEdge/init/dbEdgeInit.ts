@@ -1,16 +1,11 @@
+import { review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { getDataObjById, getDataObjIdByName } from '$server/dbEdge/dbEdgeUtilities'
 import initSys from '$server/dbEdge/init/dbEdgeInitSys'
 import initSysAuth from '$server/dbEdge/init/dbEdgeInitSysAuth'
 import initCM from '$server/dbEdge/init/dbEdgeInitCM'
 import initCMTraining from '$server/dbEdge/init/dbEdgeInitCMTraining'
 import initCMTrainingData from '$server/dbEdge/init/dbEdgeInitCMTrainingData'
 import initMOED_cm from '$server/dbEdge/init/dbEdgeInitMOED_cm'
-
-import {
-	review,
-	getFormById,
-	getFormIdByName,
-	getNodeObjsByParent
-} from '$server/dbEdge/types.edgeDB.server'
 
 const FILE = '/server/dbEdge/init'
 
@@ -21,9 +16,9 @@ export async function init() {
 	await initCM()
 	await initCMTraining()
 	await initCMTrainingData()
-	// await initMOED_cm()
+	await initMOED_cm()
 	// await initReviewQuery()
-	// await initReviewForm()
+	// await initReviewDataObj()
 }
 
 async function initReviewQuery() {
@@ -42,19 +37,9 @@ async function initReviewQuery() {
 	await review(FILE, reviewQuery)
 }
 
-async function initReviewForm() {
-	// console.log()
-	// console.log('getForm...')
-	// console.log('formId:', formId)
-	// const form = await getFormById(formId!.id)
-	// console.log('form:', form)
-	// console.log('form.fieldsSelect:', form?._fieldsSelect)
-	// console.log('form.fieldsSelectUpdate:', form?._fieldsSelectUpdate)
-	// console.log('form.fieldsOrder:', form?._fieldsOrder)
-	// console.log('form.fieldsId:', form?._fieldsId)
-	// console.log('form._fieldsSaveInsert:', form?._fieldsSaveInsert)
-	// console.log('form._fieldsSaveUpdate:', form?._fieldsSaveUpdate)
-	// console.log('form.fieldsPreset:', form?._fieldsPreset)
-	// console.log('nodes...')
-	// const nodes = await getNodeObjsByParent('46df2d22-74d0-11ee-a4cb-37af29448c9c')
+async function initReviewDataObj() {
+	console.log()
+	console.log('getDataObj...')
+	const dataObj = await getDataObjById('a4611d26-9a7c-11ee-96f4-6b3ce80142e8')
+	console.log(dataObj)
 }

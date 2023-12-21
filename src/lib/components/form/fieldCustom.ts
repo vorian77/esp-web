@@ -1,5 +1,5 @@
 import { Field } from '$comps/form/field'
-import { FieldAccess, memberOfEnum, type RawFormField } from '$comps/types'
+import { FieldAccess, memberOfEnum, type FieldRaw } from '$comps/types'
 import { valueOrDefault } from '$utils/utils'
 
 const COMPONENT = '/$comps/form/fieldLabel.ts/'
@@ -7,7 +7,7 @@ const COMPONENT = '/$comps/form/fieldLabel.ts/'
 export class FieldCustom extends Field {
 	codeType: FieldCustomType
 	parms: any
-	constructor(obj: RawFormField, index: number) {
+	constructor(obj: FieldRaw, index: number) {
 		super(obj, index)
 		obj = valueOrDefault(obj, {})
 		this.name += '.' + index.toString()

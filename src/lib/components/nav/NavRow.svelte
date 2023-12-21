@@ -1,93 +1,46 @@
 <script lang="ts">
-	import { navStatus, navTree, nodeProcessRowManager } from '$comps/nav/navStore'
-	import { DataObjStatus, NavTree, NavTreeNode, type DataObj } from '$comps/types'
-	import { DataObjCardinality, DataObjRowChange } from '$comps/types'
+	import {
+		type AppLevelRowStatus,
+		NavState,
+		NavStateComponent,
+		NavStateTokenAppRow
+	} from '$comps/types'
+	import { NavRowActionType } from '$comps/types'
 	import NavRowAction from '$comps/nav/NavRowAction.svelte'
-	import Messenger from '$comps/Messenger.svelte'
+	import DataViewer from '$comps/DataViewer.svelte'
 
-	let navTreeLocal: NavTree
-	let node: NavTreeNode
-	let dataObj: DataObj | undefined
-	let messenger: Messenger
+	export let rowStatus: AppLevelRowStatus | undefined
+	export let stateAdd = (token: NavState) => {}
+	export let stateGlobal: NavState | undefined
 
-	let dataObjStatusLocal: DataObjStatus
-	let rowsCurrent: number | undefined
-	let rowsTotal: number | undefined
-
-	let currentNode: NavTreeNode
-	let currentAction: DataObjRowChange
-
-	let status = ''
-	let showRow = false
-
-	$: {
-		navTreeLocal = Object.assign(new NavTree([]), $navTree)
-		node = navTreeLocal.currentNode
-		dataObj = node.nodeObj.dataObj
-	}
-
-	$: {
-		dataObjStatusLocal = Object.assign(new DataObjStatus(), $navStatus)
-
-		if (
-			dataObjStatusLocal.listRowsCurrent != undefined &&
-			dataObjStatusLocal.listRowsCurrent >= 0 &&
-			dataObjStatusLocal.listRowsTotal
-		) {
-			rowsCurrent = dataObjStatusLocal.listRowsCurrent + 1
-			rowsTotal = dataObjStatusLocal.listRowsTotal
-			status = '[' + rowsCurrent + ' of ' + rowsTotal + ']'
-		}
-	}
-
-	$: {
-		if (dataObj && dataObjStatusLocal) {
-			showRow =
-				dataObj.cardinality === DataObjCardinality.detail && !dataObjStatusLocal.isInsertMode
-		}
-	}
-
-	async function onProcessRow(node: NavTreeNode, action: DataObjRowChange) {
-		currentNode = node
-		currentAction = action
-		messenger.askB4Transition(dataObjStatusLocal, false, procesRow)
-	}
-
-	async function procesRow() {
-		await nodeProcessRowManager(currentNode, currentAction)
+	async function onChange(rowAction: NavRowActionType) {
+		stateAdd(
+			new NavState({
+				component: NavStateComponent.row,
+				token: new NavStateTokenAppRow(rowAction)
+			})
+		)
 	}
 </script>
 
-<Messenger bind:this={messenger} />
+<!-- <DataViewer header="rowStatus" data={rowStatus} /> -->
 
-{#if showRow}
+{#if rowStatus && rowStatus.show}
 	<span style:cursor="pointer">
 		<div class="flex">
-			<div class={rowsCurrent === 1 ? 'invisible' : ''}>
-				<NavRowAction
-					{node}
-					action={DataObjRowChange.first}
-					icon={'double-arrow-left'}
-					{onProcessRow}
-				/>
+			<div class={rowStatus.rowCurrentDisplay === 1 ? 'invisible' : ''}>
+				<NavRowAction action={NavRowActionType.first} icon={'double-arrow-left'} {onChange} />
 			</div>
-			<div class={rowsCurrent === 1 ? 'invisible' : ''}>
-				<NavRowAction {node} action={DataObjRowChange.left} icon={'arrow-left'} {onProcessRow} />
+			<div class={rowStatus.rowCurrentDisplay === 1 ? 'invisible' : ''}>
+				<NavRowAction action={NavRowActionType.left} icon={'arrow-left'} {onChange} />
 			</div>
-			<div class="ml-1">{status}</div>
-			<div class={rowsCurrent === rowsTotal ? 'invisible' : ''}>
-				<NavRowAction {node} action={DataObjRowChange.right} icon={'arrow-right'} {onProcessRow} />
+			<div class="ml-1">{rowStatus.status}</div>
+			<div class={rowStatus.rowCurrentDisplay === rowStatus.rowCount ? 'invisible' : ''}>
+				<NavRowAction action={NavRowActionType.right} icon={'arrow-right'} {onChange} />
 			</div>
-			<div class={rowsCurrent === rowsTotal ? 'invisible' : ''}>
-				<NavRowAction
-					{node}
-					action={DataObjRowChange.last}
-					icon={'double-arrow-right'}
-					{onProcessRow}
-				/>
+			<div class={rowStatus.rowCurrentDisplay === rowStatus.rowCount ? 'invisible' : ''}>
+				<NavRowAction action={NavRowActionType.last} icon={'double-arrow-right'} {onChange} />
 			</div>
 		</div>
 	</span>
 {/if}
-
-<!-- <pre>{JSON.stringify(status, null, 2)}</pre> -->

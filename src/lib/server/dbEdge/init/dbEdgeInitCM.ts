@@ -1,12 +1,4 @@
 import {
-	addCodeType,
-	addColumn,
-	addForm,
-	addFormFieldItemsList,
-	addNodeObj,
-	execute
-} from '$server/dbEdge/types.edgeDB.server'
-import {
 	apps,
 	codes,
 	codeTypes,
@@ -19,7 +11,15 @@ import {
 	tables,
 	tableColumns,
 	widgets
-} from '$server/dbEdge/init/dbEdgeInitUtilities'
+} from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import {
+	addCodeType,
+	addColumn,
+	addDataObj,
+	addDataObjFieldItems,
+	addNodeObj,
+	execute
+} from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_cm'
 
@@ -50,7 +50,7 @@ async function initCore() {
 		['ct_sys_node_obj_icon', 'app_cm', 'quote-enclosed', 3],
 
 		['ct_cm_service_flow_status', 'app_cm', 'Pending', 0],
-		['ct_cm_service_flow_status', 'app_cm', 'Open', 1],
+		['ct_cm_service_flow_status', 'app_cm', 'Proceeding', 1],
 		['ct_cm_service_flow_status', 'app_cm', 'Suspended', 3],
 		['ct_cm_service_flow_status', 'app_cm', 'Completed', 4],
 		['ct_cm_service_flow_status', 'app_cm', 'Dropped Out', 5]
@@ -64,7 +64,7 @@ async function initCore() {
 		['app_cm', 'app_cm', 'ClientNote', true]
 	])
 
-	await addFormFieldItemsList({
+	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_cm',
 		dbSelect: 'SELECT app_cm::ServiceFlow {data := .id, display := .header} ORDER BY .header',
@@ -92,10 +92,18 @@ async function initColumns() {
 			table: { mod: 'app_cm', name: 'Client' }
 		},
 		exprPreset:
-			'(SELECT app_cm::Client { data := .id, display := .person.fullName } FILTER .id = <uuid,tree,app_cm::Client;id>)',
+			'(SELECT app_cm::Client { data := .id, display := .person.fullName } FILTER .id = <uuid,preset,app_cm::Client>)',
 		header: 'Client',
 		name: 'client',
 		owner: 'app_cm'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
+		header: 'Service Flow',
+		name: 'clientServiceFlow'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -143,20 +151,30 @@ async function initTableColumns() {
 async function initServiceFlow() {
 	await tables([['app_cm', 'app_cm', 'ServiceFlow', true]])
 
-	/* form_cm_service_flow_list */
-	await addForm({
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
+		header: 'Course',
+		name: 'clientServiceFlow'
+	})
+
+	/* data_obj_cm_service_flow_list */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
-		name: 'form_cm_service_flow_list',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_service_flow_list',
 		header: 'Service Flows',
 		table: {
 			owner: 'app_cm',
 			mod: 'app_cm',
 			name: 'ClientServiceFlow'
 		},
-		exprFilter: '.client.id = <uuid,tree,app_cm::Client;id>',
+		exprFilter: '.client.id = <uuid,retrieve,id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -168,11 +186,18 @@ async function initServiceFlow() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'serviceFlowComputed',
+				dbOrderCrumb: 10,
 				dbOrderSelect: 20
 			},
 			{
 				codeAccess: 'readOnly',
+				columnName: 'codeStatus',
+				dbOrderSelect: 25
+			},
+			{
+				codeAccess: 'readOnly',
 				columnName: 'dateReferral',
+				dbOrderCrumb: 20,
 				dbOrderSelect: 30
 			},
 			{
@@ -205,21 +230,23 @@ async function initServiceFlow() {
 		]
 	})
 
-	/* form_cm_service_flow_detail */
-	await addForm({
+	/* data_obj_cm_service_flow_detail */
+	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		name: 'form_cm_service_flow_detail',
+		codeRenderType: 'form',
+		name: 'data_obj_cm_service_flow_detail',
 		header: 'Service Flow',
 		table: { owner: 'app_cm', mod: 'app_cm', name: 'ClientServiceFlow' },
-		actions: ['noa_detail_save', 'noa_detail_new', 'noa_detail_delete'],
+		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'client',
-				dbOrderSelect: 10
+				dbOrderSelect: 10,
+				isDisplay: false
 			},
 			{
 				codeElement: 'select',
@@ -275,6 +302,7 @@ async function initServiceFlow() {
 				columnName: 'id',
 				dbOrderSelect: 180,
 				isDbFilter: true,
+				isDisplay: false,
 				isDisplayable: true
 			},
 			{

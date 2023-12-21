@@ -34,7 +34,7 @@
 
 	$: {
 		// set mode
-		const keyData = getKey(field.value)
+		const keyData = getKey(field.valueCurrent)
 		if (keyData !== keyInput && mode !== Mode.changing) {
 			mode = Mode.unchanged
 		} else if (keyData === keyInput && mode === Mode.changing) {
@@ -57,7 +57,7 @@
 
 	function onDelete(event: Event) {
 		mode = Mode.changing
-		keyDelete = getKey(field.value)
+		keyDelete = getKey(field.valueCurrent)
 		keyInput = null
 		elInput.value = ''
 		onChange(field.name, null, null, fieldObjDelete)
@@ -65,7 +65,7 @@
 
 	function onChangeInput(event: Event) {
 		mode = Mode.changing
-		keyUpload = getKeyNew(field.value)
+		keyUpload = getKeyNew(field.valueCurrent)
 		keyInput = keyUpload
 		onChange(field.name, files[0].name, keyUpload, fieldObjUpload)
 	}

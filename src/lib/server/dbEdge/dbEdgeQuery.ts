@@ -47,3 +47,11 @@ export async function querySingle(script: string) {
 		})
 	}
 }
+
+export async function transaction(queries: Array<string>) {
+	return await client.transaction(async (tx) => {
+		for (const query of queries) {
+			await tx.execute(query)
+		}
+	})
+}

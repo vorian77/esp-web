@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Form as FormClass } from '$comps/form/form'
+	import { Form as FormClass } from '$comps/dataObj/dataObjOld.js'
 	import Form from '$comps/form/FormDetail.svelte'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { goto } from '$app/navigation'

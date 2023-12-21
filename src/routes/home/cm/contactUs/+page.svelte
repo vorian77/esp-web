@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Form as FormClass } from '$comps/form/form'
+	import { Form as FormClass } from '$comps/dataObj/dataObjOld.js'
 	import ContactUs from '$routes/home/cm/contactUs/ContactUs.svelte'
 
 	export let data

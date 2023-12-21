@@ -10,7 +10,6 @@ export async function encrypt(text: string) {
 	// return hash
 	return text
 }
-
 export function valueHasChanged(vSource: any, vCurrent: any): boolean {
 	if (typeof vSource == 'boolean' || typeof vCurrent === 'boolean') {
 		return noVal(vSource) ? true : vSource !== vCurrent
