@@ -1,12 +1,11 @@
 <script lang="ts">
-	import type { DataObjData, NavState } from '$comps/types'
-	import { DataObj, SurfaceType } from '$comps/types'
+	import type { State } from '$comps/nav/types.app'
+	import type { DataObj, DataObjData } from '$comps/types'
 	import FormList from '$comps/form/FormList.svelte'
 	import { getContext } from 'svelte'
+	import DataViewer from '$comps/DataViewer.svelte'
 
-	export let stateAdd = (token: NavState) => {}
-	export let stateGlobal: NavState | undefined
-	export let surface: SurfaceType = SurfaceType.page
+	export let state: State
 	export let dataObj: DataObj
 	export let dataObjData: DataObjData
 
@@ -15,4 +14,6 @@
 	// $: if (scrollToTop) scrollToTop()
 </script>
 
-<FormList {stateAdd} {stateGlobal} {surface} {dataObj} {dataObjData} />
+<!-- <DataViewer header="state" data={state} /> -->
+
+<FormList {state} {dataObj} {dataObjData} />

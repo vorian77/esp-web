@@ -1,7 +1,7 @@
 import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
-import { execute } from '$server/dbEdge/types.edgeDB.server'
+import { execute } from '$routes/api/dbEdge/types.dbEdge'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
@@ -101,11 +101,11 @@ export async function nodeObjHeaders(params: any) {
 			return e.insert(e.sys_obj.NodeObj, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				parent: e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1]))),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', e.cast(e.str, i[2]))),
-				name: e.cast(e.str, i[3]),
-				header: e.cast(e.str, i[4]),
-				order: e.cast(e.int64, i[5]),
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[6]))),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'header')),
+				name: e.cast(e.str, i[2]),
+				header: e.cast(e.str, i[3]),
+				order: e.cast(e.int64, i[4]),
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[5]))),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -121,12 +121,12 @@ export async function nodeObjPages(params: any) {
 			return e.insert(e.sys_obj.NodeObj, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				parent: e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1]))),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', e.cast(e.str, i[2]))),
-				name: e.cast(e.str, i[3]),
-				header: e.cast(e.str, i[4]),
-				order: e.cast(e.int64, i[5]),
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[6]))),
-				page: e.cast(e.str, i[7]),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'page')),
+				name: e.cast(e.str, i[2]),
+				header: e.cast(e.str, i[3]),
+				order: e.cast(e.int64, i[4]),
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[5]))),
+				page: e.cast(e.str, i[6]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -141,11 +141,11 @@ export async function nodeObjPrograms(params: any) {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_obj.NodeObj, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', e.cast(e.str, i[1]))),
-				name: e.cast(e.str, i[2]),
-				header: e.cast(e.str, i[3]),
-				order: e.cast(e.int64, i[4]),
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[5]))),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'program')),
+				name: e.cast(e.str, i[1]),
+				header: e.cast(e.str, i[2]),
+				order: e.cast(e.int64, i[3]),
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', e.cast(e.str, i[4]))),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -334,7 +334,7 @@ export async function resetDB() {
 	query = `
 	delete app_cm_training::CsfCohortAttd;
 	delete app_cm_training::CsfCohort;
-	delete app_cm::ClientNote;
+	delete app_cm::CsfNote;
 	delete app_cm::ClientServiceFlow;
 	delete app_cm::Client;
 	

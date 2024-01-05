@@ -8,6 +8,7 @@ export class User {
 	initials: string
 	lastName: string
 	org: { name: string; appName: string } | undefined
+	resource_footer: Array<any> = []
 	resource_programs: Array<any> = []
 	resource_widgets: Array<any> = []
 	userName: string
@@ -28,6 +29,7 @@ export class User {
 
 		this.id = strRequired(obj.id, 'User', 'id')
 		this.org = obj.org ? { name: obj.org.name, appName: obj.org.appName } : undefined
+		this.resource_footer = obj.resource_footer
 		this.resource_programs = obj.resource_programs
 		this.resource_widgets = obj.resource_widgets
 		this.userName = strRequired(obj.userName, 'User', 'userName')

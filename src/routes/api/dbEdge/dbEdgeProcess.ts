@@ -1,100 +1,112 @@
-import { getDataObjById, queryMultiple, querySingle } from '$server/dbEdge/types.edgeDB.server'
-import { EdgeQL, DataFieldDataType, DataObj, type DataObjRaw, formatDateTime } from '$comps/types'
-import { AppObjActionType } from '$comps/nav/types.app'
-import type { DataObjData, DataRowRecord } from '$comps/dataObj/types.query'
 import {
-	DataRowStatus,
-	QueryParm,
-	QueryParmData,
-	QueryParmDataRow,
-	QueryParmAction,
-	QueryResultSuccess
-} from '$comps/dataObj/types.query'
-
+	ApiResultData,
+	ApiResultDoSuccess,
+	TokenApiQuery,
+	TokenApiQueryData,
+	TokenApiDbDataObj,
+	TokenApiQueryType
+} from '$lib/api'
+import {
+	EdgeQL,
+	DataFieldDataType,
+	DataObj,
+	DataObjData,
+	DataObjRow,
+	DataObjRowStatus,
+	formatDateTime
+} from '$comps/types'
+import type { DataObjRecord, DataObjListRow, DataObjRaw } from '$comps/types'
+import {
+	getDataObjById,
+	getDataObjByName,
+	getDataObjId,
+	execute,
+	queryMultiple,
+	querySingle
+} from '$routes/api/dbEdge/types.dbEdge'
+import type { RawDataList } from '$routes/api/dbEdge/types.dbEdge'
 import { FieldValue } from '$comps/form/field'
-import type { Field } from '$comps/form/field'
+import type { Field, FieldItem } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
-export async function processQuery(parm: QueryParm) {
+export async function processQuery(token: TokenApiQuery) {
 	console.log()
-	// console.log('processQuery.action.parm:', parm)
+	console.log('processQuery.0:', { token, record: token.queryData.record })
 
-	let dataObjRaw: DataObjRaw = await getDataObjRaw(parm.dataObjRaw, parm.dataObjId)
-	const queryParmData = parm.data
+	const queryData: TokenApiQueryData = token.queryData
+
+	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
 	const dataObj = new DataObj(dataObjRaw)
 	const query = new EdgeQL(dataObjRaw)
-	let dataRowsRaw: Array<Record<string, any>> = []
-	let dataRowStatus: DataRowStatus = DataRowStatus.retrieved
 
-	switch (parm.action) {
-		case QueryParmAction.retrieve:
-			dataRowsRaw = await queryMultiple(query.getScriptSelectUser(queryParmData))
-			// console.log('processQuery.retrieve:', { queryParmData })
-			// return new QueryResultFail('failed under testing...')
+	let dataRowRaw: Record<string, any> = {}
+	let dataRowStatus: DataObjRowStatus = DataObjRowStatus.retrieved
+	let rawDataList: RawDataList = []
+	let script = ''
+
+	switch (token.queryType) {
+		case TokenApiQueryType.delete:
+			dataRowStatus = DataObjRowStatus.deleted
+			script = query.getScriptDelete(queryData)
+			dataRowRaw = await querySingle(script)
 			break
 
-		case QueryParmAction.processAction:
-			const actionType: AppObjActionType = parm.actionType
-			let script = ''
-			let dataRowRaw: Record<string, any> = {}
+		case TokenApiQueryType.expression:
+			const result = new ApiResultData(await querySingle(query.getScriptObjectExpr(queryData)))
+			console.log('processQuery.expression:', { result })
+			return result
+			break
 
-			if ([AppObjActionType.detailNew, AppObjActionType.listNew].includes(actionType)) {
-				dataRowStatus = DataRowStatus.created
-				script = query.getScriptPreset(queryParmData)
-				dataRowsRaw = await queryMultiple(script)
-				break
-			} else {
-				const rows: Array<QueryParmDataRow> = parm.data.object
-				const row = rows[0]
-				queryParmData.retrieve = row.record
+		case TokenApiQueryType.new:
+			dataRowStatus = DataObjRowStatus.created
+			script = query.getScriptPreset(queryData)
+			rawDataList = await queryMultiple(script)
+			break
 
-				switch (actionType) {
-					case AppObjActionType.detailDelete:
-						dataRowStatus = DataRowStatus.deleted
-						script = query.getScriptDelete(queryParmData)
-						dataRowRaw = await querySingle(script)
-						break
+		case TokenApiQueryType.retrieve:
+			rawDataList = await queryMultiple(query.getScriptSelectUser(queryData))
+			break
 
-					case AppObjActionType.detailSaveInsert:
-						dataRowStatus = DataRowStatus.updated
-						script = query.getScriptSaveInsert(queryParmData)
-						dataRowRaw = await querySingle(script)
-						checkResult(script, dataRowRaw)
+		case TokenApiQueryType.saveInsert:
+			dataRowStatus = DataObjRowStatus.updated
+			script = query.getScriptSaveInsert(queryData)
+			dataRowRaw = await querySingle(script)
+			checkResult(script, dataRowRaw)
 
-						queryParmData.retrieve = dataRowRaw
-						script = query.getScriptSelectUser(queryParmData)
-						dataRowsRaw = await queryMultiple(script)
-						break
+			queryData.record = dataRowRaw
+			script = query.getScriptSelectUser(queryData)
+			rawDataList = await queryMultiple(script)
+			break
 
-					case AppObjActionType.detailSaveUpdate:
-						dataRowStatus = DataRowStatus.updated
-						script = query.getScriptSaveUpdate(queryParmData)
-						dataRowRaw = await querySingle(script)
-						checkResult(script, dataRowRaw)
+		case TokenApiQueryType.saveUpdate:
+			dataRowStatus = DataObjRowStatus.updated
+			script = query.getScriptSaveUpdate(queryData)
+			dataRowRaw = await querySingle(script)
+			checkResult(script, dataRowRaw)
 
-						script = query.getScriptSelectSys(queryParmData)
-						dataRowsRaw = await queryMultiple(script)
-						break
+			script = query.getScriptSelectSys(queryData)
+			rawDataList = await queryMultiple(script)
+			break
 
-					default:
-						throw error(500, {
-							file: FILENAME,
-							function: 'processQuery - update - single row',
-							message: `No case defined for row NavStateTokenActionType: ${actionType}`
-						})
-				}
-			}
+		default:
+			throw error(500, {
+				file: FILENAME,
+				function: 'processQuery',
+				message: `No case defined for row TokenApiDbQueryType: ${token.queryType}`
+			})
 	}
-	const dataObjData: DataObjData = await processDataPost(
-		parm.action,
+
+	const dataObjList: DataObjListRow = await processDataPost(
 		query,
 		dataObj,
-		dataRowsRaw,
+		rawDataList,
 		dataRowStatus
 	)
-	return new QueryResultSuccess(dataObjRaw, dataObjData)
+	console.log('processQuery.1:', { rawDataList, dataObjList })
+	return new ApiResultDoSuccess(dataObjRaw, new DataObjData(dataObj.cardinality, dataObjList))
+	// return new QueryResultFail('failed under testing...')
 }
 
 function checkResult(script: string, result: Record<string, any>) {
@@ -106,37 +118,39 @@ function checkResult(script: string, result: Record<string, any>) {
 	})
 }
 
-async function getDataObjRaw(dataObjRaw: DataObjRaw | undefined, dataObjId: string | undefined) {
-	if (dataObjRaw) {
-		return dataObjRaw
-	} else if (dataObjId) {
-		let dataObjFromDb = await getDataObjById(dataObjId)
-		if (dataObjFromDb) return dataObjFromDb
+async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
+	if (dataObj.dataObjRaw) {
+		return dataObj.dataObjRaw
+	} else if (dataObj.dataObjId) {
+		let dataObjRaw = await getDataObjById(dataObj.dataObjId)
+		if (dataObjRaw) return dataObjRaw
+	} else if (dataObj.dataObjName) {
+		let dataObjRaw = await getDataObjByName(dataObj.dataObjName)
+		if (dataObjRaw) return dataObjRaw
 	}
 	throw error(500, {
 		file: FILENAME,
 		function: 'getDataObjRaw',
-		message: `Could not retrieve dataObj by id: ${dataObjId}`
+		message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
 	})
 }
 
 async function processDataPost(
-	parmAction: QueryParmAction,
 	query: EdgeQL,
 	dataObj: DataObj,
 	dataRowsRaw: Array<Record<string, any>>,
-	dataRowStatus: DataRowStatus
+	dataRowStatus: DataObjRowStatus
 ) {
-	const data: DataObjData = []
-	if (!dataRowsRaw || Object.keys(dataRowsRaw).length === 0) return data
+	const data: DataObjListRow = []
+	if (dataRowsRaw.length === 0) dataRowsRaw = [{}]
 
 	for (const row of dataRowsRaw) {
-		const record: DataRowRecord = {}
+		const record: DataObjRecord = {}
 		for (const field of dataObj.fields) {
 			const fieldName = field.name
 			if (
 				row.hasOwnProperty(fieldName) ||
-				[DataRowStatus.retrieved, DataRowStatus.created].includes(dataRowStatus)
+				[DataObjRowStatus.retrieved, DataObjRowStatus.created].includes(dataRowStatus)
 			) {
 				const { data, display }: FieldValueValues = formatDataForDisplay(
 					field,
@@ -148,11 +162,10 @@ async function processDataPost(
 				// console.log('processDataPost.record:', { fieldName, value: record[fieldName] })
 			}
 		}
-		data.push(new QueryParmDataRow(dataRowStatus, record))
+		data.push(new DataObjRow(dataRowStatus, record))
 	}
 	console.log('processDataPost.data.summary:', { dataRowStatus, rows: data.length })
 	// console.log('processDataPost.data:', { data: JSON.stringify(data, null, 2) })
-
 	return data
 
 	function formatDataForDisplay(
@@ -243,13 +256,13 @@ function formatDataForDisplayScalar(value: any, codeDataTypeField: DataFieldData
 
 type FieldValueValues = { data: any; display: any }
 
-async function getDataItems(query: EdgeQL, field: Field) {
+async function getDataItems(query: EdgeQL, field: Field): Promise<Array<FieldItem>> {
 	if (field.items.length > 0) {
 		return field.items
 	} else if (field.itemsList) {
 		const script = query.getScriptDataItems(
 			field.itemsList.dbSelect,
-			new QueryParmData({ parms: field.itemsList.parms })
+			new TokenApiQueryData({ parms: field.itemsList.parms })
 		)
 		return await queryMultiple(script)
 	} else {

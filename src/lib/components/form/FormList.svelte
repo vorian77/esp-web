@@ -1,23 +1,19 @@
 <script lang="ts">
-	import { DataObj, SurfaceType } from '$comps/types'
 	import {
-		NavState,
-		NavStateComponent,
-		TokenAppObjAction,
-		AppObjActionType
+		State,
+		StatePacket,
+		StatePacketComponent,
+		TokenAppDoAction,
+		TokenAppDoList
 	} from '$comps/nav/types.app'
-	import { QueryParmDataRow, setSelectedRecords } from '$comps/dataObj/types.query'
-	import type { DataObjData } from '$comps/dataObj/types.query'
+	import type { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
-	import { navParmsStore, setNavParmsDataObj } from '$comps/nav/app'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
 	import DataViewer from '$comps/DataViewer.svelte'
 
-	export let stateAdd = (token: NavState) => {}
-	export let stateGlobal: NavState | undefined
-	export let surface: SurfaceType = SurfaceType.page
+	export let state: State
 	export let dataObj: DataObj
 	export let dataObjData: DataObjData
 
@@ -31,14 +27,8 @@
 	type DataRow = Record<string, any>
 
 	$: {
-		const dataFormatted: any = dataObjData.map((row: QueryParmDataRow) => {
-			let newRow: DataRow = {}
-			for (let key in row.record) {
-				newRow[key] = row.record[key].display
-			}
-			return newRow
-		})
-		handler.setRows(dataFormatted)
+		dataObj.objData = dataObjData
+		handler.setRows(dataObj.dataListRecord)
 		handler.setPage(1)
 		handler.clearFilters()
 		sortList()
@@ -55,23 +45,18 @@
 		}
 	}
 
-	async function onClick(row: DataRow) {
-		stateAdd(
-			new NavState({
+	async function onClick(rowNbr: number) {
+		state.update({
+			packet: new StatePacket({
 				checkObjChanged: false,
-				component: NavStateComponent.objAction,
-				token: new TokenAppObjAction({
-					actionType: AppObjActionType.listEdit,
-					dataObjData: setSelectedRecords(dataObjData, [row.id]),
-					dataObjRaw: dataObj.dataObjRaw,
-					dbProcess: false
-				})
+				component: StatePacketComponent.appDataObj,
+				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, rowNbr)
 			})
-		)
+		})
 	}
 </script>
 
-<DataObjActionsHeader {stateAdd} {stateGlobal} {dataObj} {surface} />
+<DataObjActionsHeader {state} {dataObj} />
 
 <Datatable {handler}>
 	<table>
@@ -98,10 +83,10 @@
 		<tbody>
 			{#if dataObjData}
 				{#each $rows as row, i}
-					<tr on:click={() => onClick(row)} on:keyup={async () => await onClick(row)}>
+					<tr on:click={() => onClick(i)} on:keyup={async () => await onClick(i)}>
 						{#each dataObj.fields as field}
 							{#if field.isDisplayable && field.isDisplay}
-								{@const value = row[field.name]}
+								{@const value = row[field.name].display}
 								<td>{value}</td>
 							{/if}
 						{/each}
@@ -113,7 +98,7 @@
 </Datatable>
 
 <!-- <DataViewer header="sort" data={sort} /> -->
-<!-- <DataViewer header="dataObjData" data={dataObjData} /> -->
+<!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->
 
 <style>
 	thead {

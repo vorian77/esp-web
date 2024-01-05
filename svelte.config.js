@@ -15,6 +15,7 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter(),
 		alias: {
+			'$actions/*': 'src/actions/*',
 			'$assets/*': 'src/lib/assets/*',
 			'$comps/*': 'src/lib/components/*',
 			'$dev/*': 'src/dev/*',

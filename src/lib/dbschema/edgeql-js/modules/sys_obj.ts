@@ -20,6 +20,7 @@ export type $DataObjλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "fieldsDb": $.LinkDesc<$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "fieldsEl": $.LinkDesc<$DataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj[is sys_obj::NodeObj]": $.LinkDesc<$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<dataObj[is sys_obj::NodeObjFooter]": $.LinkDesc<$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $DataObj = $.ObjectType<"sys_obj::DataObj", $DataObjλShape, null, [
@@ -69,11 +70,9 @@ const DataObjFieldDb: $.$expr_PathNode<$.TypeSet<$DataObjFieldDb, $.Cardinality.
 
 export type $DataObjFieldElλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
   "codeAccess": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "codeCustomElType": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeElement": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "column": $.LinkDesc<_sys_db.$Column, $.Cardinality.One, {}, false, false,  false, false>;
   "itemsList": $.LinkDesc<$DataObjFieldItems, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "customElParms": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "dbOrderSelect": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
   "headerAlt": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "height": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -83,6 +82,7 @@ export type $DataObjFieldElλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4f
   "itemsListParms": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "width": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
   "dbOrderCrumb": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
+  "customElement": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "<fieldsEl[is sys_obj::DataObj]": $.LinkDesc<$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<fieldsEl": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
@@ -116,6 +116,7 @@ export type $NodeObjλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "order": $.PropertyDesc<_default.$nonNegative, $.Cardinality.One, false, false, false, false>;
   "page": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "<parent[is sys_obj::NodeObj]": $.LinkDesc<$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<parent[is sys_obj::NodeObjFooter]": $.LinkDesc<$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
   "<parent": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $NodeObj = $.ObjectType<"sys_obj::NodeObj", $NodeObjλShape, null, [
@@ -124,6 +125,15 @@ type $NodeObj = $.ObjectType<"sys_obj::NodeObj", $NodeObjλShape, null, [
 const $NodeObj = $.makeType<$NodeObj>(_.spec, "c772cba6-71ae-11ee-887e-ad6bab7f4657", _.syntax.literal);
 
 const NodeObj: $.$expr_PathNode<$.TypeSet<$NodeObj, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($NodeObj, $.Cardinality.Many), null);
+
+export type $NodeObjFooterλShape = $.typeutil.flatten<$NodeObjλShape & {
+}>;
+type $NodeObjFooter = $.ObjectType<"sys_obj::NodeObjFooter", $NodeObjFooterλShape, null, [
+  ...$NodeObj['__exclusives__'],
+]>;
+const $NodeObjFooter = $.makeType<$NodeObjFooter>(_.spec, "5833eb25-a972-11ee-8802-2fa91f7e22d5", _.syntax.literal);
+
+const NodeObjFooter: $.$expr_PathNode<$.TypeSet<$NodeObjFooter, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($NodeObjFooter, $.Cardinality.Many), null);
 
 type getDataObjλFuncExpr<
   P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
@@ -247,7 +257,7 @@ function getDataObjFieldItems(...args: any[]) {
 
 
 
-export { $DataObj, DataObj, $DataObjAction, DataObjAction, $DataObjFieldDb, DataObjFieldDb, $DataObjFieldEl, DataObjFieldEl, $DataObjFieldItems, DataObjFieldItems, $NodeObj, NodeObj };
+export { $DataObj, DataObj, $DataObjAction, DataObjAction, $DataObjFieldDb, DataObjFieldDb, $DataObjFieldEl, DataObjFieldEl, $DataObjFieldItems, DataObjFieldItems, $NodeObj, NodeObj, $NodeObjFooter, NodeObjFooter };
 
 type __defaultExports = {
   "DataObj": typeof DataObj;
@@ -256,6 +266,7 @@ type __defaultExports = {
   "DataObjFieldEl": typeof DataObjFieldEl;
   "DataObjFieldItems": typeof DataObjFieldItems;
   "NodeObj": typeof NodeObj;
+  "NodeObjFooter": typeof NodeObjFooter;
   "getDataObj": typeof getDataObj;
   "getDataObjAction": typeof getDataObjAction;
   "getNodeObjById": typeof getNodeObjById;
@@ -269,6 +280,7 @@ const __defaultExports: __defaultExports = {
   "DataObjFieldEl": DataObjFieldEl,
   "DataObjFieldItems": DataObjFieldItems,
   "NodeObj": NodeObj,
+  "NodeObjFooter": NodeObjFooter,
   "getDataObj": getDataObj,
   "getDataObjAction": getDataObjAction,
   "getNodeObjById": getNodeObjById,

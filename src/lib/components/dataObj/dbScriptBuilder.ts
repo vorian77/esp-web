@@ -4,16 +4,15 @@ import {
 	strOptional,
 	memberOfEnum,
 	memberOfEnumOrDefault,
-	nbrRequired,
 	strRequired,
 	valueOrDefault
 } from '$lib/utils/utils'
 import type { DataObjRaw } from '$comps/types'
-import type { QueryParmData, QueryParmDataValue } from '$comps/dataObj/types.query'
+import type { TokenApiQueryData, TokenApiQueryDataValue } from '$lib/api'
 import { FieldValue } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
 
-const FILENAME = '/$comps/types.edgeDB.ts'
+const FILENAME = '/$comps/dataObj/dbScriptBuilder.ts'
 
 export class EdgeQL {
 	exprFilter: string | undefined
@@ -93,17 +92,17 @@ export class EdgeQL {
 		console.log()
 	}
 
-	getScriptDataItems(dbSelect: string, data: QueryParmData) {
+	getScriptDataItems(dbSelect: string, data: TokenApiQueryData) {
 		const script = getValExpr(dbSelect, data)
 		return script
 	}
-	getScriptDelete(data: QueryParmData) {
+	getScriptDelete(data: TokenApiQueryData) {
 		const queryFilter = this.getScriptItemsFilter(this.fieldsID, data)
 		const script = 'DELETE ' + this.table.getObject() + queryFilter
 		this.logScript('delete', script)
 		return script
 	}
-	getScriptObjectExpr(data: QueryParmData) {
+	getScriptObjectExpr(data: TokenApiQueryData) {
 		if (this.exprObject) {
 			const script = getValExpr(this.exprObject, data)
 			this.logScript('objectExpression', script)
@@ -117,7 +116,7 @@ export class EdgeQL {
 		}
 	}
 
-	getScriptPreset(data: QueryParmData) {
+	getScriptPreset(data: TokenApiQueryData) {
 		let script = ''
 
 		if (this.fieldsPreset.length > 0) {
@@ -128,14 +127,14 @@ export class EdgeQL {
 		return script
 	}
 
-	getScriptSaveInsert(data: QueryParmData) {
+	getScriptSaveInsert(data: TokenApiQueryData) {
 		const queryFields = this.getScriptItemsSave(this.fieldsSaveInsert, data, true)
 		let script = 'INSERT ' + this.table.getObject() + ' ' + queryFields
 		this.logScript('insert', script)
 		return script
 	}
 
-	getScriptSaveUpdate(data: QueryParmData) {
+	getScriptSaveUpdate(data: TokenApiQueryData) {
 		const queryFilter = this.getScriptItemsFilter(this.fieldsID, data)
 		let queryFields = this.getScriptItemsSave(this.fieldsSaveUpdate, data)
 		if (queryFields) {
@@ -160,7 +159,7 @@ export class EdgeQL {
 		return script
 	}
 
-	getScriptSelect(data: QueryParmData, fieldsSelect: Array<DataFieldSelect>) {
+	getScriptSelect(data: TokenApiQueryData, fieldsSelect: Array<DataFieldSelect>) {
 		const queryFields = this.getScriptItemsSelect(fieldsSelect, data)
 		const queryFilter = this.getScriptItemsFilter(this.fieldsID, data)
 		const queryOrder = this.getScriptItemsOrder(this.fieldsOrder)
@@ -169,19 +168,19 @@ export class EdgeQL {
 		this.logScript('select', script)
 		return script
 	}
-	getScriptSelectSys(data: QueryParmData) {
+	getScriptSelectSys(data: TokenApiQueryData) {
 		return this.getScriptSelect(data, this.fieldsSelectSys)
 	}
-	getScriptSelectUser(data: QueryParmData) {
+	getScriptSelectUser(data: TokenApiQueryData) {
 		return this.getScriptSelect(data, this.fieldsSelectUser)
 	}
 
-	getScriptItemsFilter(fields: Array<DataFieldDataId>, data: QueryParmData) {
+	getScriptItemsFilter(fields: Array<DataFieldDataId>, data: TokenApiQueryData) {
 		let script = ''
 		let exprFilter = ''
 
 		if (!this.exprFilter) {
-			exprFilter = `.id = <uuid,retrieve,id>`
+			exprFilter = `.id = <uuid,record,id>`
 		} else if (this.exprFilter?.toLowerCase() !== 'none') {
 			exprFilter = this.exprFilter
 		}
@@ -211,7 +210,7 @@ export class EdgeQL {
 		return script
 	}
 
-	getScriptItemsPreset(fields: Array<DataFieldPreset>, data: QueryParmData) {
+	getScriptItemsPreset(fields: Array<DataFieldPreset>, data: TokenApiQueryData) {
 		let script = ''
 		fields.forEach((f) => {
 			if (script) script += ', '
@@ -222,7 +221,11 @@ export class EdgeQL {
 		return script
 	}
 
-	getScriptItemsSave(fields: Array<DataFieldData>, data: QueryParmData, isInsert: boolean = false) {
+	getScriptItemsSave(
+		fields: Array<DataFieldData>,
+		data: TokenApiQueryData,
+		isInsert: boolean = false
+	) {
 		let script = ''
 
 		// non link fields
@@ -273,7 +276,7 @@ export class EdgeQL {
 		return script
 	}
 
-	getScriptItemsSelect(fields: Array<DataFieldSelect>, data: QueryParmData) {
+	getScriptItemsSelect(fields: Array<DataFieldSelect>, data: TokenApiQueryData) {
 		let script = ''
 		fields.forEach((f) => {
 			if (script) script += ', '
@@ -311,12 +314,12 @@ export class EdgeQL {
 	}
 }
 
-export function getValSave(field: DataFieldData, data: QueryParmData): any {
+export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 	const valRaw = getValRaw(field, data)
 	const valFormatted = getValFormatted(field, valRaw)
 	return valFormatted
 
-	function getValRaw(field: DataFieldData, data: QueryParmData) {
+	function getValRaw(field: DataFieldData, data: TokenApiQueryData) {
 		const funct = `getValSave.getValRaw: fieldName: ${field.name} - source: ${field.codeSource} - sourceKey: ${field.sourceKey}`
 
 		switch (field.codeSource) {
@@ -335,16 +338,8 @@ export function getValSave(field: DataFieldData, data: QueryParmData): any {
 			case DataFieldSource.parms:
 				return getValue(DataFieldSource.parms, data.parms, field.sourceKey)
 
-			case DataFieldSource.preset:
-				return getValue(DataFieldSource.preset, data.preset, field.sourceKey)
-
-			case DataFieldSource.retrieve:
-				console.log('data.retrieve:', {
-					fieldName: field.name,
-					data: data.retrieve,
-					sourceKey: field.sourceKey
-				})
-				return getValue(DataFieldSource.retrieve, data.retrieve, field.sourceKey)
+			case DataFieldSource.record:
+				return getValue(DataFieldSource.record, data.record, field.sourceKey)
 
 			case DataFieldSource.system:
 				return getValue(DataFieldSource.system, data.system, field.sourceKey)
@@ -359,11 +354,11 @@ export function getValSave(field: DataFieldData, data: QueryParmData): any {
 					message: `No case defined for source: ${field.codeSource}`
 				})
 		}
-		function getValue(source: DataFieldSource, data: QueryParmDataValue, key: string) {
+		function getValue(source: DataFieldSource, data: TokenApiQueryDataValue, key: string) {
 			const result = getValueNested(data, key)
 			return result ? result[1] : valueNotFound(source, data)
 		}
-		function getValueNested(data: QueryParmDataValue, key: string) {
+		function getValueNested(data: TokenApiQueryDataValue, key: string) {
 			const tokens = key.split('.')
 			let currentData = data
 			for (let i = 0; i < tokens.length - 1; i++) {
@@ -374,7 +369,7 @@ export function getValSave(field: DataFieldData, data: QueryParmData): any {
 			if (!currentData || !currentData.hasOwnProperty(tokens[idx])) return false
 			return [true, currentData[tokens[idx]]]
 		}
-		function valueNotFound(source: DataFieldSource, data: QueryParmDataValue) {
+		function valueNotFound(source: DataFieldSource, data: TokenApiQueryDataValue) {
 			throw error(500, {
 				file: FILENAME,
 				function: funct,
@@ -473,7 +468,7 @@ export function getValSave(field: DataFieldData, data: QueryParmData): any {
 	}
 }
 
-export function getValExpr(expr: string, data: QueryParmData): string {
+export function getValExpr(expr: string, data: TokenApiQueryData): string {
 	/*
 		data token <[dataType],[source],[sourceKey]>
 		eg. (select sys_user::getUser(<str,user,userName>))
@@ -523,7 +518,7 @@ class DataFieldData extends DataField {
 			'codeSource',
 			'DataFieldSource',
 			DataFieldSource,
-			DataFieldSource.retrieve
+			DataFieldSource.record
 		)
 		this.edgeTypeDefn = obj._edgeTypeDefn ? new EdgeTypeDefn(obj._edgeTypeDefn) : undefined
 		this.isLinkMember = booleanOrFalse(obj.isLinkMember, 'DataFieldData.isLinkMember')
@@ -671,7 +666,7 @@ export enum DataFieldSource {
 	literal = 'literal',
 	parms = 'parms',
 	preset = 'preset',
-	retrieve = 'retrieve',
+	record = 'record',
 	system = 'system',
 	user = 'user'
 }

@@ -186,17 +186,17 @@ export class FieldItemsList {
 	}
 }
 
-export type FieldItems = Array<FieldValue>
+export type FieldItem = Record<string, any>
 
 export class FieldValue {
 	data: any
 	display: any
-	items: FieldItems
+	items: Array<FieldItem>
 	selected: boolean | undefined
 	constructor(
 		data: any,
 		display: any,
-		items: FieldItems,
+		items: Array<FieldItem>,
 		selected: boolean | undefined = undefined
 	) {
 		this.data = data

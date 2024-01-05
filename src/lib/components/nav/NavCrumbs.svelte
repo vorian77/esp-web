@@ -1,20 +1,25 @@
 <script lang="ts">
-	import { AppLevelCrumb, NavState, NavStateComponent, TokenAppCrumbs } from '$comps/nav/types.app'
+	import {
+		AppLevelCrumb,
+		State,
+		StatePacket,
+		StatePacketComponent,
+		TokenAppCrumbs
+	} from '$comps/nav/types.app'
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const FILENAME = '/$comps/nav/NavCrumbs.svelte'
 
-	export let stateAdd = (token: NavState) => {}
-	export let stateGlobal: NavState | undefined
+	export let state: State
 	export let crumbsList: Array<AppLevelCrumb> = []
 
 	async function onClick(crumbIdx: number) {
-		stateAdd(
-			new NavState({
-				component: NavStateComponent.crumbs,
+		state.update({
+			packet: new StatePacket({
+				component: StatePacketComponent.appCrumbs,
 				token: new TokenAppCrumbs(crumbIdx)
 			})
-		)
+		})
 	}
 </script>
 

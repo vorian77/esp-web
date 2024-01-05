@@ -1,7 +1,7 @@
 import type { ResponseBody } from '$comps/types'
 import { getUser } from '$comps/types'
 import { valueOrDefault } from '$comps/types'
-import type { QueryParm } from '$comps/dataObj/types.query'
+import type { TokenApiQuery } from '$lib/api'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/utils/db.utils.js'
@@ -14,7 +14,7 @@ export async function getNodes(apiFunction: apiFunctionsDBEdge, parentNodeId: st
 	const response: ResponseBody = await responsePromise.json()
 	return response.data
 }
-export async function processQuery(parm: QueryParm) {
+export async function processQuery(parm: TokenApiQuery) {
 	const responsePromise: Response = await fetch('/api/dbEdge', {
 		method: 'POST',
 		body: JSON.stringify({ apiFunction: apiFunctionsDBEdge.processQuery, parm })

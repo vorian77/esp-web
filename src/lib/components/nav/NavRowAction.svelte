@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { NavRowActionType } from '$comps/types'
+	import type { AppRowActionType } from '$comps/nav/types.app'
 	import Icon from '$comps/Icon.svelte'
 
 	const NAV_COLOR = '#3b79e1'
 
-	export let action: NavRowActionType
+	export let action: AppRowActionType
 	export let icon: string
-	export let onChange = async (action: NavRowActionType) => {}
+	export let onChange = async (action: AppRowActionType) => {}
 </script>
 
 <div

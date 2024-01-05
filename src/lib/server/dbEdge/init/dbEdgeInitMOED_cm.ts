@@ -1,17 +1,12 @@
 import {
 	apps,
-	codes,
 	nodeObjPrograms,
-	nodeObjHeaders,
 	nodeObjPages,
 	userType,
 	userUserType,
 	userTypeResourcesApps,
-	userTypeResourcesPrograms,
-	userTypeResourcesWidgets,
-	widgets
+	userTypeResourcesPrograms
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import { execute, review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_MOED_cm'
 
@@ -31,22 +26,14 @@ async function data() {
 
 	await apps([['app_moed_cm']])
 	await nodeObjPrograms([
-		['app_moed_cm', 'navProgram', 'node_pgm_moed_cm_staff', 'CM-Staff', 20, 'application'],
-		[
-			'app_moed_cm',
-			'navProgram',
-			'node_node_pgm_moed_cm_student_applicant',
-			'CM-Applicant',
-			30,
-			'application'
-		],
-		['app_moed_cm', 'navProgram', 'node_pgm_moed_cm_student', 'CM-Student', 40, 'application']
+		['app_moed_cm', 'node_pgm_moed_cm_staff', 'CM-Staff', 20, 'application'],
+		['app_moed_cm', 'node_node_pgm_moed_cm_student_applicant', 'CM-Applicant', 30, 'application'],
+		['app_moed_cm', 'node_pgm_moed_cm_student', 'CM-Student', 40, 'application']
 	])
 	await nodeObjPages([
 		[
 			'app_moed_cm',
 			'node_node_pgm_moed_cm_student_applicant',
-			'navPage',
 			'node_page_cm_sa_app',
 			'Application',
 			10,
@@ -56,7 +43,6 @@ async function data() {
 		[
 			'app_moed_cm',
 			'node_pgm_moed_cm_student',
-			'navPage',
 			'node_page_cm_student_app',
 			'Application',
 			10,
@@ -66,7 +52,6 @@ async function data() {
 		[
 			'app_moed_cm',
 			'node_pgm_moed_cm_student',
-			'navPage',
 			'node_page_cm_student_goals',
 			'Goals',
 			20,
@@ -76,7 +61,6 @@ async function data() {
 		[
 			'app_moed_cm',
 			'node_pgm_moed_cm_student',
-			'navPage',
 			'node_page_cm_student_messages',
 			'Messages',
 			30,
@@ -86,7 +70,6 @@ async function data() {
 		[
 			'app_moed_cm',
 			'node_pgm_moed_cm_student',
-			'navPage',
 			'node_page_cm_student_activities',
 			'Activities',
 			40,
@@ -96,7 +79,6 @@ async function data() {
 		[
 			'app_moed_cm',
 			'node_pgm_moed_cm_student',
-			'navPage',
 			'node_page_cm_student_quotes',
 			'Quotes',
 			50,

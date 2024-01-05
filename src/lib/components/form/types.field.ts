@@ -24,7 +24,6 @@ export enum FieldElement {
 
 export interface FieldRaw {
 	_codeAccess: string
-	_codeCustomElType: string
 	_codeElement: string
 	_column: {
 		_codeAlignment: string
@@ -51,7 +50,7 @@ export interface FieldRaw {
 		patternReplacement: string
 		placeHolder: string
 	}
-	customElParms: any
+	customElement: any
 	headerAlt: string
 	height: number
 	isDisplay: boolean

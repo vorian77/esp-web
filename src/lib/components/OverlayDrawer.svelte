@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
-	// import FormDetailDrawer from '$comps/form/FormDetailDrawer.svelte'
-	// import NavTree from '$comps/nav/NavTree.svelte'
+	import NavTree from '$comps/nav/NavTree.svelte'
+	import NavAppDrawer from '$comps/nav/NavAppDrawer.svelte'
 
 	const drawerStore = getDrawerStore()
 
 	function closeDrawer() {
-		$drawerStore.meta.onCloseDrawer()
+		if ($drawerStore.meta.hasOwnProperty('onCloseDrawer')) $drawerStore.meta.onCloseDrawer()
 		drawerStore.close()
 		$drawerStore.id = undefined
 	}
@@ -22,19 +22,19 @@
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'auth'}
 		<div>
-			<!-- <FormDetailDrawer
-				bind:formObj={$drawerStore.meta.formObj}
+			<NavAppDrawer
+				bind:dataObjName={$drawerStore.meta.dataObjName}
 				on:formCancelled={onformCancelled}
 				on:customFieldAction={$drawerStore.meta.onCustomFieldAction}
-			/> -->
+			/>
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}
 		<div class="p-2">
-			<!-- <NavTree on:treeChanged={closeDrawer} /> -->
+			<NavTree state={$drawerStore.meta.state} on:treeChanged={closeDrawer} />
 		</div>
 	{:else if $drawerStore.id === 'navRight'}
 		<div class="p-4">
-			<a href="/logout">Logout</a>
+			<a href="/logout" on:click={() => localStorage.clear()}>Logout</a>
 		</div>
 	{/if}
 </Drawer>

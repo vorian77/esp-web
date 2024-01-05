@@ -1,65 +1,17 @@
-import {
-	apps,
-	codes,
-	codeTypes,
-	userType,
-	userUserType,
-	nodeObjPrograms,
-	userTypeResourcesApps,
-	userTypeResourcesPrograms,
-	userTypeResourcesWidgets,
-	tables,
-	tableColumns
-} from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import {
-	addColumn,
-	addCode,
-	addCodeType,
-	addDataObj,
-	addNodeObj,
-	addUser,
-	execute,
-	review
-} from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { tables } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { addColumn, addDataObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_sys_auth'
 
 export default async function init() {
 	console.log()
 	console.log(`${FILE}.start...`)
-	await initDB()
 	await initDataObjs()
 	// await review(FILE, reviewQuery)
 	console.log(`${FILE}.end`)
 }
 
 const reviewQuery = ''
-
-async function initDB() {
-	await tables([['app_sys', 'sys_user', 'User', false]])
-
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'int64',
-		header: 'Security Code',
-		name: 'authSecurityCode'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'str',
-		header: 'Password',
-		name: 'password'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'str',
-		header: 'Mobile Phone Number',
-		name: 'userName'
-	})
-}
 
 async function initDataObjs() {
 	await dataObjLogin()
@@ -98,9 +50,9 @@ async function dataObjLogin() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'button',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'button',
 					action: { type: 'submit', value: 'data_obj_auth_login' },
 					label: 'Log in'
 				},
@@ -108,24 +60,13 @@ async function dataObjLogin() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'link',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'link',
 					action: { type: 'page', value: 'data_obj_auth_reset_password' },
 					label: 'Forgot Password?'
 				},
 				dbOrderSelect: 40
-			},
-			{
-				codeElement: 'custom',
-				codeCustomElType: 'link',
-				columnName: 'custom_element',
-				customElParms: {
-					action: { type: 'page', value: 'data_obj_auth_signup' },
-					label: 'Sign up',
-					prefix: `Don't have an account?`
-				},
-				dbOrderSelect: 50
 			}
 		]
 	})
@@ -165,9 +106,9 @@ async function dataObjReset() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'button',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'button',
 					action: { type: 'submit', value: 'data_obj_auth_reset_password' },
 					label: 'Reset Password'
 				},
@@ -175,9 +116,9 @@ async function dataObjReset() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'text',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'text',
 					align: 'center',
 					label: `We'll text you to confirm your mobile phone number. Standard rates apply.`
 				},
@@ -185,12 +126,12 @@ async function dataObjReset() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'link',
 				columnName: 'custom_element',
-				customElParms: {
-					action: { type: 'page', value: 'data_obj_auth_signup' },
-					label: 'Sign up',
-					prefix: `Don't have an account?`
+				customElement: {
+					_type: 'link',
+					action: { type: 'page', value: 'data_obj_auth_login' },
+					label: 'Log in',
+					prefix: 'Already have an account?'
 				},
 				dbOrderSelect: 50
 			}
@@ -274,9 +215,9 @@ async function dataObjSignup() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'button',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'button',
 					action: { type: 'submit', value: 'data_obj_auth_signup' },
 					label: 'Sign up'
 				},
@@ -284,9 +225,9 @@ async function dataObjSignup() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'text',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'text',
 					align: 'center',
 					label: `We'll text you to confirm your mobile phone number. Standard rates apply.`
 				},
@@ -294,9 +235,9 @@ async function dataObjSignup() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'link',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'link',
 					action: { type: 'page', value: 'data_obj_auth_login' },
 					label: 'Log in',
 					prefix: 'Already have an account?'
@@ -321,9 +262,9 @@ async function dataObjVerify() {
 		fields: [
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'text',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'text',
 					label: `Check your message app for the security code and enter it here.`
 				},
 				dbOrderSelect: 10
@@ -334,9 +275,9 @@ async function dataObjVerify() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'button',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'button',
 					action: { type: 'submit', value: 'data_obj_auth_verify_phone_mobile' },
 					label: 'Verify'
 				},
@@ -344,9 +285,9 @@ async function dataObjVerify() {
 			},
 			{
 				codeElement: 'custom',
-				codeCustomElType: 'link',
 				columnName: 'custom_element',
-				customElParms: {
+				customElement: {
+					_type: 'link',
 					action: { type: 'resend_code' },
 					label: 'Resend Security Code'
 				},

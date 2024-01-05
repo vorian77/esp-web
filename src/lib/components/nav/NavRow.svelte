@@ -1,25 +1,25 @@
 <script lang="ts">
 	import {
 		type AppLevelRowStatus,
-		NavState,
-		NavStateComponent,
+		AppRowActionType,
+		State,
+		StatePacket,
+		StatePacketComponent,
 		TokenAppRow
 	} from '$comps/nav/types.app'
-	import { NavRowActionType } from '$comps/types'
 	import NavRowAction from '$comps/nav/NavRowAction.svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 
+	export let state: State
 	export let rowStatus: AppLevelRowStatus | undefined
-	export let stateAdd = (token: NavState) => {}
-	export let stateGlobal: NavState | undefined
 
-	async function onChange(rowAction: NavRowActionType) {
-		stateAdd(
-			new NavState({
-				component: NavStateComponent.row,
+	async function onChange(rowAction: AppRowActionType) {
+		state.update({
+			packet: new StatePacket({
+				component: StatePacketComponent.appRow,
 				token: new TokenAppRow(rowAction)
 			})
-		)
+		})
 	}
 </script>
 
@@ -29,17 +29,17 @@
 	<span style:cursor="pointer">
 		<div class="flex">
 			<div class={rowStatus.rowCurrentDisplay === 1 ? 'invisible' : ''}>
-				<NavRowAction action={NavRowActionType.first} icon={'double-arrow-left'} {onChange} />
+				<NavRowAction action={AppRowActionType.first} icon={'double-arrow-left'} {onChange} />
 			</div>
 			<div class={rowStatus.rowCurrentDisplay === 1 ? 'invisible' : ''}>
-				<NavRowAction action={NavRowActionType.left} icon={'arrow-left'} {onChange} />
+				<NavRowAction action={AppRowActionType.left} icon={'arrow-left'} {onChange} />
 			</div>
 			<div class="ml-1">{rowStatus.status}</div>
 			<div class={rowStatus.rowCurrentDisplay === rowStatus.rowCount ? 'invisible' : ''}>
-				<NavRowAction action={NavRowActionType.right} icon={'arrow-right'} {onChange} />
+				<NavRowAction action={AppRowActionType.right} icon={'arrow-right'} {onChange} />
 			</div>
 			<div class={rowStatus.rowCurrentDisplay === rowStatus.rowCount ? 'invisible' : ''}>
-				<NavRowAction action={NavRowActionType.last} icon={'double-arrow-right'} {onChange} />
+				<NavRowAction action={AppRowActionType.last} icon={'double-arrow-right'} {onChange} />
 			</div>
 		</div>
 	</span>

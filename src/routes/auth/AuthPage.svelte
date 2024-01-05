@@ -1,64 +1,60 @@
 <script lang="ts">
-	import { get } from 'svelte/store'
-	import { goto } from '$app/navigation'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import type { ResponseBody } from '$comps/types'
-	import { DataObj, encrypt, setUser } from '$comps/types'
-	import { onMount } from 'svelte'
+	import type { DataObjRecord, ResponseBody } from '$comps/types'
+	import { encrypt, setUser } from '$comps/types'
+	import { FieldValue } from '$comps/form/field'
+	import {
+		apiFetch,
+		ApiFunction,
+		TokenApiDbDataObj,
+		TokenApiQuery,
+		TokenApiQueryData,
+		TokenApiQueryType,
+		TokenApiSendText,
+		TokenApiUser
+	} from '$lib/api'
+	import { goto } from '$app/navigation'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
-	const FILENAME = 'routes/authPage.svelte'
-	export let data: { system: any }
-	export let pageCurrent = ''
-
-	let forms: any = []
-	let formProcess: DataObj
-
-	onMount(() => {
-		// async function initForm(formName: string) {
-		// 	const dataObj: DataObj = await processByDataObjName(
-		// 		formName,
-		// 		DataObjProcessType.preset,
-		// 		new DbData({})
-		// 	)
-		// 	dataObj.isInsertMode = true
-		// 	forms[formName] = new DataObj(dataObj.defn)
-		// }
-		// ;[
-		// 	'form_auth_login',
-		// 	'form_auth_reset_password',
-		// 	'form_auth_signup',
-		// 	'form_auth_verify_phone_mobile'
-		// ].forEach((formName) => initForm(formName))
-	})
-
-	let verifyFrom = ''
-	let authSecurityCodePhone = ''
-	let authSecurityCode = 0
 	const drawerStore = getDrawerStore()
 	const toastStore = getToastStore()
 
-	$: {
-		if (pageCurrent) {
-			const settings: DrawerSettings = {
-				id: 'auth',
-				position: 'bottom',
-				height: 'h-[75%]',
-				meta: {
-					formObj: forms[pageCurrent],
-					onCustomFieldAction,
-					onCloseDrawer: () => (pageCurrent = '')
-				}
+	const FILENAME = 'routes/authPage.svelte'
+
+	export let pageCurrent = ''
+
+	let forms = [
+		'data_obj_auth_login',
+		'data_obj_auth_reset_password',
+		'data_obj_auth_verify_phone_mobile'
+	]
+	let verifyFrom = ''
+	let verifyData: DataObjRecord = {}
+	let authSecurityCodePhone = ''
+	let authSecurityCode = 0
+
+	$: if (pageCurrent) {
+		const settings: DrawerSettings = {
+			id: 'auth',
+			position: 'bottom',
+			height: 'h-[30%]',
+			meta: {
+				dataObjName: pageCurrent,
+				onCustomFieldAction,
+				onCloseDrawer: () => (pageCurrent = '')
 			}
-			drawerStore.open(settings)
 		}
+		drawerStore.open(settings)
 	}
 
 	async function onCustomFieldAction(event: CustomEvent) {
-		const { type, value } = event.detail
-		switch (type.toLowerCase()) {
+		let { action, data } = event.detail
+		const type = action.type.toLowerCase()
+		const value = action.value.toLowerCase()
+
+		switch (type) {
 			case 'page':
 				pageCurrent = value
 				break
@@ -68,33 +64,31 @@
 				break
 
 			case 'submit':
-				switch (value.toLowerCase()) {
-					case 'form_auth_login':
-						await processAuthCredentials(forms[value])
+				switch (value) {
+					case 'data_obj_auth_login':
+						await processAuthCredentials(value, data)
 						break
 
-					case 'form_auth_verify_phone_mobile':
-						const securityCode: FieldValue = forms[value].getFieldValue('authSecurityCode')
-						if (securityCode.display !== authSecurityCode.toString()) {
+					case 'data_obj_auth_verify_phone_mobile':
+						const securityCode = getDataValue(data, 'authSecurityCode')
+						if (securityCode !== authSecurityCode.toString()) {
 							alert('The security code you entered is not correct. Please try again')
 							return
 						}
-						await processAuthCredentials(formProcess)
+						await processAuthCredentials(verifyFrom, verifyData)
 						break
 
-					case 'form_auth_signup':
-					case 'form_auth_reset_password':
-						formProcess = forms[value]
+					case 'data_obj_auth_reset_password':
 						verifyFrom = value
-						pageCurrent = 'form_auth_verify_phone_mobile'
-						const userName: FieldValue = forms[value].getFieldValue('userName')
-						await sendCode(userName.display)
+						verifyData = data
+						pageCurrent = 'data_obj_auth_verify_phone_mobile'
+						await sendCode(getDataValue(data, 'userName'))
 						break
 
 					default:
 						throw error(500, {
 							file: FILENAME,
-							function: 'onCustomFieldAction',
+							function: 'onCustomFieldAction-submit',
 							message: `No case defined for submit value: ${value}`
 						})
 				}
@@ -109,56 +103,52 @@
 		}
 	}
 
-	async function processAuthCredentials(form) {
+	async function processAuthCredentials(formName: string, data: any) {
 		const msgFail = 'Something is wrong with the credentials you entered. Please try again.'
-		drawerStore.close()
-		pageCurrent = ''
 
 		// encrypt password
-		const fieldName = 'password'
-		let password: FieldValue | undefined = form.getFieldValue(fieldName)
-		if (password) {
-			const encryptedPassword = await encrypt(password.data)
-			// console.log('authPage.encryptedPassword:', encryptedPassword)
-			// form.setFieldValue(fieldName, new FieldValue(encryptedPassword, encryptedPassword))
+		if (data.hasOwnProperty('password')) {
+			const password = await encrypt(getDataValue(data, 'password'))
+			data['password'] = new FieldValue(password, password, [])
 		}
 
 		// process
-		// const dataObj: DataObj = await processByDataObj(
-		// 	form,
-		// 	DataObjProcessType.object,
-		// 	new DbData({ system: data.system })
-		// )
-		// if (!dataObj) {
-		// 	alert(msgFail)
-		// 	return
-		// }
-		const rtn = Array.isArray(dataObj.data) ? dataObj.data[0] : dataObj.data
-
-		if (!rtn || !rtn.hasOwnProperty('userId') || !rtn.userId) {
-			alert(msgFail)
-			return
-		} else {
-			if (verifyFrom === 'form_auth_account') {
+		const result: ResponseBody = await apiFetch(
+			ApiFunction.dbEdgeProcessQuery,
+			new TokenApiQuery(
+				TokenApiQueryType.expression,
+				new TokenApiDbDataObj({ dataObjName: formName }),
+				new TokenApiQueryData({ parms: data })
+			)
+		)
+		if (result.success && result.data.hasOwnProperty('userId')) {
+			const userId = result.data['userId']
+			if (verifyFrom === 'data_obj_auth_account') {
 				const t: ToastSettings = {
 					message: 'Your account has been updated!'
 				}
 				toastStore.trigger(t)
 			} else {
-				const user = await getUser(rtn.userId)
-				setUser(user)
+				const result: ResponseBody = await apiFetch(ApiFunction.getUser, new TokenApiUser(userId))
+				if (result.success) {
+					setUser(result.data)
 
-				// set cookie
-				await fetch('/auth', {
-					method: 'POST',
-					body: JSON.stringify({
-						action: 'set_cookie',
-						userId: rtn.userId
+					// set cookie
+					await fetch('/auth', {
+						method: 'POST',
+						body: JSON.stringify({
+							action: 'set_cookie',
+							userId
+						})
 					})
-				})
-
-				goto('/home')
+				}
 			}
+			drawerStore.close()
+			pageCurrent = ''
+			goto('/home')
+		} else {
+			alert(msgFail)
+			return
 		}
 	}
 
@@ -167,23 +157,16 @@
 		const max = 999999
 		authSecurityCode = Math.floor(Math.random() * (max - min + 1)) + min
 		authSecurityCodePhone = phoneMobile
-
-		await fetch('/auth', {
-			method: 'POST',
-			body: JSON.stringify({
-				action: 'sms_send',
-				phoneMobile: authSecurityCodePhone,
-				message: `Mobile phone number verification code: ${authSecurityCode}`
-			})
-		})
+		await apiFetch(
+			ApiFunction.sendText,
+			new TokenApiSendText(
+				phoneMobile,
+				`Mobile phone number verification code: ${authSecurityCode}`
+			)
+		)
 	}
-	export async function getUser(userId: string) {
-		const responsePromise = await fetch('/api/user', {
-			method: 'POST',
-			body: JSON.stringify({ userId })
-		})
-		const response: ResponseBody = await responsePromise.json()
-		return response.data
+	function getDataValue(data: DataObjRecord, key: string) {
+		return data[key].data
 	}
 </script>
 

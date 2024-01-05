@@ -513,11 +513,9 @@ export namespace sys_obj {
   }
   export interface DataObjFieldEl extends std.$Object {
     "codeAccess"?: sys_core.Code | null;
-    "codeCustomElType"?: sys_core.Code | null;
     "codeElement"?: sys_core.Code | null;
     "column": sys_db.Column;
     "itemsList"?: DataObjFieldItems | null;
-    "customElParms"?: unknown | null;
     "dbOrderSelect"?: number | null;
     "headerAlt"?: string | null;
     "height"?: number | null;
@@ -527,6 +525,7 @@ export namespace sys_obj {
     "itemsListParms"?: unknown | null;
     "width"?: number | null;
     "dbOrderCrumb"?: number | null;
+    "customElement"?: unknown | null;
   }
   export interface DataObjFieldItems extends sys_core.Obj {
     "fieldsDb": DataObjFieldDb[];
@@ -542,6 +541,7 @@ export namespace sys_obj {
     "order": number;
     "page"?: string | null;
   }
+  export interface NodeObjFooter extends NodeObj {}
 }
 export namespace sys_test {
   export interface Movie extends std.$Object {
@@ -699,6 +699,7 @@ export interface types {
     "DataObjFieldEl": sys_obj.DataObjFieldEl;
     "DataObjFieldItems": sys_obj.DataObjFieldItems;
     "NodeObj": sys_obj.NodeObj;
+    "NodeObjFooter": sys_obj.NodeObjFooter;
   };
   "sys_test": {
     "Movie": sys_test.Movie;

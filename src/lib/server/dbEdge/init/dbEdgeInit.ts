@@ -1,5 +1,4 @@
 import { review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
-import { getDataObjById, getDataObjIdByName } from '$server/dbEdge/dbEdgeUtilities'
 import initSys from '$server/dbEdge/init/dbEdgeInitSys'
 import initSysAuth from '$server/dbEdge/init/dbEdgeInitSysAuth'
 import initCM from '$server/dbEdge/init/dbEdgeInitCM'
@@ -18,7 +17,6 @@ export async function init() {
 	// await initCMTrainingData()
 	// await initMOED_cm()
 	// await initReviewQuery()
-	// await initReviewDataObj()
 }
 
 async function initReviewQuery() {
@@ -35,11 +33,4 @@ async function initReviewQuery() {
 	// reviewQuery = `select sys_db::Column {*}`
 	// reviewQuery = `select sys_core::ObjRoot {**} filter .name = 'root' order by .name`
 	await review(FILE, reviewQuery)
-}
-
-async function initReviewDataObj() {
-	console.log()
-	console.log('getDataObj...')
-	const dataObj = await getDataObjById('a4611d26-9a7c-11ee-96f4-6b3ce80142e8')
-	console.log(dataObj)
 }

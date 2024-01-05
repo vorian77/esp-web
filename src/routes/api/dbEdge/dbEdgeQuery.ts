@@ -9,6 +9,9 @@ let client = edgedb.createClient({
 	secretKey: EDGEDB_SECRET_KEY
 })
 
+export type RawDataRow = Record<string, any>
+export type RawDataList = Array<RawDataRow>
+
 export async function queryExecute(script: string) {
 	if (!script) return {}
 	try {
@@ -22,8 +25,8 @@ export async function queryExecute(script: string) {
 	}
 }
 
-export async function queryMultiple(script: string) {
-	if (!script) return {}
+export async function queryMultiple(script: string): Promise<RawDataList> {
+	if (!script) return []
 	try {
 		return JSON.parse(await client.queryJSON(script))
 	} catch (e: any) {
@@ -35,7 +38,7 @@ export async function queryMultiple(script: string) {
 	}
 }
 
-export async function querySingle(script: string) {
+export async function querySingle(script: string): Promise<RawDataRow> {
 	if (!script) return {}
 	try {
 		return JSON.parse(await client.querySingleJSON(script))

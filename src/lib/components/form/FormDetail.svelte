@@ -1,7 +1,18 @@
 <script lang="ts">
+	import type { FieldItem } from '$comps/form/field'
+	import {
+		BinarySelect,
+		FieldElement,
+		DataObj,
+		DataObjData,
+		Validation,
+		ValidityField,
+		ValidityErrorLevel,
+		ValidityError
+	} from '$comps/types'
+	import type { State } from '$comps/nav/types.app'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
 	import DataObjActionsFooter from '$comps/dataObj/DataObjActionsFooter.svelte'
-	import type { FieldValue } from '$comps/form/field'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
 	import FormElFile from '$comps/form/FormElFile.svelte'
 	import FormElInp from '$comps/form/FormElInp.svelte'
@@ -9,40 +20,26 @@
 	import FormElInpRadio from '$comps/form/FormElInpRadio.svelte'
 	import FormElSelect from '$comps/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/form/FormElTextarea.svelte'
-	import {
-		BinarySelect,
-		FieldAccess,
-		FieldElement,
-		DataObj,
-		SurfaceType,
-		Validation,
-		ValidityField,
-		ValidityErrorLevel,
-		ValidityError
-	} from '$comps/types'
-	import type { NavState } from '$comps/nav/types.app'
-	import type { DataObjData } from '$comps/dataObj/types.query'
-	import { setAppStatusObjChanged, setAppStatusObjValid } from '$comps/nav/app'
 	import DataViewer from '$comps/DataViewer.svelte'
-	import { disableScrollHandling } from '$app/navigation'
 
 	const FILENAME = '$comps/form/FormDetail.svelte'
 	const FORM_NAME = ''
 	const SUBMIT_BUTTON_NAME = 'SUBMIT_BUTTON_NAME'
 
-	export let stateAdd = (token: NavState) => {}
-	export let stateGlobal: NavState | undefined
-	export let surface: SurfaceType = SurfaceType.page
+	export let state: State
 	export let dataObj: DataObj
 	export let dataObjData: DataObjData
 
-	$: dataObj.objData = dataObjData
-	$: setAppStatusObjChanged(dataObj.statusChanged)
-	$: setAppStatusObjValid(dataObj.statusValidToSave)
+	$: loadData(dataObjData)
+
+	function loadData(data: DataObjData) {
+		dataObj.objData = dataObjData
+		state.update({ objValidToSave: dataObj.preValidate() })
+	}
 
 	function onChangeFile(fieldName: string, valData: any, valDisplay: any, saveCallback: any) {
 		setFieldVal(fieldName, valData, valDisplay)
-		dataObj.saveCallbackAdd(fieldName, saveCallback)
+		dataObj.data.callbacksAdd(fieldName, saveCallback)
 	}
 	function onChangeInput(event: any) {
 		setFieldVal(event.target.name, event.currentTarget.value)
@@ -71,14 +68,14 @@
 			if (idx >= 0) {
 				const field = dataObj.fields[idx]
 
-				const itemIdx = field.valueCurrent.items.findIndex((i: FieldValue) => {
+				const itemIdx = field.valueCurrent.items.findIndex((i: FieldItem) => {
 					return i.data === checkedItemID
 				})
 				if (itemIdx >= 0)
 					field.valueCurrent.items[itemIdx].selected = !field.valueCurrent.items[itemIdx].selected
 
 				let values: Array<string> = []
-				field.valueCurrent.items.forEach((i: FieldValue) => {
+				field.valueCurrent.items.forEach((i: FieldItem) => {
 					if (i.selected) values.push(i.data)
 				})
 				setFieldVal(fieldName, values.toString())
@@ -93,7 +90,7 @@
 			dataObj.fields[idx].valueCurrent.data = newValData
 			dataObj.fields[idx].valueCurrent.display = newValDisplay
 			validateField(idx, newValData)
-			dataObj.setStatusChanged()
+			state.update({ objHasChanged: dataObj.getStatusChanged() })
 		}
 		return idx
 	}
@@ -107,20 +104,15 @@
 		newValidities.forEach(({ index, validity }) => {
 			dataObj.fields[index].validity = validity
 		})
-		dataObj.statusValidToSave = dataObj.fields.every(
-			({ validity }) => validity.error == ValidityError.none
-		)
+		state.update({
+			objValidToSave: dataObj.fields.every(({ validity }) => validity.error == ValidityError.none)
+		})
 	}
 </script>
 
-<!-- <DataViewer
-	header="dataObjStatus"
-	data={{ changed: dataObj.statusChanged, validToSave: dataObj.statusValidToSave }}
-/> -->
-<!-- <DataViewer header="navStatus" data={$navStatus} /> -->
+<DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
-<DataObjActionsHeader {stateAdd} {stateGlobal} {dataObj} {surface} on:formCancelled />
-
+<!-- <temp> 240101: decorator pattern for field "types"? -->
 <div class="mx-2 mb-6">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
 		{#each dataObj.fields as field, idx (field.name)}
@@ -129,7 +121,12 @@
 					{#if field.element === FieldElement.checkbox}
 						<FormElInpCheckbox {field} on:click={onClickCheckbox} />
 					{:else if field.element === FieldElement.custom}
-						<FormElCustom bind:field formData={dataObj.objData} on:customFieldAction />
+						<FormElCustom
+							bind:field
+							{state}
+							data={dataObj.objData.dataObjRow.record}
+							on:customFieldAction
+						/>
 					{:else if field.element === FieldElement.file}
 						<FormElFile bind:field onChange={onChangeFile} />
 					{:else if [FieldElement.date, FieldElement.email, FieldElement.number, FieldElement.password, FieldElement.tel, FieldElement.text].includes(field.element)}
@@ -158,8 +155,8 @@
 	</form>
 </div>
 
-<DataObjActionsFooter {stateAdd} {stateGlobal} {dataObj} />
+<DataObjActionsFooter {state} {dataObj} />
 
-<!-- <DataViewer header="dataObjData" data={dataObjData} /> -->
+<!-- <DataViewer header="dataObjList" data={dataObjList} /> -->
 <!-- <DataViewer header="dataSource" data={dataSource} /> -->
 <!-- <DataViewer header="defn" data={formObj.defn} /> -->

@@ -2,23 +2,15 @@ import {
 	apps,
 	codes,
 	codeTypes,
-	userType,
-	userUserType,
-	nodeObjPrograms,
 	userTypeResourcesApps,
-	userTypeResourcesPrograms,
-	userTypeResourcesWidgets,
 	tables,
 	tableColumns,
 	widgets
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import {
-	addCodeType,
 	addColumn,
 	addDataObj,
-	addDataObjFieldItems,
-	addNodeObj,
-	execute
+	addDataObjFieldItems
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 const FILE = 'init_cm'
@@ -92,18 +84,10 @@ async function initColumns() {
 			table: { mod: 'app_cm', name: 'Client' }
 		},
 		exprPreset:
-			'(SELECT app_cm::Client { data := .id, display := .person.fullName } FILTER .id = <uuid,preset,app_cm::Client>)',
+			'(SELECT app_cm::Client { data := .id, display := .person.fullName } FILTER .id = <uuid,record,id>)',
 		header: 'Client',
 		name: 'client',
 		owner: 'app_cm'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
-		header: 'Service Flow',
-		name: 'clientServiceFlow'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -156,7 +140,7 @@ async function initServiceFlow() {
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
 		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
-		header: 'Course',
+		header: 'Service Flow',
 		name: 'clientServiceFlow'
 	})
 
@@ -173,7 +157,7 @@ async function initServiceFlow() {
 			mod: 'app_cm',
 			name: 'ClientServiceFlow'
 		},
-		exprFilter: '.client.id = <uuid,retrieve,id>',
+		exprFilter: '.client.id = <uuid,record,id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{

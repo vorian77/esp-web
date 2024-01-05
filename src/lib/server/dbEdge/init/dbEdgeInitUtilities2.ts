@@ -185,9 +185,8 @@ export async function addDataObj(data: any) {
 			owner: e.str,
 			actions: e.optional(e.array(e.str)),
 			codeCardinality: e.str,
-			codeCustomElType: e.optional(e.array(e.str)),
 			codeComponent: e.str,
-			customElParms: e.optional(e.json),
+			customElement: e.optional(e.json),
 			description: e.optional(e.str),
 			exprFilter: e.optional(e.str),
 			exprObject: e.optional(e.str),
@@ -262,13 +261,6 @@ export async function addDataObj(data: any) {
 							)
 						),
 
-						codeCustomElType: e.select(
-							e.sys_core.getCode(
-								'ct_sys_do_field_element_custom_type',
-								e.cast(e.str, e.json_get(f, 'codeCustomElType'))
-							)
-						),
-
 						codeElement: e.select(
 							e.sys_core.getCode(
 								'ct_sys_do_field_element',
@@ -276,7 +268,7 @@ export async function addDataObj(data: any) {
 							)
 						),
 
-						customElParms: e.cast(e.json, e.json_get(f, 'customElParms')),
+						customElement: e.cast(e.json, e.json_get(f, 'customElement')),
 
 						dbOrderCrumb: e.cast(e.int16, e.json_get(f, 'dbOrderCrumb')),
 
@@ -388,12 +380,42 @@ export async function addDataObjFieldItems(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addNodeObj(data: any) {
+export async function addNodeFooter(data: any) {
+	const query = e.params(
+		{
+			codeIcon: e.str,
+			codeType: e.str,
+			creator: e.str,
+			dataObj: e.optional(e.str),
+			header: e.optional(e.str),
+			name: e.str,
+			order: e.int16,
+			owner: e.str,
+			page: e.optional(e.str)
+		},
+		(p) => {
+			return e.insert(e.sys_obj.NodeObjFooter, {
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', p.codeIcon)),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', p.codeType)),
+				dataObj: e.select(e.sys_obj.getDataObj(p.dataObj)),
+				header: p.header,
+				name: p.name,
+				order: p.order,
+				owner: e.select(e.sys_core.getEnt(p.owner)),
+				page: p.page,
+				createdBy: e.select(e.sys_user.getUser(p.creator)),
+				modifiedBy: e.select(e.sys_user.getUser(p.creator))
+			})
+		}
+	)
+	return await query.run(client, data)
+}
+
+export async function addNodeProgramObj(data: any) {
 	const query = e.params(
 		{
 			owner: e.str,
 			parentNodeName: e.optional(e.str),
-			codeType: e.str,
 			name: e.str,
 			header: e.optional(e.str),
 			order: e.int16,
@@ -405,7 +427,7 @@ export async function addNodeObj(data: any) {
 			return e.insert(e.sys_obj.NodeObj, {
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				parent: e.select(e.sys_obj.getNodeObjByName(p.parentNodeName)),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', p.codeType)),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'programObject')),
 				name: p.name,
 				header: p.header,
 				order: p.order,

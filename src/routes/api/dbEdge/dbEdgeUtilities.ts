@@ -1,6 +1,7 @@
 import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
+import type { TokenAppTreeNodeId } from '$comps/nav/types.app'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
@@ -11,7 +12,7 @@ export async function execute(query: string) {
 	await client.execute(query)
 }
 
-export async function getDataObjIdByName(dataObjName: string) {
+export async function getDataObjId(dataObjName: string) {
 	const query = e.select(e.sys_obj.DataObj, (do1) => ({
 		id: true,
 		filter_single: e.op(do1.name, '=', dataObjName)
@@ -89,7 +90,6 @@ export async function getDataObjById(dataObjId: string) {
 					placeHolder: true
 				})),
 				_codeAccess: f.codeAccess.name,
-				_codeCustomElType: f.codeCustomElType.name,
 				_codeElement: f.codeElement.name,
 				_itemsList: e.select(f.itemsList, (il) => ({
 					dbSelect: true,
@@ -97,7 +97,7 @@ export async function getDataObjById(dataObjId: string) {
 					propertyId: true,
 					propertyLabel: true
 				})),
-				customElParms: true,
+				customElement: true,
 				headerAlt: true,
 				height: true,
 				isDisplay: true,
@@ -206,7 +206,18 @@ export async function getDataObjById(dataObjId: string) {
 	return await query.run(client)
 }
 
-export async function getNodesBranch(parentNodeId: string) {
+export async function getDataObjByName(dataObjName: string) {
+	const result = await getDataObjId(dataObjName)
+	const id = result?.id
+	if (id) {
+		return await getDataObjById(id)
+	} else {
+		return undefined
+	}
+}
+
+export async function getNodesBranch(token: TokenAppTreeNodeId) {
+	const parentNodeId = token.nodeId
 	const query = e.select(e.sys_obj.NodeObj, (n) => ({
 		id: true,
 		_codeType: n.codeType.name,
@@ -222,7 +233,8 @@ export async function getNodesBranch(parentNodeId: string) {
 	return await query.run(client)
 }
 
-export async function getNodesLevel(parentNodeId: string) {
+export async function getNodesLevel(token: TokenAppTreeNodeId) {
+	const parentNodeId = token.nodeId
 	const baseShape = e.shape(e.sys_obj.NodeObj, (n) => ({
 		id: true,
 		_codeType: n.codeType.name,
@@ -258,9 +270,16 @@ export async function getUserByUserId(userId: string) {
 			appName: true,
 			filter_single: e.op(org.id, '=', u.owner.id)
 		})),
-		resource_widgets: e.select(u.userTypes.resources.is(e.sys_user.Widget), (ut) => ({
+		resource_footer: e.select(e.sys_obj.NodeObjFooter, (f) => ({
 			id: true,
-			name: true
+			_codeType: f.codeType.name,
+			name: true,
+			header: true,
+			_codeIcon: f.codeIcon.name,
+			page: true,
+			dataObjId: f.dataObj.id,
+			order: true,
+			order_by: f.order
 		})),
 		resource_programs: e.select(u.userTypes.resources.is(e.sys_obj.NodeObj), (ut) => ({
 			id: true,
@@ -272,6 +291,10 @@ export async function getUserByUserId(userId: string) {
 			dataObjId: ut.dataObj.id,
 			order: true,
 			order_by: ut.order
+		})),
+		resource_widgets: e.select(u.userTypes.resources.is(e.sys_user.Widget), (ut) => ({
+			id: true,
+			name: true
 		})),
 		filter_single: e.op(u.id, '=', e.cast(e.uuid, userId))
 	}))

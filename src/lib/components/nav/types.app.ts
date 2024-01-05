@@ -1,60 +1,46 @@
 import {
 	DataObj,
-	DataObjCardinality,
+	DataObjData,
 	getUser,
-	memberOfEnum,
-	NavRowActionType,
-	Node,
 	NodeApp,
 	NodeNav,
-	NodeNavObject,
-	processQuery,
+	NodeType,
 	ResponseBody,
-	Token,
 	User,
 	valueOrDefault
 } from '$comps/types'
 import type { DataObjRaw, RawNode } from '$comps/types'
 import {
-	QueryParm,
-	QueryParmAction,
-	QueryParmData,
-	QueryParmDataRow
-} from '$comps/dataObj/types.query'
-import type { DataObjData, DataRowRecord, QueryParmDataValue } from '$comps/dataObj/types.query'
-
-import { apiFunctionsDBEdge, getNodes } from '$utils/db.utils'
+	apiFetch,
+	ApiFunction,
+	TokenApiDbDataObj,
+	TokenApiQueryType,
+	TokenApiQuery,
+	TokenApiQueryData
+} from '$lib/api'
+import { SurfaceType, Token } from '$comps/types.master'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/nav/types.app.ts'
 
-/* App */
 export class App {
 	crumbs: Array<any> = []
 	levels: Array<AppLevel> = []
 	private constructor(newLevel: AppLevel) {
 		this.levels.push(newLevel)
 	}
-	static async init(token: TokenAppTree) {
-		const appNode: NodeNavObject = new NodeNavObject(token.node)
-		const nodeLevelRoot = new NodeApp({
-			header: appNode.header,
-			id: appNode.id,
-			name: appNode.name,
-			dataObjId: appNode.dataObjId
-		})
-		const level = await AppLevel.init(nodeLevelRoot)
-		return level ? new App(level) : undefined
+	static async initDataObj(token: TokenApiQuery) {
+		return new App(await AppLevel.initDataObj(token))
 	}
-	async addLevel(rowNbr: number | undefined = undefined) {
-		const currLevel = this.getCurrLevel()
-		const currTab = currLevel.getCurrTab()
-		const isInsertMode = rowNbr === undefined
-		const presetParms = this.getPresetParms()
-		console.log('App.addLevel:', { presetParms })
-		const newLevel = await AppLevel.add(currTab, rowNbr, isInsertMode, presetParms)
+	static async initNode(node: NodeNav) {
+		return new App(await AppLevel.initNode(NodeApp.initTree(node)))
+	}
+	async addLevel(queryType: TokenApiQueryType) {
+		const newLevelIdx = this.levels.length
+		const newLevel = await AppLevel.add(newLevelIdx, this.getCurrLevel().getCurrTab())
 		if (newLevel) {
 			this.levels.push(newLevel)
+			await AppLevelTab.query(this.getCurrTab(), queryType, this)
 			return true
 		} else {
 			return false
@@ -77,9 +63,10 @@ export class App {
 		this.back(backCnt)
 	}
 	getCrumbsList() {
-		this.crumbs = []
+		this.crumbs = [new AppLevelCrumb(-1, 'Home')]
 		this.levels.forEach((level, i) => {
-			this.crumbs.push(new AppLevelCrumb(0, level.getCrumbLabel(0)))
+			const parentLevel = i > 0 ? this.levels[i - 1] : undefined
+			this.crumbs.push(new AppLevelCrumb(0, level.getCrumbLabel(0, parentLevel)))
 			if (level.currTabIdx > 0)
 				this.crumbs.push(new AppLevelCrumb(level.currTabIdx, level.getCrumbLabel(level.currTabIdx)))
 		})
@@ -88,123 +75,87 @@ export class App {
 	getCurrLevel() {
 		return this.levels[this.levels.length - 1]
 	}
-	getPresetParms() {
-		let parms: QueryParmDataValue = {}
-		this.levels.forEach((level) => {
-			const levelParm = level.getPresetParm()
-			if (levelParm.hasOwnProperty('key') && levelParm.hasOwnProperty('id') && levelParm.key)
-				parms[levelParm.key] = levelParm.id
-		})
-		return parms
+	getCurrTab() {
+		return this.levels[this.levels.length - 1].getCurrTab()
+	}
+	getCurrTabParent() {
+		return this.levels[this.levels.length - 2].getCurrTab()
+	}
+	getRowStatus() {
+		const parentLevel = this.levels.length - 2
+		if (parentLevel > -1) return this.levels[parentLevel].getCurrTab().getRowStatus()
 	}
 	popLevel() {
 		this.levels.pop()
+	}
+	async setRowAction(rowAction: AppRowActionType) {
+		if (this.levels.length > 1) {
+			this.getCurrTabParent().setCurrRowByAction(rowAction)
+			this.getCurrLevel().resetTabs()
+			await AppLevelTab.query(this.getCurrTab(), TokenApiQueryType.retrieve, this)
+		}
+	}
+	async updateTab(token: TokenAppDoDetail, queryType: TokenApiQueryType) {
+		this.getCurrLevel().resetTabs()
+
+		const currTab = this.getCurrTab()
+		currTab.data = token.dataObj.objData
+		if (!(await AppLevelTab.query(currTab, queryType, this))) return false
+
+		if (this.levels.length > 1) await this.getCurrTabParent().updateParentList(currTab, this)
+		return true
 	}
 }
 
 export class AppLevel {
 	currTabIdx: number
-	parentList: AppLevelParent | undefined
 	tabs: Array<AppLevelTab> = []
 	tabSet: number = 0
-	private constructor(
-		currTabIdx: number,
-		tabs: Array<AppLevelTab>,
-		parentList: AppLevelParent | undefined = undefined
-	) {
-		this.currTabIdx = currTabIdx
-		this.parentList = parentList
+	private constructor(tabs: Array<AppLevelTab>) {
+		this.currTabIdx = 0
 		this.tabs = tabs
 	}
-	static async init(nodeLevelRoot: NodeApp) {
-		const rootTab = await AppLevelTab.init(0, nodeLevelRoot, true)
-		return rootTab ? new AppLevel(0, [rootTab]) : undefined
+	static async initDataObj(token: TokenApiQuery) {
+		const newLevel = new AppLevel([await AppLevelTab.initDataObj(token)])
+		await AppLevelTab.query(newLevel.getCurrTab(), token.queryType)
+		return newLevel
 	}
-	static async add(
-		currTab: AppLevelTab,
-		rowNbr: number | undefined,
-		isInsertMode: boolean,
-		presetParms: QueryParmDataValue | undefined
-	) {
-		const parentList = new AppLevelParent(currTab, rowNbr)
+	static async initNode(node: NodeApp) {
+		const newLevel = new AppLevel([AppLevelTab.initNode(0, 0, node)])
+		await AppLevelTab.query(newLevel.getCurrTab(), TokenApiQueryType.retrieve)
+		return newLevel
+	}
+	static async add(newLevelIdx: number, currTab: AppLevelTab) {
+		const tabs: Array<AppLevelTab> = []
+
 		const rawNodes: {
 			root: Array<RawNode>
 			children: Array<RawNode>
-		} = await getNodes(apiFunctionsDBEdge.getNodesLevel, currTab.nodeId)
-
-		// add nodes
-		let tabs: Array<AppLevelTab> = []
-		const newAppNode = (dbNode: any) => {
-			return new NodeApp(Node.dbNodeToRaw(Node.dbNodeParseApp(dbNode)))
-		}
+		} = await getNodesLevel(currTab.nodeId)
 
 		if (rawNodes.root.length === 1) {
 			// add root
-			let newTab = await AppLevelTab.init(
-				0,
-				newAppNode(rawNodes.root[0]),
-				true,
-				parentList,
-				isInsertMode,
-				presetParms
-			)
-			if (newTab) {
-				tabs.push(newTab)
+			tabs.push(AppLevelTab.initNode(newLevelIdx, 0, NodeApp.initDb(rawNodes.root[0])))
 
-				// add children
-				rawNodes.children.forEach(async (rawNode, idx) => {
-					newTab = await AppLevelTab.init(
-						idx + 1,
-						newAppNode(rawNode),
-						false,
-						parentList,
-						isInsertMode,
-						presetParms
-					)
-					if (newTab) tabs.push(newTab)
-				})
-				return new AppLevel(0, tabs, parentList)
-			}
+			// add children
+			rawNodes.children.forEach(async (rawNode, idx) => {
+				tabs.push(AppLevelTab.initNode(newLevelIdx, idx + 1, NodeApp.initDb(rawNode)))
+			})
+			return new AppLevel(tabs)
 		}
 	}
-	async changeTab(tabIdx: number) {
-		this.setTabIdx(tabIdx)
-		const currTab = this.getCurrTab()
-		if (this.parentList && !currTab.isRetrieved) await AppLevelTab.retrieve(currTab, false)
-	}
-	getCrumbLabel(tabIdx: number) {
-		let label = this.tabs[tabIdx].label
-		if (this.parentList && tabIdx === 0) label += this.parentList.getCrumbLabelId()
-		return label
-	}
-	getCurrNodeId() {
-		return this.tabs[this.currTabIdx].nodeId
+	getCrumbLabel(tabIdx: number, parentLevel: AppLevel | undefined = undefined) {
+		const label = this.tabs[tabIdx].label
+		const labelId = parentLevel ? parentLevel.getCurrTab().getCrumbLabelId() : ''
+		// console.log('AppLevel.getCrumbLabel:', { label, labelId })
+		return label + labelId
 	}
 	getCurrTab() {
 		return this.tabs[this.currTabIdx]
 	}
-	getPresetParm() {
-		const rootTab = this.tabs[0]
-		if (
-			rootTab.dataObj &&
-			rootTab.dataObj.cardinality === DataObjCardinality.detail &&
-			rootTab.dataObjData
-		) {
-			const key = rootTab.dataObj.table?.getObject()
-			const id = rootTab.dataObjData[0].record.id.data
-			return { key, id }
-		} else {
-			return {}
-		}
-	}
-	getRowStatus() {
-		return this.parentList ? this.parentList.getRowStatus() : undefined
-	}
-	resetTabs(excludeRoot: boolean, retrieveParms: DataRowRecord | {}) {
-		this.tabs.forEach((tab, i) => {
-			if (excludeRoot && i === 0) return
-			tab.isRetrieved = false
-			tab.retrieveParms = retrieveParms
+	resetTabs() {
+		this.tabs.forEach((tab) => {
+			tab.reset()
 		})
 	}
 	setTabIdx(newIdx: number, setTabSet: boolean = false) {
@@ -219,83 +170,6 @@ export class AppLevelCrumb {
 	constructor(tabIdx: number, label: string) {
 		this.label = label
 		this.tabIdx = tabIdx
-	}
-}
-
-export class AppLevelParent {
-	crumbFieldNames: Array<string>
-	rowCount: number
-	rowCurrent: number | undefined
-	tab: AppLevelTab
-	constructor(tab: AppLevelTab, rowCurrent: number | undefined) {
-		this.crumbFieldNames = tab.dataObj?.crumbs ? tab.dataObj.crumbs : []
-		this.rowCount = tab.dataObjData ? tab.dataObjData.length : -1
-		this.rowCurrent = rowCurrent
-		this.tab = tab
-	}
-	getCrumbLabelId() {
-		let id = ''
-		if (this.rowCurrent !== undefined && this.rowCurrent > -1) {
-			const dataRow = this.getData() || {}
-			this.crumbFieldNames.forEach((f) => {
-				if (dataRow.hasOwnProperty(f)) {
-					if (id) id += ' '
-					id += dataRow[f].hasOwnProperty('display') ? dataRow[f].display : dataRow[f]
-				}
-			})
-		}
-		return id ? ` [${id}]` : ''
-	}
-	getData() {
-		return this.tab.dataObjData && this.rowCurrent !== undefined
-			? this.tab.dataObjData[this.rowCurrent].record
-			: {}
-	}
-
-	getRowStatus() {
-		if (this.rowCurrent !== undefined) return new AppLevelRowStatus(this.rowCount, this.rowCurrent)
-	}
-	reset() {
-		this.rowCurrent = -1
-	}
-	async retrieve() {
-		if (this.tab.dataObjData) {
-			await AppLevelTab.retrieve(this.tab, false)
-			this.rowCount = this.tab.dataObjData.length
-		}
-	}
-	setRowAction(rowAction: NavRowActionType) {
-		if (this.rowCurrent === undefined) return
-		let newRow: number
-		switch (rowAction) {
-			case NavRowActionType.first:
-				newRow = 0
-				break
-
-			case NavRowActionType.left:
-				newRow = this.rowCurrent - 1
-				break
-
-			case NavRowActionType.right:
-				newRow = this.rowCurrent + 1
-				break
-
-			case NavRowActionType.last:
-				newRow = this.rowCount - 1
-				break
-
-			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'AppLevelParent.changeRow',
-					message: `No case defined for NavRowActionType: ${rowAction}`
-				})
-		}
-		this.rowCurrent = newRow
-	}
-	setRowId(recId: string) {
-		if (this.tab.dataObjData)
-			this.rowCurrent = this.tab.dataObjData.findIndex((row) => row.record.id.data === recId)
 	}
 }
 
@@ -315,105 +189,287 @@ export class AppLevelRowStatus {
 }
 
 export class AppLevelTab {
-	dataObj: DataObj | undefined
-	dataObjData: DataObjData | undefined
+	currRow?: number
+	data?: DataObjData
+	dataObj?: DataObj
 	dataObjId: string
-	dataObjRaw: DataObjRaw | undefined
+	dataObjRaw?: DataObjRaw
 	idx: number
 	isRetrieved: boolean = false
 	label: string
+	levelIdx: number
 	nodeId: string
-	retrieveParms: DataRowRecord
 	private constructor(
+		levelIdx: number,
 		idx: number,
-		label: string,
-		nodeId: string,
 		dataObjId: string,
-		parent: AppLevelParent | undefined
+		label: string = '',
+		nodeId: string = ''
 	) {
 		this.idx = idx
 		this.label = label
+		this.levelIdx = levelIdx
 		this.nodeId = nodeId
 		this.dataObjId = dataObjId
-		this.retrieveParms = parent ? parent.getData() : {}
 	}
-	static async init(
-		idx: number,
-		node: NodeApp,
-		retrieveData: boolean,
-		parent: AppLevelParent | undefined = undefined,
-		isInsertMode: boolean = false,
-		presetParms: QueryParmDataValue = {}
-	) {
-		const tab = new AppLevelTab(idx, node.header, node.id, node.dataObjId, parent)
-		if (retrieveData) if (!(await this.retrieve(tab, isInsertMode, presetParms))) return
-		return tab
-	}
-	static async retrieve(
-		tab: AppLevelTab,
-		isInsertMode: boolean = false,
-		presetParms: QueryParmDataValue = {}
-	) {
-		let queryParmAction: QueryParmAction = QueryParmAction.retrieve
-		let queryParmActionType: AppObjActionType = AppObjActionType.none
-		let data = {}
-
-		if (isInsertMode) {
-			queryParmAction = QueryParmAction.processAction
-			queryParmActionType = AppObjActionType.detailNew
-			data = { preset: presetParms }
+	static async initDataObj(token: TokenApiQuery) {
+		const result: ResponseBody = await apiFetch(ApiFunction.dbEdgeGetDataObjId, token)
+		console.log('AppLevelTab.initDataObj:', { token, result })
+		if (result.success) {
+			let dataObjId = result.data.id
+			const tab = new AppLevelTab(0, 0, dataObjId)
+			console.log('AppLevelTab.initDataObj:', { token, dataObjId, tab })
+			return tab
 		} else {
-			data = { retrieve: tab.retrieveParms }
+			throw error(500, {
+				file: FILENAME,
+				function: 'initDataObj',
+				message: `Error retrieving dataObj: ${token.dataObj.dataObjName}`
+			})
+		}
+	}
+	static initNode(levelIdx: number, idx: number, node: NodeApp) {
+		return new AppLevelTab(levelIdx, idx, node.dataObjId, node.label, node.id)
+	}
+
+	static async query(
+		tab: AppLevelTab,
+		queryType: TokenApiQueryType,
+		app: App | undefined = undefined
+	) {
+		let record = {}
+
+		switch (queryType) {
+			case TokenApiQueryType.delete:
+			case TokenApiQueryType.saveInsert:
+			case TokenApiQueryType.saveUpdate:
+				record = tab?.data ? tab.data.dataObjRow.record : {}
+				break
+
+			case TokenApiQueryType.new:
+				if (app && tab.levelIdx > 1) {
+					const tabGrandparent = app.levels[tab.levelIdx - 2].getCurrTab()
+					record = tabGrandparent.getData()
+				}
+				break
+
+			case TokenApiQueryType.none:
+				return
+
+			case TokenApiQueryType.retrieve:
+				if (tab.isRetrieved) return
+
+				if (app && tab.levelIdx > 0) {
+					const tabParent = app.levels[tab.levelIdx - 1].getCurrTab()
+					record = tabParent.getData()
+				}
+				break
+
+			default:
+				throw error(500, {
+					file: FILENAME,
+					function: 'AppLevelTab.query',
+					message: `No case defined for AppLevelTabQueryType: ${queryType}`
+				})
 		}
 
-		const result: ResponseBody = await processQuery(
-			new QueryParm(
-				{ dataObjId: tab.dataObjId, dataObjRaw: tab.dataObjRaw },
-				queryParmAction,
-				queryParmActionType,
-				new QueryParmData(data)
+		const result: ResponseBody = await apiFetch(
+			ApiFunction.dbEdgeProcessQuery,
+			new TokenApiQuery(
+				queryType,
+				new TokenApiDbDataObj({ dataObjId: tab.dataObjId, dataObjRaw: tab.dataObjRaw }),
+				new TokenApiQueryData({ record })
 			)
 		)
-		console.log('AppLevelTab.retrieve.result:', { result })
+
 		if (result.success) {
+			// execute callbacks
+			tab.data?.callbacks.forEach(async (c) => await c.callback())
+
+			// update tab
+			tab.data = result.data.dataObjData
 			tab.dataObj = new DataObj(result.data.dataObjRaw)
-			tab.dataObjData = result.data.dataObjData
 			tab.dataObjRaw = result.data.dataObjRaw
 			tab.isRetrieved = true
+
 			return true
 		} else {
+			let errMsg = result.message
+			if (result.message.toLowerCase().includes('invalid query')) {
+				if (queryType === TokenApiQueryType.delete) {
+					errMsg = 'Unable to delete this record.'
+					if (result.message.toLowerCase().includes('still referenced in link')) {
+						let parts = result.message.split('::')
+						let table = parts[parts.length - 1]
+						table = table.split(' ')[0]
+						errMsg += ` It is referenced in record(s) of child table: ${table}.\n\nThe child table record(s) must be deleted before the parent table record can be deleted.`
+					}
+				}
+			}
+			alert(errMsg)
+			return false
 		}
 	}
-	async update(dataObjData: DataObjData | undefined) {
-		if (dataObjData) this.dataObjData = dataObjData
+
+	getCrumbLabelId() {
+		let id = ''
+		const crumbFieldNames: Array<string> = this.dataObj?.crumbs ? this.dataObj.crumbs : []
+		if (crumbFieldNames.length > 0 && this.currRow !== undefined && this.currRow > -1) {
+			const dataRow = this.getData() || {}
+			crumbFieldNames.forEach((f) => {
+				if (dataRow.hasOwnProperty(f)) {
+					if (id) id += ' '
+					id += dataRow[f].hasOwnProperty('display') ? dataRow[f].display : dataRow[f]
+				}
+			})
+		}
+		return id ? ` [${id}]` : ''
+	}
+
+	getData() {
+		return this.currRow !== undefined && this.currRow > -1 && this.data
+			? this.data.dataObjList[this.currRow].record
+			: {}
+	}
+	getRowStatus() {
+		const currLength = this.data?.dataObjList.length
+		if (currLength !== undefined && this.currRow !== undefined && this.currRow > -1)
+			return new AppLevelRowStatus(currLength, this.currRow)
+	}
+	reset() {
+		this.isRetrieved = false
+	}
+	setCurrRowByAction(rowAction: AppRowActionType) {
+		const rowCount = this.data?.dataObjList.length
+		if (this.currRow === undefined || rowCount === undefined) return
+		let newRow: number
+		switch (rowAction) {
+			case AppRowActionType.first:
+				newRow = 0
+				break
+
+			case AppRowActionType.left:
+				newRow = this.currRow - 1
+				break
+
+			case AppRowActionType.right:
+				newRow = this.currRow + 1
+				break
+
+			case AppRowActionType.last:
+				newRow = rowCount - 1
+				break
+
+			default:
+				throw error(500, {
+					file: FILENAME,
+					function: 'AppLevelTab.setCurrRowByAction',
+					message: `No case defined for AppRowActionType: ${rowAction}`
+				})
+		}
+		this.currRow = newRow
+	}
+	setCurrRowByNum(rowNum: number) {
+		this.currRow = rowNum
+	}
+	async updateParentList(currTab: AppLevelTab, app: App) {
+		this.reset()
+		await AppLevelTab.query(this, TokenApiQueryType.retrieve, app)
+
+		// set parent list curr row
+		let rowIdx = -1
+		if (this.data && currTab.data?.dataObjRow?.hasOwnProperty('record')) {
+			const rowId = currTab.data?.dataObjRow.record.id.data
+			rowIdx = this.data.dataObjList.findIndex((row) => {
+				return row.record.id.data === rowId
+			})
+		}
+		this.setCurrRowByNum(rowIdx)
 	}
 }
 
-export class NavState {
-	callbacks: Array<Function> | undefined
-	checkObjChanged: boolean
-	component: NavStateComponent
-	page: 'home' | 'app'
-	token: Token | undefined
+export enum AppRowActionType {
+	first = 'first',
+	left = 'left',
+	right = 'right',
+	last = 'last'
+}
+
+export class State {
+	nodeType: NodeType = NodeType.home
+	objHasChanged: boolean = false
+	objValidToSave: boolean = true
+	packet: StatePacket | undefined
+	page: string = '/home'
+	surface: SurfaceType = SurfaceType.default
+	updateFunction: Function
 	user: User | undefined = getUser()
+	constructor(updateFunction: Function) {
+		this.updateFunction = updateFunction
+	}
+	consume(components: StatePacketComponent | Array<StatePacketComponent>) {
+		if (this.packet && this.packet.component && components.includes(this.packet.component)) {
+			const packet = this.packet
+			this.packet = undefined
+			return packet
+		} else {
+			return undefined
+		}
+	}
+	resetStatus() {
+		this.updateFunction({ objHasChanged: false, objValidToSave: true })
+	}
+	set(packet: StatePacket) {
+		this.packet = packet
+	}
+	update(obj: any) {
+		this.updateFunction(obj)
+	}
+	updateProperties(obj: any) {
+		if (obj.hasOwnProperty('nodeType')) this.nodeType = obj.nodeType
+		if (obj.hasOwnProperty('objHasChanged')) this.objHasChanged = obj.objHasChanged
+		if (obj.hasOwnProperty('objValidToSave')) this.objValidToSave = obj.objValidToSave
+		if (obj.hasOwnProperty('page')) this.page = obj.page
+		if (obj.hasOwnProperty('surface')) this.surface = obj.surface
+		return this
+	}
+}
+export class StatePacket {
+	callbacks: Array<Function>
+	checkObjChanged: boolean = true
+	component: StatePacketComponent
+	token?: Token
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
 		this.callbacks = obj.callbacks ? obj.callbacks : []
 		this.checkObjChanged = obj.hasOwnProperty('checkObjChanged') ? obj.checkObjChanged : true
-		this.component = NavStateComponent[obj.component as keyof typeof NavStateComponent]
-		this.page = obj.page ? obj.page : 'app'
+		this.component = obj.hasOwnProperty('component') ? obj.component : undefined
 		this.token = obj.token ? obj.token : undefined
 	}
 }
-export enum NavStateComponent {
-	back = 'back',
-	crumbs = 'crumbs',
-	footer = 'footer',
-	objAction = 'objAction',
-	page = 'page',
-	row = 'row',
-	tab = 'tab',
-	tree = 'tree'
+export enum StatePacketComponent {
+	appCrumbs = 'appCrumbs',
+	appDataObj = 'appDataObj',
+	appRow = 'appRow',
+	appTab = 'appTab',
+	navApp = 'navApp',
+	navTree = 'navTree'
+}
+
+async function getNodesLevel(nodeId: string) {
+	const result: ResponseBody = await apiFetch(
+		ApiFunction.dbEdgeGetNodesLevel,
+		new TokenAppTreeNodeId(nodeId)
+	)
+	if (result.success) {
+		return result.data
+	} else {
+		throw error(500, {
+			file: FILENAME,
+			function: 'getNodes',
+			message: `Error retrieving nodes for nodeId: ${nodeId}`
+		})
+	}
 }
 
 export class TokenApp extends Token {
@@ -428,28 +484,36 @@ export class TokenAppCrumbs extends TokenApp {
 		this.crumbIdx = crumbIdx
 	}
 }
-export class TokenAppObjAction extends TokenApp {
-	actionType: AppObjActionType
-	confirm: ObjActionConfirm | undefined
-	dataObjData: Array<QueryParmDataRow> | undefined
-	dataObjRaw: DataObjRaw | undefined
-	dbProcess: boolean
-	constructor(obj: any) {
+
+export class TokenAppDo extends TokenApp {
+	action: TokenAppDoAction
+	dataObj: DataObj
+	constructor(action: TokenAppDoAction, dataObj: DataObj) {
 		super()
-		this.actionType = memberOfEnum(
-			obj.actionType,
-			'TokenAppObjAction',
-			'actionType',
-			'AppObjActionType',
-			AppObjActionType
-		)
-		this.confirm = obj.confirm ? obj.confirm : undefined
-		this.dataObjData = obj.hasOwnProperty('dataObjData') ? obj.dataObjData : undefined
-		this.dataObjRaw = obj.hasOwnProperty('dataObjRaw') ? obj.dataObjRaw : undefined
-		this.dbProcess = obj.hasOwnProperty('dbProcess') ? obj.dbProcess : true
+		this.action = action
+		this.dataObj = dataObj
 	}
 }
-export class ObjActionConfirm {
+export enum TokenAppDoAction {
+	back = 'back',
+	listEdit = 'listEdit',
+	listNew = 'listNew',
+	detailDelete = 'detailDelete',
+	detailNew = 'detailNew',
+	detailSaveInsert = 'detailSaveInsert',
+	detailSaveUpdate = 'detailSaveUpdate',
+	none = 'none'
+}
+
+export class TokenAppDoDetail extends TokenAppDo {
+	confirm: TokenAppDoDetailConfirm | undefined
+	constructor(action: TokenAppDoAction, dataObj: DataObj, confirm?: TokenAppDoDetailConfirm) {
+		super(action, dataObj)
+		this.confirm = confirm
+	}
+}
+
+export class TokenAppDoDetailConfirm {
 	buttonConfirmLabel: string
 	msg: string
 	title: string
@@ -459,9 +523,26 @@ export class ObjActionConfirm {
 		this.title = title
 	}
 }
+
+export class TokenAppDoList extends TokenAppDo {
+	rowNbr: number
+	constructor(action: TokenAppDoAction, dataObj: DataObj, rowNbr: number) {
+		super(action, dataObj)
+		this.rowNbr = rowNbr
+	}
+}
+
+export class TokenAppDoName extends TokenApp {
+	dataObjName: string
+	constructor(dataObjName: string) {
+		super()
+		this.dataObjName = dataObjName
+	}
+}
+
 export class TokenAppRow extends TokenApp {
-	rowAction: NavRowActionType
-	constructor(rowAction: NavRowActionType) {
+	rowAction: AppRowActionType
+	constructor(rowAction: AppRowActionType) {
 		super()
 		this.rowAction = rowAction
 	}
@@ -473,21 +554,28 @@ export class TokenAppTab extends TokenApp {
 		this.tabIdx = tabIdx
 	}
 }
-export class TokenAppTree extends TokenApp {
+export class TokenAppTreeNodeId extends TokenApp {
+	nodeId: string
+	constructor(nodeId: string) {
+		super()
+		this.nodeId = nodeId
+	}
+}
+export class TokenAppTreeNode extends TokenApp {
 	node: NodeNav
 	constructor(node: NodeNav) {
 		super()
 		this.node = node
 	}
 }
+export class TokenAppTreeReset extends TokenApp {
+	constructor() {
+		super()
+	}
+}
 
-export enum AppObjActionType {
-	back = 'back',
-	listEdit = 'listEdit',
-	listNew = 'listNew',
-	detailDelete = 'detailDelete',
-	detailNew = 'detailNew',
-	detailSaveInsert = 'detailSaveInsert',
-	detailSaveUpdate = 'detailSaveUpdate',
-	none = 'none'
+export class TokenAppTreeSetParent extends TokenApp {
+	constructor() {
+		super()
+	}
 }

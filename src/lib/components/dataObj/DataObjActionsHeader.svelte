@@ -1,26 +1,20 @@
 <script lang="ts">
 	import type { DataObj } from '$comps/types'
+	import { NodeType } from '$comps/types'
 	import DataObjActions from '$comps/dataObj/DataObjActions.svelte'
-	import { DataObjStatus, SurfaceType } from '$comps/types'
-	import type { NavState } from '$comps/nav/types.app'
+	import { SurfaceType } from '$comps/types.master'
+	import type { State } from '$comps/nav/types.app'
 	import { createEventDispatcher } from 'svelte'
-	import { appObjStatusStore } from '$comps/nav/app'
 
 	const dispatch = createEventDispatcher()
 
-	export let stateAdd = (token: NavState) => {}
-	export let stateGlobal: NavState | undefined
-	export let surface: SurfaceType
+	export let state: State
 	export let dataObj: DataObj
 
 	const isHeader = true
 
-	let appObjStatus: DataObjStatus
 	let isEditing = false
-	$: {
-		appObjStatus = Object.assign(new DataObjStatus(), $appObjStatusStore)
-		isEditing = appObjStatus.objHasChanged
-	}
+	$: isEditing = state.objHasChanged && state.surface === SurfaceType.default
 
 	let classPopup = ''
 	let classPopupHeader = ''
@@ -34,50 +28,50 @@
 	}
 </script>
 
-<div class="mb-7">
-	{#if surface === SurfaceType.overlay}
-		<div class="flex justify-between">
-			<div>
-				<div class="grid grid-cols-10 gap-4">
-					<div class="col-span-9">
-						<h1 class="h1">{dataObj.header}</h1>
-					</div>
-				</div>
-			</div>
-			<div class="flex">
-				<DataObjActions {stateAdd} {stateGlobal} {dataObj} justify={'end'} {isHeader} />
-				<div>
-					<button
-						type="button"
-						class="btn-icon btn-icon-sm variant-filled-error ml-2"
-						on:click={cancel}>X</button
-					>
-				</div>
-			</div>
-		</div>
-		{#if dataObj.subHeader}
-			<h4 class="h4 text-gray-500">{dataObj.subHeader}</h4>
-		{/if}
-	{:else if surface === SurfaceType.page}
+<div class="mb-4">
+	{#if state.nodeType === NodeType.object}
 		<div class="flex justify-between items-start">
-			<h1 class="h1">{dataObj.header}</h1>
-			<DataObjActions {stateAdd} {stateGlobal} {dataObj} justify={'end'} {isHeader} />
+			<h2 class="h2 ml-2">{dataObj.header}</h2>
+			<div class="flex">
+				{#if isEditing}
+					<div class="mr-4"><p class="text-lg text-blue-600">Editing...</p></div>
+				{/if}
+				{#if state.surface === SurfaceType.overlay}
+					<div>
+						<button
+							type="button"
+							class="btn-icon btn-icon-sm variant-filled-error ml-2"
+							on:click={cancel}>X</button
+						>
+					</div>
+				{/if}
+			</div>
 		</div>
-
 		{#if dataObj.subHeader}
 			<h4 class="h4 text-gray-500">{dataObj.subHeader}</h4>
 		{/if}
-	{:else if surface === SurfaceType.tab}
+	{:else if state.nodeType === NodeType.programObject}
 		{#if dataObj.subHeader}
 			<div class="mb-4">
 				<h4 class="h4 text-gray-500">{dataObj.subHeader}</h4>
 			</div>
 		{/if}
 		<div class="flex justify-between">
-			<DataObjActions {stateAdd} {stateGlobal} {dataObj} justify={'start'} {isHeader} />
-			{#if isEditing}
-				<div class="mr-4"><p class="text-lg text-blue-600">Editing...</p></div>
-			{/if}
+			<DataObjActions {state} {dataObj} justify={'start'} {isHeader} />
+			<div class="flex">
+				{#if isEditing}
+					<div class="mr-4"><p class="text-lg text-blue-600">Editing...</p></div>
+				{/if}
+				{#if state.surface === SurfaceType.overlay}
+					<div>
+						<button
+							type="button"
+							class="btn-icon btn-icon-sm variant-filled-error ml-2"
+							on:click={cancel}>X</button
+						>
+					</div>
+				{/if}
+			</div>
 		</div>
 	{/if}
 </div>

@@ -1,7 +1,5 @@
 import { redirect } from '@sveltejs/kit'
-import { getUser } from '$server/apiUser'
-import type { ResponseBody } from '$comps/types'
-import { resetLocalStorage } from '$comps/types'
+import { getUserByUserId } from '$routes/api/dbEdge/types.dbEdge'
 
 const FILENAME = 'hooks.server'
 
@@ -19,7 +17,6 @@ export async function handle({ event, resolve }) {
 
 	if (event.url.pathname.startsWith('/logout')) {
 		console.log(FILENAME, 'logout...')
-		resetLocalStorage()
 		throw redirect(303, '/')
 	}
 
@@ -43,21 +40,20 @@ export async function handle({ event, resolve }) {
 	}
 
 	// get user info
-	event.locals.user = await fetchUser(sessionId)
-	// console.log('hooks.user:', event.locals.user)
-	if (!event.locals.user) {
+	const user = await getUserByUserId(sessionId)
+	if (!user) {
 		console.log(FILENAME, `redirect - could not retrieve user: ${sessionId}`)
 		throw redirect(303, '/')
 	}
 
 	// confirm legal disclosure
-	// if (!event.locals.user.cm_ssr_disclosure) {
+	// if (!user.cm_ssr_disclosure) {
 	// 	console.log(FILENAME, 'redirect - not disclosed...')
 	// 	throw redirect(303, '/legalDisclosure')
 	// }
 
 	// security protected routes
-	return resolve(event)
+	return await resolve(event)
 }
 
 export const handleError = ({ error, event }) => {
@@ -70,10 +66,4 @@ export const handleError = ({ error, event }) => {
 		function: 'unknown',
 		message
 	}
-}
-
-async function fetchUser(sessionId: string) {
-	const responsePromise: Response = await getUser(sessionId)
-	const response: ResponseBody = await responsePromise.json()
-	return response.data
 }

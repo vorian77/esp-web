@@ -17,13 +17,12 @@ import {
 	widgets
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import {
-	addCode,
-	addCodeType,
 	addColumn,
+	addDataObj,
 	addDataObjAction,
 	addDataObjFieldItems,
+	addNodeFooter,
 	addUser,
-	execute,
 	review
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
@@ -39,6 +38,8 @@ export default async function initSys() {
 	await initSysColumns()
 	await initSysDataObjActions()
 	await initTablePerson()
+	await dataObjAccount()
+	await initFooter()
 	await initSysApp()
 	// await initReviewQuery()
 	console.log(`${FILE}.end`)
@@ -172,12 +173,13 @@ async function initSysCodes() {
 		['ct_sys_node_obj_icon', 'app_sys', 'root', 1],
 
 		// node obj - types
-		['ct_sys_node_obj_type', 'app_sys', 'app', 0],
-		['ct_sys_node_obj_type', 'app_sys', 'navHeader', 1],
-		['ct_sys_node_obj_type', 'app_sys', 'navObject', 2],
-		['ct_sys_node_obj_type', 'app_sys', 'navPage', 3],
-		['ct_sys_node_obj_type', 'app_sys', 'navProgram', 4],
-		['ct_sys_node_obj_type', 'app_sys', 'navTreeRoot', 5],
+		['ct_sys_node_obj_type', 'app_sys', 'header', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'home', 1],
+		['ct_sys_node_obj_type', 'app_sys', 'object', 2],
+		['ct_sys_node_obj_type', 'app_sys', 'page', 3],
+		['ct_sys_node_obj_type', 'app_sys', 'program', 4],
+		['ct_sys_node_obj_type', 'app_sys', 'programObject', 5],
+		['ct_sys_node_obj_type', 'app_sys', 'treeRoot', 6],
 
 		// sys - person - race
 		['ct_sys_person_race', 'app_sys', 'American Indian and Alaskan Native', 0],
@@ -364,6 +366,15 @@ async function initSysColumns() {
 		await addColumn({
 			creator: 'user_sys',
 			owner: 'app_sys',
+			codeDataType: 'int64',
+			header: 'Security Code',
+			name: 'authSecurityCode',
+			pattern: '^\\d{6}$',
+			patternMsg: 'Security Code should be exactly 6 digits.'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
 			codeDataType: 'str',
 			header: 'Category',
 			name: 'codeCategory'
@@ -439,7 +450,6 @@ async function initSysColumns() {
 			header: 'Note',
 			name: 'note'
 		})
-
 		await addColumn({
 			codeDataType: 'edgeType',
 			creator: 'user_sys',
@@ -447,6 +457,20 @@ async function initSysColumns() {
 			header: 'Owner',
 			name: 'owner',
 			owner: 'app_sys'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Password',
+			name: 'password'
+		})
+		await addColumn({
+			creator: 'user_sys',
+			owner: 'app_sys',
+			codeDataType: 'str',
+			header: 'Mobile Phone Number',
+			name: 'userName'
 		})
 	}
 }
@@ -676,29 +700,106 @@ async function initTablePerson() {
 		})
 	}
 }
+async function dataObjAccount() {
+	await tables([['app_sys', 'sys_user', 'User', false]])
+
+	await addDataObj({
+		creator: 'user_sys',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		header: 'My Account',
+		name: 'data_obj_auth_account',
+		owner: 'app_sys',
+		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
+		exprFilter: '.id = <uuid,user,id>',
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				isDbFilter: true,
+				isDisplay: false,
+				dbOrderSelect: 10
+			},
+			{
+				columnName: 'firstName',
+				dbOrderSelect: 20,
+				isLinkMember: true
+			},
+			{
+				columnName: 'lastName',
+				dbOrderSelect: 30,
+				isLinkMember: true
+			},
+
+			{
+				codeElement: 'tel',
+				columnName: 'userName',
+				dbOrderSelect: 40
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'link',
+					action: {
+						type: 'submit',
+						value: 'data_obj_auth_reset_password',
+						function: 'action_data_obj_auth_account_change_password'
+					},
+					label: 'Reset Password?'
+				},
+				dbOrderSelect: 50
+			}
+		]
+	})
+}
+
+async function initFooter() {
+	await addNodeFooter({
+		codeIcon: 'application',
+		codeType: 'home',
+		creator: 'user_sys',
+		header: 'Home',
+		name: 'node_obj_sys_footer_home',
+		order: 10,
+		owner: 'app_sys'
+	})
+
+	await addNodeFooter({
+		codeIcon: 'application',
+		codeType: 'page',
+		creator: 'user_sys',
+		header: 'Contact Us',
+		name: 'node_obj_sys_footer_contact_us',
+		order: 20,
+		owner: 'app_sys',
+		page: '/home/cm/contactUs'
+	})
+
+	await addNodeFooter({
+		codeIcon: 'application',
+		codeType: 'object',
+		creator: 'user_sys',
+		dataObj: 'data_obj_auth_account',
+		header: 'My Account',
+		name: 'node_obj_sys_footer_auth_account',
+		order: 30,
+		owner: 'app_sys'
+	})
+}
 
 async function initSysApp() {
-	await nodeObjPrograms([
-		['app_sys', 'navProgram', 'node_pgm_sys_admin', 'SysAdmin', 10, 'application']
-	])
+	await nodeObjPrograms([['app_sys', 'node_pgm_sys_admin', 'SysAdmin', 10, 'application']])
 
 	await nodeObjHeaders([
-		[
-			'app_sys',
-			'node_pgm_sys_admin',
-			'navHeader',
-			'node_hdr_sys_utility_header',
-			'Utilities',
-			40,
-			'application'
-		]
+		['app_sys', 'node_pgm_sys_admin', 'node_hdr_sys_utility_header', 'Utilities', 40, 'application']
 	])
 
 	await nodeObjPages([
 		[
 			'app_sys',
 			'node_sys_utility_header',
-			'navPage',
 			'node_page_sys_utility_quotes',
 			'Utility-Quotes',
 			10,

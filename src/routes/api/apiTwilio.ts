@@ -1,5 +1,6 @@
 import pkg from 'twilio'
 const { Twilio } = pkg
+import type { TokenApiSendText } from '$lib/api'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '$server/twilio.ts'
@@ -11,14 +12,14 @@ import {
 	TWILIO_MAXPRICE
 } from '$env/static/private'
 
-export async function sendText(phoneNbrTo: string, textBody: string) {
+export async function sendText(token: TokenApiSendText) {
 	const twilio = new Twilio(TWILIO_ACCT_SID, TWILIO_AUTH_TOKEN)
 
 	// parms
 	const parms = {
 		from: TWILIO_PHONE_NBR,
-		to: phoneNbrTo,
-		body: textBody,
+		to: token.phoneMobile,
+		body: token.message,
 		MaxPrice: TWILIO_MAXPRICE
 	}
 

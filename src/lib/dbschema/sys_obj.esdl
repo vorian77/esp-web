@@ -11,6 +11,8 @@ module sys_obj{
     constraint exclusive on (.name);
   }
 
+  type NodeObjFooter extending sys_obj::NodeObj {}
+
   type DataObjAction extending sys_core::Obj {
     allTabs: bool;
     color: str;
@@ -60,9 +62,8 @@ module sys_obj{
       on source delete allow;
     };   
     codeAccess: sys_core::Code;
-    codeCustomElType: sys_core::Code;
     codeElement: sys_core::Code;
-    customElParms: json;
+    customElement: json;
     dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
     headerAlt: str;

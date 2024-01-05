@@ -1,71 +1,31 @@
 <script lang="ts">
-	// import { NavTree } from '$comps/types'
-	import type { Node } from '$comps/types'
-	import Icon from '$comps/Icon.svelte'
-	import { page } from '$app/stores'
+	import { AppShell } from '@skeletonlabs/skeleton'
+	import type { User } from '$comps/types'
+	import { getUser } from '$comps/types'
+	import SysUser from '$routes/home/User.svelte'
+	import CMUser from '$routes/home/UserCM.svelte'
+	import Quote from '$routes/home/Quote.svelte'
+	import DataViewer from '$comps/DataViewer.svelte'
 
-	// let navTreeLocal: NavTree
-	let navTreeList: Node[]
+	const FILENAME = '$comps/nav/NavPageHome.svelte'
 
-	$: {
-		// navTreeLocal = Object.assign(new NavTree([]), $navTreeOld)
-		// navTreeList = navTreeLocal.listBranch
-	}
+	const user: User | undefined = getUser()
 
-	const FILENAME = '/$comps/nav/NavHome.svelte'
-
-	const NAV_COLOR = '#3b79e1'
-	const ITEM_COLORS = ['#f5f5f5', '#dedede']
-
-	// styling
-	const styleContainer = `
-				display: flex; 
-				flex-wrap: wrap; 
-				gap: 5px;
-				justify-content: space-between; 
-			`
-	const styleItem = `
-				display: flex;
-				align-items: center;		
-				font-size: 10px;
-				color: ${NAV_COLOR};
-				flex-direction: column;
-				justify-content: center;
-				gap: 0px;
-				background-color: whitesmoke;
-				border-radius: 5px;
-				width: 85px;
-				height: 55px;`
-	const styleItemHover =
-		styleItem +
-		`
-			background-color: ${ITEM_COLORS[1]};`
-	const styleItemActive =
-		styleItem +
-		`
-				background-color: ${ITEM_COLORS[1]};`
-	const marginTopheader = '-mt-1'
-
-	function processNode(node: Node) {
-		// nodeProcessTree($page.url.pathname, node)
-	}
+	let showSysUser: boolean = user ? user.hasResourceWidget('widget_sys_user') : false
+	let showCMUser: boolean = user ? user.hasResourceWidget('widget_cm_user') : false
+	let showCMQuote: boolean = user ? user.hasResourceWidget('widget_cm_quotes') : false
 </script>
 
-<div id="container" style={styleContainer}>
-	<!-- {#each navTreeList as node}
-		<div
-			role="button"
-			tabindex="0"
-			style={node.page == $page.url.pathname ? styleItemActive : styleItem}
-			on:click={() => processNode(node)}
-			on:keyup={() => processNode(node)}
-		>
-			<div class="mt-2">
-				<Icon name={node.icon} width="1.0rem" height="1.0rem" fill={NAV_COLOR} />
-			</div>
-			<div class={marginTopheader}>
-				{node.header}
-			</div>
-		</div>
-	{/each} -->
-</div>
+<AppShell>
+	{#if showSysUser}
+		<SysUser {user} />
+	{/if}
+
+	{#if showCMUser}
+		<CMUser {user} />
+	{/if}
+
+	{#if showCMQuote}
+		<Quote />
+	{/if}
+</AppShell>
