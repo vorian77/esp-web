@@ -21,11 +21,11 @@ const client = new MongoClient(uri, {
 try {
 	await client.connect()
 } catch (err) {
-	throw error(500, {
-		file: FILENAME,
-		function: 'Launch',
-		message: 'Connection to MongoDB failed.'
-	})
+	error(500, {
+    		file: FILENAME,
+    		function: 'Launch',
+    		message: 'Connection to MongoDB failed.'
+    	});
 }
 
 onMount(() => {
@@ -38,11 +38,11 @@ export async function dbGetForm(formName: string) {
 	console.log('dbGetForm:', formName)
 
 	if (!result) {
-		throw error(500, {
-			file: FILENAME,
-			function: 'dbGetForm',
-			message: `Unable to retrieve form (${formName}).`
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'dbGetForm',
+        			message: `Unable to retrieve form (${formName}).`
+        		});
 	}
 
 	return result
@@ -51,9 +51,9 @@ export async function dbGetForm(formName: string) {
 export async function dbUpsertForm(newForm: {}) {
 	const forms = client.db('ESP').collection('forms')
 	return await forms.replaceOne({ name: newForm.name }, newForm, { upsert: true })
-	throw error(500, {
-		file: FILENAME,
-		function: 'dbUpsertForm',
-		message: `Unable to upsert form (${JSON.stringify(newForm)}).`
-	})
+	error(500, {
+    		file: FILENAME,
+    		function: 'dbUpsertForm',
+    		message: `Unable to upsert form (${JSON.stringify(newForm)}).`
+    	});
 }

@@ -17,11 +17,11 @@ export async function queryExecute(script: string) {
 	try {
 		return await client.execute(script)
 	} catch (e: any) {
-		throw error(500, {
-			file: FILENAME,
-			function: 'queryExecute',
-			message: `Invalid query: ${script} ${e.message}`
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'queryExecute',
+        			message: `Invalid query: ${script} ${e.message}`
+        		});
 	}
 }
 
@@ -30,11 +30,11 @@ export async function queryMultiple(script: string): Promise<RawDataList> {
 	try {
 		return JSON.parse(await client.queryJSON(script))
 	} catch (e: any) {
-		throw error(500, {
-			file: FILENAME,
-			function: 'queryMultiple',
-			message: `Invalid query: ${script} ${e.message}`
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'queryMultiple',
+        			message: `Invalid query: ${script} ${e.message}`
+        		});
 	}
 }
 
@@ -43,11 +43,11 @@ export async function querySingle(script: string): Promise<RawDataRow> {
 	try {
 		return JSON.parse(await client.querySingleJSON(script))
 	} catch (e: any) {
-		throw error(500, {
-			file: FILENAME,
-			function: 'querySingle',
-			message: `Invalid query: ${script} ${e.message}`
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'querySingle',
+        			message: `Invalid query: ${script} ${e.message}`
+        		});
 	}
 }
 

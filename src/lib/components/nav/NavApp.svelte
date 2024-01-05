@@ -68,11 +68,11 @@
 
 	async function processState(packet: StatePacket) {
 		if (!packet.token)
-			throw error(500, {
-				file: FILENAME,
-				function: 'processState',
-				message: `No token supplied in State packet: ${JSON.stringify(packet, null, 2)}.`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'processState',
+            				message: `No token supplied in State packet: ${JSON.stringify(packet, null, 2)}.`
+            			});
 
 		const token = packet.token
 
@@ -143,11 +143,11 @@
 							break
 
 						default:
-							throw error(500, {
-								file: FILENAME,
-								function: 'processState.objAction',
-								message: `No case defined for TokenApiDbActionType: ${token.action} `
-							})
+							error(500, {
+                            								file: FILENAME,
+                            								function: 'processState.objAction',
+                            								message: `No case defined for TokenApiDbActionType: ${token.action} `
+                            							});
 					}
 				}
 				break
@@ -180,11 +180,11 @@
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'processAction',
-					message: `No case defined for NavActionComponent: ${packet.component}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'processAction',
+                					message: `No case defined for NavActionComponent: ${packet.component}`
+                				});
 		}
 		setNavApp()
 	}

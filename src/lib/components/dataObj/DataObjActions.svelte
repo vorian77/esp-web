@@ -31,11 +31,11 @@
 
 	async function onClick(actionName: string) {
 		if (!dataObj.objData.dataObjRow)
-			throw error(500, {
-				file: FILENAME,
-				function: 'onClick',
-				message: `dataObj.objData is undefined`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'onClick',
+            				message: `dataObj.objData is undefined`
+            			});
 
 		const rowStatus = dataObj.objData.dataObjRow.status
 
@@ -79,11 +79,11 @@
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'onClick',
-					message: `No case defined for action: ${actionName}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'onClick',
+                					message: `No case defined for action: ${actionName}`
+                				});
 		}
 	}
 

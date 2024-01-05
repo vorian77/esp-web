@@ -221,11 +221,11 @@ export class AppLevelTab {
 			console.log('AppLevelTab.initDataObj:', { token, dataObjId, tab })
 			return tab
 		} else {
-			throw error(500, {
-				file: FILENAME,
-				function: 'initDataObj',
-				message: `Error retrieving dataObj: ${token.dataObj.dataObjName}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'initDataObj',
+            				message: `Error retrieving dataObj: ${token.dataObj.dataObjName}`
+            			});
 		}
 	}
 	static initNode(levelIdx: number, idx: number, node: NodeApp) {
@@ -266,11 +266,11 @@ export class AppLevelTab {
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'AppLevelTab.query',
-					message: `No case defined for AppLevelTabQueryType: ${queryType}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'AppLevelTab.query',
+                					message: `No case defined for AppLevelTabQueryType: ${queryType}`
+                				});
 		}
 
 		const result: ResponseBody = await apiFetch(
@@ -361,11 +361,11 @@ export class AppLevelTab {
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'AppLevelTab.setCurrRowByAction',
-					message: `No case defined for AppRowActionType: ${rowAction}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'AppLevelTab.setCurrRowByAction',
+                					message: `No case defined for AppRowActionType: ${rowAction}`
+                				});
 		}
 		this.currRow = newRow
 	}
@@ -464,11 +464,11 @@ async function getNodesLevel(nodeId: string) {
 	if (result.success) {
 		return result.data
 	} else {
-		throw error(500, {
-			file: FILENAME,
-			function: 'getNodes',
-			message: `Error retrieving nodes for nodeId: ${nodeId}`
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'getNodes',
+        			message: `Error retrieving nodes for nodeId: ${nodeId}`
+        		});
 	}
 }
 

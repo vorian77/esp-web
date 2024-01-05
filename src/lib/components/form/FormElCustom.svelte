@@ -48,11 +48,11 @@
 				parmsText = field.parms as FieldCustomParmsText
 				break
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'POST',
-					message: `No case defined for type: ${field.codeType}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'POST',
+                					message: `No case defined for type: ${field.codeType}`
+                				});
 		}
 	}
 

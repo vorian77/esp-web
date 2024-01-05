@@ -46,11 +46,11 @@ export async function objUpload(fileStorageKey: string, file: File): Promise<Res
 				return new ResponseBody({ success: false })
 			}
 		} catch (err) {
-			throw error(500, {
-				file: FILENAME,
-				function: 'uploadImage',
-				message: `Unable to upload image: ${imgFile.name} Error: ${err}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'uploadImage',
+            				message: `Unable to upload image: ${imgFile.name} Error: ${err}`
+            			});
 		}
 	}
 }
@@ -93,19 +93,19 @@ async function getURL(action: string, fileStorageKey: string, fileType = '') {
 		const response: ResponseBody = await responsePromise.json()
 
 		if (!response.success) {
-			throw error(500, {
-				file: FILENAME,
-				function: 'getURL',
-				message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'getURL',
+            				message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey}`
+            			});
 		}
 
 		return response.data
 	} catch (err) {
-		throw error(500, {
-			file: FILENAME,
-			function: 'getURL',
-			message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey} - err: ${err}`
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'getURL',
+        			message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey} - err: ${err}`
+        		});
 	}
 }

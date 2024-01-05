@@ -27,17 +27,17 @@ export async function sendText(token: TokenApiSendText) {
 		const message = await twilio.messages.create(parms)
 		return new Response(JSON.stringify({ success: true, data: { sid: message.sid, parms } }))
 	} catch (err) {
-		throw error(500, {
-			file: FILENAME,
-			function: 'sendText',
-			message:
-				`Attempt to send text failed...` +
-				'\n' +
-				'Error: ' +
-				JSON.stringify(err) +
-				'\n' +
-				'Parms: ' +
-				JSON.stringify(parms)
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'sendText',
+        			message:
+        				`Attempt to send text failed...` +
+        				'\n' +
+        				'Error: ' +
+        				JSON.stringify(err) +
+        				'\n' +
+        				'Parms: ' +
+        				JSON.stringify(parms)
+        		});
 	}
 }

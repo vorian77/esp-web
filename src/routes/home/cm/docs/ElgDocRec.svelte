@@ -58,11 +58,11 @@
 			const response: ResponseBody = await responsePromise.json()
 
 			if (!response.data.url) {
-				throw error(500, {
-					file: FILENAME,
-					function: 'getURL',
-					message: `Unable to retrieve URL for ${action} - storage key: ${imgStorageKey}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'getURL',
+                					message: `Unable to retrieve URL for ${action} - storage key: ${imgStorageKey}`
+                				});
 			}
 			return response.data.url
 		}
@@ -79,11 +79,11 @@
 				const respData = resp.statusText
 				return respData
 			} catch (err) {
-				throw error(500, {
-					file: FILENAME,
-					function: 'uploadImage',
-					message: `Unable to upload image: ${imgFile.name} Error: ${err}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'uploadImage',
+                					message: `Unable to upload image: ${imgFile.name} Error: ${err}`
+                				});
 			}
 		}
 	}

@@ -20,11 +20,11 @@
 		if (response.success && response.data.disclosure == 1) {
 			goto('/home')
 		} else {
-			throw error(500, {
-				file: FILENAME,
-				function: 'accept',
-				message: `Unable to update disclosure for user id: ${user.user_id}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'accept',
+            				message: `Unable to update disclosure for user id: ${user.user_id}`
+            			});
 		}
 	}
 

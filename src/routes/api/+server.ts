@@ -32,10 +32,10 @@ export async function POST({ request }) {
 			return getServerResponse(await sendText(token))
 
 		default:
-			throw error(500, {
-				file: FILENAME,
-				function: 'POST',
-				message: `No case defined for ApiFunction: ${apiFunction}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'POST',
+            				message: `No case defined for ApiFunction: ${apiFunction}`
+            			});
 	}
 }

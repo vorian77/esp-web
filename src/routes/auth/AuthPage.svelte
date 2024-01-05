@@ -86,20 +86,20 @@
 						break
 
 					default:
-						throw error(500, {
-							file: FILENAME,
-							function: 'onCustomFieldAction-submit',
-							message: `No case defined for submit value: ${value}`
-						})
+						error(500, {
+                        							file: FILENAME,
+                        							function: 'onCustomFieldAction-submit',
+                        							message: `No case defined for submit value: ${value}`
+                        						});
 				}
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'onCustomFieldAction',
-					message: `No case defined for type: ${type}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'onCustomFieldAction',
+                					message: `No case defined for type: ${type}`
+                				});
 		}
 	}
 

@@ -92,11 +92,11 @@ export async function processForm(
 		if (optional) {
 			return getServerResponse({})
 		} else {
-			throw error(500, {
-				file: FILENAME,
-				function: 'processForm',
-				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'processForm',
+            				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}`
+            			});
 		}
 	}
 	const sourceAction = source.actions[actionIdx]
@@ -111,11 +111,11 @@ export async function processForm(
 			break
 
 		default:
-			throw error(500, {
-				file: FILENAME,
-				function: 'processForm',
-				message: `No case defined for sourceAction.target: ${sourceAction.target}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'processForm',
+            				message: `No case defined for sourceAction.target: ${sourceAction.target}`
+            			});
 	}
 
 	function setParmVals(sourceAction: FormSourceAction, data: Record<string, any>) {
@@ -155,21 +155,21 @@ export async function processForm(
 							sourceAction.items[i].value = dateStr
 							break
 						default:
-							throw error(500, {
-								file: FILENAME,
-								function: 'setParmVals',
-								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}`
-							})
+							error(500, {
+                            								file: FILENAME,
+                            								function: 'setParmVals',
+                            								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}`
+                            							});
 					}
 					break // nested case
 				case FormSourceItemSource.none:
 					break
 				default:
-					throw error(500, {
-						file: FILENAME,
-						function: 'setParmVals',
-						message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}".`
-					})
+					error(500, {
+                    						file: FILENAME,
+                    						function: 'setParmVals',
+                    						message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}".`
+                    					});
 			}
 		})
 		return sourceAction.items

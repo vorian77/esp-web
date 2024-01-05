@@ -24,11 +24,11 @@ export const POST = async ({ request, locals }) => {
 		if (idx >= 0) {
 			formDefn.fields[idx].value = responData.data.url
 		} else {
-			throw error(500, {
-				file: FILENAME,
-				function: 'POST',
-				message: `Required field element missing: (${pictEl}).`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'POST',
+            				message: `Required field element missing: (${pictEl}).`
+            			});
 		}
 	}
 	return new Response(JSON.stringify({ formDefn }))

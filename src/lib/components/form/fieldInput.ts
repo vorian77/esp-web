@@ -93,11 +93,11 @@ export class FieldInput extends Field {
 				// return this field's match column
 				return new MatchColumn(parentMatchColumn, fields[idxParent].index, message)
 			} else {
-				throw error(500, {
-					file: FILENAME,
-					function: 'constructor.initMatchColumn',
-					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}"`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'constructor.initMatchColumn',
+                					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}"`
+                				});
 			}
 		}
 	}

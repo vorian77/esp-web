@@ -98,11 +98,11 @@ export class NavTree {
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'NavTree.changeNode',
-					message: `No case defined for NodeType: ${node.type}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'NavTree.changeNode',
+                					message: `No case defined for NodeType: ${node.type}`
+                				});
 		}
 		setAppStoreNavTree(this)
 	}
@@ -220,10 +220,10 @@ async function getNodesBranch(nodeId: string) {
 	if (result.success) {
 		return result.data
 	} else {
-		throw error(500, {
-			file: FILENAME,
-			function: 'getNodesBranch',
-			message: `Error retrieving nodes for nodeId: ${nodeId}`
-		})
+		error(500, {
+        			file: FILENAME,
+        			function: 'getNodesBranch',
+        			message: `Error retrieving nodes for nodeId: ${nodeId}`
+        		});
 	}
 }

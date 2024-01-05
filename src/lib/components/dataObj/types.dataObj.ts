@@ -93,11 +93,11 @@ export class DataObj {
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'objData',
-					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'objData',
+                					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
+                				});
 		}
 		return new DataObjData(this.cardinality, dataObjList, this.data.callbacks)
 	}
@@ -136,11 +136,11 @@ export class DataObj {
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'objData',
-					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'objData',
+                					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
+                				});
 		}
 	}
 
@@ -220,11 +220,11 @@ export class DataObj {
 					newField = new FieldTextarea(field, index)
 					break
 				default:
-					throw error(500, {
-						file: FILENAME,
-						function: 'initFields',
-						message: `No case defined for field element: ${element} in form: ${this.name}`
-					})
+					error(500, {
+                    						file: FILENAME,
+                    						function: 'initFields',
+                    						message: `No case defined for field element: ${element} in form: ${this.name}`
+                    					});
 			}
 			list.push(newField)
 		})

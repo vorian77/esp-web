@@ -108,11 +108,11 @@ export class EdgeQL {
 			this.logScript('objectExpression', script)
 			return script
 		} else {
-			throw error(500, {
-				file: FILENAME,
-				function: 'getScriptObjectExpr',
-				message: `No object expression provided for object: ${this.objName}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'getScriptObjectExpr',
+            				message: `No object expression provided for object: ${this.objName}`
+            			});
 		}
 	}
 
@@ -305,11 +305,11 @@ export class EdgeQL {
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'getOp',
-					message: `No case defined for op: ${op}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'getOp',
+                					message: `No case defined for op: ${op}`
+                				});
 		}
 	}
 }
@@ -348,11 +348,11 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 				return getValue(DataFieldSource.user, data.user, field.sourceKey)
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: funct,
-					message: `No case defined for source: ${field.codeSource}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: funct,
+                					message: `No case defined for source: ${field.codeSource}`
+                				});
 		}
 		function getValue(source: DataFieldSource, data: TokenApiQueryDataValue, key: string) {
 			const result = getValueNested(data, key)
@@ -370,11 +370,11 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 			return [true, currentData[tokens[idx]]]
 		}
 		function valueNotFound(source: DataFieldSource, data: TokenApiQueryDataValue) {
-			throw error(500, {
-				file: FILENAME,
-				function: funct,
-				message: `Value null or not found for source: ${source} data: ${JSON.stringify(data)}.`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: funct,
+            				message: `Value null or not found for source: ${source} data: ${JSON.stringify(data)}.`
+            			});
 		}
 	}
 
@@ -445,11 +445,11 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'getValFormatted',
-					message: `No case defined for data type: (${field.codeDataType}).`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'getValFormatted',
+                					message: `No case defined for data type: (${field.codeDataType}).`
+                				});
 		}
 		return val
 

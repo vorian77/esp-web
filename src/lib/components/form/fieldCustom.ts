@@ -40,11 +40,11 @@ export class FieldCustom extends Field {
 				this.parms = new FieldCustomParmsText(el)
 				break
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: 'POST',
-					message: `No case defined for type: ${this.codeType}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: 'POST',
+                					message: `No case defined for type: ${this.codeType}`
+                				});
 		}
 	}
 }

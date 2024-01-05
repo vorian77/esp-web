@@ -91,11 +91,11 @@ export async function processQuery(token: TokenApiQuery) {
 			break
 
 		default:
-			throw error(500, {
-				file: FILENAME,
-				function: 'processQuery',
-				message: `No case defined for row TokenApiDbQueryType: ${token.queryType}`
-			})
+			error(500, {
+            				file: FILENAME,
+            				function: 'processQuery',
+            				message: `No case defined for row TokenApiDbQueryType: ${token.queryType}`
+            			});
 	}
 
 	const dataObjList: DataObjListRow = await processDataPost(
@@ -111,11 +111,11 @@ export async function processQuery(token: TokenApiQuery) {
 
 function checkResult(script: string, result: Record<string, any>) {
 	if (result.hasOwnProperty('id')) return true
-	throw error(500, {
-		file: FILENAME,
-		function: 'processQuery - update - single row',
-		message: `Invalid database operation for script: ${script}`
-	})
+	error(500, {
+    		file: FILENAME,
+    		function: 'processQuery - update - single row',
+    		message: `Invalid database operation for script: ${script}`
+    	});
 }
 
 async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
@@ -128,11 +128,11 @@ async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
 		let dataObjRaw = await getDataObjByName(dataObj.dataObjName)
 		if (dataObjRaw) return dataObjRaw
 	}
-	throw error(500, {
-		file: FILENAME,
-		function: 'getDataObjRaw',
-		message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
-	})
+	error(500, {
+    		file: FILENAME,
+    		function: 'getDataObjRaw',
+    		message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
+    	});
 }
 
 async function processDataPost(
@@ -196,11 +196,11 @@ async function processDataPost(
 						display: formatDataForDisplayScalar(value.display, codeDataTypePreset)
 					}
 				} else {
-					throw error(500, {
-						file: FILENAME,
-						function: `formatDataForDisplay - DataFieldType: ${DataFieldDataType.computed}`,
-						message: `No preset data type defined for field: ${field.name}`
-					})
+					error(500, {
+                    						file: FILENAME,
+                    						function: `formatDataForDisplay - DataFieldType: ${DataFieldDataType.computed}`,
+                    						message: `No preset data type defined for field: ${field.name}`
+                    					});
 				}
 
 			case DataFieldDataType.edgeType:
@@ -231,11 +231,11 @@ async function processDataPost(
 				break
 
 			default:
-				throw error(500, {
-					file: FILENAME,
-					function: `formatDataForDisplay`,
-					message: `No case defined for field: ${field.name} - DataFieldDataType: ${codeDataTypeField}`
-				})
+				error(500, {
+                					file: FILENAME,
+                					function: `formatDataForDisplay`,
+                					message: `No case defined for field: ${field.name} - DataFieldDataType: ${codeDataTypeField}`
+                				});
 		}
 		return { data: value, display: value }
 	}

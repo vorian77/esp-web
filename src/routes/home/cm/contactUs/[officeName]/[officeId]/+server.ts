@@ -17,11 +17,11 @@ export async function POST({ request }) {
 		if (responsePromise) {
 			const response: ResponseBody = await responsePromise.json()
 			if (!response.success) {
-				throw error(400, {
-					file: FILENAME,
-					function: `sendMsgToCm`,
-					message: `Unable to create CaseManager message: applicantId: ${data.user_id}, site: ${data.cm_ssr_site}`
-				})
+				error(400, {
+                					file: FILENAME,
+                					function: `sendMsgToCm`,
+                					message: `Unable to create CaseManager message: applicantId: ${data.user_id}, site: ${data.cm_ssr_site}`
+                				});
 			}
 			return response
 		}
