@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Form as FormClass } from '$comps/dataObj/dataObjOld.js'
+	// import { Form as FormClass } from '$comps/dataObj/dataObjOld.js'
 	import Form from '$comps/form/FormDetail.svelte'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	import { goto } from '$app/navigation'
@@ -9,7 +9,7 @@
 	const toastStore = getToastStore()
 
 	const formDefn = data.formDefn
-	let formObj = new FormClass(formDefn)
+	// let formObj = new FormClass(formDefn)
 
 	async function onFormSubmitted(event: CustomEvent) {
 		const respData = event.detail
@@ -33,4 +33,4 @@
 	}
 </script>
 
-<Form bind:formObj on:formSubmitted={onFormSubmitted} />
+<!-- <Form bind:formObj on:formSubmitted={onFormSubmitted} /> -->
