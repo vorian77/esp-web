@@ -29,10 +29,10 @@ export async function dbESP(
 						data[i.dbName] = i.value
 					} else {
 						error(500, {
-                        							file: FILENAME,
-                        							function: 'dbESP',
-                        							message: `No value derived for required apiArg: ${i.dbName}`
-                        						});
+							file: FILENAME,
+							function: 'dbESP',
+							message: `No value derived for required apiArg: ${i.dbName}`
+						})
 					}
 				}
 			})
@@ -71,20 +71,20 @@ export async function dbESP(
 
 					default:
 						error(500, {
-                        							file: FILENAME,
-                        							function: 'dbESP',
-                        							message: `No case defined for computed DB action: ${dbAction}`
-                        						});
+							file: FILENAME,
+							function: 'dbESP',
+							message: `No case defined for computed DB action: ${dbAction}`
+						})
 				}
 				break
 			}
 
 		default:
 			error(500, {
-            				file: FILENAME,
-            				function: 'dbESP',
-            				message: `No case defined for sourceAction.type: ${sourceAction.type}`
-            			});
+				file: FILENAME,
+				function: 'dbESP',
+				message: `No case defined for sourceAction.type: ${sourceAction.type}`
+			})
 	}
 }
 
@@ -115,7 +115,7 @@ export async function dbESPAPI(
 		// let newData = {}
 
 		// // set message
-		// if (data.hasOwnProperty('success')) {
+		// if (Object.hasOwn(data, 'success')) {
 		// 	newData = data
 		// 	if (newData.success) {
 		// 		newData.message = msgSuccess ?? data.message ?? ''
@@ -132,10 +132,10 @@ export async function dbESPAPI(
 		// }
 	} catch (err: any) {
 		error(500, {
-        			file: FILENAME,
-        			function: 'dbESPAPI',
-        			message: `Axios status: ${err.response?.status} stautsText: ${err.response?.statusText} message: ${err.message}`
-        		});
+			file: FILENAME,
+			function: 'dbESPAPI',
+			message: `Axios status: ${err.response?.status} stautsText: ${err.response?.statusText} message: ${err.message}`
+		})
 	}
 }
 
@@ -230,10 +230,10 @@ function getSqlUpdate(sourceAction: FormSourceActionDirect) {
 	})
 	if (cols == '') {
 		error(500, {
-        			file: FILENAME,
-        			function: 'getSqlUpdate',
-        			message: `No updatabled columns defined for update to table: ${sourceAction.singleTable}`
-        		});
+			file: FILENAME,
+			function: 'getSqlUpdate',
+			message: `No updatabled columns defined for update to table: ${sourceAction.singleTable}`
+		})
 	}
 
 	let sql = 'UPDATE ' + sourceAction.singleTable + ' SET ' + cols + getSqlWhere(sourceAction)
@@ -262,10 +262,10 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 			return null
 		} else {
 			error(500, {
-            				file: FILENAME,
-            				function: 'getSQLColValue',
-            				message: `Null value submitted for required field: (${item.dbName}).`
-            			});
+				file: FILENAME,
+				function: 'getSQLColValue',
+				message: `Null value submitted for required field: (${item.dbName}).`
+			})
 		}
 	}
 	let val = item.value
@@ -290,20 +290,20 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 			break
 		default:
 			error(500, {
-            				file: FILENAME,
-            				function: 'getSQLColValue',
-            				message: `No case defined for item: (${item.dbName}) data type: (${item.dbDataType}).`
-            			});
+				file: FILENAME,
+				function: 'getSQLColValue',
+				message: `No case defined for item: (${item.dbName}) data type: (${item.dbDataType}).`
+			})
 	}
 
 	if (val) {
 		return val
 	} else {
 		error(500, {
-        			file: FILENAME,
-        			function: 'getSQLColValue',
-        			message: `Get value failed for field: ${item.dbName}`
-        		});
+			file: FILENAME,
+			function: 'getSQLColValue',
+			message: `Get value failed for field: ${item.dbName}`
+		})
 	}
 	function quoteVal(val) {
 		return "'" + val + "'"
@@ -315,10 +315,10 @@ function getSqlTable(sourceAction: FormSourceActionDirect) {
 		return sourceAction.singleTable
 	} else {
 		error(500, {
-        			file: FILENAME,
-        			function: 'getSqlTable',
-        			message: `Single table not defined for source action.`
-        		});
+			file: FILENAME,
+			function: 'getSqlTable',
+			message: `Single table not defined for source action.`
+		})
 	}
 }
 
@@ -329,10 +329,10 @@ function getSqlStatement(sourceAction: FormSourceActionDirect) {
 		const value = i.value
 		if (value == null || value == undefined) {
 			error(500, {
-            				file: FILENAME,
-            				function: 'getSqlStatement',
-            				message: `Cannnot retrieve source. Value for db argument: ${dbName} is null or undefined.`
-            			});
+				file: FILENAME,
+				function: 'getSqlStatement',
+				message: `Cannnot retrieve source. Value for db argument: ${dbName} is null or undefined.`
+			})
 		}
 		sql = sql?.replace(dbName, value)
 	})

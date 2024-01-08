@@ -10,10 +10,10 @@ export function booleanOrFalse(val: any, name: string) {
 		return val
 	} else {
 		error(500, {
-        			file: FILENAME,
-        			function: 'booleanOrFalse',
-        			message: `Value: (${val}) for Field: (${name}) is expected to be typeof "boolean" but is typeof (${typeof val}).`
-        		});
+			file: FILENAME,
+			function: 'booleanOrFalse',
+			message: `Value: (${val}) for Field: (${name}) is expected to be typeof "boolean" but is typeof (${typeof val}).`
+		})
 	}
 }
 export function hasPropertyOf(clazz: any, obj: any) {
@@ -21,7 +21,7 @@ export function hasPropertyOf(clazz: any, obj: any) {
 	const modelKeys = Object.keys(model)
 
 	for (const key of modelKeys) {
-		if (obj.hasOwnProperty(key)) {
+		if (Object.hasOwn(obj, key)) {
 			// true if target has a single property of clazz
 			return true
 		}
@@ -33,7 +33,7 @@ export function isInstanceOf(clazz: any, obj: any) {
 	const modelKeys = Object.keys(model)
 
 	for (const key of modelKeys) {
-		if (!obj.hasOwnProperty(key)) {
+		if (!Object.hasOwn(obj, key)) {
 			// false if obj is missing any properties of clazz
 			return false
 		}
@@ -50,10 +50,10 @@ export function memberOfEnum(
 ) {
 	if (!val) {
 		error(500, {
-        			file: className,
-        			function: `memberOfEnum: ${enumName} - Field: ${fieldName}`,
-        			message: `No value supplied. Elements:${Object.values(enumObj).toString()}`
-        		});
+			file: className,
+			function: `memberOfEnum: ${enumName} - Field: ${fieldName}`,
+			message: `No value supplied. Elements:${Object.values(enumObj).toString()}`
+		})
 	}
 	for (const value of Object.values(enumObj)) {
 		if (val.toLowerCase() == value.toLowerCase()) {
@@ -61,10 +61,10 @@ export function memberOfEnum(
 		}
 	}
 	error(500, {
-    		file: className,
-    		function: `memberOfEnum: ${enumName} - Field: ${fieldName} - Value: ${val}`,
-    		message: `Invalid enum value for Elements: ${Object.values(enumObj).toString()}`
-    	});
+		file: className,
+		function: `memberOfEnum: ${enumName} - Field: ${fieldName} - Value: ${val}`,
+		message: `Invalid enum value for Elements: ${Object.values(enumObj).toString()}`
+	})
 }
 export function memberOfEnumOrDefault(
 	val: string,
@@ -91,12 +91,7 @@ export function memberOfEnumIfExists(
 	}
 	return memberOfEnum(val, fieldName, className, enumName, enumObj)
 }
-export function nbrOptional(val: any, name: string) {
-	if (!val) {
-		return undefined
-	}
-	return nbrRequired(val, name)
-}
+
 export function arrayOfEnums(
 	vals: string,
 	fieldName: string,
@@ -106,13 +101,13 @@ export function arrayOfEnums(
 ) {
 	if (!vals) {
 		error(500, {
-        			file: className,
-        			function: 'arrayOfEnums',
-        			message: `No value(s) supplied...
+			file: className,
+			function: 'arrayOfEnums',
+			message: `No value(s) supplied...
 Field: ${fieldName}
 Enum: ${enumName}
 Elements:${Object.values(enumObj).toString()}`
-        		});
+		})
 	}
 	let arrVals = getArray(vals)
 	let enums = new Set()
@@ -123,15 +118,21 @@ Elements:${Object.values(enumObj).toString()}`
 	return Array.from(enums)
 }
 
+export function nbrOptional(val: any, name: string) {
+	if (!val) {
+		return undefined
+	}
+	return nbrRequired(val, name)
+}
 export function nbrRequired(val: number, name: string) {
 	if (typeof val === 'number') {
 		return val
 	} else {
 		error(500, {
-        			file: FILENAME,
-        			function: 'nbrRequired',
-        			message: `Required value: (${name}) - is undefined or has an invlid value: (${val}).`
-        		});
+			file: FILENAME,
+			function: 'nbrRequired',
+			message: `Required value: (${name}) - is undefined or has an invlid value: (${val}).`
+		})
 	}
 }
 export function required(val: any, clazz: any, fieldName: string) {
@@ -139,10 +140,10 @@ export function required(val: any, clazz: any, fieldName: string) {
 		return val
 	} else {
 		error(500, {
-        			file: FILENAME,
-        			function: clazz,
-        			message: `Field: ${fieldName} - is required but is undefined.`
-        		});
+			file: FILENAME,
+			function: clazz,
+			message: `Field: ${fieldName} - is required but is undefined.`
+		})
 	}
 }
 export function strAppend(currentVal: string, newVal: string, separator = ' ') {
@@ -167,10 +168,10 @@ export function strRequired(val: string | null | undefined, className: string, f
 		return val
 	} else {
 		error(500, {
-        			file: className,
-        			function: 'strRequired',
-        			message: `Value: (${val}) for field: ${field} is invalid.`
-        		});
+			file: className,
+			function: 'strRequired',
+			message: `Value: (${val}) for field: ${field} is invalid.`
+		})
 	}
 }
 export function strUpper(val: string) {

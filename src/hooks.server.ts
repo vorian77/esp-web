@@ -17,7 +17,7 @@ export async function handle({ event, resolve }) {
 
 	if (event.url.pathname.startsWith('/logout')) {
 		console.log(FILENAME, 'logout...')
-		redirect(303, '/');
+		redirect(303, '/')
 	}
 
 	if (event.url.pathname.toLowerCase().startsWith('/api')) {
@@ -36,14 +36,14 @@ export async function handle({ event, resolve }) {
 	const sessionId = event.cookies.get('session_id')
 	if (!sessionId) {
 		console.log(FILENAME, 'redirect - no sessionid...')
-		redirect(303, '/');
+		redirect(303, '/')
 	}
 
 	// get user info
 	const user = await getUserByUserId(sessionId)
 	if (!user) {
 		console.log(FILENAME, `redirect - could not retrieve user: ${sessionId}`)
-		redirect(303, '/');
+		redirect(303, '/')
 	}
 
 	// confirm legal disclosure

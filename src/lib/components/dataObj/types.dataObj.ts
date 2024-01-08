@@ -20,7 +20,14 @@ import {
 } from '$comps/types'
 import { type Field, FieldValue } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
-import { FieldCustom } from '$comps/form/fieldCustom'
+import {
+	FieldCustomAction,
+	FieldCustomActionButton,
+	FieldCustomActionLink,
+	FieldCustomHeader,
+	FieldCustomText,
+	FieldCustomType
+} from '$comps/form/fieldCustom'
 import { FieldInput } from '$comps/form/fieldInput'
 import { FieldFile } from '$comps/form/fieldFile'
 import { FieldRadio } from '$comps/form/fieldRadio'
@@ -47,6 +54,7 @@ export class DataObj {
 	orderItems: DataObjListOrder
 	subHeader: string
 	table: Table | undefined
+
 	constructor(dataObjRaw: DataObjRaw) {
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
 		this.actions = this.initActions(dataObjRaw._actions)
@@ -78,6 +86,14 @@ export class DataObj {
 		this.subHeader = valueOrDefault(dataObjRaw.subHeader, '')
 	}
 
+	static async constructorCustomActions(dataObjRaw: DataObjRaw) {
+		const dataObj = new DataObj(dataObjRaw)
+		dataObj.fields.forEach(async (f) => {
+			if (f instanceof FieldCustomAction) await f.initAction()
+		})
+		return dataObj
+	}
+
 	get objData() {
 		let dataObjList: DataObjListRow = []
 		switch (this.data.cardinality) {
@@ -94,15 +110,15 @@ export class DataObj {
 
 			default:
 				error(500, {
-                					file: FILENAME,
-                					function: 'objData',
-                					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
-                				});
+					file: FILENAME,
+					function: 'objData',
+					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
+				})
 		}
 		return new DataObjData(this.cardinality, dataObjList, this.data.callbacks)
 	}
 	set objData(dataSource: DataObjData) {
-		this.data = new DataObjData(dataSource.cardinality, dataSource.dataObjList)
+		this.data = dataSource
 		switch (this.data.cardinality) {
 			case DataObjCardinality.list:
 				this.dataListRecord = dataSource.dataObjList.map((row: DataObjRow) => {
@@ -112,16 +128,14 @@ export class DataObj {
 					}
 					return newRecord
 				})
-				console.log('dataObj.objData.dataListRecord:', this.dataListRecord)
 				break
 
 			case DataObjCardinality.detail:
 				if (dataSource.dataObjRow) {
 					const dataRow = dataSource.dataObjRow
-					// console.log('dataObj.dataRow.0:', { dataRow })
 					if (dataRow.record) {
 						this.fields.forEach((f) => {
-							if (dataRow.record.hasOwnProperty(f.name)) {
+							if (Object.hasOwn(dataRow.record, f.name)) {
 								f.valueCurrent = FieldValue.duplicate(dataRow.record[f.name])
 								f.valueInitial = FieldValue.duplicate(dataRow.record[f.name])
 							} else if (dataRow?.status === DataObjRowStatus.created) {
@@ -133,14 +147,15 @@ export class DataObj {
 						})
 					}
 				}
+				// console.log('dataObj.objData.fields:', this.fields)
 				break
 
 			default:
 				error(500, {
-                					file: FILENAME,
-                					function: 'objData',
-                					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
-                				});
+					file: FILENAME,
+					function: 'objData',
+					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
+				})
 		}
 	}
 
@@ -201,7 +216,27 @@ export class DataObj {
 					break
 
 				case FieldElement.custom:
-					newField = new FieldCustom(field, index)
+					const customType = field.customElement._type
+					switch (customType) {
+						case FieldCustomType.button:
+							newField = new FieldCustomActionButton(field, index)
+							break
+						case FieldCustomType.header:
+							newField = new FieldCustomHeader(field, index)
+							break
+						case FieldCustomType.link:
+							newField = new FieldCustomActionLink(field, index)
+							break
+						case FieldCustomType.text:
+							newField = new FieldCustomText(field, index)
+							break
+						default:
+							error(500, {
+								file: FILENAME,
+								function: 'POST',
+								message: `No case defined for custom field type: ${customType}`
+							})
+					}
 					break
 
 				case FieldElement.file:
@@ -221,10 +256,10 @@ export class DataObj {
 					break
 				default:
 					error(500, {
-                    						file: FILENAME,
-                    						function: 'initFields',
-                    						message: `No case defined for field element: ${element} in form: ${this.name}`
-                    					});
+						file: FILENAME,
+						function: 'initFields',
+						message: `No case defined for field element: ${element} in form: ${this.name}`
+					})
 			}
 			list.push(newField)
 		})
@@ -307,7 +342,7 @@ export class DataObjAction {
 	color: string
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
-		this.allTabs = obj.hasOwnProperty('allTabs') && obj.allTabs !== null ? obj.allTabs : false
+		this.allTabs = Object.hasOwn(obj, 'allTabs') && obj.allTabs !== null ? obj.allTabs : false
 		this.name = strRequired(obj.name, 'ObjectAction', 'name')
 		this.header = strRequired(obj.header, 'ObjectAction', 'header')
 		this.color = valueOrDefault(obj.color, 'variant-filled-primary')

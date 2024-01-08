@@ -391,20 +391,22 @@ export async function addNodeFooter(data: any) {
 			name: e.str,
 			order: e.int16,
 			owner: e.str,
-			page: e.optional(e.str)
+			page: e.optional(e.str),
+			queryActions: e.optional(e.array(e.json))
 		},
 		(p) => {
 			return e.insert(e.sys_obj.NodeObjFooter, {
 				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', p.codeIcon)),
 				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', p.codeType)),
+				createdBy: e.select(e.sys_user.getUser(p.creator)),
 				dataObj: e.select(e.sys_obj.getDataObj(p.dataObj)),
 				header: p.header,
+				modifiedBy: e.select(e.sys_user.getUser(p.creator)),
 				name: p.name,
 				order: p.order,
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				page: p.page,
-				createdBy: e.select(e.sys_user.getUser(p.creator)),
-				modifiedBy: e.select(e.sys_user.getUser(p.creator))
+				queryActions: p.queryActions
 			})
 		}
 	)

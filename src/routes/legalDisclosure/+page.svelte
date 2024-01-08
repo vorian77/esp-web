@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { User } from '$comps/types'
-	import { getUser } from '$comps/types'
+	import { userGet } from '$comps/types'
 	import { goto } from '$app/navigation'
 	import { error } from '@sveltejs/kit'
 
 	const FILENAME = 'routes/legalDisclosure'
 
-	const user: User | undefined = getUser()
+	const user: User | undefined = userGet()
 	const legalDisclosure = user ? user.cm_ssr_disclosure : undefined
 
 	async function accept() {
@@ -21,10 +21,10 @@
 			goto('/home')
 		} else {
 			error(500, {
-            				file: FILENAME,
-            				function: 'accept',
-            				message: `Unable to update disclosure for user id: ${user.user_id}`
-            			});
+				file: FILENAME,
+				function: 'accept',
+				message: `Unable to update disclosure for user id: ${user.user_id}`
+			})
 		}
 	}
 

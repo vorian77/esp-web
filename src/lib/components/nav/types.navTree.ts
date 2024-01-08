@@ -1,7 +1,8 @@
 import { apiFetch, ApiFunction } from '$lib/api'
 import { NodeNav, NodeType, ResponseBody } from '$comps/types'
-import type { RawNode, User } from '$comps/types'
+import type { DbNode, RawNode, User } from '$comps/types'
 import {
+	QueryActions,
 	State,
 	StatePacket,
 	StatePacketComponent,
@@ -27,11 +28,24 @@ export class NavTree {
 		this.currNode = navTree.currNode
 		this.listTree = navTree.listTree
 	}
-	static init(rawNodes: Array<RawNode>) {
-		const currNode = NodeNav.initRoot()
-		let listTree: Array<NodeNav> = this.addBranchNodes(currNode, 0, [currNode], rawNodes)
+	static init(dbNodes: Array<DbNode>) {
+		// root node
+		const currNode = new NodeNav(
+			{
+				header: 'root',
+				id: '+ROOT+',
+				name: 'root',
+				_codeType: NodeType.treeRoot,
+				order: 0,
+				queryActions: new QueryActions([])
+			},
+			'root',
+			-1
+		)
+		// root branch
+		let listTree: Array<NodeNav> = this.addBranchNodes(currNode, 0, [currNode], dbNodes)
 
-		// open root nodes
+		// open root branch nodes
 		listTree = listTree.map((n) => {
 			n.isOpen = n.id !== currNode.id
 			return n
@@ -51,14 +65,14 @@ export class NavTree {
 		node: NodeNav,
 		nodeIdx: number,
 		listTree: Array<NodeNav>,
-		dbNodes: Array<RawNode>
+		dbNodes: Array<DbNode>
 	) {
 		const nodeId = node.id
 		const nodeIndent = node.indent + 1
 		node.isRetrieved = true
 
 		dbNodes.forEach((n, i) => {
-			listTree.splice(nodeIdx + i + 1, 0, NodeNav.initBranch(n, nodeId, nodeIndent))
+			listTree.splice(nodeIdx + i + 1, 0, new NodeNav(n, nodeId, nodeIndent))
 		})
 		return listTree
 	}
@@ -88,7 +102,7 @@ export class NavTree {
 				break
 
 			case NodeType.page:
-				if (node.hasOwnProperty('page')) {
+				if (Object.hasOwn(node, 'page')) {
 					state.update({ page: node.page })
 					dispatch('treeChanged')
 				}
@@ -99,10 +113,10 @@ export class NavTree {
 
 			default:
 				error(500, {
-                					file: FILENAME,
-                					function: 'NavTree.changeNode',
-                					message: `No case defined for NodeType: ${node.type}`
-                				});
+					file: FILENAME,
+					function: 'NavTree.changeNode',
+					message: `No case defined for NodeType: ${node.type}`
+				})
 		}
 		setAppStoreNavTree(this)
 	}
@@ -185,7 +199,6 @@ export class NavTree {
 		const currNode = this.currNode
 		for (let i = 0; i < this.listTree.length; i++) {
 			if (this.listTree[i].id === currNode.parentId) {
-				console.log('NavTree.setCurrentParent', { currNode, parentNode: this.listTree[i] })
 				await this.setCurrentNode(this.listTree[i])
 				setAppStoreNavTree(this)
 				break
@@ -195,7 +208,7 @@ export class NavTree {
 }
 
 export async function initNavTree(user: User) {
-	let rawBranch = user?.resource_programs ? user?.resource_programs : []
+	let rawBranch: Array<DbNode> = user?.resource_programs ? user?.resource_programs : []
 
 	// <temp> filter to single program for dev
 	// rawBranch = rawBranch.filter((p: any) => {
@@ -221,9 +234,9 @@ async function getNodesBranch(nodeId: string) {
 		return result.data
 	} else {
 		error(500, {
-        			file: FILENAME,
-        			function: 'getNodesBranch',
-        			message: `Error retrieving nodes for nodeId: ${nodeId}`
-        		});
+			file: FILENAME,
+			function: 'getNodesBranch',
+			message: `Error retrieving nodes for nodeId: ${nodeId}`
+		})
 	}
 }

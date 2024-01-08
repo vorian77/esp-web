@@ -967,14 +967,7 @@ async function dataObjsCmTrainingCsfCohort() {
 // 		}
 // 	]
 // },
-// {
-// 	codeAccess: 'optional',
-// 	codeElement: 'file',
-// 	columnName: 'avatar',
-// 	dbOrderSelect: 100,
-// 	isLinkMember: true,
-// 	width: 300
-// },
+//
 
 async function navAdmin() {
 	await nodeObjPrograms([

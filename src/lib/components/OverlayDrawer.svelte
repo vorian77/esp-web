@@ -6,7 +6,8 @@
 	const drawerStore = getDrawerStore()
 
 	function closeDrawer() {
-		if ($drawerStore.meta.hasOwnProperty('onCloseDrawer')) $drawerStore.meta.onCloseDrawer()
+		if ($drawerStore.meta && Object.hasOwn($drawerStore.meta, 'onCloseDrawer'))
+			$drawerStore.meta.onCloseDrawer()
 		drawerStore.close()
 		$drawerStore.id = undefined
 	}
@@ -25,7 +26,6 @@
 			<NavAppDrawer
 				bind:dataObjName={$drawerStore.meta.dataObjName}
 				on:formCancelled={onformCancelled}
-				on:customFieldAction={$drawerStore.meta.onCustomFieldAction}
 			/>
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}

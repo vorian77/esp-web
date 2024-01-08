@@ -19,6 +19,7 @@ const config = {
 			'$assets/*': 'src/lib/assets/*',
 			'$comps/*': 'src/lib/components/*',
 			'$dev/*': 'src/dev/*',
+			'$enhance/*': 'src/lib/enhancements/*',
 			'$routes/*': 'src/routes/*',
 			'$server/*': 'src/lib/server/*',
 			'$utils/*': 'src/lib/utils/*'

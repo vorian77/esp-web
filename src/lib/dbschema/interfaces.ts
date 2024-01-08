@@ -540,6 +540,7 @@ export namespace sys_obj {
     "parent"?: NodeObj | null;
     "order": number;
     "page"?: string | null;
+    "queryActions"?: unknown[] | null;
   }
   export interface NodeObjFooter extends NodeObj {}
 }

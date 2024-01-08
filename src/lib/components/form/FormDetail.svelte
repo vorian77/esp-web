@@ -1,8 +1,6 @@
 <script lang="ts">
-	import type { FieldItem } from '$comps/form/field'
 	import {
 		BinarySelect,
-		FieldElement,
 		DataObj,
 		DataObjData,
 		Validation,
@@ -20,6 +18,14 @@
 	import FormElInpRadio from '$comps/form/FormElInpRadio.svelte'
 	import FormElSelect from '$comps/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/form/FormElTextarea.svelte'
+	import type { FieldItem } from '$comps/form/field'
+	import { FieldCheckbox } from '$comps/form/fieldCheckbox'
+	import { FieldCustom } from '$comps/form/fieldCustom'
+	import { FieldFile } from '$comps/form/fieldFile'
+	import { FieldInput } from '$comps/form/fieldInput'
+	import { FieldRadio } from '$comps/form/fieldRadio'
+	import { FieldSelect } from '$comps/form/fieldSelect'
+	import { FieldTextarea } from '$comps/form/fieldTextarea'
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const FILENAME = '$comps/form/FormDetail.svelte'
@@ -33,13 +39,14 @@
 	$: loadData(dataObjData)
 
 	function loadData(data: DataObjData) {
-		dataObj.objData = dataObjData
+		dataObj.objData = data
 		state.update({ objValidToSave: dataObj.preValidate() })
 	}
 
-	function onChangeFile(fieldName: string, valData: any, valDisplay: any, saveCallback: any) {
+	function onChangeFile(fieldName: string, valData: any, valDisplay: any, saveCallback: Function) {
 		setFieldVal(fieldName, valData, valDisplay)
 		dataObj.data.callbacksAdd(fieldName, saveCallback)
+		console.log('onChangeFile:', { fieldName, valData, valDisplay })
 	}
 	function onChangeInput(event: any) {
 		setFieldVal(event.target.name, event.currentTarget.value)
@@ -118,24 +125,20 @@
 		{#each dataObj.fields as field, idx (field.name)}
 			{#if field.isDisplayable && field.isDisplay}
 				<div class:mt-3={idx}>
-					{#if field.element === FieldElement.checkbox}
+					{#if field instanceof FieldCheckbox}
 						<FormElInpCheckbox {field} on:click={onClickCheckbox} />
-					{:else if field.element === FieldElement.custom}
-						<FormElCustom
-							bind:field
-							{state}
-							data={dataObj.objData.dataObjRow.record}
-							on:customFieldAction
-						/>
-					{:else if field.element === FieldElement.file}
+					{:else if field instanceof FieldCustom}
+						<FormElCustom bind:field {state} data={dataObj.objData.dataObjRow.record} />
+					{:else if field instanceof FieldFile}
 						<FormElFile bind:field onChange={onChangeFile} />
-					{:else if [FieldElement.date, FieldElement.email, FieldElement.number, FieldElement.password, FieldElement.tel, FieldElement.text].includes(field.element)}
+						<!-- {:else if [FieldElement.date, FieldElement.email, FieldElement.number, FieldElement.password, FieldElement.tel, FieldElement.text].includes(field.element)} -->
+					{:else if field instanceof FieldInput}
 						<FormElInp {field} on:change={onChangeInput} on:keyup={onChangeInput} />
-					{:else if field.element === FieldElement.radio}
+					{:else if field instanceof FieldRadio}
 						<FormElInpRadio {field} on:change={onChangeInput} />
-					{:else if field.element === FieldElement.select}
+					{:else if field instanceof FieldSelect}
 						<FormElSelect {field} onChange={onChangeSelect} />
-					{:else if field.element === FieldElement.textArea}
+					{:else if field instanceof FieldTextarea}
 						<FormElTextarea {field} on:change={onChangeInput} on:keyup={onChangeInput} />
 					{/if}
 				</div>

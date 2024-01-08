@@ -1,3 +1,4 @@
+import type { DataObjRecord } from '$comps/types'
 import { nbrOptional, nbrRequired, strRequired, valueOrDefault } from '$utils/utils'
 
 export class User {
@@ -47,5 +48,11 @@ export class User {
 			return false
 		}
 		return undefined !== this.user.resource_widgets.find((r: any) => r.name === resource)
+	}
+
+	update(record: DataObjRecord) {
+		this.firstName = Object.hasOwn(record, 'firstName') ? record.firstName.display : this.firstName
+		this.lastName = Object.hasOwn(record, 'lastName') ? record.lastName.display : this.lastName
+		this.fullName = this.firstName + ' ' + this.lastName
 	}
 }

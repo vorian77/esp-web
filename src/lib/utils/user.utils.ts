@@ -1,13 +1,21 @@
 import { get } from 'svelte/store'
 import { localStorageStore } from '@skeletonlabs/skeleton'
-import { User } from '$comps/types'
+import { User, type DataObjRecord } from '$comps/types'
 
 export let appStoreUser = localStorageStore('appStoreUser', {})
 
-export function setUser(newUser: any) {
+export function userSet(newUser: any) {
 	appStoreUser.set(newUser)
 }
-export function getUser() {
+export function userGet() {
 	const user = get(appStoreUser)
 	return user && Object.keys(user).length > 0 ? new User(user) : undefined
+}
+
+export function userUpdate(record: DataObjRecord) {
+	let user = userGet()
+	if (user) {
+		user.update(record)
+		userSet(user)
+	}
 }

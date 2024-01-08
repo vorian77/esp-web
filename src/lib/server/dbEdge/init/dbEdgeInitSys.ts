@@ -738,18 +738,26 @@ async function dataObjAccount() {
 				dbOrderSelect: 40
 			},
 			{
+				codeAccess: 'optional',
+				codeElement: 'file',
+				columnName: 'avatar',
+				dbOrderSelect: 50,
+				isLinkMember: true,
+				width: 300
+			},
+			{
 				codeElement: 'custom',
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'link',
 					action: {
-						type: 'submit',
-						value: 'data_obj_auth_reset_password',
-						function: 'action_data_obj_auth_account_change_password'
+						method: 'auth',
+						type: 'page',
+						value: 'data_obj_auth_reset_password_account'
 					},
 					label: 'Reset Password?'
 				},
-				dbOrderSelect: 50
+				dbOrderSelect: 60
 			}
 		]
 	})
@@ -785,7 +793,14 @@ async function initFooter() {
 		header: 'My Account',
 		name: 'node_obj_sys_footer_auth_account',
 		order: 30,
-		owner: 'app_sys'
+		owner: 'app_sys',
+		queryActions: [
+			{
+				name: 'myAccount',
+				queryTypes: ['retrieve', 'saveUpdate'],
+				timings: ['pre', 'post']
+			}
+		]
 	})
 }
 

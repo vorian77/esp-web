@@ -7,17 +7,19 @@ import initCMTrainingData from '$server/dbEdge/init/dbEdgeInitCMTrainingData'
 import initMOED_cm from '$server/dbEdge/init/dbEdgeInitMOED_cm'
 
 const FILE = '/server/dbEdge/init'
+const load = 0
 
 export async function init() {
-	// <temp>  230908 - database init
-	// await initSys()
-	// await initSysAuth()
-	// await initCM()
-	// await initCMTraining()
-	// await initCMTrainingData()
-	// await initMOED_cm()
-	// await initReviewQuery()
+	if (load) {
+		await initSys()
+		await initSysAuth()
+		await initCM()
+		await initCMTraining()
+		await initCMTrainingData()
+		await initMOED_cm()
+	}
 }
+// await initReviewQuery()
 
 async function initReviewQuery() {
 	let reviewQuery = ''

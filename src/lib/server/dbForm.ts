@@ -24,7 +24,7 @@ export async function getForm(formName: string, pageData = {}) {
 	form.pageData = pageData
 
 	// check for data source
-	if (!form.hasOwnProperty('source')) {
+	if (!Object.hasOwn(form, 'source')) {
 		return form
 	}
 
@@ -41,14 +41,14 @@ export async function getForm(formName: string, pageData = {}) {
 	// retrieve drop-down-list field items
 	if (form.fields) {
 		for (let i = 0; i < form.fields.length; i++) {
-			if (form.fields[i].hasOwnProperty('source')) {
+			if (Object.hasOwn(form.fields[i], 'source')) {
 				form.fields[i].items = await getValues(form.fields[i].name, form.fields[i].source, pageData)
 			}
 		}
 	}
 
 	// set field values
-	if (JSON.stringify(form.values) === '{}' || !form.hasOwnProperty('fields')) {
+	if (JSON.stringify(form.values) === '{}' || !Object.hasOwn(form, 'fields')) {
 		return form
 	}
 
@@ -93,10 +93,10 @@ export async function processForm(
 			return getServerResponse({})
 		} else {
 			error(500, {
-            				file: FILENAME,
-            				function: 'processForm',
-            				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}`
-            			});
+				file: FILENAME,
+				function: 'processForm',
+				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}`
+			})
 		}
 	}
 	const sourceAction = source.actions[actionIdx]
@@ -112,10 +112,10 @@ export async function processForm(
 
 		default:
 			error(500, {
-            				file: FILENAME,
-            				function: 'processForm',
-            				message: `No case defined for sourceAction.target: ${sourceAction.target}`
-            			});
+				file: FILENAME,
+				function: 'processForm',
+				message: `No case defined for sourceAction.target: ${sourceAction.target}`
+			})
 	}
 
 	function setParmVals(sourceAction: FormSourceAction, data: Record<string, any>) {
@@ -156,20 +156,20 @@ export async function processForm(
 							break
 						default:
 							error(500, {
-                            								file: FILENAME,
-                            								function: 'setParmVals',
-                            								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}`
-                            							});
+								file: FILENAME,
+								function: 'setParmVals',
+								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}`
+							})
 					}
 					break // nested case
 				case FormSourceItemSource.none:
 					break
 				default:
 					error(500, {
-                    						file: FILENAME,
-                    						function: 'setParmVals',
-                    						message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}".`
-                    					});
+						file: FILENAME,
+						function: 'setParmVals',
+						message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}".`
+					})
 			}
 		})
 		return sourceAction.items

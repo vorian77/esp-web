@@ -15,13 +15,13 @@ const reviewQuery = ''
 
 async function initDataObjs() {
 	await dataObjLogin()
-	await dataObjReset()
+	await dataObjResetAccount()
+	await dataObjResetLogin()
 	await dataObjSignup()
 	await dataObjVerify()
 }
 
 async function dataObjLogin() {
-	/* data_obj_auth_login */
 	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
@@ -53,7 +53,7 @@ async function dataObjLogin() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'button',
-					action: { type: 'submit', value: 'data_obj_auth_login' },
+					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_login' },
 					label: 'Log in'
 				},
 				dbOrderSelect: 30
@@ -63,7 +63,7 @@ async function dataObjLogin() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'link',
-					action: { type: 'page', value: 'data_obj_auth_reset_password' },
+					action: { method: 'auth', type: 'page', value: 'data_obj_auth_reset_password_login' },
 					label: 'Forgot Password?'
 				},
 				dbOrderSelect: 40
@@ -72,8 +72,7 @@ async function dataObjLogin() {
 	})
 }
 
-async function dataObjReset() {
-	/* data_obj_auth_reset_password */
+async function dataObjResetAccount() {
 	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
@@ -89,7 +88,7 @@ async function dataObjReset() {
 		SELECT { userId := user.id }`,
 		header: 'Reset Password',
 		isPopup: true,
-		name: 'data_obj_auth_reset_password',
+		name: 'data_obj_auth_reset_password_account',
 		owner: 'app_sys',
 		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
 		fields: [
@@ -109,8 +108,63 @@ async function dataObjReset() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'button',
-					action: { type: 'submit', value: 'data_obj_auth_reset_password' },
-					label: 'Reset Password'
+					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_reset_password_account' },
+					label: 'Confirm Mobile Phone Number'
+				},
+				dbOrderSelect: 30
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'text',
+					align: 'center',
+					label: `We'll text you to confirm your mobile phone number. Standard rates apply.`
+				},
+				dbOrderSelect: 40
+			}
+		]
+	})
+}
+
+async function dataObjResetLogin() {
+	await addDataObj({
+		creator: 'user_sys',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		exprObject: `WITH
+		userName := <str,parms,userName>,
+		password := <str,parms,password>,
+		user := (
+			UPDATE sys_user::User 
+			FILTER .userName = userName
+			SET { password := password }
+		)
+		SELECT { userId := user.id }`,
+		header: 'Reset Password',
+		isPopup: true,
+		name: 'data_obj_auth_reset_password_login',
+		owner: 'app_sys',
+		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		fields: [
+			{
+				codeElement: 'tel',
+				columnName: 'userName',
+				dbOrderSelect: 10
+			},
+			{
+				codeElement: 'password',
+				columnName: 'password',
+				dbOrderSelect: 20,
+				headerAlt: 'New Password'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'button',
+					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_reset_password_login' },
+					label: 'Confirm Mobile Phone Number'
 				},
 				dbOrderSelect: 30
 			},
@@ -129,7 +183,7 @@ async function dataObjReset() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'link',
-					action: { type: 'page', value: 'data_obj_auth_login' },
+					action: { method: 'auth', type: 'page', value: 'data_obj_auth_login' },
 					label: 'Log in',
 					prefix: 'Already have an account?'
 				},
@@ -218,7 +272,7 @@ async function dataObjSignup() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'button',
-					action: { type: 'submit', value: 'data_obj_auth_signup' },
+					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_signup' },
 					label: 'Sign up'
 				},
 				dbOrderSelect: 50
@@ -238,7 +292,7 @@ async function dataObjSignup() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'link',
-					action: { type: 'page', value: 'data_obj_auth_login' },
+					action: { method: 'auth', type: 'page', value: 'data_obj_auth_login' },
 					label: 'Log in',
 					prefix: 'Already have an account?'
 				},
@@ -278,7 +332,7 @@ async function dataObjVerify() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'button',
-					action: { type: 'submit', value: 'data_obj_auth_verify_phone_mobile' },
+					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_verify_phone_mobile' },
 					label: 'Verify'
 				},
 				dbOrderSelect: 30
@@ -288,7 +342,7 @@ async function dataObjVerify() {
 				columnName: 'custom_element',
 				customElement: {
 					_type: 'link',
-					action: { type: 'resend_code' },
+					action: { method: 'auth', type: 'resend_code' },
 					label: 'Resend Security Code'
 				},
 				dbOrderSelect: 40

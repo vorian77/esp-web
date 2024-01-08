@@ -1,13 +1,13 @@
 /** array.utils.js */
 
-export function getArray(objs: any) {
-	objs = objs != null && objs != undefined ? objs : []
+export function getArray(obj: any) {
+	obj = obj != null && obj != undefined ? obj : []
 	let arr = []
 
-	if (Array.isArray(objs)) {
-		arr = objs
+	if (Array.isArray(obj)) {
+		arr = obj
 	} else {
-		arr = [objs]
+		arr = [obj]
 	}
 	return arr
 }

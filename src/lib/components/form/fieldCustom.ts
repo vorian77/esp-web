@@ -1,6 +1,13 @@
 import { Field } from '$comps/form/field'
-import { FieldAccess, memberOfEnum, type FieldRaw } from '$comps/types'
-import { valueOrDefault } from '$utils/utils'
+import {
+	FieldAccess,
+	type FieldRaw,
+	type FieldCustomRaw,
+	memberOfEnum,
+	strRequired,
+	valueOrDefault
+} from '$comps/types'
+import { getEnhancement } from '$enhance/actions/_actions'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/form/fieldCustom.ts'
@@ -8,94 +15,75 @@ const FILENAME = '/$comps/form/fieldCustom.ts'
 export class FieldCustom extends Field {
 	codeType: FieldCustomType
 	label: string
-	parms:
-		| FieldCustomParmsButton
-		| FieldCustomParmsHeader
-		| FieldCustomParmsLink
-		| FieldCustomParmsText
 	constructor(obj: FieldRaw, index: number) {
+		const clazz = 'FieldCustom'
 		super(obj, index)
 		this.name += '.' + index.toString()
 		this.access = FieldAccess.readonly
 		const el: any = valueOrDefault(obj.customElement, {})
-		this.codeType = memberOfEnum(
-			el._type,
-			'FieldLabel',
-			'codeType',
-			'FieldCustomType',
-			FieldCustomType
-		)
+		this.codeType = memberOfEnum(el._type, clazz, 'codeType', 'FieldCustomType', FieldCustomType)
 		this.label = el.label
-		switch (this.codeType) {
-			case FieldCustomType.button:
-				this.parms = new FieldCustomParmsButton(el)
-				break
-			case FieldCustomType.header:
-				this.parms = new FieldCustomParmsHeader(el)
-				break
-			case FieldCustomType.link:
-				this.parms = new FieldCustomParmsLink(el)
-				break
-			case FieldCustomType.text:
-				this.parms = new FieldCustomParmsText(el)
-				break
-			default:
-				error(500, {
-                					file: FILENAME,
-                					function: 'POST',
-                					message: `No case defined for type: ${this.codeType}`
-                				});
-		}
 	}
 }
 
-export class FieldCustomParmsAction {
-	function?: string
+export class FieldCustomAction extends FieldCustom {
+	enhancement: Function | undefined
+	method: string
 	type: string
 	value: string
-	constructor(obj: any) {
-		obj = valueOrDefault(obj, {})
-		this.function = obj.function
-		this.type = obj.type
-		this.value = obj.value
+	constructor(obj: FieldRaw, index: number) {
+		const clazz = 'FieldCustomAction'
+		super(obj, index)
+		const el: FieldCustomRaw = valueOrDefault(obj.customElement, {})
+		this.method = strRequired(el.action.method, clazz, 'method').toLowerCase()
+		this.type = strRequired(el.action.type, clazz, 'type').toLowerCase()
+		this.value = valueOrDefault(el.action.value, '').toLowerCase()
+	}
+	async initAction() {
+		this.enhancement = await getEnhancement(this.method)
 	}
 }
-export class FieldCustomParmsButton {
+
+export class FieldCustomActionButton extends FieldCustomAction {
 	color: string
-	action: FieldCustomParmsAction
-	constructor(obj: any) {
-		obj = valueOrDefault(obj, {})
-		this.color = obj.color
-		this.action = new FieldCustomParmsAction(obj.action)
+	constructor(obj: FieldRaw, index: number) {
+		const clazz = 'FieldCustomActionButton'
+		super(obj, index)
+		const el: FieldCustomRaw = valueOrDefault(obj.customElement, {})
+		this.color = el.color
 	}
 }
-export class FieldCustomParmsHeader {
+export class FieldCustomActionLink extends FieldCustomAction {
+	prefix: string
+	constructor(obj: FieldRaw, index: number) {
+		const clazz = 'FieldCustomActionLink'
+		super(obj, index)
+		const el: FieldCustomRaw = valueOrDefault(obj.customElement, {})
+		this.prefix = el.prefix
+	}
+}
+
+export class FieldCustomHeader extends FieldCustom {
 	size: string
 	source: string
 	sourceKey: string
-	constructor(obj: any) {
-		obj = valueOrDefault(obj, {})
-		this.size = obj.size
-		this.source = obj.source
-		this.sourceKey = obj.sourceKey
+	constructor(obj: FieldRaw, index: number) {
+		const clazz = 'FieldCustomHeader'
+		super(obj, index)
+		const el: FieldCustomRaw = valueOrDefault(obj.customElement, {})
+		this.size = el.size
+		this.source = el.source
+		this.sourceKey = el.sourceKey
 	}
 }
 
-export class FieldCustomParmsLink {
-	action: FieldCustomParmsAction
-	prefix: string
-	constructor(obj: any) {
-		obj = valueOrDefault(obj, {})
-		this.action = new FieldCustomParmsAction(obj.action)
-		this.prefix = obj.prefix
-	}
-}
-
-export class FieldCustomParmsText {
+export class FieldCustomText extends FieldCustom {
 	align: string
-	constructor(obj: any) {
-		obj = valueOrDefault(obj, {})
-		this.align = obj.align
+	constructor(obj: FieldRaw, index: number) {
+		const clazz = 'FieldCustomText'
+		super(obj, index)
+		const el: FieldCustomRaw = valueOrDefault(obj.customElement, {})
+		this.align = el.align
 	}
 }
 

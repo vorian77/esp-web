@@ -33,10 +33,9 @@ const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
 export async function processQuery(token: TokenApiQuery) {
 	console.log()
-	console.log('processQuery.0:', { token, record: token.queryData.record })
+	console.log('processQuery.0.avatar:', { record: token.queryData.record.avatar })
 
 	const queryData: TokenApiQueryData = token.queryData
-
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
 	const dataObj = new DataObj(dataObjRaw)
 	const query = new EdgeQL(dataObjRaw)
@@ -92,10 +91,10 @@ export async function processQuery(token: TokenApiQuery) {
 
 		default:
 			error(500, {
-            				file: FILENAME,
-            				function: 'processQuery',
-            				message: `No case defined for row TokenApiDbQueryType: ${token.queryType}`
-            			});
+				file: FILENAME,
+				function: 'processQuery',
+				message: `No case defined for row TokenApiDbQueryType: ${token.queryType}`
+			})
 	}
 
 	const dataObjList: DataObjListRow = await processDataPost(
@@ -104,18 +103,18 @@ export async function processQuery(token: TokenApiQuery) {
 		rawDataList,
 		dataRowStatus
 	)
-	console.log('processQuery.1:', { rawDataList, dataObjList })
+	console.log('processQuery.1:', { dataRaw: rawDataList, dataProcessedRow0: dataObjList[0].record })
 	return new ApiResultDoSuccess(dataObjRaw, new DataObjData(dataObj.cardinality, dataObjList))
 	// return new QueryResultFail('failed under testing...')
 }
 
 function checkResult(script: string, result: Record<string, any>) {
-	if (result.hasOwnProperty('id')) return true
+	if (Object.hasOwn(result, 'id')) return true
 	error(500, {
-    		file: FILENAME,
-    		function: 'processQuery - update - single row',
-    		message: `Invalid database operation for script: ${script}`
-    	});
+		file: FILENAME,
+		function: 'processQuery - update - single row',
+		message: `Invalid database operation for script: ${script}`
+	})
 }
 
 async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
@@ -129,10 +128,10 @@ async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
 		if (dataObjRaw) return dataObjRaw
 	}
 	error(500, {
-    		file: FILENAME,
-    		function: 'getDataObjRaw',
-    		message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
-    	});
+		file: FILENAME,
+		function: 'getDataObjRaw',
+		message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
+	})
 }
 
 async function processDataPost(
@@ -149,7 +148,7 @@ async function processDataPost(
 		for (const field of dataObj.fields) {
 			const fieldName = field.name
 			if (
-				row.hasOwnProperty(fieldName) ||
+				Object.hasOwn(row, fieldName) ||
 				[DataObjRowStatus.retrieved, DataObjRowStatus.created].includes(dataRowStatus)
 			) {
 				const { data, display }: FieldValueValues = formatDataForDisplay(
@@ -164,8 +163,8 @@ async function processDataPost(
 		}
 		data.push(new DataObjRow(dataRowStatus, record))
 	}
-	console.log('processDataPost.data.summary:', { dataRowStatus, rows: data.length })
-	// console.log('processDataPost.data:', { data: JSON.stringify(data, null, 2) })
+	console.log('processDataPost.data.summary.0:', { dataRowStatus, rows: data.length })
+	console.log('processDataPost.data.summary.1:', { data: JSON.stringify(data) })
 	return data
 
 	function formatDataForDisplay(
@@ -197,10 +196,10 @@ async function processDataPost(
 					}
 				} else {
 					error(500, {
-                    						file: FILENAME,
-                    						function: `formatDataForDisplay - DataFieldType: ${DataFieldDataType.computed}`,
-                    						message: `No preset data type defined for field: ${field.name}`
-                    					});
+						file: FILENAME,
+						function: `formatDataForDisplay - DataFieldType: ${DataFieldDataType.computed}`,
+						message: `No preset data type defined for field: ${field.name}`
+					})
 				}
 
 			case DataFieldDataType.edgeType:
@@ -227,15 +226,15 @@ async function processDataPost(
 				break
 
 			case DataFieldDataType.json:
-				value = value ? JSON.parse(value) : value
+				return value ? JSON.parse(value) : { data: null, display: null }
 				break
 
 			default:
 				error(500, {
-                					file: FILENAME,
-                					function: `formatDataForDisplay`,
-                					message: `No case defined for field: ${field.name} - DataFieldDataType: ${codeDataTypeField}`
-                				});
+					file: FILENAME,
+					function: `formatDataForDisplay`,
+					message: `No case defined for field: ${field.name} - DataFieldDataType: ${codeDataTypeField}`
+				})
 		}
 		return { data: value, display: value }
 	}
@@ -274,7 +273,7 @@ function isFieldValue(value: any) {
 	return (
 		value &&
 		Object.keys(value).length === 2 &&
-		value.hasOwnProperty('data') &&
-		value.hasOwnProperty('display')
+		Object.hasOwn(value, 'data') &&
+		Object.hasOwn(value, 'display')
 	)
 }

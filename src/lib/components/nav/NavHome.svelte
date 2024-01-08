@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { AppShell } from '@skeletonlabs/skeleton'
-	import type { User } from '$comps/types'
-	import { getUser } from '$comps/types'
+	import { appStoreUser, User } from '$comps/types'
 	import SysUser from '$routes/home/User.svelte'
 	import CMUser from '$routes/home/UserCM.svelte'
 	import Quote from '$routes/home/Quote.svelte'
@@ -9,11 +8,20 @@
 
 	const FILENAME = '$comps/nav/NavPageHome.svelte'
 
-	const user: User | undefined = getUser()
+	let user: User | undefined
+	let showSysUser: boolean
+	let showCMUser: boolean
+	let showCMQuote: boolean
 
-	let showSysUser: boolean = user ? user.hasResourceWidget('widget_sys_user') : false
-	let showCMUser: boolean = user ? user.hasResourceWidget('widget_cm_user') : false
-	let showCMQuote: boolean = user ? user.hasResourceWidget('widget_cm_quotes') : false
+	$: {
+		const rawUser = $appStoreUser
+		user = rawUser && Object.keys(rawUser).length > 0 ? new User(rawUser) : undefined
+		if (user) {
+			showSysUser = user.hasResourceWidget('widget_sys_user')
+			showCMUser = user.hasResourceWidget('widget_cm_user')
+			showCMQuote = user.hasResourceWidget('widget_cm_quotes')
+		}
+	}
 </script>
 
 <AppShell>

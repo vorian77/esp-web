@@ -50,7 +50,7 @@ export interface FieldRaw {
 		patternReplacement: string
 		placeHolder: string
 	}
-	customElement: any
+	customElement: FieldCustomRaw
 	headerAlt: string
 	height: number
 	isDisplay: boolean
@@ -64,4 +64,15 @@ export interface FieldRaw {
 	}
 	itemsListParms: any
 	width: number
+}
+export interface FieldCustomRaw {
+	_type: string
+	action: { method: string; type: string; value: string }
+	align: string
+	color: string
+	label: string
+	prefix: string
+	size: string
+	source: string
+	sourceKey: string
 }

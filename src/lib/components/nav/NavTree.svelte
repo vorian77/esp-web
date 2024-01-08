@@ -27,7 +27,6 @@
 			})()
 		}
 		if (packet?.token instanceof TokenAppTreeSetParent) {
-			console.log('NavTree.token:', packet.token)
 			;(async () => {
 				await navTree.setCurrentParent()
 			})()

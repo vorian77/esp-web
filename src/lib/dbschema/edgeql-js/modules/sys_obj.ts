@@ -115,6 +115,7 @@ export type $NodeObjλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "parent": $.LinkDesc<$NodeObj, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "order": $.PropertyDesc<_default.$nonNegative, $.Cardinality.One, false, false, false, false>;
   "page": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "queryActions": $.PropertyDesc<$.ArrayType<_std.$json>, $.Cardinality.AtMostOne, false, false, false, false>;
   "<parent[is sys_obj::NodeObj]": $.LinkDesc<$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<parent[is sys_obj::NodeObjFooter]": $.LinkDesc<$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
   "<parent": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

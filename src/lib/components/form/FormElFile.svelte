@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { FieldValue } from '$comps/form/field'
 	import type { FieldFile } from '$comps/form/fieldFile'
 	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import type { ResponseBody } from '$comps/types.js'
+	import type { ResponseBody } from '$comps/types'
 	import { getURLDownload, objDelete, objExists, objUpload } from '$comps/fileTransferAWS'
 
 	const FILENAME = '$comps/form/FormElFile.svelte'
@@ -47,7 +48,7 @@
 				imgFileName = keyData ? await getURLDownload(keyData) : ''
 			})()
 		} else {
-			imgFileName = files && files[0] && files[0].name ? URL.createObjectURL(files[0]) : ''
+			imgFileName = files && files[0] ? URL.createObjectURL(files[0]) : ''
 			// this comment required to prevent bug - always shows downloaded image
 			console.log('ElFile.source.input:', imgFileName)
 		}
@@ -67,7 +68,8 @@
 		mode = Mode.changing
 		keyUpload = getKeyNew(field.valueCurrent)
 		keyInput = keyUpload
-		onChange(field.name, files[0].name, keyUpload, fieldObjUpload)
+		console.log('fieldObjUpload:', { file: files[0] })
+		onChange(field.name, files[0], keyUpload, fieldObjUpload)
 	}
 
 	const fieldObjDelete = async function () {
@@ -106,10 +108,10 @@
 		toastStore.trigger(toastSettings)
 	}
 
-	function getKey(fieldVal: any) {
+	function getKey(fieldVal: FieldValue) {
 		return fieldVal.display ? fieldVal.display : null
 	}
-	function getKeyNew(fieldVal: any) {
+	function getKeyNew(fieldVal: FieldValue) {
 		let key = getKey(fieldVal)
 		return key ? key : field.getKey()
 	}

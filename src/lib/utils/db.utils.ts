@@ -1,5 +1,5 @@
 import type { ResponseBody } from '$comps/types'
-import { getUser } from '$comps/types'
+import { userGet } from '$comps/types'
 import { valueOrDefault } from '$comps/types'
 import type { TokenApiQuery } from '$lib/api'
 import { error } from '@sveltejs/kit'
@@ -32,10 +32,10 @@ export class DbData {
 		this.dataObj = this.getData(data, 'dataObj')
 		this.parms = this.getData(data, 'parms')
 		this.system = this.getData(data, 'system')
-		this.user = valueOrDefault(getUser(), {})
+		this.user = valueOrDefault(userGet(), {})
 	}
 	getData(data: any, key: string) {
-		return data.hasOwnProperty(key) && data !== undefined ? data[key] : {}
+		return Object.hasOwn(data, key) && data !== undefined ? data[key] : {}
 	}
 }
 export type DbDataType = Record<string, any>

@@ -33,9 +33,9 @@ export async function POST({ request }) {
 
 		default:
 			error(500, {
-            				file: FILENAME,
-            				function: 'POST',
-            				message: `No case defined for ApiFunction: ${apiFunction}`
-            			});
+				file: FILENAME,
+				function: 'POST',
+				message: `No case defined for ApiFunction: ${apiFunction}`
+			})
 	}
 }

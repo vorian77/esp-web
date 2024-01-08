@@ -2,8 +2,8 @@ import { Token } from '$comps/types.master'
 import {
 	type DataObjData,
 	type DataObjRecord,
-	getUser,
 	required,
+	userGet,
 	valueOrDefault
 } from '$comps/types'
 import type { DataObjRaw } from '$comps/types'
@@ -111,10 +111,10 @@ export class TokenApiQueryData {
 		this.parms = this.setData(data, 'parms', {})
 		this.record = this.setData(data, 'record', {})
 		this.system = this.setData(data, 'system', {})
-		this.user = valueOrDefault(getUser(), {})
+		this.user = valueOrDefault(userGet(), {})
 	}
 	setData(data: any, key: string, defaultVal: any) {
-		return data.hasOwnProperty(key) && data !== undefined ? data[key] : defaultVal
+		return Object.hasOwn(data, key) && data !== undefined ? data[key] : defaultVal
 	}
 }
 
@@ -127,9 +127,9 @@ export class TokenApiDbDataObj {
 	constructor(obj: any) {
 		obj = valueOrDefault(obj, {})
 		const clazz = 'TokenApiDbDataObj'
-		if (obj.hasOwnProperty('dataObjId')) this.dataObjId = obj.dataObjId
-		if (obj.hasOwnProperty('dataObjName')) this.dataObjName = obj.dataObjName
-		if (obj.hasOwnProperty('dataObjRaw')) this.dataObjRaw = obj.dataObjRaw
+		if (Object.hasOwn(obj, 'dataObjId')) this.dataObjId = obj.dataObjId
+		if (Object.hasOwn(obj, 'dataObjName')) this.dataObjName = obj.dataObjName
+		if (Object.hasOwn(obj, 'dataObjRaw')) this.dataObjRaw = obj.dataObjRaw
 		required(
 			this.dataObjId || this.dataObjName || this.dataObjRaw,
 			clazz,

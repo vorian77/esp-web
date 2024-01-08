@@ -185,7 +185,7 @@ export class ResponseBody {
 	constructor(parms: any) {
 		parms = valueOrDefault(parms, {})
 
-		if (parms.hasOwnProperty('data') && Object.keys(parms).length === 1) {
+		if (Object.hasOwn(parms, 'data') && Object.keys(parms).length === 1) {
 			parms = parms.data
 		}
 
@@ -193,17 +193,17 @@ export class ResponseBody {
 			this.type = 'array'
 			this.data = parms
 		} else {
-			if (parms.hasOwnProperty('message')) {
+			if (Object.hasOwn(parms, 'message')) {
 				this.message = parms.message
 				delete parms.message
 			}
 
-			if (parms.hasOwnProperty('success')) {
+			if (Object.hasOwn(parms, 'success')) {
 				this.success = parms.success
 				delete parms.success
 			}
 
-			if (parms.hasOwnProperty('data') && Object.keys(parms).length === 1) {
+			if (Object.hasOwn(parms, 'data') && Object.keys(parms).length === 1) {
 				this.data = { ...parms.data }
 			} else {
 				this.data = { ...parms }

@@ -6,7 +6,7 @@
 		TokenAppTreeNode,
 		TokenAppTreeReset
 	} from '$comps/nav/types.app'
-	import { Node, NodeNav, NodeType } from '$comps/types'
+	import { appStoreUser, Node, NodeType, RawNode, User } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 
@@ -14,26 +14,23 @@
 
 	export let state: State
 
-	let footer: Array<any> = []
+	let footer: Array<Node> = []
 	let loaded = false
 	let currNodeName = ''
 
-	$: if (!loaded && state && state.user) {
-		state.user.resource_footer.forEach((n: any) => {
-			footer.push(Node.dbNodeToRaw(n))
-		})
-		currNodeName = footer.length > 0 ? footer[0].name : ''
-		loaded = true
+	$: if (!loaded && $appStoreUser) {
+		const user = Object.keys($appStoreUser).length > 0 ? new User($appStoreUser) : undefined
+		if (user) {
+			user.resource_footer.forEach((n: any) => {
+				footer.push(new Node(new RawNode(n)))
+			})
+			currNodeName = footer.length > 0 ? footer[0].name : ''
+			loaded = true
+		}
 	}
 
 	const navColor = '#3b79e1'
 	const itemColors = ['#f5f5f5', '#dedede']
-
-	const nodesConfig = [
-		['Home', 'home', '/home'],
-		['Contact Us', 'contact-us', '/home/cm/contactUs'],
-		['Account', 'profile', '/home/account']
-	]
 
 	// styling
 	const styleContainer = `
@@ -62,7 +59,7 @@
 				border-top: 1px solid ${navColor};`
 	const marginTopheader = 'mt-1'
 
-	function onChange(node: NodeNav) {
+	function onChange(node: Node) {
 		currNodeName = node.name!
 		let packet: StatePacket | undefined
 

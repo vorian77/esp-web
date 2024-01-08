@@ -69,10 +69,10 @@
 	async function processState(packet: StatePacket) {
 		if (!packet.token)
 			error(500, {
-            				file: FILENAME,
-            				function: 'processState',
-            				message: `No token supplied in State packet: ${JSON.stringify(packet, null, 2)}.`
-            			});
+				file: FILENAME,
+				function: 'processState',
+				message: `No token supplied in State packet: ${JSON.stringify(packet, null, 2)}.`
+			})
 
 		const token = packet.token
 
@@ -102,7 +102,7 @@
 
 						case TokenAppDoAction.detailDelete:
 							if (token instanceof TokenAppDoDetail) {
-								if (await app.updateTab(token, TokenApiQueryType.delete)) {
+								if (await app.updateTab(state, token, TokenApiQueryType.delete)) {
 									app.popLevel()
 									dataObjUpdate = new DataObjUpdate(true, true, true)
 								}
@@ -111,20 +111,20 @@
 
 						case TokenAppDoAction.detailNew:
 							app.getCurrLevel().getCurrTab().setCurrRowByNum(-1)
-							await AppLevelTab.query(app.getCurrTab(), TokenApiQueryType.new, app)
+							await AppLevelTab.query(state, app.getCurrTab(), TokenApiQueryType.new, app)
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
 
 						case TokenAppDoAction.detailSaveInsert:
 							if (token instanceof TokenAppDoDetail) {
-								await app.updateTab(token, TokenApiQueryType.saveInsert)
+								await app.updateTab(state, token, TokenApiQueryType.saveInsert)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
 
 						case TokenAppDoAction.detailSaveUpdate:
 							if (token instanceof TokenAppDoDetail) {
-								await app.updateTab(token, TokenApiQueryType.saveUpdate)
+								await app.updateTab(state, token, TokenApiQueryType.saveUpdate)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
@@ -132,29 +132,29 @@
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
 								app.getCurrLevel().getCurrTab().setCurrRowByNum(token.rowNbr)
-								await app.addLevel(TokenApiQueryType.retrieve)
+								await app.addLevel(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
 							break
 
 						case TokenAppDoAction.listNew:
-							await app.addLevel(TokenApiQueryType.new)
+							await app.addLevel(state, TokenApiQueryType.new)
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break
 
 						default:
 							error(500, {
-                            								file: FILENAME,
-                            								function: 'processState.objAction',
-                            								message: `No case defined for TokenApiDbActionType: ${token.action} `
-                            							});
+								file: FILENAME,
+								function: 'processState.objAction',
+								message: `No case defined for TokenApiDbActionType: ${token.action} `
+							})
 					}
 				}
 				break
 
 			case StatePacketComponent.appRow:
 				if (token instanceof TokenAppRow) {
-					await app.setRowAction(token.rowAction)
+					await app.setRowAction(state, token.rowAction)
 					dataObjUpdate = new DataObjUpdate(false, false, true)
 				}
 				break
@@ -163,28 +163,28 @@
 				if (token instanceof TokenAppTab) {
 					currLevel = app.getCurrLevel()
 					currLevel.setTabIdx(token.tabIdx)
-					await AppLevelTab.query(currLevel.getCurrTab(), TokenApiQueryType.retrieve, app)
+					await AppLevelTab.query(state, currLevel.getCurrTab(), TokenApiQueryType.retrieve, app)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
 				break
 
 			case StatePacketComponent.navApp:
 				if (token instanceof TokenApiQuery) {
-					app = await App.initDataObj(token)
+					app = await App.initDataObj(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
 				if (token instanceof TokenAppTreeNode) {
-					app = await App.initNode(token.node)
+					app = await App.initNode(state, token.node)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
 				break
 
 			default:
 				error(500, {
-                					file: FILENAME,
-                					function: 'processAction',
-                					message: `No case defined for NavActionComponent: ${packet.component}`
-                				});
+					file: FILENAME,
+					function: 'processAction',
+					message: `No case defined for NavActionComponent: ${packet.component}`
+				})
 		}
 		setNavApp()
 	}
@@ -278,7 +278,6 @@
 							{dataObj}
 							{dataObjData}
 							on:formCancelled
-							on:customFieldAction
 						/>
 					{/if}
 				</svelte:fragment>
@@ -286,12 +285,5 @@
 		{/if}
 	</AppShell>
 {:else if state?.nodeType === NodeType.object && currTab}
-	<svelte:component
-		this={currComponent}
-		{state}
-		{dataObj}
-		{dataObjData}
-		on:formCancelled
-		on:customFieldAction
-	/>
+	<svelte:component this={currComponent} {state} {dataObj} {dataObjData} on:formCancelled />
 {/if}

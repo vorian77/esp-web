@@ -31,6 +31,7 @@ export async function objUpload(fileStorageKey: string, file: File): Promise<Res
 	return await upload(url, file)
 
 	async function upload(url: string, imgFile: File) {
+		console.log('upload:', { url, imgFile })
 		try {
 			const resp: Response = await fetch(url, {
 				method: 'PUT',
@@ -47,10 +48,10 @@ export async function objUpload(fileStorageKey: string, file: File): Promise<Res
 			}
 		} catch (err) {
 			error(500, {
-            				file: FILENAME,
-            				function: 'uploadImage',
-            				message: `Unable to upload image: ${imgFile.name} Error: ${err}`
-            			});
+				file: FILENAME,
+				function: 'uploadImage',
+				message: `Unable to upload image: ${imgFile.name} Error: ${err}`
+			})
 		}
 	}
 }
@@ -94,18 +95,18 @@ async function getURL(action: string, fileStorageKey: string, fileType = '') {
 
 		if (!response.success) {
 			error(500, {
-            				file: FILENAME,
-            				function: 'getURL',
-            				message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey}`
-            			});
+				file: FILENAME,
+				function: 'getURL',
+				message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey}`
+			})
 		}
 
 		return response.data
 	} catch (err) {
 		error(500, {
-        			file: FILENAME,
-        			function: 'getURL',
-        			message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey} - err: ${err}`
-        		});
+			file: FILENAME,
+			function: 'getURL',
+			message: `Unable to retrieve URL for ${action} - storage key: ${fileStorageKey} - err: ${err}`
+		})
 	}
 }

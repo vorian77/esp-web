@@ -24,7 +24,7 @@ export function valueHasChanged(vSource: any, vCurrent: any): boolean {
 		if (typeof vSource !== 'object' || typeof vCurrent !== 'object') return true
 		if (Object.entries(vSource).length !== Object.entries(vCurrent).length) return true
 		for (const [key, value] of Object.entries(vSource)) {
-			if (!vCurrent.hasOwnProperty(key)) return true
+			if (!Object.hasOwn(vCurrent, key)) return true
 			if (valueHasChanged(value, vCurrent[key])) return true
 		}
 		return false

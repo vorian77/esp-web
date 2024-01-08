@@ -1,13 +1,14 @@
 module sys_obj{
   type NodeObj extending sys_core::Obj {
-    required codeType: sys_core::Code;
-    parent: NodeObj;
-    required order: default::nonNegative;
     required codeIcon: sys_core::Code;
-    page: str;
+    required codeType: sys_core::Code;
     dataObj: sys_obj::DataObj {
       on target delete allow
     };
+    parent: NodeObj;
+    required order: default::nonNegative;
+    page: str;
+    queryActions: array<json>;
     constraint exclusive on (.name);
   }
 

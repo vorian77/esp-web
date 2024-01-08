@@ -228,7 +228,8 @@ export async function getNodesBranch(token: TokenAppTreeNodeId) {
 		dataObjId: n.dataObj.id,
 		order: true,
 		filter: e.op(n.parent.id, '=', e.cast(e.uuid, parentNodeId)),
-		order_by: n.order
+		order_by: n.order,
+		queryActions: n.queryActions
 	}))
 	return await query.run(client)
 }
@@ -244,7 +245,8 @@ export async function getNodesLevel(token: TokenAppTreeNodeId) {
 		page: true,
 		dataObjId: n.dataObj.id,
 		order: true,
-		order_by: n.order
+		order_by: n.order,
+		queryActions: n.queryActions
 	}))
 	const root = e.select(e.sys_obj.NodeObj, (n: any) => ({
 		...baseShape(n),
@@ -279,7 +281,8 @@ export async function getUserByUserId(userId: string) {
 			page: true,
 			dataObjId: f.dataObj.id,
 			order: true,
-			order_by: f.order
+			order_by: f.order,
+			queryActions: f.queryActions
 		})),
 		resource_programs: e.select(u.userTypes.resources.is(e.sys_obj.NodeObj), (ut) => ({
 			id: true,

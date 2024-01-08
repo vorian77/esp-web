@@ -1,11 +1,12 @@
 <script lang="ts">
-	import AuthPage from '$routes/auth/AuthPage.svelte'
 	// import logo from '$assets/YO-Baltimore-logo.png'
 	import logo from '$assets/clientLogo-AtlanticImpact.png'
-	import { setUser } from '$comps/types'
+	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
+	import { userSet } from '$comps/types'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
+	const drawerStore = getDrawerStore()
 
 	export let data
 
@@ -25,13 +26,23 @@
 		const resp = await responsePromise.json()
 		if (resp) {
 			const user = resp.data
-			setUser(user)
+			userSet(user)
 			goto('/home')
 		}
 	}
-</script>
 
-<AuthPage bind:pageCurrent />
+	function openDrawer(dataObjName: string) {
+		const settings: DrawerSettings = {
+			id: 'auth',
+			position: 'bottom',
+			height: 'h-[30%]',
+			meta: {
+				dataObjName
+			}
+		}
+		drawerStore.open(settings)
+	}
+</script>
 
 <div id="full-screen">
 	<div class="content">
@@ -41,7 +52,7 @@
 			<button
 				type="button"
 				class="btn variant-filled-primary w-full mt-10"
-				on:click={() => (pageCurrent = 'data_obj_auth_login')}
+				on:click={() => openDrawer('data_obj_auth_login')}
 			>
 				Log in
 			</button>

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import {
-		getUser,
+		appStoreUser,
 		initNavTree,
 		NavTree as NavTreeType,
 		NodeType,
 		valueOrDefault
 	} from '$comps/types'
-	import type { User } from '$comps/types'
+	import { User } from '$comps/types'
 	import {
 		State,
 		StatePacket,
@@ -17,8 +17,12 @@
 		AppBar,
 		AppShell,
 		Avatar,
+		getDrawerStore,
+		getModalStore,
+		getToastStore,
 		type DrawerSettings,
-		getDrawerStore
+		type ModalSettings,
+		type ToastSettings
 	} from '@skeletonlabs/skeleton'
 	import NavApp from '$comps/nav/NavApp.svelte'
 	import NavHome from '$comps/nav/NavHome.svelte'
@@ -27,35 +31,34 @@
 	import Icon from '$comps/Icon.svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import {
-		getModalStore,
-		getToastStore,
-		type ModalSettings,
-		type ToastSettings
-	} from '@skeletonlabs/skeleton'
 	import type { ToastType } from '$comps/types'
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const FILENAME = '/$routes/home/+layout.svelte'
 
+	const drawerStore = getDrawerStore()
 	const modalStore = getModalStore()
 	const toastStore = getToastStore()
-	const drawerStore = getDrawerStore()
 
 	const DEFAULT_APP_NAME = 'The App Factory'
 	const NAV_COLOR = '#3b79e1'
 	const SIDEBAR_LEFT_WIDTH = '80'
 
-	const user: User | undefined = getUser()
 	let launchApp = true
 	let state: State
 	let statePackets: Array<StatePacket> = []
+	let user: User | undefined
+
+	$: {
+		const rawUser = $appStoreUser
+		user = rawUser && Object.keys(rawUser).length > 0 ? new User(rawUser) : undefined
+	}
 
 	$: if (launchApp && user) {
 		;(async () => {
 			await initNavTree(user)
 		})()
-		state = new State(stateUpdate)
+		state = new State(stateUpdate, drawerStore, modalStore, toastStore)
 		launchApp = false
 	}
 
@@ -78,7 +81,7 @@
 						'Discard Changes',
 						'Are you sure you want to discard your changes?',
 						'Discard Changes'
-				  )
+					)
 			await askB4Transition(obj, confirm)
 		} else {
 			state = state.updateProperties(obj)
