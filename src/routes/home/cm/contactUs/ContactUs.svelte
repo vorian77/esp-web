@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { Form } from '$comps/dataObj/dataObjOld'
+	// import type { Form } from '$comps/dataObj/dataObjOld'
 	import { goto } from '$app/navigation'
-	export let formObj: Form
+	// export let formObj: Form
 
-	function call(phoneNbr) {
-		window.location.href = 'tel:' + phoneNbr
-	}
-	function message(office, officeId) {
-		goto(`/home/cm/contactUs/${office}/${officeId}`)
-	}
+	// function call(phoneNbr) {
+	// 	window.location.href = 'tel:' + phoneNbr
+	// }
+	// function message(office, officeId) {
+	// 	goto(`/home/cm/contactUs/${office}/${officeId}`)
+	// }
 </script>
 
 <h1 class="h1">Contact Us</h1>
@@ -17,7 +17,7 @@
 	For more information or to register in person, contact one of our offices directly.
 </p>
 
-{#each formObj.values as v, index (v.ent_id)}
+<!-- {#each formObj.values as v, index (v.ent_id)}
 	{@const areaCode = v.rec_contact1_ph_off.slice(0, 3)}
 	{@const exchange = v.rec_contact1_ph_off.slice(3, 6)}
 	{@const extension = v.rec_contact1_ph_off.slice(6, 10)}
@@ -47,7 +47,7 @@
 			>
 		</div>
 	</div>
-{/each}
+{/each} -->
 
 <style>
 	a {
