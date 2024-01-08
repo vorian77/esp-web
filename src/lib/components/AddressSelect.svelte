@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { DataObj } from '$comps/dataObj/dataObjOld'
-	export let formObj: DataObj
+	// import type { DataObj } from '$comps/dataObj/dataObjOld'
+	// export let formObj: DataObj
 	export let currentSite = 0
 
-	function onSelect(ent_id) {
-		currentSite = ent_id
-	}
+	// function onSelect(ent_id) {
+	// 	currentSite = ent_id
+	// }
 </script>
 
-{#each formObj.values as v, index (v.ent_id)}
+<!-- {#each formObj.values as v, index (v.ent_id)}
 	{@const areaCode = v.rec_contact1_ph_off.slice(0, 3)}
 	{@const exchange = v.rec_contact1_ph_off.slice(3, 6)}
 	{@const extension = v.rec_contact1_ph_off.slice(6, 10)}
@@ -39,7 +39,7 @@
 			{/if}
 		</div>
 	</div>
-{/each}
+{/each} -->
 
 <style>
 	a {
