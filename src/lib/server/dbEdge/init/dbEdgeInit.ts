@@ -8,7 +8,7 @@ import initCMTrainingData from '$server/dbEdge/init/dbEdgeInitCMTrainingData'
 import initMOED_cm from '$server/dbEdge/init/dbEdgeInitMOED_cm'
 
 const FILE = '/server/dbEdge/init'
-const load = 0
+const load = 1
 
 export async function init() {
 	if (load) {

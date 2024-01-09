@@ -57,8 +57,8 @@ export class Field {
 			this.access === FieldAccess.required
 				? 'bg-blue-100'
 				: this.access == FieldAccess.readonly
-				  ? 'bg-gray-200'
-				  : 'bg-white'
+					? 'bg-gray-200'
+					: 'bg-white'
 		this.dataType = memberOfEnum(
 			obj._column._codeDataType,
 			'Field',
@@ -66,14 +66,14 @@ export class Field {
 			'DataFieldDataType',
 			DataFieldDataType
 		)
-		this.dataTypePreset = obj._column._codeDataTypePreset
+		this.dataTypePreset = obj._column._codeDataTypeComputed
 			? memberOfEnum(
-					obj._column._codeDataTypePreset,
+					obj._column._codeDataTypeComputed,
 					'Field',
 					'dataType',
 					'DataFieldDataType',
 					DataFieldDataType
-			  )
+				)
 			: undefined
 		this.element = memberOfEnumOrDefault(
 			obj._codeElement,

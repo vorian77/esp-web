@@ -28,7 +28,7 @@ export interface FieldRaw {
 	_column: {
 		_codeAlignment: string
 		_codeDataType: string
-		_codeDataTypePreset: string
+		_codeDataTypeComputed: string
 		classValue: string
 		exprSelect: string
 		exprStorageKey: string

@@ -484,7 +484,6 @@ export namespace sys_db {
   export interface Column extends sys_core.Obj {
     "codeAlignment"?: sys_core.Code | null;
     "codeDataType": sys_core.Code;
-    "codeDataTypePreset"?: sys_core.Code | null;
     "classValue"?: string | null;
     "edgeTypeDefn"?: unknown | null;
     "exprPreset"?: string | null;
@@ -505,6 +504,7 @@ export namespace sys_db {
     "patternMsg"?: string | null;
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
+    "codeDataTypeComputed"?: sys_core.Code | null;
   }
   export interface Table extends sys_core.Obj {
     "hasMgmt": boolean;

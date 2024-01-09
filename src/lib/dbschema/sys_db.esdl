@@ -3,7 +3,7 @@ module sys_db{
     classValue: str;
     codeAlignment: sys_core::Code;
     required codeDataType: sys_core::Code;
-    codeDataTypePreset: sys_core::Code;
+    codeDataTypeComputed: sys_core::Code;
     edgeTypeDefn: json;
     exprPreset: str;
     exprSelect: str;

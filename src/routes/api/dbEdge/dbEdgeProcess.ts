@@ -54,9 +54,7 @@ export async function processQuery(token: TokenApiQuery) {
 			break
 
 		case TokenApiQueryType.expression:
-			const result = new ApiResultData(await querySingle(query.getScriptObjectExpr(queryData)))
-			console.log('processQuery.expression:', { result })
-			return result
+			return new ApiResultData(await querySingle(query.getScriptObjectExpr(queryData)))
 			break
 
 		case TokenApiQueryType.new:
@@ -98,13 +96,15 @@ export async function processQuery(token: TokenApiQuery) {
 			})
 	}
 
+	console.log('processQuery.2:', { rawDataList, dataRowStatus })
+
 	const dataObjList: DataObjListRow = await processDataPost(
 		query,
 		dataObj,
 		rawDataList,
 		dataRowStatus
 	)
-	// console.log('processQuery.1:', { dataRaw: rawDataList, dataProcessedRow0: dataObjList[0].record })
+	console.log('processQuery.3:', { processedDataPost: dataObjList })
 	return new ApiResultDoSuccess(dataObjRaw, new DataObjData(dataObj.cardinality, dataObjList))
 	// return new QueryResultFail('failed under testing...')
 }
@@ -138,13 +138,13 @@ async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
 async function processDataPost(
 	query: EdgeQL,
 	dataObj: DataObj,
-	dataRowsRaw: Array<Record<string, any>>,
+	rawDataList: RawDataList,
 	dataRowStatus: DataObjRowStatus
 ) {
 	const data: DataObjListRow = []
-	if (dataRowsRaw.length === 0) dataRowsRaw = [{}]
+	if (rawDataList.length === 0) rawDataList = [{}]
 
-	for (const row of dataRowsRaw) {
+	for (const row of rawDataList) {
 		const record: DataObjRecord = {}
 		for (const field of dataObj.fields) {
 			const fieldName = field.name
@@ -165,15 +165,22 @@ async function processDataPost(
 		data.push(new DataObjRow(dataRowStatus, record))
 	}
 	console.log('processDataPost.data.summary.0:', { dataRowStatus, rows: data.length })
-	console.log('processDataPost.data.summary.1:', { data: JSON.stringify(data) })
+	// console.log('processDataPost.data.summary.1:', { data: JSON.stringify(data) })
 	return data
 
 	function formatDataForDisplay(
 		field: Field,
 		value: any,
 		codeDataTypeField: DataFieldDataType,
-		codeDataTypePreset: DataFieldDataType | undefined = undefined
+		codeDataTypeComputed: DataFieldDataType | undefined = undefined
 	): FieldValueValues {
+		console.log('formatDataForDisplay:', {
+			field: field.name,
+			value,
+			codeDataTypeField,
+			codeDataTypeComputed
+		})
+
 		switch (codeDataTypeField) {
 			// scalar
 			case DataFieldDataType.bool:
@@ -190,18 +197,23 @@ async function processDataPost(
 
 			// complex
 			case DataFieldDataType.computed:
-				if (codeDataTypePreset && isFieldValue(value)) {
+				if (codeDataTypeComputed && !value) {
+					const val = formatDataForDisplayScalar(value, codeDataTypeComputed)
+					return { data: val, display: val }
+				}
+
+				if (codeDataTypeComputed && isFieldValue(value)) {
 					return {
 						data: value.data,
-						display: formatDataForDisplayScalar(value.display, codeDataTypePreset)
+						display: formatDataForDisplayScalar(value.display, codeDataTypeComputed)
 					}
-				} else {
-					error(500, {
-						file: FILENAME,
-						function: `formatDataForDisplay - DataFieldType: ${DataFieldDataType.computed}`,
-						message: `No preset data type defined for field: ${field.name}`
-					})
 				}
+
+				error(500, {
+					file: FILENAME,
+					function: 'formatDataForDisplay',
+					message: `Invalid data format. field name: ${field.name} - field data type: ${codeDataTypeField} - value: ${value}`
+				})
 
 			case DataFieldDataType.edgeType:
 				let data = ''

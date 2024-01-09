@@ -292,16 +292,6 @@ async function initSysColumns() {
 			isExcludeUpdate: true,
 			name: 'custom_select'
 		})
-		await addColumn({
-			codeDataType: 'computed',
-			codeDataTypePreset: 'str',
-			creator: 'user_sys',
-			exprSelect: `(SELECT sys_user::User {fullName := str_upper(.person.fullName)} FILTER .userName = <str,user,userName>)`,
-			header: 'Full Name (uppercase)',
-			isExcludeUpdate: true,
-			name: 'computed_person_fullname_uppercase',
-			owner: 'app_sys'
-		})
 	}
 
 	async function columnsMgmt() {
@@ -333,7 +323,7 @@ async function initSysColumns() {
 		})
 		await addColumn({
 			codeDataType: 'edgeType',
-			codeDataTypePreset: 'str',
+			codeDataTypeComputed: 'str',
 			creator: 'user_sys',
 			edgeTypeDefn: {
 				property: 'person.fullName',
@@ -348,7 +338,7 @@ async function initSysColumns() {
 		})
 		await addColumn({
 			codeDataType: 'edgeType',
-			codeDataTypePreset: 'str',
+			codeDataTypeComputed: 'str',
 			creator: 'user_sys',
 			edgeTypeDefn: {
 				property: 'person.fullName',

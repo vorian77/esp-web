@@ -72,7 +72,7 @@ export async function getDataObjById(dataObjId: string) {
 				_column: e.select(f.column, (c) => ({
 					_codeAlignment: c.codeAlignment.name,
 					_codeDataType: c.codeDataType.name,
-					_codeDataTypePreset: c.codeDataTypePreset.name,
+					_codeDataTypeComputed: c.codeDataTypeComputed.name,
 					classValue: true,
 					exprSelect: true,
 					exprStorageKey: true,

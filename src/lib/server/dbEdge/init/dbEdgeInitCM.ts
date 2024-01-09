@@ -77,7 +77,7 @@ async function initColumns() {
 	})
 	await addColumn({
 		codeDataType: 'edgeType',
-		codeDataTypePreset: 'str',
+		codeDataTypeComputed: 'str',
 		creator: 'user_sys',
 		edgeTypeDefn: {
 			property: 'person.fullName',
@@ -120,12 +120,12 @@ async function initColumns() {
 	})
 	await addColumn({
 		codeDataType: 'computed',
-		codeDataTypePreset: 'date',
+		codeDataTypeComputed: 'str',
 		creator: 'user_sys',
 		exprSelect: `.serviceFlow { data := .id, display := .header }`,
 		header: 'Service Flow',
 		isExcludeUpdate: true,
-		name: 'serviceFlowComputed',
+		name: 'computedServiceFlow',
 		owner: 'app_cm'
 	})
 }
@@ -182,7 +182,7 @@ async function initServiceFlow() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'serviceFlowComputed',
+				columnName: 'computedServiceFlow',
 				dbOrderCrumb: 10,
 				dbOrderSelect: 20
 			},

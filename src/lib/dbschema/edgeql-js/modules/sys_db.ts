@@ -9,7 +9,6 @@ import type * as _sys_obj from "./sys_obj";
 export type $ColumnλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "codeAlignment": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "codeDataType": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
-  "codeDataTypePreset": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "classValue": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "edgeTypeDefn": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "exprPreset": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -30,6 +29,7 @@ export type $ColumnλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "patternMsg": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "patternReplacement": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "placeHolder": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "codeDataTypeComputed": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "<columns[is sys_db::Table]": $.LinkDesc<$Table, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column[is sys_obj::DataObjFieldDb]": $.LinkDesc<_sys_obj.$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column[is sys_obj::DataObjFieldEl]": $.LinkDesc<_sys_obj.$DataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
