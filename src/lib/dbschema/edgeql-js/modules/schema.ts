@@ -13,6 +13,7 @@ import type * as _sys_obj from "./sys_obj";
 import type * as _default from "./default";
 import type * as _app_cm from "./app_cm";
 import type * as _sys_test from "./sys_test";
+import type * as _sys_admin from "./sys_admin";
 export type $AccessKind = {
   "Select": $.$expr_Literal<$AccessKind>;
   "UpdateRead": $.$expr_Literal<$AccessKind>;
@@ -740,6 +741,7 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is app_cm::CsfData]": $.LinkDesc<_app_cm.$CsfData, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CsfNote]": $.LinkDesc<_app_cm.$CsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_obj::NodeObjFooter]": $.LinkDesc<_sys_obj.$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_admin::ObjConfig]": $.LinkDesc<_sys_admin.$ObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<intersection_of": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<subject": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

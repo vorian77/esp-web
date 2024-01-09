@@ -2,6 +2,7 @@ import {
 	DataObj,
 	DataObjCardinality,
 	DataObjData,
+	DataObjRowStatus,
 	getArray,
 	memberOfEnum,
 	Node,
@@ -99,7 +100,13 @@ export class App {
 			await AppLevelTab.query(state, this.getCurrTab(), TokenApiQueryType.retrieve, this)
 		}
 	}
-	async updateTab(state: State, token: TokenAppDoDetail, queryType: TokenApiQueryType) {
+	async tabDuplicate(state: State, token: TokenAppDoDetail) {
+		const currTab = this.getCurrTab()
+		currTab.data = token.dataObj.objData
+		currTab.data.dataObjRow.status = DataObjRowStatus.created
+		return true
+	}
+	async tabUpdate(state: State, token: TokenAppDoDetail, queryType: TokenApiQueryType) {
 		this.getCurrLevel().resetTabs()
 
 		const currTab = this.getCurrTab()
@@ -241,15 +248,16 @@ export class AppLevelTab {
 		queryType: TokenApiQueryType,
 		app: App | undefined = undefined
 	) {
-		const record = this.queryDataPre(tab, queryType, app)
+		let record = this.queryDataPre(tab, queryType, app)
 
-		await this.queryExecuteActions(
+		record = await this.queryExecuteActions(
 			state,
 			record,
 			tab.queryActions,
 			QueryActionTiming.pre,
 			queryType
 		)
+		console.log('AppLevelTab.query:', { queryType, record })
 
 		if (!(await this.queryExecute(tab, queryType, new TokenApiQueryData({ record })))) return false
 
@@ -379,11 +387,16 @@ export class AppLevelTab {
 		queryActionTiming: QueryActionTiming,
 		queryType: TokenApiQueryType
 	) {
+		let newData: any = data
+		let counter = 0
 		queryActions.actions.forEach(async (action) => {
 			if (action.timings.includes(queryActionTiming) && action.queryTypes.includes(queryType)) {
-				await action.func(state, data, queryActionTiming, queryType)
+				counter++
+				newData = await action.func(state, data, queryActionTiming, queryType)
 			}
 		})
+		return counter === 1 ? newData : data
+		return data
 	}
 
 	getCrumbLabelId() {
@@ -549,7 +562,8 @@ export class State {
 			return undefined
 		}
 	}
-	resetStatus() {
+	statusReset() {
+		// console.log('State.resetStatus...')
 		this.updateFunction({ objHasChanged: false, objValidToSave: true })
 	}
 	set(packet: StatePacket) {
@@ -633,6 +647,7 @@ export enum TokenAppDoAction {
 	listNew = 'listNew',
 	detailDelete = 'detailDelete',
 	detailNew = 'detailNew',
+	detailSaveAs = 'detailSaveAs',
 	detailSaveInsert = 'detailSaveInsert',
 	detailSaveUpdate = 'detailSaveUpdate',
 	none = 'none'

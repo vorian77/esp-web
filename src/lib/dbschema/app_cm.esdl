@@ -34,7 +34,6 @@ module app_cm {
 
 module app_cm_training {
   type Course extending sys_core::Obj {
-    isActive: str;
     multi codeMultiCerts: sys_core::Code;
     multi codeMultiExams: sys_core::Code;
     multi codeMultiItemsIncluded: sys_core::Code;
@@ -45,6 +44,7 @@ module app_cm_training {
     codeTypePayment: sys_core::CodeType;
     cost: float32;
     description: str;
+    isActive: str;
     provider: sys_core::Org;
     schedule: str;
     staffAdmin: sys_user::Staff;

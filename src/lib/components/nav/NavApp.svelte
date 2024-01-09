@@ -102,7 +102,7 @@
 
 						case TokenAppDoAction.detailDelete:
 							if (token instanceof TokenAppDoDetail) {
-								if (await app.updateTab(state, token, TokenApiQueryType.delete)) {
+								if (await app.tabUpdate(state, token, TokenApiQueryType.delete)) {
 									app.popLevel()
 									dataObjUpdate = new DataObjUpdate(true, true, true)
 								}
@@ -115,16 +115,23 @@
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
 
+						case TokenAppDoAction.detailSaveAs:
+							if (token instanceof TokenAppDoDetail) {
+								await app.tabDuplicate(state, token)
+								dataObjUpdate = new DataObjUpdate(false, false, true)
+							}
+							break
+
 						case TokenAppDoAction.detailSaveInsert:
 							if (token instanceof TokenAppDoDetail) {
-								await app.updateTab(state, token, TokenApiQueryType.saveInsert)
+								await app.tabUpdate(state, token, TokenApiQueryType.saveInsert)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
 
 						case TokenAppDoAction.detailSaveUpdate:
 							if (token instanceof TokenAppDoDetail) {
-								await app.updateTab(state, token, TokenApiQueryType.saveUpdate)
+								await app.tabUpdate(state, token, TokenApiQueryType.saveUpdate)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
@@ -209,7 +216,7 @@
 				if (dataObjUpdate?.updateComponent) currComponent = comps[currTab.dataObj.component]
 				if (dataObjUpdate?.updateObj) dataObj = currTab.dataObj
 				if (dataObjUpdate?.updateObjData) {
-					state.resetStatus()
+					state.statusReset()
 					dataObjData = currTab.data
 				}
 			}

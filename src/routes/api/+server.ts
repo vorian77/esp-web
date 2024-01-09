@@ -1,6 +1,11 @@
 import { ApiFunction } from '$lib/api'
 import { getServerResponse } from '$comps/types'
-import { getNodesBranch, getNodesLevel, processQuery } from '$routes/api/dbEdge/types.dbEdge'
+import {
+	getNodesBranch,
+	getNodesLevel,
+	getTableColumns,
+	processQuery
+} from '$routes/api/dbEdge/types.dbEdge'
 import { getDataObjId } from '$routes/api/dbEdge/dbEdgeUtilities'
 import { sendText } from '$routes/api/apiTwilio'
 import { getUser } from '$routes/api/apiUser'
@@ -21,6 +26,9 @@ export async function POST({ request }) {
 
 		case ApiFunction.dbEdgeGetNodesLevel:
 			return getServerResponse(await getNodesLevel(token))
+
+		case ApiFunction.dbEdgeGetTableColumns:
+			return getServerResponse(await getTableColumns(token))
 
 		case ApiFunction.dbEdgeProcessQuery:
 			return getServerResponse(await processQuery(token))

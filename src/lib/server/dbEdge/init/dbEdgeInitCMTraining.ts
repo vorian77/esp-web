@@ -14,6 +14,7 @@ import {
 	addColumn,
 	addCodeType,
 	addDataObj,
+	addDataObjFieldItems,
 	addNodeProgramObj
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
@@ -37,6 +38,8 @@ async function initCore() {
 	await apps([['app_cm_training']])
 
 	await codeTypes([
+		['app_cm_training', 0, 'ct_cm_training_csf_cohort_outcomes'],
+
 		['app_cm_training', 0, 'ct_cm_training_course_cert'],
 		['app_cm_training', 0, 'ct_cm_training_course_exam'],
 		['app_cm_training', 0, 'ct_cm_training_course_items_included'],
@@ -65,6 +68,11 @@ async function initCore() {
 	})
 
 	await codes([
+		// ct_cm_training_csf_cohort_outcomes
+		['ct_cm_training_csf_cohort_outcomes', 'app_cm_training', 'Completed', 0],
+		['ct_cm_training_csf_cohort_outcomes', 'app_cm_training', 'Failed', 1],
+		['ct_cm_training_csf_cohort_outcomes', 'app_cm_training', 'Withdrew', 2],
+
 		// ct_cm_training_course_cert
 		['ct_cm_training_course_cert', 'app_cm_training', 'Asbestos Abatement', 0],
 		['ct_cm_training_course_cert', 'app_cm_training', 'Lead Abatement', 0],
@@ -139,7 +147,7 @@ async function initDataObjs() {
 	await dataObjsCmTrainingCourse()
 	await dataObjsCmTrainingCohort()
 	await dataObjsCmTrainingStudent()
-	// await dataObjsCmTrainingCsfCohort()
+	await dataObjsCmTrainingCsfCohort()
 }
 
 async function initNav() {
@@ -203,6 +211,14 @@ async function dbCourse() {
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
 		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		header: 'Outcomes',
+		name: 'codeOutcomes'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
 		header: 'Sector',
 		name: 'codeSector'
 	})
@@ -213,6 +229,14 @@ async function dbCourse() {
 		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'CodeType' } },
 		header: 'Payment Type',
 		name: 'codeTypePayment'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Cohort' } },
+		header: 'Cohort',
+		name: 'cohort'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -271,7 +295,11 @@ async function dbCourse() {
 }
 
 async function dbCohort() {
-	await tables([['app_cm_training', 'app_cm_training', 'Cohort', true]])
+	await tables([
+		['app_cm_training', 'app_cm_training', 'Cohort', true],
+		['app_cm_training', 'app_cm_training', 'CsfCohort', true],
+		['app_cm_training', 'app_cm_training', 'CsfCohortAttd', true]
+	])
 }
 
 async function dataObjsCmTrainingCourse() {
@@ -875,7 +903,6 @@ async function dataObjsCmTrainingStudent() {
 }
 
 async function dataObjsCmTrainingCsfCohort() {
-	/* node_obj_cm_training_csf_cohort */
 	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
@@ -884,9 +911,8 @@ async function dataObjsCmTrainingCsfCohort() {
 		name: 'data_obj_cm_csf_cohort_list',
 		header: 'Cohorts',
 		subHeader: "Student's course enrollments.",
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'CsfCohort' },
+		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohort' },
 		exprFilter: '.clientServiceFlow.id = <uuid,record,id>',
-		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -924,11 +950,6 @@ async function dataObjsCmTrainingCsfCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'dateStart',
-				dbOrderSelect: 70
-			},
-			{
-				codeAccess: 'readOnly',
 				columnName: 'dateEnd',
 				dbOrderSelect: 80
 			},
@@ -944,7 +965,71 @@ async function dataObjsCmTrainingCsfCohort() {
 			}
 		]
 	})
+
+	await addDataObj({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		name: 'data_obj_cm_csf_cohort_detail',
+		header: 'Cohort',
+		subHeader: "Student's course enrollment.",
+		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohort' },
+		actions: ['noa_detail_new', 'noa_detail_delete'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				isDisplay: false
+			},
+			{
+				columnName: 'clientServiceFlow',
+				dbOrderSelect: 20
+			},
+			{
+				columnName: 'cohort',
+				dbOrderCrumb: 10,
+				dbOrderSelect: 30
+			},
+			{
+				columnName: 'codeStatus',
+				dbOrderSelect: 40
+			},
+			{
+				columnName: 'dateReferral',
+				dbOrderCrumb: 20,
+				dbOrderList: 10,
+				dbOrderSelect: 50
+			},
+			{
+				columnName: 'dateStart',
+				dbOrderSelect: 60
+			},
+			{
+				columnName: 'dateEnd',
+				dbOrderSelect: 80
+			},
+			{
+				columnName: 'codeOutcomes',
+				dbOrderSelect: 90
+			},
+			{
+				columnName: 'note',
+				dbOrderSelect: 100
+			}
+		]
+	})
 }
+
+// {
+// 	codeAccess: 'optional',
+// 	codeElement: 'select',
+// 	columnName: 'codeOutcomes',
+// 	dbOrderSelect: 100,
+// 	itemsList: 'il_sys_code_order_index_by_codeTypeName',
+// 	itemsListParms: { codeTypeName: 'ct_cm_training_csf_cohort_outcomes' }
+// },
 
 // {
 // 	codeAccess: 'optional',
@@ -1071,11 +1156,22 @@ async function navProvider() {
 		codeIcon: 'application',
 		creator: 'user_sys',
 		dataObj: 'data_obj_cm_csf_cohort_list',
-		header: 'Cohort',
+		header: 'Cohorts',
 		name: 'node_obj_cm_training_csf_cohort_list',
 		order: 10,
 		owner: 'app_cm_training',
 		parentNodeName: 'node_obj_cm_training_service_flow_detail'
+	})
+
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		creator: 'user_sys',
+		dataObj: 'data_obj_cm_csf_cohort_detail',
+		header: 'Cohort',
+		name: 'node_obj_cm_training_csf_cohort_detail',
+		order: 10,
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_csf_cohort_list'
 	})
 
 	// await addNodeProgramObj({

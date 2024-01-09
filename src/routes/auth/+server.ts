@@ -10,8 +10,8 @@ export async function POST({ request, cookies }) {
 
 	switch (action) {
 		case 'express_login':
-			const user = await getUserByUserName('2487985578')
-			// const user = await getUserByUserName('user_sys')
+			// const user = await getUserByUserName('2487985578')
+			const user = await getUserByUserName('user_sys')
 			if (user) setCookie(user.id)
 			return getServerResponse(user)
 

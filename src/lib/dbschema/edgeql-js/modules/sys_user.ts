@@ -9,6 +9,7 @@ import type * as _sys_obj from "./sys_obj";
 import type * as _app_cm_training from "./app_cm_training";
 import type * as _sys_db from "./sys_db";
 import type * as _app_cm from "./app_cm";
+import type * as _sys_admin from "./sys_admin";
 export type $MgmtλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
   "createdAt": $.PropertyDesc<_std.$datetime, $.Cardinality.One, false, false, true, true>;
   "modifiedAt": $.PropertyDesc<_std.$datetime, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -80,6 +81,8 @@ export type $UserλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c2
   "<createdBy[is app_cm::CsfNote]": $.LinkDesc<_app_cm.$CsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_obj::NodeObjFooter]": $.LinkDesc<_sys_obj.$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_obj::NodeObjFooter]": $.LinkDesc<_sys_obj.$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is sys_admin::ObjConfig]": $.LinkDesc<_sys_admin.$ObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is sys_admin::ObjConfig]": $.LinkDesc<_sys_admin.$ObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;

@@ -13,6 +13,7 @@ export enum ApiFunction {
 	dbEdgeGetNodesBranch = 'dbEdgeGetNodesBranch',
 	dbEdgeGetNodesLevel = 'dbEdgeGetNodesLevel',
 	dbEdgeProcessQuery = 'dbEdgeProcessQuery',
+	dbEdgeGetTableColumns = 'dbEdgeGetTableColumns',
 	getUser = 'getUser',
 	sendText = 'sendText'
 }
@@ -135,6 +136,16 @@ export class TokenApiDbDataObj {
 			clazz,
 			'dataObjId, dataObjName or dataObjRaw'
 		)
+	}
+}
+
+export class TokenApiDbTableColumns {
+	tableModule: string
+	tableName: string
+	constructor(tableModule: string, tableName: string) {
+		const clazz = 'TokenApiDbTableColumns'
+		this.tableModule = tableModule
+		this.tableName = tableName
 	}
 }
 

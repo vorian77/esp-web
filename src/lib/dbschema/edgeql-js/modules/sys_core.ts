@@ -8,6 +8,7 @@ import type * as _sys_db from "./sys_db";
 import type * as _sys_obj from "./sys_obj";
 import type * as _sys_user from "./sys_user";
 import type * as _app_cm from "./app_cm";
+import type * as _sys_admin from "./sys_admin";
 import type * as _default from "./default";
 export type $ObjRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
   "header": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -35,6 +36,7 @@ export type $ObjRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f7384
   "<owner[is sys_core::App]": $.LinkDesc<$App, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_obj::DataObjFieldItems]": $.LinkDesc<_sys_obj.$DataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_obj::NodeObjFooter]": $.LinkDesc<_sys_obj.$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<owner[is sys_admin::ObjConfig]": $.LinkDesc<_sys_admin.$ObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $ObjRoot = $.ObjectType<"sys_core::ObjRoot", $ObjRootλShape, null, [

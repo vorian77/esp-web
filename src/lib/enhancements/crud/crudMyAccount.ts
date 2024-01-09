@@ -20,13 +20,17 @@ export default async function action(
 	console.log('crudMyAccount', { queryActionTiming, queryType, data })
 
 	if (queryActionTiming === QueryActionTiming.post && queryType === TokenApiQueryType.retrieve) {
-		fileStorageKey = data.avatar.display
-		console.log('crudMyAccount.post/retrive', { file, fileStorageKey })
+		if (Object.hasOwn(data, 'avatar')) {
+			fileStorageKey = data.avatar.display
+			console.log('crudMyAccount.post/retrive', { file, fileStorageKey })
+		}
 	}
 
 	if (queryActionTiming === QueryActionTiming.pre && queryType === TokenApiQueryType.saveUpdate) {
-		file = data.avatar.data
-		console.log('crudMyAccount.pre/save', { file, fileStorageKey })
+		if (Object.hasOwn(data, 'avatar')) {
+			file = data.avatar.data
+			console.log('crudMyAccount.pre/save', { file, fileStorageKey })
+		}
 	}
 
 	if (queryActionTiming === QueryActionTiming.post && queryType === TokenApiQueryType.saveUpdate) {
@@ -39,6 +43,7 @@ export default async function action(
 			if (fileStorageKey) await fileDelete(state, fileStorageKey)
 		}
 	}
+	return data
 }
 
 const fileDelete = async function (state: State, storageKey: string) {

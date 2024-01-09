@@ -52,6 +52,22 @@ export default async function init() {
 		lastName: 'Hall'
 	})
 
+	await addUserOrg({
+		orgName: 'Atlantic Impact',
+		userName: '3136276210',
+		password: 'JakeDog#1',
+		firstName: 'Matthew',
+		lastName: 'Clayton'
+	})
+
+	await addUserOrg({
+		orgName: 'Atlantic Impact',
+		userName: '2482317505',
+		password: 'JakeDog#1',
+		firstName: 'Anise',
+		lastName: 'Hayes'
+	})
+
 	await addStaff([
 		['Stacy', 'Administrator'],
 		['Stan', 'Administrator'],

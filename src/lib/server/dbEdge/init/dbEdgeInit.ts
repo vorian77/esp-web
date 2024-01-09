@@ -1,5 +1,6 @@
 import { review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import initSys from '$server/dbEdge/init/dbEdgeInitSys'
+import initSysAdmin from '$server/dbEdge/init/dbEdgeInitSysAdmin'
 import initSysAuth from '$server/dbEdge/init/dbEdgeInitSysAuth'
 import initCM from '$server/dbEdge/init/dbEdgeInitCM'
 import initCMTraining from '$server/dbEdge/init/dbEdgeInitCMTraining'
@@ -12,6 +13,7 @@ const load = 0
 export async function init() {
 	if (load) {
 		await initSys()
+		await initSysAdmin()
 		await initSysAuth()
 		await initCM()
 		await initCMTraining()

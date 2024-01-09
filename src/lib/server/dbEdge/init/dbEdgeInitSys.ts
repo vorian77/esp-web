@@ -391,22 +391,8 @@ async function initSysColumns() {
 			creator: 'user_sys',
 			owner: 'app_sys',
 			codeDataType: 'date',
-			header: 'End Date',
-			name: 'dateEnd'
-		})
-		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
-			codeDataType: 'date',
 			header: 'Estimated End Date',
 			name: 'dateEndEst'
-		})
-		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
-			codeDataType: 'date',
-			header: 'Start Date',
-			name: 'dateStart'
 		})
 		await addColumn({
 			creator: 'user_sys',

@@ -445,6 +445,41 @@ export namespace sys {
   export type TransactionIsolation = "RepeatableRead" | "Serializable";
   export type VersionStage = "dev" | "alpha" | "beta" | "rc" | "final";
 }
+export namespace sys_admin {
+  export interface ObjConfig extends sys_core.Obj {
+    "creator"?: string | null;
+    "detailActions"?: string | null;
+    "detailDataObj"?: string | null;
+    "detailHeader"?: string | null;
+    "detailName"?: string | null;
+    "detailParentNodeName"?: string | null;
+    "detailSubHeader"?: string | null;
+    "icon"?: string | null;
+    "linkProperty"?: string | null;
+    "linkTableModule"?: string | null;
+    "linkTableName"?: string | null;
+    "listActions"?: string | null;
+    "listDataObj"?: string | null;
+    "listExprFilter"?: string | null;
+    "listHeader"?: string | null;
+    "listName"?: string | null;
+    "listParentNodeName"?: string | null;
+    "listSubHeader"?: string | null;
+    "objsOwner"?: string | null;
+    "outputDetailDataObj"?: string | null;
+    "outputDetailNode"?: string | null;
+    "outputListDataObj"?: string | null;
+    "outputListNode"?: string | null;
+    "tableModule"?: string | null;
+    "tableName"?: string | null;
+    "tableOwner"?: string | null;
+    "detailOrder"?: number | null;
+    "listOrder"?: number | null;
+    "outputDetailColumns"?: string | null;
+    "outputListColumns"?: string | null;
+    "hasMgmt"?: boolean | null;
+  }
+}
 export namespace sys_db {
   export interface Column extends sys_core.Obj {
     "codeAlignment"?: sys_core.Code | null;
@@ -688,6 +723,9 @@ export interface types {
     "Role": sys.Role;
     "TransactionIsolation": sys.TransactionIsolation;
     "VersionStage": sys.VersionStage;
+  };
+  "sys_admin": {
+    "ObjConfig": sys_admin.ObjConfig;
   };
   "sys_db": {
     "Column": sys_db.Column;

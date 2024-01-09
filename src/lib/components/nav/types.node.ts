@@ -83,6 +83,7 @@ export class NodeApp {
 	static async initDb(dbNode: DbNode) {
 		const rawNode = new RawNode(dbNode)
 		const queryActions = await QueryActions.init(rawNode.queryActions)
+		console.log('NodeApp.initDb.rawNode:', rawNode)
 		return new NodeApp('NodeApp-Db', rawNode, queryActions)
 	}
 	static async initTree(node: Node) {

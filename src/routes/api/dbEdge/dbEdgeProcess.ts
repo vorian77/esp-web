@@ -33,10 +33,11 @@ const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
 export async function processQuery(token: TokenApiQuery) {
 	console.log()
-	console.log('processQuery.0.avatar:', { record: token.queryData.record.avatar })
+	console.log('processQuery.0.record:', { record: token.queryData.record })
 
 	const queryData: TokenApiQueryData = token.queryData
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
+	console.log('processQuery.1.dataObjRaw:', { dataObjRaw })
 	const dataObj = new DataObj(dataObjRaw)
 	const query = new EdgeQL(dataObjRaw)
 

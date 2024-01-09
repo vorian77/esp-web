@@ -133,6 +133,7 @@ export class DataObj {
 			case DataObjCardinality.detail:
 				if (dataSource.dataObjRow) {
 					const dataRow = dataSource.dataObjRow
+					// console.log('dataObj.objData.dataRow.status:', dataRow.status)
 					if (dataRow.record) {
 						this.fields.forEach((f) => {
 							if (Object.hasOwn(dataRow.record, f.name)) {

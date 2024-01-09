@@ -2,6 +2,7 @@ import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
 import type { TokenAppTreeNodeId } from '$comps/nav/types.app'
+import { TokenApiDbTableColumns } from '$lib/api'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
@@ -227,9 +228,9 @@ export async function getNodesBranch(token: TokenAppTreeNodeId) {
 		page: true,
 		dataObjId: n.dataObj.id,
 		order: true,
+		queryActions: n.queryActions,
 		filter: e.op(n.parent.id, '=', e.cast(e.uuid, parentNodeId)),
-		order_by: n.order,
-		queryActions: n.queryActions
+		order_by: n.order
 	}))
 	return await query.run(client)
 }
@@ -260,6 +261,27 @@ export async function getNodesLevel(token: TokenAppTreeNodeId) {
 	return await query.run(client)
 }
 
+export async function getTableColumns(token: TokenApiDbTableColumns) {
+	const query = e.select(e.schema.ObjectType, (ot) => ({
+		name: true,
+		links: e.select(ot.links, (l) => ({
+			name: l.name,
+			readonly: l.readonly,
+			required: l.required,
+			datatype: l.target.name,
+			filter: e.op(l.name, '!=', '__type__')
+		})),
+		properties: e.select(ot.properties, (p) => ({
+			name: p.name,
+			readonly: p.readonly,
+			required: p.required,
+			datatype: p.target.name
+		})),
+		filter: e.op(ot.name, '=', token.tableModule + '::' + token.tableName)
+	}))
+	return await query.run(client)
+}
+
 export async function getUserByUserId(userId: string) {
 	const query = e.select(e.sys_user.User, (u) => ({
 		id: true,
@@ -281,8 +303,8 @@ export async function getUserByUserId(userId: string) {
 			page: true,
 			dataObjId: f.dataObj.id,
 			order: true,
-			order_by: f.order,
-			queryActions: f.queryActions
+			queryActions: f.queryActions,
+			order_by: f.order
 		})),
 		resource_programs: e.select(u.userTypes.resources.is(e.sys_obj.NodeObj), (ut) => ({
 			id: true,

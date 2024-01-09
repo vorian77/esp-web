@@ -416,27 +416,29 @@ export async function addNodeFooter(data: any) {
 export async function addNodeProgramObj(data: any) {
 	const query = e.params(
 		{
+			codeIcon: e.str,
+			creator: e.str,
+			dataObj: e.optional(e.str),
+			header: e.optional(e.str),
+			name: e.str,
+			order: e.int16,
 			owner: e.str,
 			parentNodeName: e.optional(e.str),
-			name: e.str,
-			header: e.optional(e.str),
-			order: e.int16,
-			codeIcon: e.str,
-			dataObj: e.optional(e.str),
-			creator: e.str
+			queryActions: e.optional(e.array(e.json))
 		},
 		(p) => {
 			return e.insert(e.sys_obj.NodeObj, {
+				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', p.codeIcon)),
+				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'programObject')),
+				createdBy: e.select(e.sys_user.getUser(p.creator)),
+				dataObj: e.select(e.sys_obj.getDataObj(p.dataObj)),
+				header: p.header,
+				modifiedBy: e.select(e.sys_user.getUser(p.creator)),
+				name: p.name,
+				order: p.order,
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				parent: e.select(e.sys_obj.getNodeObjByName(p.parentNodeName)),
-				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'programObject')),
-				name: p.name,
-				header: p.header,
-				order: p.order,
-				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', p.codeIcon)),
-				dataObj: e.select(e.sys_obj.getDataObj(p.dataObj)),
-				createdBy: e.select(e.sys_user.getUser(p.creator)),
-				modifiedBy: e.select(e.sys_user.getUser(p.creator))
+				queryActions: p.queryActions
 			})
 		}
 	)

@@ -32,58 +32,58 @@
 	async function onClick(actionName: string) {
 		if (!dataObj.objData.dataObjRow)
 			error(500, {
-            				file: FILENAME,
-            				function: 'onClick',
-            				message: `dataObj.objData is undefined`
-            			});
+				file: FILENAME,
+				function: 'onClick',
+				message: `dataObj.objData is undefined`
+			})
 
 		const rowStatus = dataObj.objData.dataObjRow.status
 
 		switch (actionName) {
 			case 'noa_back':
-				objAction(TokenAppDoAction.back, true)
+				await objAction(TokenAppDoAction.back, true)
 				break
 
 			case 'noa_detail_cancel':
-				objAction(TokenAppDoAction.back, false)
+				await objAction(TokenAppDoAction.back, false)
 				break
 
 			case 'noa_detail_delete':
 				if (rowStatus === DataObjRowStatus.created) {
-					objAction(TokenAppDoAction.back, true)
+					await objAction(TokenAppDoAction.back, true)
 				} else {
 					const confirm = new TokenAppDoDetailConfirm(
 						'Confirm Delete',
 						`Are you sure you want to delete this record (this action cannot be reversed)?`,
 						'Delete Record'
 					)
-					objAction(TokenAppDoAction.detailDelete, true, confirm)
+					await objAction(TokenAppDoAction.detailDelete, true, confirm)
 				}
 				break
 
 			case 'noa_detail_new':
-				objAction(TokenAppDoAction.detailNew, true)
+				await objAction(TokenAppDoAction.detailNew, true)
 				break
 
 			case 'noa_detail_save':
-				if ([DataObjRowStatus.retrieved, DataObjRowStatus.updated].includes(rowStatus)) {
-					objAction(TokenAppDoAction.detailSaveUpdate, false)
-				} else if (rowStatus === DataObjRowStatus.created) {
-					objAction(TokenAppDoAction.detailSaveInsert, false)
-				}
-				return true
+				await objActionSave(rowStatus)
+				break
+
+			case 'noa_detail_save_as':
+				// await objActionSave(rowStatus)
+				await objAction(TokenAppDoAction.detailSaveAs, false)
 				break
 
 			case 'noa_list_new':
-				objAction(TokenAppDoAction.listNew, false)
+				await objAction(TokenAppDoAction.listNew, false)
 				break
 
 			default:
 				error(500, {
-                					file: FILENAME,
-                					function: 'onClick',
-                					message: `No case defined for action: ${actionName}`
-                				});
+					file: FILENAME,
+					function: 'onClick',
+					message: `No case defined for action: ${actionName}`
+				})
 		}
 	}
 
@@ -99,6 +99,14 @@
 				token: new TokenAppDoDetail(action, dataObj, confirm)
 			})
 		})
+	}
+
+	async function objActionSave(rowStatus: DataObjRowStatus) {
+		if ([DataObjRowStatus.retrieved, DataObjRowStatus.updated].includes(rowStatus)) {
+			await objAction(TokenAppDoAction.detailSaveUpdate, false)
+		} else if (rowStatus === DataObjRowStatus.created) {
+			await objAction(TokenAppDoAction.detailSaveInsert, false)
+		}
 	}
 </script>
 

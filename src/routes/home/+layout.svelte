@@ -153,7 +153,7 @@
 			buttonTextConfirm: confirm.buttonConfirmLabel,
 			response: async (r: boolean) => {
 				if (r) {
-					state.resetStatus()
+					state.statusReset()
 					stateUpdate(obj)
 				}
 			}
@@ -207,7 +207,7 @@
 	</svelte:fragment>
 
 	<div class="mx-3 mt-2">
-		<DataViewer
+		<!-- <DataViewer
 			header="state"
 			data={{
 				page: state?.page,
@@ -215,7 +215,7 @@
 				hasChanged: state?.objHasChanged,
 				validToSave: state?.objValidToSave
 			}}
-		/>
+		/> -->
 		{#if $page.route.id === '/home'}
 			{#if state?.nodeType === NodeType.home}
 				<NavHome />
