@@ -293,14 +293,14 @@ async function initSysColumns() {
 			name: 'custom_select'
 		})
 		await addColumn({
-			creator: 'user_sys',
-			owner: 'app_sys',
 			codeDataType: 'computed',
 			codeDataTypePreset: 'str',
+			creator: 'user_sys',
 			exprSelect: `(SELECT sys_user::User {fullName := str_upper(.person.fullName)} FILTER .userName = <str,user,userName>)`,
 			header: 'Full Name (uppercase)',
 			isExcludeUpdate: true,
-			name: 'computed_person_fullname_uppercase'
+			name: 'computed_person_fullname_uppercase',
+			owner: 'app_sys'
 		})
 	}
 

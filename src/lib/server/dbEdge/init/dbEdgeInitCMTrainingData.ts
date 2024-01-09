@@ -46,26 +46,24 @@ export default async function init() {
 
 	await addUserOrg({
 		orgName: 'Atlantic Impact',
+		userName: '2482317505',
+		password: 'Atlantic99!',
+		firstName: 'Anise',
+		lastName: 'Hayes'
+	})
+	await addUserOrg({
+		orgName: 'Atlantic Impact',
+		userName: '3136276210',
+		password: 'Atlantic99!',
+		firstName: 'Matthew',
+		lastName: 'Clayton'
+	})
+	await addUserOrg({
+		orgName: 'Atlantic Impact',
 		userName: '2487985578',
 		password: 'JakeDog#1',
 		firstName: 'Phyllip',
 		lastName: 'Hall'
-	})
-
-	await addUserOrg({
-		orgName: 'Atlantic Impact',
-		userName: '3136276210',
-		password: 'JakeDog#1',
-		firstName: 'Matthew',
-		lastName: 'Clayton'
-	})
-
-	await addUserOrg({
-		orgName: 'Atlantic Impact',
-		userName: '2482317505',
-		password: 'JakeDog#1',
-		firstName: 'Anise',
-		lastName: 'Hayes'
 	})
 
 	await addStaff([

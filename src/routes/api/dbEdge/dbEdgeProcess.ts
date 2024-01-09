@@ -104,7 +104,7 @@ export async function processQuery(token: TokenApiQuery) {
 		rawDataList,
 		dataRowStatus
 	)
-	console.log('processQuery.1:', { dataRaw: rawDataList, dataProcessedRow0: dataObjList[0].record })
+	// console.log('processQuery.1:', { dataRaw: rawDataList, dataProcessedRow0: dataObjList[0].record })
 	return new ApiResultDoSuccess(dataObjRaw, new DataObjData(dataObj.cardinality, dataObjList))
 	// return new QueryResultFail('failed under testing...')
 }

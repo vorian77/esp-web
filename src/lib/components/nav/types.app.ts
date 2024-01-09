@@ -268,6 +268,7 @@ export class AppLevelTab {
 			QueryActionTiming.post,
 			queryType
 		)
+
 		return true
 	}
 
@@ -296,8 +297,6 @@ export class AppLevelTab {
 				break
 
 			case TokenApiQueryType.retrieve:
-				if (tab.isRetrieved) break
-
 				if (app && tab.levelIdx > 0) {
 					const tabParent = app.levels[tab.levelIdx - 1].getCurrTab()
 					record = tabParent.getData()

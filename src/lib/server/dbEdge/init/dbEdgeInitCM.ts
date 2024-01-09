@@ -120,7 +120,7 @@ async function initColumns() {
 	})
 	await addColumn({
 		codeDataType: 'computed',
-		codeDataTypePreset: 'str',
+		codeDataTypePreset: 'date',
 		creator: 'user_sys',
 		exprSelect: `.serviceFlow { data := .id, display := .header }`,
 		header: 'Service Flow',

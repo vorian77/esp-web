@@ -170,8 +170,11 @@
 				if (token instanceof TokenAppTab) {
 					currLevel = app.getCurrLevel()
 					currLevel.setTabIdx(token.tabIdx)
-					await AppLevelTab.query(state, currLevel.getCurrTab(), TokenApiQueryType.retrieve, app)
-					dataObjUpdate = new DataObjUpdate(true, true, true)
+					currTab = currLevel.getCurrTab()
+					if (!currTab.isRetrieved) {
+						await AppLevelTab.query(state, currLevel.getCurrTab(), TokenApiQueryType.retrieve, app)
+						dataObjUpdate = new DataObjUpdate(true, true, true)
+					}
 				}
 				break
 
@@ -200,7 +203,7 @@
 		state.update({
 			packet: new StatePacket({
 				component: StatePacketComponent.appTab,
-				token: new TokenAppTab(event.target.value)
+				token: new TokenAppTab(parseInt(event.target.value))
 			})
 		})
 	}
