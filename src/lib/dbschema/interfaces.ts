@@ -16,22 +16,25 @@ export namespace sys_user {
   export interface Mgmt extends std.$Object {
     "createdAt": Date;
     "modifiedAt"?: Date | null;
-    "createdBy": User;
-    "modifiedBy": User;
+    "createdBy": UserRoot;
+    "modifiedBy": UserRoot;
   }
-  export interface User extends std.$Object {
+  export interface UserRoot extends std.$Object {
     "userName": string;
-    "owner": sys_core.ObjRoot;
     "person": Person;
+  }
+  export interface User extends UserRoot, Mgmt {
     "password": string;
     "userTypes": UserType[];
+    "orgs": sys_core.Org[];
+    "owner": sys_core.Org;
   }
   export interface SYS_USER extends User {}
   export interface SYS_USER_ID extends User {}
   export interface Staff extends Mgmt {
     "person": Person;
     "roles": sys_core.Code[];
-    "owner": sys_core.ObjRoot;
+    "owner": sys_core.Org;
   }
   export interface UserType extends sys_core.Obj {
     "resources": sys_core.Obj[];
@@ -94,10 +97,8 @@ export namespace sys_core {
     "state"?: CodeType | null;
     "addr1"?: string | null;
     "addr2"?: string | null;
-    "appName"?: string | null;
     "city"?: string | null;
     "zip"?: string | null;
-    "userTypeDefault"?: sys_user.UserType | null;
   }
 }
 export interface Person extends std.$Object {
@@ -150,13 +151,13 @@ export namespace app_cm_training {
     "staffAgency"?: sys_user.Staff | null;
   }
   export interface CsfCohort extends app_cm.CsfData {
-    "codeOutcomes": sys_core.Code[];
     "codeStatus": sys_core.Code;
     "cohort": Cohort;
     "dateEnd"?: edgedb.LocalDate | null;
     "dateStart"?: edgedb.LocalDate | null;
     "note"?: string | null;
     "dateReferral"?: edgedb.LocalDate | null;
+    "codeMultiCerts": sys_core.Code[];
   }
   export interface CsfCohortAttd extends app_cm.CsfData {
     "date": edgedb.LocalDate;
@@ -600,6 +601,7 @@ export interface types {
   };
   "sys_user": {
     "Mgmt": sys_user.Mgmt;
+    "UserRoot": sys_user.UserRoot;
     "User": sys_user.User;
     "SYS_USER": sys_user.SYS_USER;
     "SYS_USER_ID": sys_user.SYS_USER_ID;

@@ -3,7 +3,7 @@ import {
 	addRoleOrg,
 	addStaff,
 	addRoleStaff,
-	setOrgUserType
+	userUserType
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import {
 	addOrg,
@@ -35,45 +35,45 @@ export default async function init() {
 		['Atlantic Impact - School Site 3', 'cm_training_role_org_venue']
 	])
 
-	await setOrgUserType([['Atlantic Impact', 'ut_cm_training_staff_provider']])
-
 	await addUser({
-		userName: 'user_ai',
-		password: '!alfjasf*!@#$$*&',
-		firstName: 'Atlantic',
-		lastName: 'Impact'
+		firstName: 'Anise',
+		lastName: 'Hayes',
+		owner: 'Atlantic Impact',
+		password: 'Atlantic99!',
+		userName: '2482317505'
+	})
+	await addUser({
+		firstName: 'Matthew',
+		lastName: 'Clayton',
+		owner: 'Atlantic Impact',
+		password: 'Atlantic99!',
+		userName: '3136276210'
+	})
+	await addUser({
+		firstName: 'Phyllip',
+		lastName: 'Hall',
+		owner: 'Atlantic Impact',
+		password: 'JakeDog#1',
+		userName: '2487985578'
 	})
 
-	await addUserOrg({
-		orgName: 'Atlantic Impact',
-		userName: '2482317505',
-		password: 'Atlantic99!',
-		firstName: 'Anise',
-		lastName: 'Hayes'
-	})
-	await addUserOrg({
-		orgName: 'Atlantic Impact',
-		userName: '3136276210',
-		password: 'Atlantic99!',
-		firstName: 'Matthew',
-		lastName: 'Clayton'
-	})
-	await addUserOrg({
-		orgName: 'Atlantic Impact',
-		userName: '2487985578',
-		password: 'JakeDog#1',
-		firstName: 'Phyllip',
-		lastName: 'Hall'
-	})
+	await addUserOrg({ orgName: 'Atlantic Impact', userName: 'user_sys' })
+	await addUserOrg({ orgName: 'Atlantic Impact', userName: '2482317505' })
+	await addUserOrg({ orgName: 'Atlantic Impact', userName: '3136276210' })
+	await addUserOrg({ orgName: 'Atlantic Impact', userName: '2487985578' })
+
+	await userUserType([['2482317505', 'ut_cm_training_staff_provider']])
+	await userUserType([['3136276210', 'ut_cm_training_staff_provider']])
+	await userUserType([['2487985578', 'ut_cm_training_staff_provider']])
 
 	await addStaff([
-		['Stacy', 'Administrator'],
-		['Stan', 'Administrator'],
-		['Anise', 'Hayes'],
-		['Matthew', 'Clayton'],
-		['Erica', 'Hicks'],
-		['Jane', 'Instructor'],
-		['Joe', 'Instructor']
+		['Atlantic Impact', 'Stacy', 'Administrator'],
+		['Atlantic Impact', 'Stan', 'Administrator'],
+		['Atlantic Impact', 'Anise', 'Hayes'],
+		['Atlantic Impact', 'Matthew', 'Clayton'],
+		['Atlantic Impact', 'Erica', 'Hicks'],
+		['Atlantic Impact', 'Jane', 'Instructor'],
+		['Atlantic Impact', 'Joe', 'Instructor']
 	])
 
 	await addRoleStaff([
@@ -102,7 +102,7 @@ reviewQuery = `select app_cm::Client {*, person: {id, firstName, lastName, email
 async function dataCourses() {
 	await execute(`
     with
-    myCreator := (select sys_user::getUser('user_ai'))
+    myCreator := (select sys_user::getUser('user_sys'))
     for x in {
       ('Construction', 'Under development', 'Yes', 'Commercial Painting', 3999, 'Training in Commercial Painting will prepare participants for the complexities of painting large-scale business projects such as, factories, residential complexes, and retail developments. Training will focus on drywall, overcoat, and ceiling painting, sealing cracks with wall filler, repairing wood trim, decorative painting, exterior painting, and power washing.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
       ('Construction', 'Under development', 'Yes', 'Heavy Equipment (Skills for Life)', 3200, 'This training will prepare students for careers in Heavy Equipment. Program participants will learn how to safely and professionally use forklifts, aerial lifts, and skid steers. During this program students will also learn how to safely operate heavy equipment, how to properly conduct and fill out daily equipment safety checklist, and how to determine equipment load limits. At the conclusion of this program, Participants will receive 128 hours of hand-on training, certifications in OSHA 30, and asbestos abatement.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
@@ -126,7 +126,7 @@ async function dataCourses() {
 async function dataCohorts() {
 	await execute(`
     with
-    myCreator := (select sys_user::getUser('user_ai'))
+    myCreator := (select sys_user::getUser('user_sys'))
     for x in {
       ('Commercial Painting', 'Cohort 1', 'Under development'), 
       ('Heavy Equipment (Skills for Life)', 'Cohort 2', 'Under development'),   
@@ -149,7 +149,7 @@ async function dataCohorts() {
 async function dataStudents() {
 	await execute(`
     with
-    myCreator := (select sys_user::getUser('user_ai'))
+    myCreator := (select sys_user::getUser('user_sys'))
     for x in {
       ('AE-195100', 'Jose', 'Prater', 'jp@gmail.com'),
       ('AE-195200', 'Jeron', 'Johnson', 'jj@gmail.com'),
@@ -182,10 +182,11 @@ async function dataStudents() {
 async function dataServiceFlows() {
 	await execute(`
       with
-      myCreator := (select sys_user::getUser('user_ai'))
+      myCreator := (select sys_user::getUser('user_sys'))
       for x in {
         ('sf_cm_training', 'DESC'), 
-        ('sf_cm_osha', 'OSHA'),       
+        ('sf_cm_osha', 'OSHA'),    
+        ('sf_cm_youth_build', 'Youth Build'),    
       }
       union (insert app_cm::ServiceFlow {
         owner := (select sys_core::getOrg('System')),
@@ -200,7 +201,7 @@ async function dataServiceFlows() {
 async function dataClientServiceFlows() {
 	await execute(`
       with
-      myCreator := (select sys_user::getUser('user_ai'))
+      myCreator := (select sys_user::getUser('user_sys'))
       for x in {
         ('AE-195500', 'sf_cm_training', '2023-11-05', 'Note 1'),
         ('AE-195500', 'sf_cm_osha', '2023-11-15', 'Note 2'),

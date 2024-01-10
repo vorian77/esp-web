@@ -6,8 +6,9 @@ import {
 	nodeObjPages,
 	nodeObjPrograms,
 	nodeObjHeaders,
-	resetDB,
 	rootObj,
+	rootUser,
+	sysUser,
 	tables,
 	userType,
 	userUserType,
@@ -22,7 +23,7 @@ import {
 	addDataObjAction,
 	addDataObjFieldItems,
 	addNodeFooter,
-	addUser,
+	addUserOrg,
 	review
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
@@ -31,7 +32,6 @@ const FILE = 'initSys'
 export default async function initSys() {
 	console.log()
 	console.log(`${FILE}.start...`)
-	await resetDB()
 	await initSysCore()
 	await initSysCodes()
 	await initSysFieldItemsLists()
@@ -52,17 +52,13 @@ async function initReviewQuery() {
 
 async function initSysCore() {
 	await rootObj()
-
-	await addUser({
-		firstName: 'System',
-		lastName: 'User',
-		userName: 'user_sys',
-		password: '!8394812kalsdjfa*!@#$$*&'
-	})
+	await rootUser()
 
 	await apps([['app_sys'], ['app_db']])
+	await addOrgs([['System', 'System Application']])
 
-	await addOrgs([['System', 'System App']])
+	await sysUser('System', 'user_sys')
+	await addUserOrg({ orgName: 'System', userName: 'user_sys' })
 }
 
 async function initSysCodes() {

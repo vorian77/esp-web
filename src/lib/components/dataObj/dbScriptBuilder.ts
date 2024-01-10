@@ -627,7 +627,6 @@ export class Table {
 	module: string
 	name: string
 	constructor(obj: any) {
-		console.log('class.Table.obj:', obj)
 		obj = valueOrDefault(obj, {})
 		this.hasMgmt = booleanOrFalse(obj.hasMgmt, 'Table')
 		this.module = strRequired(obj.mod, 'Table', 'mod')

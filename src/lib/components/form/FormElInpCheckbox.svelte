@@ -12,6 +12,7 @@
 			field.valueCurrent.items.forEach((i) => (i.selected = vals.includes(i.data)))
 		} else {
 			const binarySelect = new BinarySelect(field.dataType)
+			console.log('FormElInpCheckbox.binarySelect:', { field, binarySelect })
 			if (!field.valueCurrent.data) field.valueCurrent.data = binarySelect.getDefault()
 			isSelected = binarySelect.isSelected(field.valueCurrent.data)
 		}

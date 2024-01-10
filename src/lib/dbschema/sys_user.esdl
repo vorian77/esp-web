@@ -5,7 +5,7 @@ module sys_user {
       readonly := true;
     };
 
-    required createdBy: User {
+    required createdBy: UserRoot {
       readonly := true;
     };
     
@@ -13,11 +13,11 @@ module sys_user {
       rewrite insert, update using (datetime_of_transaction())
     }
 
-    required modifiedBy: User 
+    required modifiedBy: UserRoot
   }
   
   type Staff extending sys_user::Mgmt {
-    required owner: sys_core::ObjRoot;
+    required owner: sys_core::Org;
     required person: default::Person{
        on source delete delete target if orphan;
     };
@@ -25,13 +25,20 @@ module sys_user {
         on target delete allow;
       }; 
   }
-
-  type User {
-    required owner: sys_core::ObjRoot;
+ 
+  type UserRoot {
     required person: default::Person{
       on source delete delete target if orphan;
     };
     required userName: str;
+    constraint exclusive on (.userName);
+  }
+
+  type User extending sys_user::UserRoot, sys_user::Mgmt {
+    required owner: sys_core::Org;
+    multi orgs: sys_core::Org {
+      on target delete allow;
+    };
     required password: str;
     multi userTypes: UserType {
       on target delete allow;
@@ -65,6 +72,9 @@ module sys_user {
   );
 
   # FUNCTIONS
+   function getRootUser() -> optional UserRoot
+    using (select assert_single((select UserRoot filter .userName = '*ROOTUSER*')));
+
   function getStaffByName(firstName: str, lastName: str) -> optional Staff
       using (select assert_single(Staff filter 
         str_lower(.person.firstName) = str_lower(firstName) and

@@ -8,7 +8,7 @@ export class User {
 	id: string
 	initials: string
 	lastName: string
-	org: { name: string; appName: string } | undefined
+	org: { name: string; header: string } | undefined
 	resource_footer: Array<any> = []
 	resource_programs: Array<any> = []
 	resource_widgets: Array<any> = []
@@ -29,7 +29,7 @@ export class User {
 		this.initials = this.firstName.toUpperCase()[0] + this.lastName.toUpperCase()[0]
 
 		this.id = strRequired(obj.id, 'User', 'id')
-		this.org = obj.org ? { name: obj.org.name, appName: obj.org.appName } : undefined
+		this.org = obj.org ? { name: obj.org.name, header: obj.org.header } : undefined
 		this.resource_footer = obj.resource_footer
 		this.resource_programs = obj.resource_programs
 		this.resource_widgets = obj.resource_widgets

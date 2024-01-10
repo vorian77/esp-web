@@ -291,7 +291,7 @@ export async function getUserByUserId(userId: string) {
 		userName: true,
 		org: e.select(e.sys_core.Org, (org) => ({
 			name: true,
-			appName: true,
+			header: true,
 			filter_single: e.op(org.id, '=', u.owner.id)
 		})),
 		resource_footer: e.select(e.sys_obj.NodeObjFooter, (f) => ({

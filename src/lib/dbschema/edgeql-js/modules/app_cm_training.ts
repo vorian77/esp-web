@@ -55,13 +55,13 @@ const $Course = $.makeType<$Course>(_.spec, "edb845d2-7d84-11ee-a1b3-051822eac25
 const Course: $.$expr_PathNode<$.TypeSet<$Course, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Course, $.Cardinality.Many), null);
 
 export type $CsfCohortλShape = $.typeutil.flatten<_app_cm.$CsfDataλShape & {
-  "codeOutcomes": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
   "codeStatus": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
   "cohort": $.LinkDesc<$Cohort, $.Cardinality.One, {}, false, false,  false, false>;
   "dateEnd": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
   "dateStart": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "dateReferral": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "codeMultiCerts": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
   "<csfCohort[is app_cm_training::CsfCohortAttd]": $.LinkDesc<$CsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<csfCohort": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;

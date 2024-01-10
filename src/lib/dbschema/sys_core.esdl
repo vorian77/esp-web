@@ -18,10 +18,6 @@ module sys_core {
   type App extending Ent {}
 
   type Org extending Ent {
-    userTypeDefault: sys_user::UserType{
-      on target delete allow;
-    };
-    appName: str;
     addr1: str;
     addr2: str;
     city: str;
@@ -46,7 +42,7 @@ module sys_core {
   }
 
   # FUNCTIONS
-  function getRoot() -> optional ObjRoot
+  function getRootObj() -> optional ObjRoot
     using (select assert_single((select ObjRoot filter .name = '*ROOTOBJ*')));
 
   function getEnt(entName: str) -> optional Ent

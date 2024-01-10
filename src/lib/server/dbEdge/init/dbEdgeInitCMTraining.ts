@@ -38,8 +38,6 @@ async function initCore() {
 	await apps([['app_cm_training']])
 
 	await codeTypes([
-		['app_cm_training', 0, 'ct_cm_training_csf_cohort_outcomes'],
-
 		['app_cm_training', 0, 'ct_cm_training_course_cert'],
 		['app_cm_training', 0, 'ct_cm_training_course_exam'],
 		['app_cm_training', 0, 'ct_cm_training_course_items_included'],
@@ -68,11 +66,6 @@ async function initCore() {
 	})
 
 	await codes([
-		// ct_cm_training_csf_cohort_outcomes
-		['ct_cm_training_csf_cohort_outcomes', 'app_cm_training', 'Completed', 0],
-		['ct_cm_training_csf_cohort_outcomes', 'app_cm_training', 'Failed', 1],
-		['ct_cm_training_csf_cohort_outcomes', 'app_cm_training', 'Withdrew', 2],
-
 		// ct_cm_training_course_cert
 		['ct_cm_training_course_cert', 'app_cm_training', 'Asbestos Abatement', 0],
 		['ct_cm_training_course_cert', 'app_cm_training', 'Lead Abatement', 0],
@@ -159,7 +152,17 @@ async function initNav() {
 async function dbCourse() {
 	await tables([['app_cm_training', 'app_cm_training', 'Course', true]])
 
-	// Course - columns
+	await addDataObjFieldItems({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		dbSelect: `SELECT app_cm_training::Course {data := .id, display := .name} 
+			FILTER .owner in (SELECT sys_user::User FILTER .userName = <str,user,userName>).orgs
+			ORDER BY .name`,
+		propertyId: 'id',
+		propertyLabel: 'name',
+		name: 'il_cm_training_course_by_userName'
+	})
+
 	await addColumn({
 		creator: 'user_sys',
 		owner: 'app_sys',
@@ -169,7 +172,6 @@ async function dbCourse() {
 		isMultiSelect: true,
 		name: 'codeMultiCerts'
 	})
-
 	await addColumn({
 		creator: 'user_sys',
 		owner: 'app_sys',
@@ -205,14 +207,6 @@ async function dbCourse() {
 		header: 'Requirements',
 		isMultiSelect: true,
 		name: 'codeMultiRqmts'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
-		header: 'Outcomes',
-		name: 'codeOutcomes'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -303,7 +297,6 @@ async function dbCohort() {
 }
 
 async function dataObjsCmTrainingCourse() {
-	/* node_obj_cm_training_course_list */
 	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
@@ -312,7 +305,7 @@ async function dataObjsCmTrainingCourse() {
 		name: 'data_obj_cm_training_course_list',
 		header: 'Courses',
 		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'Course' },
-		exprFilter: 'none',
+		exprFilter: '.owner in (SELECT sys_user::User FILTER .userName = <str,user,userName>).orgs',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -341,7 +334,6 @@ async function dataObjsCmTrainingCourse() {
 		]
 	})
 
-	/* node_obj_cm_training_course_detail */
 	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
@@ -503,7 +495,6 @@ async function dataObjsCmTrainingCourse() {
 }
 
 async function dataObjsCmTrainingCohort() {
-	/* node_obj_cm_training_cohort_list */
 	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
@@ -541,7 +532,6 @@ async function dataObjsCmTrainingCohort() {
 		]
 	})
 
-	/* node_obj_cm_training_cohort_detail */
 	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
@@ -645,7 +635,6 @@ async function dataObjsCmTrainingCohort() {
 }
 
 async function dataObjsCmTrainingStudent() {
-	/* node_obj_cm_training_student_list */
 	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
@@ -655,7 +644,7 @@ async function dataObjsCmTrainingStudent() {
 		header: 'Students',
 		subHeader: 'All students enrolled in any courses.',
 		table: { owner: 'app_cm', mod: 'app_cm', name: 'Client' },
-		exprFilter: 'none',
+		exprFilter: '.owner in (SELECT sys_user::User FILTER .userName = <str,user,userName>).orgs',
 		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
 		actions: ['noa_list_new'],
 		fields: [
@@ -699,7 +688,6 @@ async function dataObjsCmTrainingStudent() {
 		]
 	})
 
-	/* node_obj_cm_training_student_detail */
 	await addDataObj({
 		creator: 'user_sys',
 		owner: 'app_cm_training',
@@ -938,6 +926,7 @@ async function dataObjsCmTrainingCsfCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
+				codeElement: 'date',
 				columnName: 'dateReferral',
 				dbOrderCrumb: 20,
 				dbOrderList: 10,
@@ -955,7 +944,7 @@ async function dataObjsCmTrainingCsfCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'codeOutcomes',
+				columnName: 'codeMultiCerts',
 				dbOrderSelect: 90
 			},
 			{
@@ -981,55 +970,67 @@ async function dataObjsCmTrainingCsfCohort() {
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
-				isDisplay: false
+				isDisplay: true
 			},
 			{
+				codeAccess: 'readOnly',
 				columnName: 'clientServiceFlow',
-				dbOrderSelect: 20
+				dbOrderSelect: 20,
+				exprPreset:
+					'(SELECT app_cm::ClientServiceFlow { data := .id, display := .serviceFlow.name } FILTER .id = <uuid,record,id>)',
+				isDisplay: true
 			},
 			{
+				codeElement: 'select',
 				columnName: 'cohort',
 				dbOrderCrumb: 10,
-				dbOrderSelect: 30
+				dbOrderSelect: 30,
+				itemsList: 'il_cm_training_course_by_userName'
 			},
 			{
+				codeElement: 'select',
 				columnName: 'codeStatus',
-				dbOrderSelect: 40
+				dbOrderSelect: 40,
+				itemsList: 'il_sys_code_order_index_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_cm_service_flow_status' }
 			},
 			{
+				codeAccess: 'optional',
+				codeElement: 'date',
 				columnName: 'dateReferral',
 				dbOrderCrumb: 20,
 				dbOrderList: 10,
 				dbOrderSelect: 50
 			},
 			{
+				codeAccess: 'optional',
+				codeElement: 'date',
 				columnName: 'dateStart',
 				dbOrderSelect: 60
 			},
 			{
+				codeAccess: 'optional',
+				codeElement: 'date',
 				columnName: 'dateEnd',
 				dbOrderSelect: 80
 			},
 			{
-				columnName: 'codeOutcomes',
-				dbOrderSelect: 90
+				codeAccess: 'optional',
+				codeElement: 'checkbox',
+				columnName: 'codeMultiCerts',
+				dbOrderSelect: 90,
+				itemsList: 'il_sys_code_order_name_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_cm_training_course_cert' }
 			},
 			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
 				columnName: 'note',
 				dbOrderSelect: 100
 			}
 		]
 	})
 }
-
-// {
-// 	codeAccess: 'optional',
-// 	codeElement: 'select',
-// 	columnName: 'codeOutcomes',
-// 	dbOrderSelect: 100,
-// 	itemsList: 'il_sys_code_order_index_by_codeTypeName',
-// 	itemsListParms: { codeTypeName: 'ct_cm_training_csf_cohort_outcomes' }
-// },
 
 // {
 // 	codeAccess: 'optional',

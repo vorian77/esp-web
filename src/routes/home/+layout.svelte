@@ -177,8 +177,8 @@
 				</div>
 
 				<div role="button" tabindex="0" class="text-black" on:click={goHome} on:keyup={goHome}>
-					{#if user?.org?.appName}
-						{user.org.appName}
+					{#if user?.org?.header}
+						{user.org.header}
 					{:else}
 						{DEFAULT_APP_NAME}
 					{/if}

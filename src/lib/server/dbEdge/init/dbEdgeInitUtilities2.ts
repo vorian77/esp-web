@@ -454,7 +454,7 @@ export async function addOrg(data: any) {
 		},
 		(p) => {
 			return e.insert(e.sys_core.Org, {
-				owner: e.select(e.sys_core.getRoot()),
+				owner: e.select(e.sys_core.getRootObj()),
 				name: p.name,
 				header: p.header,
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
@@ -466,22 +466,26 @@ export async function addOrg(data: any) {
 }
 
 export async function addUser(data: any) {
+	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params(
 		{
-			userName: e.str,
-			password: e.str,
 			firstName: e.str,
-			lastName: e.str
+			lastName: e.str,
+			owner: e.str,
+			password: e.str,
+			userName: e.str
 		},
 		(p) => {
 			return e.insert(e.sys_user.User, {
-				owner: e.select(e.sys_core.getRoot()),
+				createdBy: CREATOR,
+				modifiedBy: CREATOR,
+				owner: e.select(e.sys_core.getOrg(p.owner)),
+				password: p.password,
 				person: e.insert(e.default.Person, {
 					firstName: p.firstName,
 					lastName: p.lastName
 				}),
-				userName: p.userName,
-				password: p.password
+				userName: p.userName
 			})
 		}
 	)
@@ -489,36 +493,20 @@ export async function addUser(data: any) {
 }
 
 export async function addUserOrg(data: any) {
-	const org = e.select(e.sys_core.Org, (org) => ({
-		filter_single: e.op(org.name, '=', data.orgName)
-	}))
-	const person = e.select(e.sys_user.User, (user) => ({
-		_id: user.person.id,
-		filter_single: e.op(user.userName, '=', data.userName)
-	}))
-	const userType = e.select(e.sys_user.UserType, (ut) => ({
-		filter_single: e.op(ut.id, '=', e.cast(e.uuid, org.userTypeDefault.id))
-	}))
-
 	const query = e.params(
 		{
 			orgName: e.str,
-			userName: e.str,
-			password: e.str,
-			firstName: e.str,
-			lastName: e.str
+			userName: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_user.User, {
-				owner: e.set(org),
-				userName: p.userName,
-				password: p.password,
-				person: e.insert(e.default.Person, {
-					firstName: p.firstName,
-					lastName: p.lastName
-				}),
-				userTypes: e.set(userType)
-			})
+			return e.update(e.sys_user.User, (u) => ({
+				filter: e.op(u.userName, '=', p.userName),
+				set: {
+					orgs: {
+						'+=': e.select(e.sys_core.getOrg(p.orgName))
+					}
+				}
+			}))
 		}
 	)
 	return await query.run(client, data)

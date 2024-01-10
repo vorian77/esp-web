@@ -15,12 +15,39 @@ export async function rootObj() {
 	return await query.run(client)
 }
 
+export async function rootUser() {
+	const query = e.insert(e.sys_user.UserRoot, {
+		person: e.insert(e.default.Person, {
+			firstName: 'Root',
+			lastName: 'User'
+		}),
+		userName: '*ROOTUSER*'
+	})
+	return await query.run(client)
+}
+
+export async function sysUser(owner: string, userName: string) {
+	const CREATOR = e.select(e.sys_user.getRootUser())
+	const query = e.insert(e.sys_user.User, {
+		createdBy: CREATOR,
+		modifiedBy: CREATOR,
+		owner: e.select(e.sys_core.getOrg(owner)),
+		password: '!8394812kalsdjfa*!@#$$*&',
+		person: e.insert(e.default.Person, {
+			firstName: 'System',
+			lastName: 'User'
+		}),
+		userName
+	})
+	return await query.run(client)
+}
+
 export async function apps(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.App, {
-				owner: e.select(e.sys_core.getRoot()),
+				owner: e.select(e.sys_core.getRootObj()),
 				name: e.cast(e.str, i[0]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
@@ -252,13 +279,13 @@ export async function tableColumns(data: any) {
 }
 
 export async function addOrgs(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.Org, {
-				owner: e.select(e.sys_core.getRoot()),
+				owner: e.select(e.sys_core.getRootObj()),
 				name: e.cast(e.str, i[0]),
-				appName: e.cast(e.str, i[1]),
+				header: e.cast(e.str, i[1]),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
 			})
@@ -287,10 +314,10 @@ export async function addStaff(params: any) {
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_user.Staff, {
-				owner: e.select(e.sys_core.getRoot()),
+				owner: e.select(e.sys_core.getOrg(e.cast(e.str, i[0]))),
 				person: e.insert(e.default.Person, {
-					firstName: e.cast(e.str, i[0]),
-					lastName: e.cast(e.str, i[1])
+					firstName: e.cast(e.str, i[1]),
+					lastName: e.cast(e.str, i[2])
 				}),
 				createdBy: CREATOR,
 				modifiedBy: CREATOR
@@ -314,36 +341,21 @@ export async function addRoleStaff(params: any) {
 	return await query.run(client, { data: params })
 }
 
-export async function setOrgUserType(params: any) {
-	const query = e.params({ data: e.json }, (params) => {
-		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_core.getOrg(e.cast(e.str, i[0])), (o) => ({
-				set: {
-					userTypeDefault: e.select(e.sys_user.getUserType(e.cast(e.str, i[1])))
-				}
-			}))
-		})
-	})
-	return await query.run(client, { data: params })
-}
-
 export async function resetDB() {
 	let query = ''
 	const tables: Array<string> = []
 
-	query = `
-	delete app_cm_training::CsfCohortAttd;
-	delete app_cm_training::CsfCohort;
-	delete app_cm::CsfNote;
-	delete app_cm::ClientServiceFlow;
-	delete app_cm::Client;
-	
-	delete app_cm_training::Cohort;
-	delete app_cm_training::Course;
-	delete app_cm::ServiceFlow;
-	delete sys_user::User filter .userName not in {'user_sys', 'user_ai'};`
-
 	// tables in delete order
+	tables.push('app_cm_training::CsfCohortAttd')
+	tables.push('app_cm_training::CsfCohort')
+	tables.push('app_cm::CsfNote')
+	tables.push('app_cm::ClientServiceFlow')
+	tables.push('app_cm::Client')
+
+	tables.push('app_cm_training::Cohort')
+	tables.push('app_cm_training::Course')
+	tables.push('app_cm::ServiceFlow')
+
 	tables.push('sys_obj::NodeObj')
 	tables.push('sys_obj::DataObj')
 	tables.push('sys_obj::DataObjFieldItems')
@@ -354,16 +366,19 @@ export async function resetDB() {
 	tables.push('sys_core::Code')
 	tables.push('sys_core::CodeType')
 	tables.push('sys_user::UserType')
-	tables.push('sys_core::Obj')
+
 	tables.push('sys_user::Staff')
 	tables.push('sys_user::User')
+	tables.push('default::Person filter .firstName != "Root" and .lastName != "User"')
+
+	tables.push('sys_core::Obj')
+	tables.push('sys_user::UserRoot')
+	tables.push('sys_core::ObjRoot')
 
 	tables.forEach((t) => {
 		if (query) query += ' '
 		query += 'delete ' + t + ';'
 	})
 
-	query += ' delete default::Person; delete sys_core::ObjRoot;'
-	// console.log('resetDB.query:', query)
 	await execute(query)
 }

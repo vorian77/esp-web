@@ -1,3 +1,4 @@
+import { resetDB } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import initSys from '$server/dbEdge/init/dbEdgeInitSys'
 import initSysAdmin from '$server/dbEdge/init/dbEdgeInitSysAdmin'
@@ -8,10 +9,11 @@ import initCMTrainingData from '$server/dbEdge/init/dbEdgeInitCMTrainingData'
 import initMOED_cm from '$server/dbEdge/init/dbEdgeInitMOED_cm'
 
 const FILE = '/server/dbEdge/init'
-const load = 1
+const load = 0
 
 export async function init() {
 	if (load) {
+		await resetDB()
 		await initSys()
 		await initSysAdmin()
 		await initSysAuth()

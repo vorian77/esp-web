@@ -65,12 +65,12 @@ module app_cm_training {
   }
 
   type CsfCohort extending app_cm::CsfData {
-    required cohort: app_cm_training::Cohort;
+    multi codeMultiCerts: sys_core::Code;
     required codeStatus: sys_core::Code;
+    required cohort: app_cm_training::Cohort;
+    dateEnd: cal::local_date;
     dateReferral: cal::local_date;
     dateStart: cal::local_date;
-    dateEnd: cal::local_date;
-    multi codeOutcomes: sys_core::Code;
     note: str;
   }
 

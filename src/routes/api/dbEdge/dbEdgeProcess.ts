@@ -37,7 +37,7 @@ export async function processQuery(token: TokenApiQuery) {
 
 	const queryData: TokenApiQueryData = token.queryData
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
-	console.log('processQuery.1.dataObjRaw:', { dataObjRaw })
+	// console.log('processQuery.1.dataObjRaw:', { dataObjRaw })
 	const dataObj = new DataObj(dataObjRaw)
 	const query = new EdgeQL(dataObjRaw)
 
@@ -96,7 +96,7 @@ export async function processQuery(token: TokenApiQuery) {
 			})
 	}
 
-	console.log('processQuery.2:', { rawDataList, dataRowStatus })
+	// console.log('processQuery.2:', { rawDataList, dataRowStatus })
 
 	const dataObjList: DataObjListRow = await processDataPost(
 		query,
@@ -104,7 +104,7 @@ export async function processQuery(token: TokenApiQuery) {
 		rawDataList,
 		dataRowStatus
 	)
-	console.log('processQuery.3:', { processedDataPost: dataObjList })
+	// console.log('processQuery.3:', { processedDataPost: dataObjList })
 	return new ApiResultDoSuccess(dataObjRaw, new DataObjData(dataObj.cardinality, dataObjList))
 	// return new QueryResultFail('failed under testing...')
 }
@@ -174,13 +174,6 @@ async function processDataPost(
 		codeDataTypeField: DataFieldDataType,
 		codeDataTypeComputed: DataFieldDataType | undefined = undefined
 	): FieldValueValues {
-		console.log('formatDataForDisplay:', {
-			field: field.name,
-			value,
-			codeDataTypeField,
-			codeDataTypeComputed
-		})
-
 		switch (codeDataTypeField) {
 			// scalar
 			case DataFieldDataType.bool:

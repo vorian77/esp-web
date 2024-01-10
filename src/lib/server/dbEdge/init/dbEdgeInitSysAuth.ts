@@ -207,7 +207,6 @@ async function dataObjSignup() {
 		firstName := <str,parms,firstName>,
 		lastName := <str,parms,lastName>,
 		person := (SELECT sys_user::User {_id := .person.id} FILTER .userName = userName),
-		userType := (SELECT sys_user::UserType FILTER .id = <uuid>org.userTypeDefault.id),
 		user := (
 			INSERT sys_user::User {
 				owner := org,
