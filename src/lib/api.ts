@@ -7,6 +7,9 @@ import {
 	valueOrDefault
 } from '$comps/types'
 import type { DataObjRaw } from '$comps/types'
+import { error } from '@sveltejs/kit'
+
+const FILENAME = 'lib/api.ts'
 
 export enum ApiFunction {
 	dbEdgeGetDataObjId = 'dbEdgeGetDataObjId',
@@ -108,14 +111,41 @@ export class TokenApiQueryData {
 	user: TokenApiQueryDataValue
 	constructor(data: any) {
 		data = valueOrDefault(data, {})
-		this.dataObjData = this.setData(data, 'dataObjData', undefined)
-		this.parms = this.setData(data, 'parms', {})
-		this.record = this.setData(data, 'record', {})
-		this.system = this.setData(data, 'system', {})
-		this.user = valueOrDefault(userGet(), {})
+		this.dataObjData = this.init(data, 'dataObjData', undefined)
+		this.parms = this.init(data, 'parms', {})
+		this.record = this.init(data, 'record', {})
+		this.system = this.init(data, 'system', {})
+		this.user = Object.hasOwn(data, 'user')
+			? this.init(data, 'user', {})
+			: valueOrDefault(userGet(), {})
 	}
-	setData(data: any, key: string, defaultVal: any) {
+	init(data: any, key: string, defaultVal: any) {
 		return Object.hasOwn(data, key) && data !== undefined ? data[key] : defaultVal
+	}
+	update(dataType: string, data: any) {
+		switch (dataType.toLowerCase()) {
+			case 'dataObjData':
+				this.dataObjData = data
+				break
+			case 'parms':
+				this.parms = data
+				break
+			case 'record':
+				this.record = data
+				break
+			case 'system':
+				this.system = data
+				break
+			case 'user':
+				this.user = data
+				break
+			default:
+				error(500, {
+					file: FILENAME,
+					function: 'TokenApiQueryData.update',
+					message: `No case defined for data type: ${dataType}`
+				})
+		}
 	}
 }
 

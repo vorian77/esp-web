@@ -93,7 +93,9 @@ export class EdgeQL {
 	}
 
 	getScriptDataItems(dbSelect: string, data: TokenApiQueryData) {
+		console.log('getScriptDataItems.0:', { dbSelect, data })
 		const script = getValExpr(dbSelect, data)
+		console.log('getScriptDataItems.1...')
 		return script
 	}
 	getScriptDelete(data: TokenApiQueryData) {

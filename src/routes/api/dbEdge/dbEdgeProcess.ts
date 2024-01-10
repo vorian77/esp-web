@@ -19,8 +19,6 @@ import type { DataObjRecord, DataObjListRow, DataObjRaw } from '$comps/types'
 import {
 	getDataObjById,
 	getDataObjByName,
-	getDataObjId,
-	execute,
 	queryMultiple,
 	querySingle
 } from '$routes/api/dbEdge/types.dbEdge'
@@ -33,13 +31,12 @@ const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
 export async function processQuery(token: TokenApiQuery) {
 	console.log()
-	console.log('processQuery.0.record:', { record: token.queryData.record })
 
 	const queryData: TokenApiQueryData = token.queryData
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
-	// console.log('processQuery.1.dataObjRaw:', { dataObjRaw })
 	const dataObj = new DataObj(dataObjRaw)
 	const query = new EdgeQL(dataObjRaw)
+	// console.log('processQuery.0.record:', { queryData })
 
 	let dataRowRaw: Record<string, any> = {}
 	let dataRowStatus: DataObjRowStatus = DataObjRowStatus.retrieved
@@ -100,6 +97,7 @@ export async function processQuery(token: TokenApiQuery) {
 
 	const dataObjList: DataObjListRow = await processDataPost(
 		query,
+		queryData,
 		dataObj,
 		rawDataList,
 		dataRowStatus
@@ -137,6 +135,7 @@ async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
 
 async function processDataPost(
 	query: EdgeQL,
+	queryData: TokenApiQueryData,
 	dataObj: DataObj,
 	rawDataList: RawDataList,
 	dataRowStatus: DataObjRowStatus
@@ -158,7 +157,11 @@ async function processDataPost(
 					field.dataType,
 					field.dataTypePreset
 				)
-				record[fieldName] = new FieldValue(data, display, await getDataItems(query, field))
+				record[fieldName] = new FieldValue(
+					data,
+					display,
+					await getDataItems(query, queryData, field)
+				)
 				// console.log('processDataPost.record:', { fieldName, value: record[fieldName] })
 			}
 		}
@@ -261,15 +264,17 @@ function formatDataForDisplayScalar(value: any, codeDataTypeField: DataFieldData
 
 type FieldValueValues = { data: any; display: any }
 
-async function getDataItems(query: EdgeQL, field: Field): Promise<Array<FieldItem>> {
+async function getDataItems(
+	query: EdgeQL,
+	queryData: TokenApiQueryData,
+	field: Field
+): Promise<Array<FieldItem>> {
 	if (field.items.length > 0) {
 		return field.items
 	} else if (field.itemsList) {
-		const script = query.getScriptDataItems(
-			field.itemsList.dbSelect,
-			new TokenApiQueryData({ parms: field.itemsList.parms })
-		)
-		return await queryMultiple(script)
+		const queryDataList = new TokenApiQueryData(queryData)
+		queryDataList.update('parms', field.itemsList.parms)
+		return await queryMultiple(query.getScriptDataItems(field.itemsList.dbSelect, queryDataList))
 	} else {
 		return []
 	}
