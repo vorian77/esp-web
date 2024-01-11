@@ -87,11 +87,11 @@ export async function addCodeType(data: any) {
 export async function addColumn(data: any) {
 	const query = e.params(
 		{
-			owner: e.str,
 			classValue: e.optional(e.str),
 			codeAlignment: e.optional(e.str),
 			codeDataType: e.str,
 			codeDataTypeComputed: e.optional(e.str),
+			creator: e.str,
 			edgeTypeDefn: e.optional(e.json),
 			exprPreset: e.optional(e.str),
 			exprSelect: e.optional(e.str),
@@ -105,15 +105,16 @@ export async function addColumn(data: any) {
 			isSetBySys: e.optional(e.bool),
 			matchColumn: e.optional(e.str),
 			maxLength: e.optional(e.int16),
-			maxValue: e.optional(e.int16),
+			maxValue: e.optional(e.float64),
 			minLength: e.optional(e.int16),
-			minValue: e.optional(e.int16),
+			minValue: e.optional(e.float64),
 			name: e.str,
+			owner: e.str,
 			pattern: e.optional(e.str),
 			patternMsg: e.optional(e.str),
 			patternReplacement: e.optional(e.str),
 			placeHolder: e.optional(e.str),
-			creator: e.str
+			spinStep: e.optional(e.str)
 		},
 		(p) => {
 			return e.insert(e.sys_db.Column, {
@@ -143,6 +144,7 @@ export async function addColumn(data: any) {
 				patternMsg: p.patternMsg,
 				patternReplacement: p.patternReplacement,
 				placeHolder: p.placeHolder,
+				spinStep: p.spinStep,
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
 				modifiedBy: e.select(e.sys_user.getUser(p.creator))
 			})

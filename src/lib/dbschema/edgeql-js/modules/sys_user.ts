@@ -30,15 +30,16 @@ export type $UserRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f738
   "<createdBy[is sys_core::Obj]": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_core::Code]": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_user::Mgmt]": $.LinkDesc<$Mgmt, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm_training::CsfCohortAttd]": $.LinkDesc<_app_cm_training.$CsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm_training::CsfCohort]": $.LinkDesc<_app_cm_training.$CsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm_training::CsfCohortAttd]": $.LinkDesc<_app_cm_training.$CsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::Ent]": $.LinkDesc<_sys_core.$Ent, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm::CsfData]": $.LinkDesc<_app_cm.$CsfData, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_obj::DataObjFieldItems]": $.LinkDesc<_sys_obj.$DataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is app_cm_training::CsfCohortAttd]": $.LinkDesc<_app_cm_training.$CsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm_training::CsfCohort]": $.LinkDesc<_app_cm_training.$CsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -72,7 +73,6 @@ export type $UserRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f738
   "<modifiedBy[is sys_obj::DataObjAction]": $.LinkDesc<_sys_obj.$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_user::Widget]": $.LinkDesc<$Widget, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_admin::ObjConfig]": $.LinkDesc<_sys_admin.$ObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is app_cm_training::CsfCohortAttd]": $.LinkDesc<_app_cm_training.$CsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm::ServiceFlow]": $.LinkDesc<_app_cm.$ServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm::ClientServiceFlow]": $.LinkDesc<_app_cm.$ClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::Code]": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;

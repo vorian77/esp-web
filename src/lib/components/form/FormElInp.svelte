@@ -6,6 +6,9 @@
 	export let field: FieldInput
 
 	const classValue = 'input text-black ' + field.colorBackground
+	const min = field.minValue ? field.minValue.toString() : ''
+	const max = field.maxValue ? field.maxValue.toString() : ''
+	const step = field.spinStep ? field.spinStep : ''
 </script>
 
 <!-- <DataViewer header="element" data={field.element} /> -->
@@ -13,33 +16,56 @@
 
 <label class="label" for={field.name} hidden={field.access == FieldAccess.hidden}>
 	<span>{field.label}</span>
-	<input
-		type={field.element}
-		id={field.name}
-		name={field.name}
-		placeholder={field.placeHolder}
-		hidden={field.access == FieldAccess.hidden}
-		readonly={field.access == FieldAccess.readonly}
-		class={classValue}
-		value={field.valueCurrent.display}
-		class:input-warning={field.validity.level == ValidityErrorLevel.warning}
-		class:input-error={field.validity.level == ValidityErrorLevel.error}
-		on:change
-		on:keyup
-	/>
+	<div class="show_always">
+		<input
+			class={classValue}
+			class:input-warning={field.validity.level == ValidityErrorLevel.warning}
+			class:input-error={field.validity.level == ValidityErrorLevel.error}
+			hidden={field.access == FieldAccess.hidden}
+			id={field.name}
+			{max}
+			{min}
+			name={field.name}
+			on:change
+			on:keyup
+			placeholder={field.placeHolder}
+			readonly={field.access == FieldAccess.readonly}
+			{step}
+			type={field.element}
+			value={field.valueCurrent.display}
+		/>
+	</div>
 </label>
 
-<style>
+<!-- <div class="show_always">
+	<input type="number" class="show_spin" step="0.5" />
+</div> -->
+
+<!-- <style>
 	/* turn off spinner */
 	/* Chrome, Safari, Edge, Opera */
-	input::-webkit-outer-spin-button,
-	input::-webkit-inner-spin-button {
+	/* disable globally if required */
+	input[type='number']::-webkit-outer-spin-button,
+	input[type='number']::-webkit-inner-spin-button {
 		-webkit-appearance: none;
-		margin: 0;
+	}
+
+	/* restore to hidden until mouse over */
+	.show_spinner input[type='number']::-webkit-outer-spin-button,
+	.show_spinner input[type='number']::-webkit-inner-spin-button {
+		-webkit-appearance: inner-spin-button;
+	}
+
+	/* restore and show permanently */
+	.show_always input[type='number']::-webkit-outer-spin-button,
+	.show_always input[type='number']::-webkit-inner-spin-button {
+		-webkit-appearance: inner-spin-button;
+		opacity: 1;
+		margin-left: 10px;
 	}
 
 	/* Firefox */
 	input[type='number'] {
 		-moz-appearance: textfield;
 	}
-</style>
+</style> -->

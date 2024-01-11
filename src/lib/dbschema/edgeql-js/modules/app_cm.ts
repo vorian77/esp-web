@@ -34,7 +34,6 @@ export type $ClientServiceFlowλShape = $.typeutil.flatten<_sys_user.$MgmtλShap
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "<clientServiceFlow[is app_cm_training::CsfCohort]": $.LinkDesc<_app_cm_training.$CsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<clientServiceFlow[is app_cm::CsfData]": $.LinkDesc<$CsfData, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<clientServiceFlow[is app_cm_training::CsfCohortAttd]": $.LinkDesc<_app_cm_training.$CsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<clientServiceFlow[is app_cm::CsfNote]": $.LinkDesc<$CsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
   "<clientServiceFlow": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;

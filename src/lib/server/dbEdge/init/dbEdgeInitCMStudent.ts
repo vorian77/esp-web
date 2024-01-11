@@ -8,6 +8,7 @@ export default async function init() {
 	await initCMStudent()
 	await initStudentCsf()
 	await initStudentCsfCohort()
+	await initStudentCsfCohortAttd()
 	console.log(`${FILE}.end`)
 }
 
@@ -472,6 +473,7 @@ async function initStudentCsfCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
+				codeDbListDir: 'desc',
 				codeElement: 'date',
 				columnName: 'dateReferral',
 				dbOrderCrumb: 20,
@@ -572,6 +574,116 @@ async function initStudentCsfCohort() {
 				codeElement: 'textArea',
 				columnName: 'note',
 				dbOrderSelect: 100
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdAt',
+				dbOrderSelect: 200,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdBy',
+				dbOrderSelect: 210,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedAt',
+				dbOrderSelect: 220,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 230,
+				isDisplay: true
+			}
+		]
+	})
+}
+
+async function initStudentCsfCohortAttd() {
+	await addDataObj({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormList',
+		codeCardinality: 'list',
+		name: 'data_obj_cm_csf_cohort_attd_list',
+		header: 'Attendances',
+		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohortAttd' },
+		exprFilter: '.csfCohort.id = <uuid,record,id>',
+		actions: ['noa_list_new'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'csfCohort',
+				dbOrderSelect: 20,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				codeDbListDir: 'desc',
+				codeElement: 'date',
+				columnName: 'date',
+				dbOrderCrumb: 10,
+				dbOrderList: 10,
+				dbOrderSelect: 30
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'duration',
+				dbOrderSelect: 40
+			}
+		]
+	})
+
+	await addDataObj({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		name: 'data_obj_cm_csf_cohort_attd_detail',
+		header: 'Attendance',
+		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohortAttd' },
+		actions: ['noa_detail_new', 'noa_detail_delete'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'csfCohort',
+				dbOrderSelect: 20,
+				exprPreset: `(SELECT app_cm_training::CsfCohort { data := .id, display := .cohort.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,record,id>)`,
+				isDisplay: false
+			},
+			{
+				codeElement: 'date',
+				columnName: 'date',
+				dbOrderCrumb: 10,
+				dbOrderList: 10,
+				dbOrderSelect: 30
+			},
+			{
+				codeElement: 'number',
+				columnName: 'duration',
+				dbOrderSelect: 40
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'note',
+				dbOrderSelect: 50
 			},
 			{
 				codeAccess: 'readOnly',

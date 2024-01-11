@@ -35,7 +35,7 @@
 		const settings: DrawerSettings = {
 			id: 'auth',
 			position: 'bottom',
-			height: 'h-[30%]',
+			height: 'h-[50%]',
 			meta: {
 				dataObjName
 			}

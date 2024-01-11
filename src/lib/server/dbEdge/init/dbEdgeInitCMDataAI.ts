@@ -10,6 +10,7 @@ export default async function init() {
 	await initStudents()
 	await initServiceFlows()
 	await initClientServiceFlows()
+	await initCsfCohort()
 	console.log(`${FILE}.end`)
 }
 
@@ -120,7 +121,8 @@ async function initClientServiceFlows() {
       for x in {
         ('AE-195500', 'sf_cm_training', '2023-11-05', 'Note 1'),
         ('AE-195500', 'sf_cm_osha', '2023-11-15', 'Note 2'),
-        ('AE-196100', 'sf_cm_training', '2023-12-01', 'Note 3'),        
+        ('AE-196100', 'sf_cm_training', '2023-12-01', 'Note 3'),  
+        ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Note 4'),      
       }
       union (insert app_cm::ClientServiceFlow {
         client := (select assert_single((select app_cm::Client filter .agencyId = x.0))),
@@ -132,4 +134,28 @@ async function initClientServiceFlows() {
         modifiedBy := myCreator
       });
     `)
+}
+
+async function initCsfCohort() {
+	await execute(`
+  with
+  myCreator := (select sys_user::getUser('user_sys'))
+  for x in {
+    ('AE-195500', 'sf_cm_training', '2023-11-05', 'Commercial Painting', 'Cohort 1', 'Pending', '2023-11-05'), 
+    ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Residential and Commercial Masonry', 'Cohort 6', 'Proceeding', '2023-12-01'), 
+  }
+  union (insert app_cm_training::CsfCohort {
+    clientServiceFlow := (select assert_single((select app_cm::ClientServiceFlow filter
+      .client = (select assert_single((select app_cm::Client filter .agencyId = x.0))) and
+      .serviceFlow = (select assert_single((select app_cm::ServiceFlow filter .name = x.1))) and
+      .dateReferral = <cal::local_date>x.2))), 
+    cohort := (select assert_single((select app_cm_training::Cohort filter
+      .course = (select app_cm_training::getCMTrainingCourse(x.3)) and
+      .name = x.4))),
+    codeStatus := (select assert_single((select sys_core::Code filter .codeType.name = "ct_cm_service_flow_status" and .name = x.5))),
+    dateReferral := <cal::local_date>x.6,
+    createdBy := myCreator,
+    modifiedBy := myCreator                         
+  });
+`)
 }

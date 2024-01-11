@@ -22,14 +22,15 @@ export type $ColumnλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "isSetBySys": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "matchColumn": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "maxLength": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
-  "maxValue": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
   "minLength": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
-  "minValue": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
   "pattern": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "patternMsg": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "patternReplacement": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "placeHolder": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeDataTypeComputed": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "spinStep": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "maxValue": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, false, false, false>;
+  "minValue": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, false, false, false>;
   "<columns[is sys_db::Table]": $.LinkDesc<$Table, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column[is sys_obj::DataObjFieldDb]": $.LinkDesc<_sys_obj.$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column[is sys_obj::DataObjFieldEl]": $.LinkDesc<_sys_obj.$DataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;

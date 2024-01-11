@@ -132,7 +132,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 		const settings: DrawerSettings = {
 			id: 'auth',
 			position: 'bottom',
-			height: 'h-[30%]',
+			height: 'h-[50%]',
 			meta: { dataObjName }
 		}
 		state.messageDrawer.open(settings)

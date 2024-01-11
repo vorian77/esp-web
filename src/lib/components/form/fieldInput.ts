@@ -17,15 +17,16 @@ import { error } from '@sveltejs/kit'
 const FILENAME = '$comps/form/fieldInput.ts'
 
 export class FieldInput extends Field {
-	matchColumn: MatchColumn | undefined
-	maxLength: number | undefined
-	maxValue: number | undefined
-	minLength: number | undefined
-	minValue: number | undefined
-	pattern: string | undefined
-	patternMsg: string | undefined
-	patternReplacement: string | undefined
+	matchColumn?: MatchColumn
+	maxLength?: number
+	maxValue?: number
+	minLength?: number
+	minValue?: number
+	pattern?: string
+	patternMsg?: string
+	patternReplacement?: string
 	placeHolder: string
+	spinStep?: string
 	constructor(obj: FieldRaw, index: number, fields: Array<Field>) {
 		super(obj, index)
 		obj = valueOrDefault(obj, {})
@@ -37,7 +38,6 @@ export class FieldInput extends Field {
 			this.placeHolder += ' (optional)'
 		}
 
-		// validators
 		this.matchColumn = initMatchColumn(obj._column.matchColumn, this, fields)
 		this.maxLength = obj._column.maxLength
 		this.maxValue = obj._column.maxValue
@@ -46,6 +46,7 @@ export class FieldInput extends Field {
 		this.pattern = obj._column.pattern
 		this.patternMsg = obj._column.patternMsg
 		this.patternReplacement = obj._column.patternReplacement
+		this.spinStep = obj._column.spinStep
 
 		// set field type defaults
 		switch (this.element) {
@@ -94,10 +95,10 @@ export class FieldInput extends Field {
 				return new MatchColumn(parentMatchColumn, fields[idxParent].index, message)
 			} else {
 				error(500, {
-                					file: FILENAME,
-                					function: 'constructor.initMatchColumn',
-                					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}"`
-                				});
+					file: FILENAME,
+					function: 'constructor.initMatchColumn',
+					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}"`
+				})
 			}
 		}
 	}

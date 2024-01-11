@@ -16,13 +16,14 @@ module sys_db{
     isSetBySys: bool;
     matchColumn: str;
     maxLength: default::nonNegative;
-    maxValue: default::nonNegative;
+    maxValue: float64;
     minLength: default::nonNegative;
-    minValue: default::nonNegative;
+    minValue: float64;
     pattern: str;
     patternMsg: str;
     patternReplacement: str;
     placeHolder: str;
+    spinStep: str;
     constraint exclusive on (.name);
   }
 

@@ -553,6 +553,7 @@ async function initColumns() {
 		owner: 'app_sys',
 		codeDataType: 'decimal',
 		header: 'Cost',
+		minValue: 0,
 		name: 'cost'
 	})
 	await addColumn({
@@ -597,6 +598,17 @@ async function initColumns() {
 	await addColumn({
 		creator: 'user_sys',
 		owner: 'app_sys',
+		codeDataType: 'edgeType',
+		edgeTypeDefn: {
+			property: `cohort.course.header ++ ' (' ++ to_str(.dateReferral) ++ ')'`,
+			table: { mod: 'app_cm_training', name: 'CsfCohort' }
+		},
+		header: 'Cohort',
+		name: 'csfCohort'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'custom_element',
 		isExcludeInsert: true,
@@ -612,6 +624,13 @@ async function initColumns() {
 		isExcludeInsert: true,
 		isExcludeUpdate: true,
 		name: 'custom_select'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Date',
+		name: 'date'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -703,6 +722,16 @@ async function initColumns() {
 		codeDataType: 'str',
 		header: 'Detail-Sub Header',
 		name: 'detailSubHeader'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'decimal',
+		header: 'Duration',
+		maxValue: 24,
+		minValue: 0,
+		name: 'duration',
+		spinStep: '0.25'
 	})
 	await addColumn({
 		creator: 'user_sys',

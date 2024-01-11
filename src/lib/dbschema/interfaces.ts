@@ -159,11 +159,11 @@ export namespace app_cm_training {
     "dateReferral"?: edgedb.LocalDate | null;
     "codeMultiCerts": sys_core.Code[];
   }
-  export interface CsfCohortAttd extends app_cm.CsfData {
+  export interface CsfCohortAttd extends sys_user.Mgmt {
     "date": edgedb.LocalDate;
-    "duration": string;
     "note"?: string | null;
     "csfCohort": CsfCohort;
+    "duration": number;
   }
 }
 export namespace cfg {
@@ -498,14 +498,15 @@ export namespace sys_db {
     "isSetBySys"?: boolean | null;
     "matchColumn"?: string | null;
     "maxLength"?: number | null;
-    "maxValue"?: number | null;
     "minLength"?: number | null;
-    "minValue"?: number | null;
     "pattern"?: string | null;
     "patternMsg"?: string | null;
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
     "codeDataTypeComputed"?: sys_core.Code | null;
+    "spinStep"?: string | null;
+    "maxValue"?: number | null;
+    "minValue"?: number | null;
   }
   export interface Table extends sys_core.Obj {
     "hasMgmt": boolean;

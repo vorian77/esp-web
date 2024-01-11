@@ -74,10 +74,10 @@ module app_cm_training {
     note: str;
   }
 
-  type CsfCohortAttd extending app_cm::CsfData {
+  type CsfCohortAttd extending sys_user::Mgmt {
     required csfCohort: app_cm_training::CsfCohort;
     required date: cal::local_date;
-    required duration: decimal;
+    required duration: float32;
     note: str;
   }  
 

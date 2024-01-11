@@ -196,6 +196,28 @@ async function initNodeObjs() {
 		owner: 'app_cm_training',
 		parentNodeName: 'node_obj_cm_training_csf_cohort_list'
 	})
+
+	// student - cohort attendance
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		creator: 'user_sys',
+		dataObj: 'data_obj_cm_csf_cohort_attd_list',
+		header: 'Attendances',
+		name: 'node_obj_cm_training_csf_cohort_attd_list',
+		order: 10,
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_csf_cohort_detail'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		creator: 'user_sys',
+		dataObj: 'data_obj_cm_csf_cohort_attd_detail',
+		header: 'Attendance',
+		name: 'node_obj_cm_training_csf_cohort_attd_detail',
+		order: 10,
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_csf_cohort_attd_list'
+	})
 }
 
 async function initFooter() {

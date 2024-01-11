@@ -49,6 +49,7 @@ export interface FieldRaw {
 		patternMsg: string
 		patternReplacement: string
 		placeHolder: string
+		spinStep: string
 	}
 	customElement: FieldCustomRaw
 	headerAlt: string

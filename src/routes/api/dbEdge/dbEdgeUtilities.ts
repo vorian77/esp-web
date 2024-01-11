@@ -88,7 +88,8 @@ export async function getDataObjById(dataObjId: string) {
 					pattern: true,
 					patternMsg: true,
 					patternReplacement: true,
-					placeHolder: true
+					placeHolder: true,
+					spinStep: true
 				})),
 				_codeAccess: f.codeAccess.name,
 				_codeElement: f.codeElement.name,

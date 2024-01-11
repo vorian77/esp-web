@@ -119,7 +119,6 @@
 
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
-<!-- <temp> 240101: decorator pattern for field "types"? -->
 <div class="mx-2 mb-6">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
 		{#each dataObj.fields as field, idx (field.name)}
@@ -131,7 +130,6 @@
 						<FormElCustom bind:field {state} data={dataObj.objData.dataObjRow.record} />
 					{:else if field instanceof FieldFile}
 						<FormElFile bind:field onChange={onChangeFile} />
-						<!-- {:else if [FieldElement.date, FieldElement.email, FieldElement.number, FieldElement.password, FieldElement.tel, FieldElement.text].includes(field.element)} -->
 					{:else if field instanceof FieldInput}
 						<FormElInp {field} on:change={onChangeInput} on:keyup={onChangeInput} />
 					{:else if field instanceof FieldRadio}

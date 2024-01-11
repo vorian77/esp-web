@@ -72,14 +72,14 @@ const $CsfCohort = $.makeType<$CsfCohort>(_.spec, "66168384-8faa-11ee-98ae-290ec
 
 const CsfCohort: $.$expr_PathNode<$.TypeSet<$CsfCohort, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($CsfCohort, $.Cardinality.Many), null);
 
-export type $CsfCohortAttdλShape = $.typeutil.flatten<_app_cm.$CsfDataλShape & {
+export type $CsfCohortAttdλShape = $.typeutil.flatten<_sys_user.$MgmtλShape & {
   "date": $.PropertyDesc<_cal.$local_date, $.Cardinality.One, false, false, false, false>;
-  "duration": $.PropertyDesc<_std.$decimal, $.Cardinality.One, false, false, false, false>;
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "csfCohort": $.LinkDesc<$CsfCohort, $.Cardinality.One, {}, false, false,  false, false>;
+  "duration": $.PropertyDesc<_std.$float32, $.Cardinality.One, false, false, false, false>;
 }>;
 type $CsfCohortAttd = $.ObjectType<"app_cm_training::CsfCohortAttd", $CsfCohortAttdλShape, null, [
-  ..._app_cm.$CsfData['__exclusives__'],
+  ..._sys_user.$Mgmt['__exclusives__'],
 ]>;
 const $CsfCohortAttd = $.makeType<$CsfCohortAttd>(_.spec, "661b166b-8faa-11ee-bf27-37fc298d68b5", _.syntax.literal);
 
