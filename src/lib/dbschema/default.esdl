@@ -7,14 +7,14 @@ module default {
     avatar: json;
     birthDate: cal::local_date;
     city: str;
+    codeEthnicity: sys_core::Code;
+    codeGender: sys_core::Code;
     codeRace: sys_core::Code;
     codeState: sys_core::Code;
     email: str;
-    ethnicity: json;
     favFood: str;
     required firstName: Name;
     property fullName := .firstName ++ ' ' ++ .lastName;
-    gender: str;
     required lastName: Name;
     note: str;
     phoneMobile: str;

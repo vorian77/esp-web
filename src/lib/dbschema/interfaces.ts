@@ -112,13 +112,13 @@ export interface Person extends std.$Object {
   "birthDate"?: edgedb.LocalDate | null;
   "city"?: string | null;
   "email"?: string | null;
-  "ethnicity"?: unknown | null;
   "favFood"?: string | null;
   "fullName": string;
-  "gender"?: string | null;
   "note"?: string | null;
   "phoneMobile"?: string | null;
   "zip"?: string | null;
+  "codeGender"?: sys_core.Code | null;
+  "codeEthnicity"?: sys_core.Code | null;
 }
 export namespace app_cm_training {
   export interface Cohort extends sys_core.Obj {

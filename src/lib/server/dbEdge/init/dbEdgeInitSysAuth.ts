@@ -1,27 +1,20 @@
-import { tables } from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import { addColumn, addDataObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { addDataObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-const FILE = 'init_sys_auth'
+const FILE = 'initSysAuth'
 
 export default async function init() {
 	console.log()
 	console.log(`${FILE}.start...`)
-	await initDataObjs()
-	// await review(FILE, reviewQuery)
+	await initDataObjLogin()
+	await initDataObjResetPasswordAccount()
+	await initDataObjResetPasswordLogin()
+	// await initDataObjSignup()
+	await initDataObjVerify()
+	await initDataObjAccount()
 	console.log(`${FILE}.end`)
 }
 
-const reviewQuery = ''
-
-async function initDataObjs() {
-	await dataObjLogin()
-	await dataObjResetAccount()
-	await dataObjResetLogin()
-	await dataObjSignup()
-	await dataObjVerify()
-}
-
-async function dataObjLogin() {
+async function initDataObjLogin() {
 	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
@@ -72,7 +65,7 @@ async function dataObjLogin() {
 	})
 }
 
-async function dataObjResetAccount() {
+async function initDataObjResetPasswordAccount() {
 	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
@@ -127,7 +120,7 @@ async function dataObjResetAccount() {
 	})
 }
 
-async function dataObjResetLogin() {
+async function initDataObjResetPasswordLogin() {
 	await addDataObj({
 		creator: 'user_sys',
 		codeComponent: 'FormDetail',
@@ -193,7 +186,7 @@ async function dataObjResetLogin() {
 	})
 }
 
-async function dataObjSignup() {
+async function initDataObjSignup() {
 	/* data_obj_auth_signup */
 	await addDataObj({
 		creator: 'user_sys',
@@ -301,7 +294,7 @@ async function dataObjSignup() {
 	})
 }
 
-async function dataObjVerify() {
+async function initDataObjVerify() {
 	/* data_obj_auth_verify_phone_mobile */
 	await addDataObj({
 		creator: 'user_sys',
@@ -345,6 +338,67 @@ async function dataObjVerify() {
 					label: 'Resend Security Code'
 				},
 				dbOrderSelect: 40
+			}
+		]
+	})
+}
+
+async function initDataObjAccount() {
+	await addDataObj({
+		creator: 'user_sys',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		header: 'My Account',
+		name: 'data_obj_auth_account',
+		owner: 'app_sys',
+		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
+		exprFilter: '.id = <uuid,user,id>',
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				isDbFilter: true,
+				isDisplay: false,
+				dbOrderSelect: 10
+			},
+			{
+				columnName: 'firstName',
+				dbOrderSelect: 20,
+				isLinkMember: true
+			},
+			{
+				columnName: 'lastName',
+				dbOrderSelect: 30,
+				isLinkMember: true
+			},
+
+			{
+				codeElement: 'tel',
+				columnName: 'userName',
+				dbOrderSelect: 40
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'file',
+				columnName: 'avatar',
+				dbOrderSelect: 50,
+				isLinkMember: true,
+				width: 300
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'link',
+					action: {
+						method: 'auth',
+						type: 'page',
+						value: 'data_obj_auth_reset_password_account'
+					},
+					label: 'Reset Password?'
+				},
+				dbOrderSelect: 60
 			}
 		]
 	})

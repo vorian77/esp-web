@@ -1,42 +1,34 @@
 import { resetDB } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
-import initSys from '$server/dbEdge/init/dbEdgeInitSys'
-import initSysAdmin from '$server/dbEdge/init/dbEdgeInitSysAdmin'
+import initCore from '$server/dbEdge/init/dbEdgeInitCore'
 import initSysAuth from '$server/dbEdge/init/dbEdgeInitSysAuth'
-import initCM from '$server/dbEdge/init/dbEdgeInitCM'
+import initSysAdmin from '$server/dbEdge/init/dbEdgeInitSysAdmin'
+import initCMStudent from '$server/dbEdge/init/dbEdgeInitCMStudent'
 import initCMTraining from '$server/dbEdge/init/dbEdgeInitCMTraining'
-import initCMTrainingData from '$server/dbEdge/init/dbEdgeInitCMTrainingData'
-import initMOED_cm from '$server/dbEdge/init/dbEdgeInitMOED_cm'
+import initResources from '$server/dbEdge/init/dbEdgeInitResources'
+import initCMDataAI from '$server/dbEdge/init/dbEdgeInitCMDataAI'
+import initCMDataMOED from '$server/dbEdge/init/dbEdgeInitCMDataMOED'
 
 const FILE = '/server/dbEdge/init'
-const load = 0
+const load = 1
 
 export async function init() {
 	if (load) {
 		await resetDB()
-		await initSys()
-		await initSysAdmin()
+		await initCore()
 		await initSysAuth()
-		await initCM()
+		await initSysAdmin()
 		await initCMTraining()
-		await initCMTrainingData()
-		await initMOED_cm()
+		await initCMStudent()
+		await initResources()
+		await initCMDataAI()
+		// await initCMDataMOED()
+		// await initReviewQuery()
 	}
 }
-// await initReviewQuery()
 
 async function initReviewQuery() {
 	let reviewQuery = ''
-	//reviewQuery = `select sys_core::ObjRoot {*} `
-	//reviewQuery = `select sys_user::User {*} `
-	// reviewQuery = `select sys_core::App {*} `
-	// reviewQuery = `select sys_core::CodeType {*} `
-	// reviewQuery = `select sys_core::Code {*} `
-	// reviewQuery = `select sys_obj::NodeObj {*} `
-	//reviewQuery = `select sys_app::Widget {**}`
-	// reviewQuery = `select sys_obj::ObjAction {*}`
-	// reviewQuery = `select sys_db::Table {*}`
-	// reviewQuery = `select sys_db::Column {*}`
 	// reviewQuery = `select sys_core::ObjRoot {**} filter .name = 'root' order by .name`
 	await review(FILE, reviewQuery)
 }

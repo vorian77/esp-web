@@ -1,105 +1,19 @@
-import {
-	addOrgs,
-	addRoleOrg,
-	addStaff,
-	addRoleStaff,
-	userUserType
-} from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import {
-	addOrg,
-	addUser,
-	addUserOrg,
-	execute,
-	review
-} from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { execute } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-const FILE = 'init_cm_training_data'
-const rootObjName = '*ROOTOBJ*'
-
-let reviewQuery = ''
+const FILE = 'initCMDataAI'
 
 export default async function init() {
 	console.log()
 	console.log(`${FILE}.start...`)
-
-	await addOrgs([
-		['Atlantic Impact', 'Atlantic Impact Mobile'],
-		['Atlantic Impact - School Site 1', ''],
-		['Atlantic Impact - School Site 2', ''],
-		['Atlantic Impact - School Site 3', '']
-	])
-	await addRoleOrg([
-		['Atlantic Impact', 'cm_training_role_org_agency'],
-		['Atlantic Impact - School Site 1', 'cm_training_role_org_venue'],
-		['Atlantic Impact - School Site 2', 'cm_training_role_org_venue'],
-		['Atlantic Impact - School Site 3', 'cm_training_role_org_venue']
-	])
-
-	await addUser({
-		firstName: 'Anise',
-		lastName: 'Hayes',
-		owner: 'Atlantic Impact',
-		password: 'Atlantic99!',
-		userName: '2482317505'
-	})
-	await addUser({
-		firstName: 'Matthew',
-		lastName: 'Clayton',
-		owner: 'Atlantic Impact',
-		password: 'Atlantic99!',
-		userName: '3136276210'
-	})
-	await addUser({
-		firstName: 'Phyllip',
-		lastName: 'Hall',
-		owner: 'Atlantic Impact',
-		password: 'JakeDog#1',
-		userName: '2487985578'
-	})
-
-	await addUserOrg({ orgName: 'Atlantic Impact', userName: 'user_sys' })
-	await addUserOrg({ orgName: 'Atlantic Impact', userName: '2482317505' })
-	await addUserOrg({ orgName: 'Atlantic Impact', userName: '3136276210' })
-	await addUserOrg({ orgName: 'Atlantic Impact', userName: '2487985578' })
-
-	await userUserType([['2482317505', 'ut_cm_training_staff_provider']])
-	await userUserType([['3136276210', 'ut_cm_training_staff_provider']])
-	await userUserType([['2487985578', 'ut_cm_training_staff_provider']])
-
-	await addStaff([
-		['Atlantic Impact', 'Stacy', 'Administrator'],
-		['Atlantic Impact', 'Stan', 'Administrator'],
-		['Atlantic Impact', 'Anise', 'Hayes'],
-		['Atlantic Impact', 'Matthew', 'Clayton'],
-		['Atlantic Impact', 'Erica', 'Hicks'],
-		['Atlantic Impact', 'Jane', 'Instructor'],
-		['Atlantic Impact', 'Joe', 'Instructor']
-	])
-
-	await addRoleStaff([
-		['Stacy', 'Administrator', 'cm_training_role_staff_admin'],
-		['Stan', 'Administrator', 'cm_training_role_staff_admin'],
-
-		['Anise', 'Hayes', 'cm_training_role_staff_agency'],
-		['Matthew', 'Clayton', 'cm_training_role_staff_agency'],
-		['Erica', 'Hicks', 'cm_training_role_staff_agency'],
-
-		['Jane', 'Instructor', 'cm_training_role_staff_instructor'],
-		['Joe', 'Instructor', 'cm_training_role_staff_instructor']
-	])
-
-	await dataCourses()
-	await dataCohorts()
-	await dataStudents()
-	await dataServiceFlows()
-	await dataClientServiceFlows()
-	// await review(FILE, reviewQuery)
+	await initCourses()
+	await initCohorts()
+	await initStudents()
+	await initServiceFlows()
+	await initClientServiceFlows()
 	console.log(`${FILE}.end`)
 }
 
-reviewQuery = `select app_cm::Client {*, person: {id, firstName, lastName, email}}`
-
-async function dataCourses() {
+async function initCourses() {
 	await execute(`
     with
     myCreator := (select sys_user::getUser('user_sys'))
@@ -123,7 +37,7 @@ async function dataCourses() {
   `)
 }
 
-async function dataCohorts() {
+async function initCohorts() {
 	await execute(`
     with
     myCreator := (select sys_user::getUser('user_sys'))
@@ -146,23 +60,23 @@ async function dataCohorts() {
   `)
 }
 
-async function dataStudents() {
+async function initStudents() {
 	await execute(`
     with
     myCreator := (select sys_user::getUser('user_sys'))
     for x in {
-      ('AE-195100', 'Jose', 'Prater', 'jp@gmail.com'),
-      ('AE-195200', 'Jeron', 'Johnson', 'jj@gmail.com'),
-      ('AE-195300', 'Sara', 'Payne', 'sp@gmail.com'),
-      ('AE-195400', 'Elonda', 'Cruder', 'ec@gmail.com'),
-      ('AE-195500', 'Christopher', 'Calhoun', 'cc@gmail.com'),
-      ('AE-195600', 'Regory', 'Elliott', 're@gmail.com'),
-      ('AE-195700', 'Farrah', 'May', 'fm@gmail.com'),
-      ('AE-195800', 'Gerrell', 'Johnson', 'gj@gmail.com'),
-      ('AE-195900', 'Cornelius', 'Williams', 'cw@gmail.com'),
-      ('AE-196000', 'Chakiya', 'Long', 'cl@gmail.com'),
-      ('AE-196100', 'William', 'Cobb', 'wc@gmail.com'),
-      ('AE-196200', 'Italo', 'Rodriguez', 'ir@gmail.com'),
+      ('AE-195100', 'Jose', 'Prater', 'jp@gmail.com', <cal::local_date>'2004-01-10'),
+      ('AE-195200', 'Jeron', 'Johnson', 'jj@gmail.com', <cal::local_date>'2006-02-02'),
+      ('AE-195300', 'Sara', 'Payne', 'sp@gmail.com', <cal::local_date>'2003-03-03'),
+      ('AE-195400', 'Elonda', 'Cruder', 'ec@gmail.com', <cal::local_date>'2002-02-02'),
+      ('AE-195500', 'Christopher', 'Calhoun', 'cc@gmail.com', <cal::local_date>'2001-01-01'),
+      ('AE-195600', 'Regory', 'Elliott', 're@gmail.com', <cal::local_date>'2005-05-05'),
+      ('AE-195700', 'Farrah', 'May', 'fm@gmail.com', <cal::local_date>'2004-09-09'),
+      ('AE-195800', 'Gerrell', 'Johnson', 'gj@gmail.com', <cal::local_date>'2001-01-20'),
+      ('AE-195900', 'Cornelius', 'Williams', 'cw@gmail.com', <cal::local_date>'2023-05-15'),
+      ('AE-196000', 'Chakiya', 'Long', 'cl@gmail.com', <cal::local_date>'2024-04-14'),
+      ('AE-196100', 'William', 'Cobb', 'wc@gmail.com', <cal::local_date>'2008-08-18'),
+      ('AE-196200', 'Italo', 'Rodriguez', 'ir@gmail.com', <cal::local_date>'2005-05-15'),
       
     }
     union (insert app_cm::Client {
@@ -171,7 +85,8 @@ async function dataStudents() {
       person := (insert default::Person {
         firstName := x.1,
         lastName := x.2,
-        email := x.3  
+        email := x.3,
+        birthDate := x.4
       }),
       createdBy := myCreator,
       modifiedBy := myCreator
@@ -179,7 +94,7 @@ async function dataStudents() {
   `)
 }
 
-async function dataServiceFlows() {
+async function initServiceFlows() {
 	await execute(`
       with
       myCreator := (select sys_user::getUser('user_sys'))
@@ -198,7 +113,7 @@ async function dataServiceFlows() {
     `)
 }
 
-async function dataClientServiceFlows() {
+async function initClientServiceFlows() {
 	await execute(`
       with
       myCreator := (select sys_user::getUser('user_sys'))
