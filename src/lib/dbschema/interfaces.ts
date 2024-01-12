@@ -62,6 +62,15 @@ export namespace app_cm {
   export interface CsfData extends sys_user.Mgmt {
     "clientServiceFlow": ClientServiceFlow;
   }
+  export interface CsfCertification extends CsfData {
+    "course": app_cm_training.Course;
+    "staffAgency": sys_user.Staff;
+    "dateExpires"?: edgedb.LocalDate | null;
+    "dateIssued": edgedb.LocalDate;
+    "imageCertification"?: unknown | null;
+    "note"?: string | null;
+    "codeCertification": sys_core.Code;
+  }
   export interface CsfNote extends CsfData {
     "date": edgedb.LocalDate;
     "note"?: string | null;
@@ -615,6 +624,7 @@ export interface types {
     "Client": app_cm.Client;
     "ClientServiceFlow": app_cm.ClientServiceFlow;
     "CsfData": app_cm.CsfData;
+    "CsfCertification": app_cm.CsfCertification;
     "CsfNote": app_cm.CsfNote;
     "ServiceFlow": app_cm.ServiceFlow;
   };

@@ -218,6 +218,28 @@ async function initNodeObjs() {
 		owner: 'app_cm_training',
 		parentNodeName: 'node_obj_cm_training_csf_cohort_attd_list'
 	})
+
+	// student - certification
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		creator: 'user_sys',
+		dataObj: 'data_obj_cm_training_csf_certification_list',
+		header: 'Certifications',
+		name: 'node_obj_cm_training_csf_certification_list',
+		order: 20,
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_service_flow_detail'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		creator: 'user_sys',
+		dataObj: 'data_obj_cm_training_csf_certification_detail',
+		header: 'Certification',
+		name: 'node_obj_cm_training_csf_certification_detail',
+		order: 10,
+		owner: 'app_cm_training',
+		parentNodeName: 'node_obj_cm_training_csf_certification_list'
+	})
 }
 
 async function initFooter() {

@@ -9,6 +9,7 @@ export default async function init() {
 	await initStudentCsf()
 	await initStudentCsfCohort()
 	await initStudentCsfCohortAttd()
+	await initStudentCsfCertification()
 	console.log(`${FILE}.end`)
 }
 
@@ -684,6 +685,148 @@ async function initStudentCsfCohortAttd() {
 				codeElement: 'textArea',
 				columnName: 'note',
 				dbOrderSelect: 50
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdAt',
+				dbOrderSelect: 200,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdBy',
+				dbOrderSelect: 210,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedAt',
+				dbOrderSelect: 220,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 230,
+				isDisplay: true
+			}
+		]
+	})
+}
+
+async function initStudentCsfCertification() {
+	await addDataObj({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormList',
+		codeCardinality: 'list',
+		name: 'data_obj_cm_training_csf_certification_list',
+		header: 'Certifications',
+		table: { owner: 'app_cm', mod: 'app_cm', name: 'CsfCertification' },
+		exprFilter: '.clientServiceFlow.id = <uuid,record,id>',
+		actions: ['noa_list_new'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'clientServiceFlow',
+				dbOrderSelect: 20,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'course',
+				dbOrderSelect: 30
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeCertification',
+				dbOrderSelect: 40
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateIssued',
+				dbOrderSelect: 50
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateExpires',
+				dbOrderSelect: 60
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'note',
+				dbOrderSelect: 60,
+				isDisplay: false
+			}
+		]
+	})
+
+	await addDataObj({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		name: 'data_obj_cm_training_csf_certification_detail',
+		header: 'Certification',
+		table: { owner: 'app_cm', mod: 'app_cm', name: 'CsfCertification' },
+		actions: ['noa_detail_new', 'noa_detail_delete'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'clientServiceFlow',
+				dbOrderSelect: 20,
+				exprPreset: `(SELECT app_cm::ClientServiceFlow { data := .id, display := .serviceFlow.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,record,id>)`,
+				isDisplay: false
+			},
+			{
+				codeElement: 'select',
+				columnName: 'course',
+				dbOrderSelect: 30,
+				itemsList: 'il_cm_training_course_by_csfId_status',
+				itemsListParms: { status: 'Completed' }
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeCertification',
+				dbOrderSelect: 40,
+				itemsList: 'il_sys_code_order_name_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_cm_training_course_cert' }
+			},
+			{
+				codeElement: 'date',
+				columnName: 'dateIssued',
+				dbOrderSelect: 50
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'date',
+				columnName: 'dateExpires',
+				dbOrderSelect: 60
+			},
+			{
+				codeElement: 'select',
+				columnName: 'staffAgency',
+				dbOrderSelect: 70,
+				itemsList: 'il_sys_role_staff_by_codeName',
+				itemsListParms: { codeName: 'cm_training_role_staff_agency' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'note',
+				dbOrderSelect: 80
 			},
 			{
 				codeAccess: 'readOnly',

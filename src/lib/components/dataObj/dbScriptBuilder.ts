@@ -93,9 +93,9 @@ export class EdgeQL {
 	}
 
 	getScriptDataItems(dbSelect: string, data: TokenApiQueryData) {
-		console.log('getScriptDataItems.0:', { dbSelect, data })
 		const script = getValExpr(dbSelect, data)
-		console.log('getScriptDataItems.1...')
+		console.log()
+		console.log('getScriptDataItems:', { dbSelect, data, script })
 		return script
 	}
 	getScriptDelete(data: TokenApiQueryData) {
@@ -473,6 +473,8 @@ export function getValExpr(expr: string, data: TokenApiQueryData): string {
 		data token <[dataType],[source],[sourceKey]>
 		eg. (select sys_user::getUser(<str,user,userName>))
 	*/
+	expr = expr.replace(/(\r\n|\n|\r)/gm, '')
+	expr = expr.replace(/\s+/g, ' ').trim()
 	const regex = /<(.*?)>/g
 	const newExpr = expr.replace(regex, (t) => {
 		const token = t.slice(1, t.length - 1)
@@ -629,6 +631,7 @@ export class Table {
 	module: string
 	name: string
 	constructor(obj: any) {
+		console.log('constructor.Table:', { obj })
 		obj = valueOrDefault(obj, {})
 		this.hasMgmt = booleanOrFalse(obj.hasMgmt, 'Table')
 		this.module = strRequired(obj.mod, 'Table', 'mod')

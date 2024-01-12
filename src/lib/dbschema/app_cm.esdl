@@ -21,6 +21,16 @@ module app_cm {
     note: str;
   }
 
+  type CsfCertification extending app_cm::CsfData {
+    required codeCertification: sys_core::Code;
+    required course: app_cm_training::Course;
+    dateExpires: cal::local_date;
+    required dateIssued: cal::local_date;
+    imageCertification: json;
+    note: str;
+    required staffAgency: sys_user::Staff;
+  }
+
   type CsfData extending sys_user::Mgmt {
     required clientServiceFlow: ClientServiceFlow;
   }

@@ -346,6 +346,7 @@ export async function resetDB() {
 	const tables: Array<string> = []
 
 	// tables in delete order
+	tables.push('app_cm::CsfCertification')
 	tables.push('app_cm_training::CsfCohortAttd')
 	tables.push('app_cm_training::CsfCohort')
 	tables.push('app_cm::CsfNote')

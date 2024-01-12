@@ -45,6 +45,7 @@ export type $CourseλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "staffAdmin": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "staffAgency": $.LinkDesc<_sys_user.$Staff, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "<course[is app_cm_training::Cohort]": $.LinkDesc<$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<course[is app_cm::CsfCertification]": $.LinkDesc<_app_cm.$CsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
   "<course": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Course = $.ObjectType<"app_cm_training::Course", $CourseλShape, null, [

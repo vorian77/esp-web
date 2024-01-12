@@ -274,7 +274,11 @@ async function getDataItems(
 	} else if (field.itemsList) {
 		const queryDataList = new TokenApiQueryData(queryData)
 		queryDataList.update('parms', field.itemsList.parms)
-		return await queryMultiple(query.getScriptDataItems(field.itemsList.dbSelect, queryDataList))
+		const result = await queryMultiple(
+			query.getScriptDataItems(field.itemsList.dbSelect, queryDataList)
+		)
+		console.log('getDataItems.result:', { field: field.name, result })
+		return result
 	} else {
 		return []
 	}

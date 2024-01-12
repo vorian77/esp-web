@@ -141,8 +141,8 @@ async function initCsfCohort() {
   with
   myCreator := (select sys_user::getUser('user_sys'))
   for x in {
-    ('AE-195500', 'sf_cm_training', '2023-11-05', 'Commercial Painting', 'Cohort 1', 'Pending', '2023-11-05'), 
-    ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Residential and Commercial Masonry', 'Cohort 6', 'Proceeding', '2023-12-01'), 
+    ('AE-195500', 'sf_cm_training', '2023-11-05', 'Commercial Painting', 'Cohort 1', 'Completed', '2023-11-05'), 
+    ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Residential and Commercial Masonry', 'Cohort 6', 'Completed', '2023-12-01'), 
   }
   union (insert app_cm_training::CsfCohort {
     clientServiceFlow := (select assert_single((select app_cm::ClientServiceFlow filter

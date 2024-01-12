@@ -57,6 +57,7 @@ export class DataObj {
 
 	constructor(dataObjRaw: DataObjRaw) {
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
+		console.log('DataObj.constructor', { dataObjRaw })
 		this.actions = this.initActions(dataObjRaw._actions)
 		this.cardinality = memberOfEnum(
 			dataObjRaw._codeCardinality,

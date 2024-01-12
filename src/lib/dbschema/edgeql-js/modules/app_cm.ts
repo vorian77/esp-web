@@ -35,6 +35,7 @@ export type $ClientServiceFlowλShape = $.typeutil.flatten<_sys_user.$MgmtλShap
   "<clientServiceFlow[is app_cm_training::CsfCohort]": $.LinkDesc<_app_cm_training.$CsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<clientServiceFlow[is app_cm::CsfData]": $.LinkDesc<$CsfData, $.Cardinality.Many, {}, false, false,  false, false>;
   "<clientServiceFlow[is app_cm::CsfNote]": $.LinkDesc<$CsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<clientServiceFlow[is app_cm::CsfCertification]": $.LinkDesc<$CsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
   "<clientServiceFlow": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $ClientServiceFlow = $.ObjectType<"app_cm::ClientServiceFlow", $ClientServiceFlowλShape, null, [
@@ -53,6 +54,22 @@ type $CsfData = $.ObjectType<"app_cm::CsfData", $CsfDataλShape, null, [
 const $CsfData = $.makeType<$CsfData>(_.spec, "edaddbf1-8fa9-11ee-839f-1724c29a417c", _.syntax.literal);
 
 const CsfData: $.$expr_PathNode<$.TypeSet<$CsfData, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($CsfData, $.Cardinality.Many), null);
+
+export type $CsfCertificationλShape = $.typeutil.flatten<$CsfDataλShape & {
+  "course": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.One, {}, false, false,  false, false>;
+  "staffAgency": $.LinkDesc<_sys_user.$Staff, $.Cardinality.One, {}, false, false,  false, false>;
+  "dateExpires": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
+  "dateIssued": $.PropertyDesc<_cal.$local_date, $.Cardinality.One, false, false, false, false>;
+  "imageCertification": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
+  "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "codeCertification": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
+}>;
+type $CsfCertification = $.ObjectType<"app_cm::CsfCertification", $CsfCertificationλShape, null, [
+  ...$CsfData['__exclusives__'],
+]>;
+const $CsfCertification = $.makeType<$CsfCertification>(_.spec, "1ccc0fda-b0c3-11ee-8b30-258f4e974f70", _.syntax.literal);
+
+const CsfCertification: $.$expr_PathNode<$.TypeSet<$CsfCertification, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($CsfCertification, $.Cardinality.Many), null);
 
 export type $CsfNoteλShape = $.typeutil.flatten<$CsfDataλShape & {
   "date": $.PropertyDesc<_cal.$local_date, $.Cardinality.One, false, false, false, false>;
@@ -79,12 +96,13 @@ const ServiceFlow: $.$expr_PathNode<$.TypeSet<$ServiceFlow, $.Cardinality.Many>,
 
 
 
-export { $Client, Client, $ClientServiceFlow, ClientServiceFlow, $CsfData, CsfData, $CsfNote, CsfNote, $ServiceFlow, ServiceFlow };
+export { $Client, Client, $ClientServiceFlow, ClientServiceFlow, $CsfData, CsfData, $CsfCertification, CsfCertification, $CsfNote, CsfNote, $ServiceFlow, ServiceFlow };
 
 type __defaultExports = {
   "Client": typeof Client;
   "ClientServiceFlow": typeof ClientServiceFlow;
   "CsfData": typeof CsfData;
+  "CsfCertification": typeof CsfCertification;
   "CsfNote": typeof CsfNote;
   "ServiceFlow": typeof ServiceFlow
 };
@@ -92,6 +110,7 @@ const __defaultExports: __defaultExports = {
   "Client": Client,
   "ClientServiceFlow": ClientServiceFlow,
   "CsfData": CsfData,
+  "CsfCertification": CsfCertification,
   "CsfNote": CsfNote,
   "ServiceFlow": ServiceFlow
 };

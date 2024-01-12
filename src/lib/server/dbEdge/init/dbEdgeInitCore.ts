@@ -325,9 +325,8 @@ async function initTables() {
 		['app_cm', 'app_cm', 'ServiceFlow', true],
 		['app_cm', 'app_cm', 'Client', true],
 		['app_cm', 'app_cm', 'ClientServiceFlow', true],
-		['app_cm', 'app_cm', 'ClientCohort', true],
-		['app_cm', 'app_cm', 'ClientCohortAttd', true],
-		['app_cm', 'app_cm', 'ClientNote', true],
+		['app_cm', 'app_cm', 'CsfCertification', true],
+		['app_cm', 'app_cm', 'CsfNote', true],
 
 		['app_cm_training', 'app_cm_training', 'Course', true],
 		['app_cm_training', 'app_cm_training', 'Cohort', true],
@@ -420,11 +419,12 @@ async function initColumns() {
 		name: 'clientServiceFlow'
 	})
 	await addColumn({
+		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'str',
-		header: 'Category',
-		name: 'codeCategory'
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		header: 'Certification',
+		name: 'codeCertification',
+		owner: 'app_sys'
 	})
 	await addColumn({
 		codeDataType: 'edgeType',
@@ -557,12 +557,12 @@ async function initColumns() {
 		name: 'cost'
 	})
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
 		codeDataType: 'edgeType',
+		creator: 'user_sys',
 		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
 		header: 'Course',
-		name: 'course'
+		name: 'course',
+		owner: 'app_sys'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -645,6 +645,20 @@ async function initColumns() {
 		codeDataType: 'date',
 		header: 'Estimated End Date',
 		name: 'dateEndEst'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Expiration Date',
+		name: 'dateExpires'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Issued Date',
+		name: 'dateIssued'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -790,6 +804,14 @@ async function initColumns() {
 		header: 'System ID',
 		isSetBySys: true,
 		name: 'id'
+	})
+	await addColumn({
+		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'json',
+		exprStorageKey: 'image_certification_<raw,calc,random10>',
+		header: 'Certification',
+		name: 'imageCertification'
 	})
 	await addColumn({
 		creator: 'user_sys',
@@ -1208,6 +1230,19 @@ ORDER BY .course.name`,
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_cm_training_cohort_by_userName'
+	})
+	await addDataObjFieldItems({
+		creator: 'user_sys',
+		owner: 'app_cm_training',
+		dbSelect: `SELECT (
+      SELECT app_cm_training::CsfCohort 
+      FILTER 
+        .clientServiceFlow.id = <uuid,record,id> AND 
+        .codeStatus = (SELECT sys_core::getCode('ct_cm_service_flow_status', <str,parms,status>))
+      ).cohort.course {data := .id, display := .name} ORDER BY .name`,
+		propertyId: 'id',
+		propertyLabel: 'name',
+		name: 'il_cm_training_course_by_csfId_status'
 	})
 	await addDataObjFieldItems({
 		creator: 'user_sys',
