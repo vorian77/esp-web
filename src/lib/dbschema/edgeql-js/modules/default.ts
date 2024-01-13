@@ -8,16 +8,18 @@ import type * as _cal from "./cal";
 import type * as _sys_user from "./sys_user";
 import type * as _app_cm from "./app_cm";
 export type $Name = $.ScalarType<"std::str", string>;
-const Name: $.scalarTypeWithConstructor<_std.$str, never> = $.makeType<$.scalarTypeWithConstructor<_std.$str, never>>(_.spec, "c779e93d-71ae-11ee-a35f-53945e85672e", _.syntax.literal);
+const Name: $.scalarTypeWithConstructor<_std.$str, never> = $.makeType<$.scalarTypeWithConstructor<_std.$str, never>>(_.spec, "a90a4b50-b15a-11ee-b2b3-9b445b83d6f0", _.syntax.literal);
 
 export type $nonNegative = $.ScalarType<"std::number", number>;
-const nonNegative: $.scalarTypeWithConstructor<_std.$number, string> = $.makeType<$.scalarTypeWithConstructor<_std.$number, string>>(_.spec, "c7618c23-71ae-11ee-966d-ffbbb5d32be9", _.syntax.literal);
+const nonNegative: $.scalarTypeWithConstructor<_std.$number, string> = $.makeType<$.scalarTypeWithConstructor<_std.$number, string>>(_.spec, "a8d9c931-b15a-11ee-8a6b-033832728ab7", _.syntax.literal);
 
-export type $PersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
+export type $SysPersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
   "firstName": $.PropertyDesc<$Name, $.Cardinality.One, false, false, false, false>;
   "lastName": $.PropertyDesc<$Name, $.Cardinality.One, false, false, false, false>;
-  "codeRace": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "codeState": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "codeEthnicity": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "codeGender": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "codeRace": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "codeState": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "addr1": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "addr2": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "avatar": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -29,36 +31,34 @@ export type $PersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "phoneMobile": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "zip": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "codeGender": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "codeEthnicity": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "<person[is sys_user::SysStaff]": $.LinkDesc<_sys_user.$SysStaff, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::UserRoot]": $.LinkDesc<_sys_user.$UserRoot, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<person[is sys_user::Staff]": $.LinkDesc<_sys_user.$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<person[is sys_user::User]": $.LinkDesc<_sys_user.$User, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<person[is app_cm::Client]": $.LinkDesc<_app_cm.$Client, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<person[is sys_user::currentUser]": $.LinkDesc<_sys_user.$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<person[is sys_user::SYS_USER_ID]": $.LinkDesc<_sys_user.$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::SysUser]": $.LinkDesc<_sys_user.$SysUser, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::SYS_USER]": $.LinkDesc<_sys_user.$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::SYS_USER_ID]": $.LinkDesc<_sys_user.$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is sys_user::currentUser]": $.LinkDesc<_sys_user.$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<person[is app_cm::CmClient]": $.LinkDesc<_app_cm.$CmClient, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
-type $Person = $.ObjectType<"default::Person", $PersonλShape, null, [
+type $SysPerson = $.ObjectType<"default::SysPerson", $SysPersonλShape, null, [
   ..._std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588['__exclusives__'],
 ]>;
-const $Person = $.makeType<$Person>(_.spec, "c779fb20-71ae-11ee-a52a-455bf99b509e", _.syntax.literal);
+const $SysPerson = $.makeType<$SysPerson>(_.spec, "a90a5935-b15a-11ee-881f-5d8e7a472f6d", _.syntax.literal);
 
-const Person: $.$expr_PathNode<$.TypeSet<$Person, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Person, $.Cardinality.Many), null);
+const SysPerson: $.$expr_PathNode<$.TypeSet<$SysPerson, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysPerson, $.Cardinality.Many), null);
 
 
 
-export { Name, nonNegative, $Person, Person };
+export { Name, nonNegative, $SysPerson, SysPerson };
 
 type __defaultExports = {
   "Name": typeof Name;
   "nonNegative": typeof nonNegative;
-  "Person": typeof Person
+  "SysPerson": typeof SysPerson
 };
 const __defaultExports: __defaultExports = {
   "Name": Name,
   "nonNegative": nonNegative,
-  "Person": Person
+  "SysPerson": SysPerson
 };
 export default __defaultExports;

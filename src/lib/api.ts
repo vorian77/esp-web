@@ -106,46 +106,61 @@ export class TokenApiQuery extends TokenApi {
 export class TokenApiQueryData {
 	dataObjData: DataObjData | undefined
 	parms: TokenApiQueryDataValue
-	record: DataObjRecord
 	system: TokenApiQueryDataValue
+	tree: TokenApiQueryDataTree
 	user: TokenApiQueryDataValue
 	constructor(data: any) {
 		data = valueOrDefault(data, {})
-		this.dataObjData = this.init(data, 'dataObjData', undefined)
-		this.parms = this.init(data, 'parms', {})
-		this.record = this.init(data, 'record', {})
-		this.system = this.init(data, 'system', {})
+		this.dataObjData = this.setData(data, 'dataObjData', undefined)
+		this.parms = this.setData(data, 'parms', {})
+		this.system = this.setData(data, 'system', {})
+		this.tree = this.setData(data, 'tree', [])
 		this.user = Object.hasOwn(data, 'user')
-			? this.init(data, 'user', {})
+			? this.setData(data, 'user', {})
 			: valueOrDefault(userGet(), {})
 	}
-	init(data: any, key: string, defaultVal: any) {
+	static load(currData: TokenApiQueryData) {
+		const newData = new TokenApiQueryData(currData)
+		newData.tree = new TokenApiQueryDataTree(currData.tree.levels)
+		return newData
+	}
+	setData(data: any, key: string, defaultVal: any) {
 		return Object.hasOwn(data, key) && data !== undefined ? data[key] : defaultVal
 	}
-	update(dataType: string, data: any) {
-		switch (dataType.toLowerCase()) {
-			case 'dataObjData':
-				this.dataObjData = data
-				break
-			case 'parms':
-				this.parms = data
-				break
-			case 'record':
-				this.record = data
-				break
-			case 'system':
-				this.system = data
-				break
-			case 'user':
-				this.user = data
-				break
-			default:
-				error(500, {
-					file: FILENAME,
-					function: 'TokenApiQueryData.update',
-					message: `No case defined for data type: ${dataType}`
-				})
+	setDataParms(data: any) {
+		this.parms = data
+	}
+}
+export class TokenApiQueryDataTree {
+	levels: Array<TokenApiQueryDataTreeLevel> = []
+	constructor(levels: Array<TokenApiQueryDataTreeLevel> = []) {
+		this.levels = levels
+	}
+	addData(table: string, data: any) {
+		const idx = this.levels.findIndex((t) => t.table === table)
+		if (idx >= 0) {
+			this.levels[idx].data = data
+			console.log('TokenApiQueryData.replacing:', { table, length: this.levels.length })
+		} else {
+			this.levels.push(new TokenApiQueryDataTreeLevel(table, data))
+			console.log('TokenApiQueryData.adding:', { table, length: this.levels.length })
 		}
+	}
+	getRecord(table: string | undefined = undefined) {
+		if (table) {
+			return this.levels.find((l) => l.table === table)?.data
+		} else {
+			return this.levels[this.levels.length - 1]?.data
+		}
+	}
+}
+
+export class TokenApiQueryDataTreeLevel {
+	table: string
+	data: DataObjRecord
+	constructor(table: string, data: DataObjRecord) {
+		this.data = data
+		this.table = table
 	}
 }
 

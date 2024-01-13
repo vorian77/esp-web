@@ -10,7 +10,7 @@ export type $MovieλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c
 type $Movie = $.ObjectType<"sys_test::Movie", $MovieλShape, null, [
   ..._std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588['__exclusives__'],
 ]>;
-const $Movie = $.makeType<$Movie>(_.spec, "c7b5c8f1-71ae-11ee-ba86-eb87304eac3e", _.syntax.literal);
+const $Movie = $.makeType<$Movie>(_.spec, "a9695e61-b15a-11ee-93a6-c5327c45a8bf", _.syntax.literal);
 
 const Movie: $.$expr_PathNode<$.TypeSet<$Movie, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Movie, $.Cardinality.Many), null);
 
@@ -23,7 +23,7 @@ type $Person = $.ObjectType<"sys_test::Person", $PersonλShape, null, [
   ..._std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588['__exclusives__'],
   {name: {__element__: _std.$str, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
 ]>;
-const $Person = $.makeType<$Person>(_.spec, "c7b3e011-71ae-11ee-8234-6fa387f35638", _.syntax.literal);
+const $Person = $.makeType<$Person>(_.spec, "a967d4a0-b15a-11ee-8352-25676ab8ccf7", _.syntax.literal);
 
 const Person: $.$expr_PathNode<$.TypeSet<$Person, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Person, $.Cardinality.Many), null);
 

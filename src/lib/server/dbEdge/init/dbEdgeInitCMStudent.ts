@@ -16,15 +16,15 @@ export default async function init() {
 async function initCMStudent() {
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
-		name: 'data_obj_cm_training_student_list',
+		name: 'data_obj_cm_student_list',
 		header: 'Students',
 		subHeader: 'All students enrolled in any courses.',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'Client' },
-		exprFilter: '.owner in (SELECT sys_user::User FILTER .userName = <str,user,userName>).orgs',
-		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
+		table: 'CmClient',
+		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
+		link: { property: 'person', table: { mod: 'default', name: 'SysPerson' } },
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -69,13 +69,13 @@ async function initCMStudent() {
 
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		name: 'data_obj_cm_training_student_detail',
+		name: 'data_obj_cm_student_detail',
 		header: 'Student',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'Client' },
-		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
+		table: 'CmClient',
+		link: { property: 'person', table: { mod: 'default', name: 'SysPerson' } },
 		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
@@ -209,7 +209,7 @@ async function initCMStudent() {
 				columnName: 'owner',
 				dbOrderSelect: 215,
 				exprPreset:
-					'(SELECT sys_core::Org { data := .id, display := .name } FILTER .name = <str,user,org.name>)',
+					'(SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .name = <str,user,org.name>)',
 				isDisplay: false
 			},
 			{
@@ -274,12 +274,8 @@ async function initStudentCsf() {
 		codeCardinality: 'list',
 		name: 'data_obj_cm_client_service_flow_list',
 		header: 'Service Flows',
-		table: {
-			owner: 'app_cm',
-			mod: 'app_cm',
-			name: 'ClientServiceFlow'
-		},
-		exprFilter: '.client.id = <uuid,record,id>',
+		table: 'CmClientServiceFlow',
+		exprFilter: '.client.id = <uuid,tree,CmClient.id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -342,13 +338,15 @@ async function initStudentCsf() {
 		codeCardinality: 'detail',
 		name: 'data_obj_cm_client_service_flow_detail',
 		header: 'Service Flow',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'ClientServiceFlow' },
+		table: 'CmClientServiceFlow',
 		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'client',
 				dbOrderSelect: 10,
+				exprPreset:
+					'(SELECT app_cm::CmClient { data := .id, display := .person.fullName } FILTER .id = <uuid,tree,CmClient.id>)',
 				isDisplay: false
 			},
 			{
@@ -366,7 +364,7 @@ async function initStudentCsf() {
 				codeElement: 'select',
 				columnName: 'codeStatus',
 				dbOrderSelect: 30,
-				exprPreset: `(SELECT sys_core::Code { data := .id, display := .name } FILTER .codeType.name = 'ct_cm_service_flow_status' and .name = 'Pending')`,
+				exprPreset: `(SELECT sys_core::SysCode { data := .id, display := .name } FILTER .codeType.name = 'ct_cm_service_flow_status' and .name = 'Pending')`,
 				itemsList: 'il_sys_code_order_index_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_service_flow_status' }
 			},
@@ -439,14 +437,14 @@ async function initStudentCsf() {
 async function initStudentCsfCohort() {
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		name: 'data_obj_cm_csf_cohort_list',
 		header: 'Cohorts',
 		subHeader: "Student's course enrollments.",
-		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohort' },
-		exprFilter: '.clientServiceFlow.id = <uuid,record,id>',
+		table: 'CmCsfCohort',
+		exprFilter: '.clientServiceFlow.id = <uuid,tree,CmClientServiceFlow.id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -506,13 +504,13 @@ async function initStudentCsfCohort() {
 
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		name: 'data_obj_cm_csf_cohort_detail',
 		header: 'Cohort',
 		subHeader: "Student's course enrollment.",
-		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohort' },
+		table: 'CmCsfCohort',
 		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
@@ -525,7 +523,7 @@ async function initStudentCsfCohort() {
 				codeAccess: 'readOnly',
 				columnName: 'clientServiceFlow',
 				dbOrderSelect: 20,
-				exprPreset: `(SELECT app_cm::ClientServiceFlow { data := .id, display := .serviceFlow.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,record,id>)`,
+				exprPreset: `(SELECT app_cm::CmClientServiceFlow { data := .id, display := .serviceFlow.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,tree,CmClientServiceFlow.id>)`,
 				isDisplay: false
 			},
 			{
@@ -533,7 +531,7 @@ async function initStudentCsfCohort() {
 				columnName: 'cohort',
 				dbOrderCrumb: 10,
 				dbOrderSelect: 30,
-				itemsList: 'il_cm_training_cohort_by_userName'
+				itemsList: 'il_cm_cohort_by_userName'
 			},
 			{
 				codeElement: 'select',
@@ -568,7 +566,7 @@ async function initStudentCsfCohort() {
 				dbOrderSelect: 90,
 				headerAlt: 'Certifications Earned',
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_training_course_cert' }
+				itemsListParms: { codeTypeName: 'ct_cm_course_cert' }
 			},
 			{
 				codeAccess: 'optional',
@@ -607,13 +605,13 @@ async function initStudentCsfCohort() {
 async function initStudentCsfCohortAttd() {
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		name: 'data_obj_cm_csf_cohort_attd_list',
 		header: 'Attendances',
-		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohortAttd' },
-		exprFilter: '.csfCohort.id = <uuid,record,id>',
+		table: 'CmCsfCohortAttd',
+		exprFilter: '.csfCohort.id = <uuid,tree,CmCsfCohort.id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -647,12 +645,12 @@ async function initStudentCsfCohortAttd() {
 
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		name: 'data_obj_cm_csf_cohort_attd_detail',
 		header: 'Attendance',
-		table: { owner: 'app_cm_training', mod: 'app_cm_training', name: 'CsfCohortAttd' },
+		table: 'CmCsfCohortAttd',
 		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
@@ -665,7 +663,7 @@ async function initStudentCsfCohortAttd() {
 				codeAccess: 'readOnly',
 				columnName: 'csfCohort',
 				dbOrderSelect: 20,
-				exprPreset: `(SELECT app_cm_training::CsfCohort { data := .id, display := .cohort.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,record,id>)`,
+				exprPreset: `(SELECT app_cm::CmCsfCohort { data := .id, display := .cohort.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,tree,CmCsfCohort.id>)`,
 				isDisplay: false
 			},
 			{
@@ -717,13 +715,13 @@ async function initStudentCsfCohortAttd() {
 async function initStudentCsfCertification() {
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
-		name: 'data_obj_cm_training_csf_certification_list',
+		name: 'data_obj_cm_csf_certification_list',
 		header: 'Certifications',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'CsfCertification' },
-		exprFilter: '.clientServiceFlow.id = <uuid,record,id>',
+		table: 'CmCsfCertification',
+		exprFilter: '.clientServiceFlow.id = <uuid,tree,CmClientServiceFlow.id>',
 		actions: ['noa_list_new'],
 		fields: [
 			{
@@ -769,12 +767,12 @@ async function initStudentCsfCertification() {
 
 	await addDataObj({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		name: 'data_obj_cm_training_csf_certification_detail',
+		name: 'data_obj_cm_csf_certification_detail',
 		header: 'Certification',
-		table: { owner: 'app_cm', mod: 'app_cm', name: 'CsfCertification' },
+		table: 'CmCsfCertification',
 		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
@@ -787,14 +785,14 @@ async function initStudentCsfCertification() {
 				codeAccess: 'readOnly',
 				columnName: 'clientServiceFlow',
 				dbOrderSelect: 20,
-				exprPreset: `(SELECT app_cm::ClientServiceFlow { data := .id, display := .serviceFlow.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,record,id>)`,
+				exprPreset: `(SELECT app_cm::CmClientServiceFlow { data := .id, display := .serviceFlow.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,tree,CmClientServiceFlow.id>)`,
 				isDisplay: false
 			},
 			{
 				codeElement: 'select',
 				columnName: 'course',
 				dbOrderSelect: 30,
-				itemsList: 'il_cm_training_course_by_csfId_status',
+				itemsList: 'il_cm_course_by_csfId_status',
 				itemsListParms: { status: 'Completed' }
 			},
 			{
@@ -802,7 +800,7 @@ async function initStudentCsfCertification() {
 				columnName: 'codeCertification',
 				dbOrderSelect: 40,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_training_course_cert' }
+				itemsListParms: { codeTypeName: 'ct_cm_course_cert' }
 			},
 			{
 				codeElement: 'date',

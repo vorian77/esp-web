@@ -5,10 +5,10 @@ import * as _ from "../imports";
 import type * as _sys_core from "./sys_core";
 import type * as _std from "./std";
 import type * as _default from "./default";
-import type * as _sys_obj from "./sys_obj";
-export type $ColumnλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
-  "codeAlignment": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
-  "codeDataType": $.LinkDesc<_sys_core.$Code, $.Cardinality.One, {}, false, false,  false, false>;
+export type $SysColumnλShape = $.typeutil.flatten<_sys_core.$SysObjλShape & {
+  "codeAlignment": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "codeDataType": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.One, {}, false, false,  false, false>;
+  "codeDataTypeComputed": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "classValue": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "edgeTypeDefn": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "exprPreset": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -22,58 +22,54 @@ export type $ColumnλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "isSetBySys": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "matchColumn": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "maxLength": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
+  "maxValue": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, false, false, false>;
   "minLength": $.PropertyDesc<_default.$nonNegative, $.Cardinality.AtMostOne, false, false, false, false>;
+  "minValue": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, false, false, false>;
   "pattern": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "patternMsg": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "patternReplacement": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "placeHolder": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "codeDataTypeComputed": $.LinkDesc<_sys_core.$Code, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "spinStep": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "maxValue": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, false, false, false>;
-  "minValue": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, false, false, false>;
-  "<columns[is sys_db::Table]": $.LinkDesc<$Table, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<column[is sys_obj::DataObjFieldDb]": $.LinkDesc<_sys_obj.$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<column[is sys_obj::DataObjFieldEl]": $.LinkDesc<_sys_obj.$DataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<columns[is sys_db::SysTable]": $.LinkDesc<$SysTable, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<column[is sys_core::SysDataObjFieldEl]": $.LinkDesc<_sys_core.$SysDataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<column[is sys_core::SysDataObjFieldDb]": $.LinkDesc<_sys_core.$SysDataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columns": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
-type $Column = $.ObjectType<"sys_db::Column", $ColumnλShape, null, [
-  ..._sys_core.$Obj['__exclusives__'],
+type $SysColumn = $.ObjectType<"sys_db::SysColumn", $SysColumnλShape, null, [
+  ..._sys_core.$SysObj['__exclusives__'],
 ]>;
-const $Column = $.makeType<$Column>(_.spec, "c7629c3e-71ae-11ee-9579-af7c2b70cbec", _.syntax.literal);
+const $SysColumn = $.makeType<$SysColumn>(_.spec, "a8fe1b6d-b15a-11ee-a540-81921c72c5d1", _.syntax.literal);
 
-const Column: $.$expr_PathNode<$.TypeSet<$Column, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Column, $.Cardinality.Many), null);
+const SysColumn: $.$expr_PathNode<$.TypeSet<$SysColumn, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysColumn, $.Cardinality.Many), null);
 
-export type $TableλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
+export type $SysTableλShape = $.typeutil.flatten<_sys_core.$SysObjλShape & {
+  "columns": $.LinkDesc<$SysColumn, $.Cardinality.Many, {}, false, false,  false, false>;
   "hasMgmt": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
-  "mod": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "columns": $.LinkDesc<$Column, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<table[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "mod": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
+  "<table[is sys_core::SysDataObj]": $.LinkDesc<_sys_core.$SysDataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<table": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
-type $Table = $.ObjectType<"sys_db::Table", $TableλShape, null, [
-  ..._sys_core.$Obj['__exclusives__'],
+type $SysTable = $.ObjectType<"sys_db::SysTable", $SysTableλShape, null, [
+  ..._sys_core.$SysObj['__exclusives__'],
 ]>;
-const $Table = $.makeType<$Table>(_.spec, "c7256477-71ae-11ee-bd5b-dbe5a62d4d35", _.syntax.literal);
+const $SysTable = $.makeType<$SysTable>(_.spec, "a903dd29-b15a-11ee-911e-9d680f3a532f", _.syntax.literal);
 
-const Table: $.$expr_PathNode<$.TypeSet<$Table, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Table, $.Cardinality.Many), null);
+const SysTable: $.$expr_PathNode<$.TypeSet<$SysTable, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysTable, $.Cardinality.Many), null);
 
 type getTableλFuncExpr<
   P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
-  P2 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
 > = $.$expr_Function<
-  $Table, $.cardutil.overrideLowerBound<$.cardutil.multiplyCardinalities<$.cardutil.paramCardinality<P1>, $.cardutil.paramCardinality<P2>>, 'Zero'>
+  $SysTable, $.cardutil.overrideLowerBound<$.cardutil.paramCardinality<P1>, 'Zero'>
 >;
 function getTable<
   P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
-  P2 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
 >(
-  ownerName: P1,
-  tableName: P2,
-): getTableλFuncExpr<P1, P2>;
+  tableName: P1,
+): getTableλFuncExpr<P1>;
 function getTable(...args: any[]) {
   const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_db::getTable', args, _.spec, [
-    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}, {typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "c7256477-71ae-11ee-bd5b-dbe5a62d4d35", returnTypemod: "OptionalType"},
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "a903dd29-b15a-11ee-911e-9d680f3a532f", returnTypemod: "OptionalType"},
   ]);
   return _.syntax.$expressionify({
     __kind__: $.ExpressionKind.Function,
@@ -88,7 +84,7 @@ function getTable(...args: any[]) {
 type getColumnλFuncExpr<
   P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
 > = $.$expr_Function<
-  $Column, $.cardutil.overrideLowerBound<$.cardutil.paramCardinality<P1>, 'Zero'>
+  $SysColumn, $.cardutil.overrideLowerBound<$.cardutil.paramCardinality<P1>, 'Zero'>
 >;
 function getColumn<
   P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
@@ -97,7 +93,7 @@ function getColumn<
 ): getColumnλFuncExpr<P1>;
 function getColumn(...args: any[]) {
   const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_db::getColumn', args, _.spec, [
-    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "c7629c3e-71ae-11ee-9579-af7c2b70cbec", returnTypemod: "OptionalType"},
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "a8fe1b6d-b15a-11ee-a540-81921c72c5d1", returnTypemod: "OptionalType"},
   ]);
   return _.syntax.$expressionify({
     __kind__: $.ExpressionKind.Function,
@@ -111,17 +107,17 @@ function getColumn(...args: any[]) {
 
 
 
-export { $Column, Column, $Table, Table };
+export { $SysColumn, SysColumn, $SysTable, SysTable };
 
 type __defaultExports = {
-  "Column": typeof Column;
-  "Table": typeof Table;
+  "SysColumn": typeof SysColumn;
+  "SysTable": typeof SysTable;
   "getTable": typeof getTable;
   "getColumn": typeof getColumn
 };
 const __defaultExports: __defaultExports = {
-  "Column": Column,
-  "Table": Table,
+  "SysColumn": SysColumn,
+  "SysTable": SysTable,
   "getTable": getTable,
   "getColumn": getColumn
 };

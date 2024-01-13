@@ -30,13 +30,15 @@ import { error } from '@sveltejs/kit'
 const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
 export async function processQuery(token: TokenApiQuery) {
-	console.log()
+	// console.log()
+	// console.log('processQuery.0...')
 
-	const queryData: TokenApiQueryData = token.queryData
+	const queryData = TokenApiQueryData.load(token.queryData)
+
+	console.log('processQuery.0:', { tables: queryData.tree.levels.map((node) => node.table) })
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
 	const dataObj = new DataObj(dataObjRaw)
 	const query = new EdgeQL(dataObjRaw)
-	// console.log('processQuery.0.record:', { queryData })
 
 	let dataRowRaw: Record<string, any> = {}
 	let dataRowStatus: DataObjRowStatus = DataObjRowStatus.retrieved
@@ -70,7 +72,11 @@ export async function processQuery(token: TokenApiQuery) {
 			dataRowRaw = await querySingle(script)
 			checkResult(script, dataRowRaw)
 
-			queryData.record = dataRowRaw
+			queryData.tree.addData(dataObj.table.name, dataRowRaw)
+			queryData.tree.levels.forEach((level, i) => {
+				console.log('processQuery.treeNode:', { i, level })
+			})
+
 			script = query.getScriptSelectUser(queryData)
 			rawDataList = await queryMultiple(script)
 			break
@@ -162,12 +168,12 @@ async function processDataPost(
 					display,
 					await getDataItems(query, queryData, field)
 				)
-				// console.log('processDataPost.record:', { fieldName, value: record[fieldName] })
 			}
 		}
 		data.push(new DataObjRow(dataRowStatus, record))
 	}
-	console.log('processDataPost.data.summary.0:', { dataRowStatus, rows: data.length })
+	console.log()
+	console.log('processDataPost.data.summary:', { dataRowStatus, rows: data.length })
 	// console.log('processDataPost.data.summary.1:', { data: JSON.stringify(data) })
 	return data
 
@@ -272,12 +278,12 @@ async function getDataItems(
 	if (field.items.length > 0) {
 		return field.items
 	} else if (field.itemsList) {
-		const queryDataList = new TokenApiQueryData(queryData)
-		queryDataList.update('parms', field.itemsList.parms)
+		const queryDataItems = TokenApiQueryData.load(queryData)
+		queryDataItems.setDataParms(field.itemsList.parms)
 		const result = await queryMultiple(
-			query.getScriptDataItems(field.itemsList.dbSelect, queryDataList)
+			query.getScriptDataItems(field.itemsList.dbSelect, queryDataItems)
 		)
-		console.log('getDataItems.result:', { field: field.name, result })
+		// console.log('getDataItems.result:', { field: field.name, resultRows: result.length })
 		return result
 	} else {
 		return []

@@ -7,13 +7,11 @@ import type * as _sys from "./sys";
 import type * as _cfg from "./cfg";
 import type * as _sys_core from "./sys_core";
 import type * as _sys_user from "./sys_user";
-import type * as _app_cm_training from "./app_cm_training";
-import type * as _sys_db from "./sys_db";
-import type * as _sys_obj from "./sys_obj";
-import type * as _default from "./default";
 import type * as _app_cm from "./app_cm";
-import type * as _sys_test from "./sys_test";
+import type * as _sys_db from "./sys_db";
+import type * as _default from "./default";
 import type * as _sys_admin from "./sys_admin";
+import type * as _sys_test from "./sys_test";
 export type $AccessKind = {
   "Select": $.$expr_Literal<$AccessKind>;
   "UpdateRead": $.$expr_Literal<$AccessKind>;
@@ -545,8 +543,8 @@ export type $SourceλShape = $.typeutil.flatten<$Object_32faaa35947553cf88fce68e
 }>;
 type $Source = $.ObjectType<"schema::Source", $SourceλShape, null, [
   ...$Object_32faaa35947553cf88fce68ecf1be4d9['__exclusives__'],
-  {indexes: {__element__: $Index, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
   {pointers: {__element__: $Pointer, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
+  {indexes: {__element__: $Index, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
 ]>;
 const $Source = $.makeType<$Source>(_.spec, "0368bb5e-ae06-5c00-9316-15095185b828", _.syntax.literal);
 
@@ -630,12 +628,12 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "compound_type": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, true, false, false>;
   "is_compound_type": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, true, false, false>;
   "links": $.LinkDesc<$Link, $.Cardinality.Many, {
-    "@owned": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne>;
     "@is_owned": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne>;
+    "@owned": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne>;
   }, false, true, false, false>;
   "properties": $.LinkDesc<$Property, $.Cardinality.Many, {
-    "@owned": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne>;
     "@is_owned": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne>;
+    "@owned": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne>;
   }, false, true, false, false>;
   "<__type__[is std::BaseObject]": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is schema::TupleElement]": $.LinkDesc<$TupleElement, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -707,43 +705,43 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is schema::Extension]": $.LinkDesc<$Extension, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::ObjRoot]": $.LinkDesc<_sys_core.$ObjRoot, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_user::Mgmt]": $.LinkDesc<_sys_user.$Mgmt, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::Obj]": $.LinkDesc<_sys_core.$Obj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm_training::Course]": $.LinkDesc<_app_cm_training.$Course, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::Code]": $.LinkDesc<_sys_core.$Code, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::CodeType]": $.LinkDesc<_sys_core.$CodeType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::Ent]": $.LinkDesc<_sys_core.$Ent, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_db::Table]": $.LinkDesc<_sys_db.$Table, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::Org]": $.LinkDesc<_sys_core.$Org, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_db::Column]": $.LinkDesc<_sys_db.$Column, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_obj::DataObj]": $.LinkDesc<_sys_obj.$DataObj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_obj::DataObjAction]": $.LinkDesc<_sys_obj.$DataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_obj::NodeObj]": $.LinkDesc<_sys_obj.$NodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is Person]": $.LinkDesc<_default.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_user::Staff]": $.LinkDesc<_sys_user.$Staff, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_user::User]": $.LinkDesc<_sys_user.$User, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_user::UserType]": $.LinkDesc<_sys_user.$UserType, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_user::Widget]": $.LinkDesc<_sys_user.$Widget, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysObj]": $.LinkDesc<_sys_core.$SysObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCourse]": $.LinkDesc<_app_cm.$CmCourse, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysCode]": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysCodeType]": $.LinkDesc<_sys_core.$SysCodeType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObj]": $.LinkDesc<_sys_core.$SysDataObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjAction]": $.LinkDesc<_sys_core.$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldItems]": $.LinkDesc<_sys_core.$SysDataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysEnt]": $.LinkDesc<_sys_core.$SysEnt, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysNodeObj]": $.LinkDesc<_sys_core.$SysNodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysOrg]": $.LinkDesc<_sys_core.$SysOrg, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_db::SysColumn]": $.LinkDesc<_sys_db.$SysColumn, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_db::SysTable]": $.LinkDesc<_sys_db.$SysTable, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_user::UserRoot]": $.LinkDesc<_sys_user.$UserRoot, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is SysPerson]": $.LinkDesc<_default.$SysPerson, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_user::SysStaff]": $.LinkDesc<_sys_user.$SysStaff, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_user::SysUserType]": $.LinkDesc<_sys_user.$SysUserType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_user::SysUser]": $.LinkDesc<_sys_user.$SysUser, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_user::SysWidget]": $.LinkDesc<_sys_user.$SysWidget, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_user::SYS_USER]": $.LinkDesc<_sys_user.$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_user::SYS_USER_ID]": $.LinkDesc<_sys_user.$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_user::currentUser]": $.LinkDesc<_sys_user.$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::Client]": $.LinkDesc<_app_cm.$Client, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::ServiceFlow]": $.LinkDesc<_app_cm.$ServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::ClientServiceFlow]": $.LinkDesc<_app_cm.$ClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm_training::Cohort]": $.LinkDesc<_app_cm_training.$Cohort, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::App]": $.LinkDesc<_sys_core.$App, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmClient]": $.LinkDesc<_app_cm.$CmClient, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmServiceFlow]": $.LinkDesc<_app_cm.$CmServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmClientServiceFlow]": $.LinkDesc<_app_cm.$CmClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCsfData]": $.LinkDesc<_app_cm.$CmCsfData, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCsfCertification]": $.LinkDesc<_app_cm.$CmCsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCsfCohort]": $.LinkDesc<_app_cm.$CmCsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCsfNote]": $.LinkDesc<_app_cm.$CmCsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCsfCohortAttd]": $.LinkDesc<_app_cm.$CmCsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_admin::SaObjConfig]": $.LinkDesc<_sys_admin.$SaObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysApp]": $.LinkDesc<_sys_core.$SysApp, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysNodeObjFooter]": $.LinkDesc<_sys_core.$SysNodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldEl]": $.LinkDesc<_sys_core.$SysDataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldDb]": $.LinkDesc<_sys_core.$SysDataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_test::Person]": $.LinkDesc<_sys_test.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_test::Movie]": $.LinkDesc<_sys_test.$Movie, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_obj::DataObjFieldDb]": $.LinkDesc<_sys_obj.$DataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_obj::DataObjFieldItems]": $.LinkDesc<_sys_obj.$DataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_obj::DataObjFieldEl]": $.LinkDesc<_sys_obj.$DataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm_training::CsfCohort]": $.LinkDesc<_app_cm_training.$CsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm_training::CsfCohortAttd]": $.LinkDesc<_app_cm_training.$CsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::CsfData]": $.LinkDesc<_app_cm.$CsfData, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::CsfNote]": $.LinkDesc<_app_cm.$CsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_obj::NodeObjFooter]": $.LinkDesc<_sys_obj.$NodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::CsfCertification]": $.LinkDesc<_app_cm.$CsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_admin::ObjConfig]": $.LinkDesc<_sys_admin.$ObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_user::UserRoot]": $.LinkDesc<_sys_user.$UserRoot, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_user::SYS_USER_ID]": $.LinkDesc<_sys_user.$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_user::SYS_USER]": $.LinkDesc<_sys_user.$SYS_USER, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<intersection_of": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<subject": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -756,8 +754,8 @@ type $ObjectType = $.ObjectType<"schema::ObjectType", $ObjectTypeλShape, null, 
   ...$InheritingObject['__exclusives__'],
   ...$Type['__exclusives__'],
   ...$AnnotationSubject['__exclusives__'],
-  {access_policies: {__element__: $AccessPolicy, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
   {triggers: {__element__: $Trigger, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
+  {access_policies: {__element__: $AccessPolicy, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
 ]>;
 const $ObjectType = $.makeType<$ObjectType>(_.spec, "2662a1b4-4f3f-5875-b6eb-ce52101a90a3", _.syntax.literal);
 

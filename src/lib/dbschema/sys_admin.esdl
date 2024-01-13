@@ -1,5 +1,5 @@
 module sys_admin{
-  type ObjConfig extending sys_core::Obj {
+  type SaObjConfig extending sys_core::SysObj {
     creator: str;
     detailActions: str;
     detailDataObj: str;

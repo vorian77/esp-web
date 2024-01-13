@@ -22,7 +22,7 @@ export default async function action(
 		data,
 		queryActionTiming,
 		queryType,
-		columns: await getColumns('app_cm_training', 'Course')
+		columns: await getColumns('app_cm', 'CmCourse')
 	})
 	setValue(data, 'outputDetailColumns', '{key: 123}')
 	return data

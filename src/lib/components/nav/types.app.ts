@@ -2,6 +2,7 @@ import {
 	DataObj,
 	DataObjCardinality,
 	DataObjData,
+	DataObjRow,
 	DataObjRowStatus,
 	getArray,
 	memberOfEnum,
@@ -13,14 +14,16 @@ import {
 	strRequired,
 	valueOrDefault
 } from '$comps/types'
-import type { DataObjRaw, DbNode } from '$comps/types'
+import type { DataObjRaw, DataObjRecord, DbNode } from '$comps/types'
 import {
 	apiFetch,
 	ApiFunction,
 	TokenApiDbDataObj,
 	TokenApiQueryType,
 	TokenApiQuery,
-	TokenApiQueryData
+	TokenApiQueryData,
+	TokenApiQueryDataTree,
+	TokenApiQueryDataTreeLevel
 } from '$lib/api'
 import { SurfaceType, Token } from '$comps/types.master'
 import { getEnhancement } from '$enhance/crud/_crud'
@@ -95,9 +98,15 @@ export class App {
 	}
 	async setRowAction(state: State, rowAction: AppRowActionType) {
 		if (this.levels.length > 1) {
-			this.getCurrTabParent().setCurrRowByAction(rowAction)
+			const tabParent = this.getCurrTabParent()
+			tabParent.setCurrRowByAction(rowAction)
+
 			this.getCurrLevel().resetTabs()
-			await AppLevelTab.query(state, this.getCurrTab(), TokenApiQueryType.retrieve, this)
+
+			const tabCurrent = this.getCurrTab()
+			tabCurrent.setDataDetail(tabParent.getDataList())
+
+			await AppLevelTab.query(state, tabCurrent, TokenApiQueryType.retrieve, this)
 		}
 	}
 	async tabDuplicate(state: State, token: TokenAppDoDetail) {
@@ -248,26 +257,27 @@ export class AppLevelTab {
 		queryType: TokenApiQueryType,
 		app: App | undefined = undefined
 	) {
-		let record = this.queryDataPre(tab, queryType, app)
+		let treeData = this.queryDataPre(tab, queryType, app)
 
-		record = await this.queryExecuteActions(
-			state,
-			record,
-			tab.queryActions,
-			QueryActionTiming.pre,
-			queryType
-		)
-		console.log('AppLevelTab.query:', { queryType, record })
+		// treeData = await this.queryExecuteActions(
+		// 	state,
+		// 	treeData,
+		// 	tab.queryActions,
+		// 	QueryActionTiming.pre,
+		// 	queryType
+		// )
+		console.log('AppLevelTab.query:', { queryType, treeData })
 
-		if (!(await this.queryExecute(tab, queryType, new TokenApiQueryData({ record })))) return false
+		if (!(await this.queryExecute(tab, queryType, new TokenApiQueryData({ tree: treeData }))))
+			return false
 
-		await this.queryExecuteActions(
-			state,
-			tab?.data?.dataObjRow.record ? tab.data.dataObjRow.record : {},
-			tab.queryActions,
-			QueryActionTiming.post,
-			queryType
-		)
+		// await this.queryExecuteActions(
+		// 	state,
+		// 	tab?.data?.dataObjRow.record ? tab.data.dataObjRow.record : {},
+		// 	tab.queryActions,
+		// 	QueryActionTiming.post,
+		// 	queryType
+		// )
 
 		return true
 	}
@@ -277,40 +287,50 @@ export class AppLevelTab {
 		queryType: TokenApiQueryType,
 		app: App | undefined = undefined
 	) {
-		let record = {}
+		console.log('queryDataPre.currentTab:', {
+			name: tab?.dataObj?.name,
+			cardinality: tab?.dataObj?.cardinality,
+			levels: app?.levels.length
+		})
+		let treeData = new TokenApiQueryDataTree()
+		if (app) {
+			let offset = 0
+			switch (queryType) {
+				case TokenApiQueryType.delete:
+				case TokenApiQueryType.saveInsert:
+				case TokenApiQueryType.saveUpdate:
+					offset = 0
+					break
+				case TokenApiQueryType.new:
+					offset = 2
+					break
+				case TokenApiQueryType.retrieve:
+					offset = 1
+					break
 
-		switch (queryType) {
-			case TokenApiQueryType.delete:
-			case TokenApiQueryType.saveInsert:
-			case TokenApiQueryType.saveUpdate:
-				record = tab?.data ? tab.data.dataObjRow.record : {}
-				break
-
-			case TokenApiQueryType.new:
-				if (app && tab.levelIdx > 1) {
-					const tabGrandparent = app.levels[tab.levelIdx - 2].getCurrTab()
-					record = tabGrandparent.getData()
+				default:
+					error(500, {
+						file: FILENAME,
+						function: 'queryDataPre',
+						message: `No case defined for queryType: ${queryType}`
+					})
+			}
+			for (let i = 0; i < app.levels.length - offset; i++) {
+				const currTab = app.levels[i].getCurrTab()
+				const dataObj = currTab.dataObj
+				if (dataObj) {
+					if (dataObj.cardinality === DataObjCardinality.list) {
+						if (currTab.currRow !== undefined && currTab.currRow > -1) {
+							treeData.addData(dataObj.table.name, currTab.getDataList())
+						}
+					} else {
+						if (currTab.data) treeData.addData(dataObj.table.name, currTab.getDataDetail())
+					}
 				}
-				break
-
-			case TokenApiQueryType.none:
-				break
-
-			case TokenApiQueryType.retrieve:
-				if (app && tab.levelIdx > 0) {
-					const tabParent = app.levels[tab.levelIdx - 1].getCurrTab()
-					record = tabParent.getData()
-				}
-				break
-
-			default:
-				error(500, {
-					file: FILENAME,
-					function: 'AppLevelTab.query',
-					message: `No case defined for AppLevelTabQueryType: ${queryType}`
-				})
+			}
 		}
-		return record
+		console.log('queryDataPre.1:', { levels: treeData.levels.length })
+		return treeData
 	}
 
 	static queryDataPost(tab: AppLevelTab, queryType: TokenApiQueryType, newData: DataObjData) {
@@ -402,7 +422,7 @@ export class AppLevelTab {
 		let id = ''
 		const crumbFieldNames: Array<string> = this.dataObj?.crumbs ? this.dataObj.crumbs : []
 		if (crumbFieldNames.length > 0 && this.currRow !== undefined && this.currRow > -1) {
-			const dataRow = this.getData() || {}
+			const dataRow = this.getDataList() || {}
 			crumbFieldNames.forEach((f) => {
 				if (Object.hasOwn(dataRow, f)) {
 					if (id) id += ' '
@@ -413,7 +433,11 @@ export class AppLevelTab {
 		return id ? ` [${id}]` : ''
 	}
 
-	getData() {
+	getDataDetail() {
+		return this.data ? this.data.dataObjRow.record : {}
+	}
+
+	getDataList() {
 		return this.currRow !== undefined && this.currRow > -1 && this.data
 			? this.data.dataObjList[this.currRow].record
 			: {}
@@ -458,6 +482,9 @@ export class AppLevelTab {
 	}
 	setCurrRowByNum(rowNum: number) {
 		this.currRow = rowNum
+	}
+	setDataDetail(data: DataObjRecord) {
+		if (this.data) this.data.dataObjRow.record = data
 	}
 	async updateParentList(state: State, currTab: AppLevelTab, app: App) {
 		this.reset()

@@ -1,16 +1,25 @@
 <script lang="ts">
 	import type { FieldSelect } from '$comps/form/fieldSelect'
+	import { onMount, onDestroy } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 	export let field: FieldSelect
 	export let onChange = (fieldName: string, valueData: any, valueDisplay: any) => {}
 
 	const fieldId = 'field' + field.index
 
-	$: if (field.valueCurrent.items.length === 1 && !field.valueCurrent.data)
-		field.valueCurrent.data = field.valueCurrent.items[0].data
+	onMount(() => {
+		if (field.valueCurrent.items.length === 1 && !field.valueCurrent.data) {
+			field.valueCurrent.update(
+				field.valueCurrent.items[0].data,
+				field.valueCurrent.items[0].display
+			)
+			onChange(field.name, field.valueCurrent.items[0].data, field.valueCurrent.items[0].display)
+		}
+	})
 
 	function onChangeSelect(event: Event) {
-		const newValData = event.currentTarget?.value
+		const target = event.currentTarget as HTMLSelectElement
+		const newValData = target.value
 		let newValDisplay = null
 		if (newValData) {
 			const idx = field.valueCurrent.items.findIndex((f) => {

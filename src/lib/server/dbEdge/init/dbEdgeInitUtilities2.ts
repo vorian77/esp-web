@@ -36,7 +36,7 @@ export async function addCode(data: any) {
 			creator: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.Code, {
+			return e.insert(e.sys_core.SysCode, {
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				codeType: e.select(e.sys_core.getCodeType(p.codeType)),
 				parent: e.select(
@@ -70,7 +70,7 @@ export async function addCodeType(data: any) {
 			creator: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.CodeType, {
+			return e.insert(e.sys_core.SysCodeType, {
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				parent: e.select(e.sys_core.getCodeType(p.parent)),
 				header: p.header,
@@ -117,7 +117,7 @@ export async function addColumn(data: any) {
 			spinStep: e.optional(e.str)
 		},
 		(p) => {
-			return e.insert(e.sys_db.Column, {
+			return e.insert(e.sys_db.SysColumn, {
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				classValue: p.classValue,
 				codeAlignment: e.sys_core.getCode('ct_db_col_alignment', p.codeAlignment),
@@ -153,33 +153,6 @@ export async function addColumn(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addDataObjAction(data: any) {
-	const query = e.params(
-		{
-			allTabs: e.optional(e.bool),
-			owner: e.str,
-			name: e.str,
-			header: e.str,
-			order: e.int64,
-			color: e.optional(e.str),
-			creator: e.str
-		},
-		(p) => {
-			return e.insert(e.sys_obj.DataObjAction, {
-				allTabs: p.allTabs,
-				owner: e.select(e.sys_core.getEnt(p.owner)),
-				name: p.name,
-				header: p.header,
-				order: p.order,
-				color: p.color,
-				createdBy: e.select(e.sys_user.getUser(p.creator)),
-				modifiedBy: e.select(e.sys_user.getUser(p.creator))
-			})
-		}
-	)
-	return await query.run(client, data)
-}
-
 export async function addDataObj(data: any) {
 	const query = e.params(
 		{
@@ -198,11 +171,11 @@ export async function addDataObj(data: any) {
 			isPopup: e.optional(e.bool),
 			name: e.str,
 			subHeader: e.optional(e.str),
-			table: e.optional(e.json)
+			table: e.optional(e.str)
 		},
 		(p) => {
-			return e.insert(e.sys_obj.DataObj, {
-				actions: e.select(e.sys_obj.DataObjAction, (OA) => ({
+			return e.insert(e.sys_core.SysDataObj, {
+				actions: e.select(e.sys_core.SysDataObjAction, (OA) => ({
 					filter: e.contains(p.actions, OA.name)
 				})),
 				codeCardinality: e.select(e.sys_core.getCode('ct_sys_do_cardinality', p.codeCardinality)),
@@ -212,7 +185,7 @@ export async function addDataObj(data: any) {
 				exprObject: p.exprObject,
 
 				fieldsDb: e.for(e.array_unpack(p.fields), (f) => {
-					return e.insert(e.sys_obj.DataObjFieldDb, {
+					return e.insert(e.sys_core.SysDataObjFieldDb, {
 						column: e.select(e.sys_db.getColumn(e.cast(e.str, e.json_get(f, 'columnName')))),
 
 						codeDbDataOp: e.sys_core.getCode(
@@ -253,7 +226,7 @@ export async function addDataObj(data: any) {
 				}),
 
 				fieldsEl: e.for(e.array_unpack(p.fields), (f) => {
-					return e.insert(e.sys_obj.DataObjFieldEl, {
+					return e.insert(e.sys_core.SysDataObjFieldEl, {
 						column: e.select(e.sys_db.getColumn(e.cast(e.str, e.json_get(f, 'columnName')))),
 
 						codeAccess: e.select(
@@ -287,7 +260,7 @@ export async function addDataObj(data: any) {
 						items: e.cast(e.array(e.json), e.json_get(f, 'items')),
 
 						itemsList: e.select(
-							e.sys_obj.getDataObjFieldItems(e.cast(e.str, e.json_get(f, 'itemsList')))
+							e.sys_core.getDataObjFieldItems(e.cast(e.str, e.json_get(f, 'itemsList')))
 						),
 
 						itemsListParms: e.cast(e.json, e.json_get(f, 'itemsListParms')),
@@ -302,13 +275,35 @@ export async function addDataObj(data: any) {
 				name: p.name,
 				owner: e.select(e.sys_core.getEnt(p.owner)),
 				subHeader: p.subHeader,
-				table: e.select(
-					e.sys_db.getTable(
-						e.cast(e.str, e.json_get(p.table, 'owner')),
-						e.cast(e.str, e.json_get(p.table, 'name'))
-					)
-				),
+				table: e.select(e.sys_db.getTable(p.table)),
 
+				createdBy: e.select(e.sys_user.getUser(p.creator)),
+				modifiedBy: e.select(e.sys_user.getUser(p.creator))
+			})
+		}
+	)
+	return await query.run(client, data)
+}
+
+export async function addDataObjAction(data: any) {
+	const query = e.params(
+		{
+			allTabs: e.optional(e.bool),
+			owner: e.str,
+			name: e.str,
+			header: e.str,
+			order: e.int64,
+			color: e.optional(e.str),
+			creator: e.str
+		},
+		(p) => {
+			return e.insert(e.sys_core.SysDataObjAction, {
+				allTabs: p.allTabs,
+				owner: e.select(e.sys_core.getEnt(p.owner)),
+				name: p.name,
+				header: p.header,
+				order: p.order,
+				color: p.color,
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
 				modifiedBy: e.select(e.sys_user.getUser(p.creator))
 			})
@@ -329,7 +324,7 @@ export async function addDataObjFieldItems(data: any) {
 			propertyLabel: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_obj.DataObjFieldItems, {
+			return e.insert(e.sys_core.SysDataObjFieldItems, {
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
 				modifiedBy: e.select(e.sys_user.getUser(p.creator)),
 				owner: e.select(e.sys_core.getEnt(p.owner)),
@@ -339,7 +334,7 @@ export async function addDataObjFieldItems(data: any) {
 				propertyLabel: p.propertyLabel,
 
 				fieldsDb: e.for(e.array_unpack(p.fields), (f) => {
-					return e.insert(e.sys_obj.DataObjFieldDb, {
+					return e.insert(e.sys_core.SysDataObjFieldDb, {
 						column: e.select(e.sys_db.getColumn(e.cast(e.str, e.json_get(f, 'columnName')))),
 
 						codeDbDataOp: e.sys_core.getCode(
@@ -397,11 +392,11 @@ export async function addNodeFooter(data: any) {
 			queryActions: e.optional(e.array(e.json))
 		},
 		(p) => {
-			return e.insert(e.sys_obj.NodeObjFooter, {
+			return e.insert(e.sys_core.SysNodeObjFooter, {
 				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', p.codeIcon)),
 				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', p.codeType)),
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
-				dataObj: e.select(e.sys_obj.getDataObj(p.dataObj)),
+				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
 				header: p.header,
 				modifiedBy: e.select(e.sys_user.getUser(p.creator)),
 				name: p.name,
@@ -429,17 +424,17 @@ export async function addNodeProgramObj(data: any) {
 			queryActions: e.optional(e.array(e.json))
 		},
 		(p) => {
-			return e.insert(e.sys_obj.NodeObj, {
+			return e.insert(e.sys_core.SysNodeObj, {
 				codeIcon: e.select(e.sys_core.getCode('ct_sys_node_obj_icon', p.codeIcon)),
 				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'programObject')),
 				createdBy: e.select(e.sys_user.getUser(p.creator)),
-				dataObj: e.select(e.sys_obj.getDataObj(p.dataObj)),
+				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
 				header: p.header,
 				modifiedBy: e.select(e.sys_user.getUser(p.creator)),
 				name: p.name,
 				order: p.order,
 				owner: e.select(e.sys_core.getEnt(p.owner)),
-				parent: e.select(e.sys_obj.getNodeObjByName(p.parentNodeName)),
+				parent: e.select(e.sys_core.getNodeObjByName(p.parentNodeName)),
 				queryActions: p.queryActions
 			})
 		}
@@ -455,7 +450,7 @@ export async function addOrg(data: any) {
 			creator: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.Org, {
+			return e.insert(e.sys_core.SysOrg, {
 				owner: e.select(e.sys_core.getRootObj()),
 				name: p.name,
 				header: p.header,
@@ -478,12 +473,12 @@ export async function addUser(data: any) {
 			userName: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_user.User, {
+			return e.insert(e.sys_user.SysUser, {
 				createdBy: CREATOR,
 				modifiedBy: CREATOR,
 				owner: e.select(e.sys_core.getOrg(p.owner)),
 				password: p.password,
-				person: e.insert(e.default.Person, {
+				person: e.insert(e.default.SysPerson, {
 					firstName: p.firstName,
 					lastName: p.lastName
 				}),
@@ -501,7 +496,7 @@ export async function addUserOrg(data: any) {
 			userName: e.str
 		},
 		(p) => {
-			return e.update(e.sys_user.User, (u) => ({
+			return e.update(e.sys_user.SysUser, (u) => ({
 				filter: e.op(u.userName, '=', p.userName),
 				set: {
 					orgs: {

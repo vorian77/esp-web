@@ -22,14 +22,14 @@ async function initDataObjLogin() {
 		exprObject: `WITH 
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
-		SELECT sys_user::User { userId := .id }
+		SELECT sys_user::SysUser { userId := .id }
 		FILTER .userName = userName and .password = password 
 		`,
 		header: 'Log in',
 		isPopup: true,
 		name: 'data_obj_auth_login',
 		owner: 'app_sys',
-		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		table: 'SysUser',
 		fields: [
 			{
 				codeElement: 'tel',
@@ -74,7 +74,7 @@ async function initDataObjResetPasswordAccount() {
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
 		user := (
-			UPDATE sys_user::User 
+			UPDATE sys_user::SysUser 
 			FILTER .userName = userName
 			SET { password := password }
 		)
@@ -83,7 +83,7 @@ async function initDataObjResetPasswordAccount() {
 		isPopup: true,
 		name: 'data_obj_auth_reset_password_account',
 		owner: 'app_sys',
-		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		table: 'SysUser',
 		fields: [
 			{
 				codeElement: 'tel',
@@ -129,7 +129,7 @@ async function initDataObjResetPasswordLogin() {
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
 		user := (
-			UPDATE sys_user::User 
+			UPDATE sys_user::SysUser 
 			FILTER .userName = userName
 			SET { password := password }
 		)
@@ -138,7 +138,7 @@ async function initDataObjResetPasswordLogin() {
 		isPopup: true,
 		name: 'data_obj_auth_reset_password_login',
 		owner: 'app_sys',
-		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		table: 'SysUser',
 		fields: [
 			{
 				codeElement: 'tel',
@@ -194,19 +194,19 @@ async function initDataObjSignup() {
 		codeCardinality: 'detail',
 		exprObject: `WITH 
 		orgName := <str,system,org_name>,
-		org := (SELECT sys_core::Org FILTER .name = orgName),
+		org := (SELECT sys_core::SysOrg FILTER .name = orgName),
 		userName := <str,parms,userName>,
 		password := <str,parms,password>,
 		firstName := <str,parms,firstName>,
 		lastName := <str,parms,lastName>,
-		person := (SELECT sys_user::User {_id := .person.id} FILTER .userName = userName),
+		person := (SELECT sys_user::SysUser {_id := .person.id} FILTER .userName = userName),
 		user := (
-			INSERT sys_user::User {
+			INSERT sys_user::SysUser {
 				owner := org,
 				userName := userName,
 				password := password,
 				person := (
-					INSERT default::Person {
+					INSERT default::SysPerson {
 						firstName := firstName,
 						lastName := lastName
 					}
@@ -215,12 +215,12 @@ async function initDataObjSignup() {
 			}
 			UNLESS CONFLICT ON .userName
 			ELSE (
-				UPDATE sys_user::User
+				UPDATE sys_user::SysUser
 				SET {
 					userName := userName,
 					password := password,
 					person := (
-						UPDATE default::Person 
+						UPDATE default::SysPerson 
 						FILTER .id = <uuid>person._id
 						SET { 
 							firstName := firstName,
@@ -232,13 +232,13 @@ async function initDataObjSignup() {
 		)
 		SELECT {
 			userId := user.id,
-			isNew := user NOT IN sys_user::User
+			isNew := user NOT IN sys_user::SysUser
 		}`,
 		header: 'Sign up',
 		isPopup: true,
 		name: 'data_obj_auth_signup',
 		owner: 'app_sys',
-		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		table: 'SysUser',
 		fields: [
 			{
 				columnName: 'firstName',
@@ -304,7 +304,7 @@ async function initDataObjVerify() {
 		isPopup: true,
 		name: 'data_obj_auth_verify_phone_mobile',
 		owner: 'app_sys',
-		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
+		table: 'SysUser',
 		fields: [
 			{
 				codeElement: 'custom',
@@ -351,8 +351,8 @@ async function initDataObjAccount() {
 		header: 'My Account',
 		name: 'data_obj_auth_account',
 		owner: 'app_sys',
-		table: { owner: 'app_sys', mod: 'sys_user', name: 'User' },
-		link: { property: 'person', table: { mod: 'default', name: 'Person' } },
+		table: 'SysUser',
+		link: { property: 'person', table: { mod: 'default', name: 'SysPerson' } },
 		exprFilter: '.id = <uuid,user,id>',
 		fields: [
 			{

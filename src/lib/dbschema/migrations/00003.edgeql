@@ -1,8 +1,9 @@
-CREATE MIGRATION m1uhtumqmowr5ybd5bsjlz5botqvhxrxf4luqvo4qiazdhqphz6ttq
-    ONTO m1lddbksjln62ats7hitooyj2gcxgib5famuoamlt2mbdbaot6t2yq
+CREATE MIGRATION m1qwqn2767ec4h4z5myvk2i2sif34uufzmcr2n4flvn33ck6agw3bq
+    ONTO m1vot3gwta7jzxhgiq4mwhd2wpwrn2ez2ucwzs3iopv3i3mii2bkfa
 {
-  ALTER TYPE sys_db::Column {
-      CREATE PROPERTY exprSave: std::str;
-      CREATE PROPERTY exprSelect: std::str;
+  ALTER TYPE sys_db::SysTable {
+      CREATE REQUIRED PROPERTY mod: std::str {
+          SET REQUIRED USING (<std::str>{});
+      };
   };
 };

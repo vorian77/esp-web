@@ -36,8 +36,7 @@ export class NavTree {
 				id: '+ROOT+',
 				name: 'root',
 				_codeType: NodeType.treeRoot,
-				order: 0,
-				queryActions: new QueryActions([])
+				order: 0
 			},
 			'root',
 			-1
@@ -212,7 +211,7 @@ export async function initNavTree(user: User) {
 
 	// <temp> filter to single program for dev
 	// rawBranch = rawBranch.filter((p: any) => {
-	// 	return p.name === 'node_pgm_cm_training_staff_provider'
+	// 	return p.name === 'node_pgm_cm_staff_provider'
 	// })
 
 	// if user has access to only 1 program,

@@ -4,14 +4,16 @@ import * as $ from "../reflection";
 import * as _ from "../imports";
 import type * as _sys_core from "./sys_core";
 import type * as _std from "./std";
-export type $ObjConfigλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
+export type $SaObjConfigλShape = $.typeutil.flatten<_sys_core.$SysObjλShape & {
   "creator": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "detailActions": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "detailDataObj": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "detailHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "detailName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "detailOrder": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
   "detailParentNodeName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "detailSubHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "hasMgmt": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "icon": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "linkProperty": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "linkTableModule": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -21,37 +23,35 @@ export type $ObjConfigλShape = $.typeutil.flatten<_sys_core.$ObjλShape & {
   "listExprFilter": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "listHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "listName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "listOrder": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
   "listParentNodeName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "listSubHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "objsOwner": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "outputDetailColumns": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "outputDetailDataObj": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "outputDetailNode": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "outputListColumns": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "outputListDataObj": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "outputListNode": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "tableModule": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "tableName": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "tableOwner": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "detailOrder": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
-  "listOrder": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
-  "outputDetailColumns": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "outputListColumns": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "hasMgmt": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
 }>;
-type $ObjConfig = $.ObjectType<"sys_admin::ObjConfig", $ObjConfigλShape, null, [
-  ..._sys_core.$Obj['__exclusives__'],
+type $SaObjConfig = $.ObjectType<"sys_admin::SaObjConfig", $SaObjConfigλShape, null, [
+  ..._sys_core.$SysObj['__exclusives__'],
 ]>;
-const $ObjConfig = $.makeType<$ObjConfig>(_.spec, "47f1f58a-ae86-11ee-93c4-ddbcbd24eb3f", _.syntax.literal);
+const $SaObjConfig = $.makeType<$SaObjConfig>(_.spec, "a9529d7a-b15a-11ee-9d24-c7ff23b51ae8", _.syntax.literal);
 
-const ObjConfig: $.$expr_PathNode<$.TypeSet<$ObjConfig, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($ObjConfig, $.Cardinality.Many), null);
+const SaObjConfig: $.$expr_PathNode<$.TypeSet<$SaObjConfig, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SaObjConfig, $.Cardinality.Many), null);
 
 
 
-export { $ObjConfig, ObjConfig };
+export { $SaObjConfig, SaObjConfig };
 
 type __defaultExports = {
-  "ObjConfig": typeof ObjConfig
+  "SaObjConfig": typeof SaObjConfig
 };
 const __defaultExports: __defaultExports = {
-  "ObjConfig": ObjConfig
+  "SaObjConfig": SaObjConfig
 };
 export default __defaultExports;

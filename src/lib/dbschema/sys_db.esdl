@@ -1,9 +1,9 @@
 module sys_db{
-  type Column extending sys_core::Obj {
+  type SysColumn extending sys_core::SysObj {
     classValue: str;
-    codeAlignment: sys_core::Code;
-    required codeDataType: sys_core::Code;
-    codeDataTypeComputed: sys_core::Code;
+    codeAlignment: sys_core::SysCode;
+    required codeDataType: sys_core::SysCode;
+    codeDataTypeComputed: sys_core::SysCode;
     edgeTypeDefn: json;
     exprPreset: str;
     exprSelect: str;
@@ -27,19 +27,17 @@ module sys_db{
     constraint exclusive on (.name);
   }
 
-  type Table extending sys_core::Obj {
-    multi columns: Column;
+  type SysTable extending sys_core::SysObj {
+    multi columns: sys_db::SysColumn;
     required hasMgmt: bool;
-    mod: str;
-    constraint exclusive on ((.owner, .name));
+    required mod: str;
+    constraint exclusive on (.name);
   }
 
   # FUNCTIONS
-  function getColumn(columnName: str) -> optional Column
-    using (select Column filter .name = columnName);
+  function getColumn(columnName: str) -> optional sys_db::SysColumn
+    using (select sys_db::SysColumn filter .name = columnName);
 
-  function getTable(ownerName: str, tableName: str) -> optional Table
-    using (select Table filter 
-       .owner = (select sys_core::getEnt(ownerName)) and 
-       .name = tableName);
+  function getTable(tableName: str) -> optional sys_db::SysTable
+    using (select sys_db::SysTable filter .name = tableName);
 }

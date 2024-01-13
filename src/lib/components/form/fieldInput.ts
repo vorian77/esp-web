@@ -96,7 +96,7 @@ export class FieldInput extends Field {
 			} else {
 				error(500, {
 					file: FILENAME,
-					function: 'constructor.initMatchColumn',
+					function: 'FieldInput.initMatchColumn',
 					message: `For column: "${thisField.name}", can not find parent matchColumn: "${parentMatchColumn}"`
 				})
 			}

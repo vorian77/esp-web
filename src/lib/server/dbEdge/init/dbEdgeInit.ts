@@ -10,7 +10,7 @@ import initCMDataAI from '$server/dbEdge/init/dbEdgeInitCMDataAI'
 import initCMDataMOED from '$server/dbEdge/init/dbEdgeInitCMDataMOED'
 
 const FILE = '/server/dbEdge/init'
-const load = 1
+const load = 0
 
 export async function init() {
 	if (load) {
@@ -22,7 +22,7 @@ export async function init() {
 		await initCMStudent()
 		await initResources()
 		await initCMDataAI()
-		await initCMDataMOED()
+		// await initCMDataMOED()
 		// await initReviewQuery()
 	}
 }

@@ -14,7 +14,7 @@ export async function execute(query: string) {
 }
 
 export async function getDataObjId(dataObjName: string) {
-	const query = e.select(e.sys_obj.DataObj, (do1) => ({
+	const query = e.select(e.sys_core.SysDataObj, (do1) => ({
 		id: true,
 		filter_single: e.op(do1.name, '=', dataObjName)
 	}))
@@ -22,8 +22,8 @@ export async function getDataObjId(dataObjName: string) {
 }
 
 export async function getDataObjById(dataObjId: string) {
-	const query = e.select(e.sys_obj.DataObj, (do1) => {
-		const actionBack = e.select(e.sys_obj.DataObjAction, (doa) => ({
+	const query = e.select(e.sys_core.SysDataObj, (do1) => {
+		const actionBack = e.select(e.sys_core.SysDataObjAction, (doa) => ({
 			allTabs: true,
 			color: true,
 			header: true,
@@ -62,6 +62,7 @@ export async function getDataObjById(dataObjId: string) {
 			_actions,
 			_codeCardinality: do1.codeCardinality.name,
 			_codeComponent: do1.codeComponent.name,
+
 			_table: e.select(do1.table, (t) => ({
 				mod: true,
 				name: true,
@@ -220,7 +221,7 @@ export async function getDataObjByName(dataObjName: string) {
 
 export async function getNodesBranch(token: TokenAppTreeNodeId) {
 	const parentNodeId = token.nodeId
-	const query = e.select(e.sys_obj.NodeObj, (n) => ({
+	const query = e.select(e.sys_core.SysNodeObj, (n) => ({
 		id: true,
 		_codeType: n.codeType.name,
 		name: true,
@@ -238,7 +239,7 @@ export async function getNodesBranch(token: TokenAppTreeNodeId) {
 
 export async function getNodesLevel(token: TokenAppTreeNodeId) {
 	const parentNodeId = token.nodeId
-	const baseShape = e.shape(e.sys_obj.NodeObj, (n) => ({
+	const baseShape = e.shape(e.sys_core.SysNodeObj, (n) => ({
 		id: true,
 		_codeType: n.codeType.name,
 		name: true,
@@ -250,11 +251,11 @@ export async function getNodesLevel(token: TokenAppTreeNodeId) {
 		order_by: n.order,
 		queryActions: n.queryActions
 	}))
-	const root = e.select(e.sys_obj.NodeObj, (n: any) => ({
+	const root = e.select(e.sys_core.SysNodeObj, (n: any) => ({
 		...baseShape(n),
 		filter: e.op(n.parent.id, '=', e.cast(e.uuid, parentNodeId))
 	}))
-	const children = e.select(e.sys_obj.NodeObj, (n: any) => ({
+	const children = e.select(e.sys_core.SysNodeObj, (n: any) => ({
 		...baseShape(n),
 		filter: e.op(n.parent.parent.id, '=', e.cast(e.uuid, parentNodeId))
 	}))
@@ -284,18 +285,18 @@ export async function getTableColumns(token: TokenApiDbTableColumns) {
 }
 
 export async function getUserByUserId(userId: string) {
-	const query = e.select(e.sys_user.User, (u) => ({
+	const query = e.select(e.sys_user.SysUser, (u) => ({
 		id: true,
 		lastName: u.person.lastName,
 		firstName: u.person.firstName,
 		fullName: u.person.fullName,
 		userName: true,
-		org: e.select(e.sys_core.Org, (org) => ({
+		org: e.select(e.sys_core.SysOrg, (org) => ({
 			name: true,
 			header: true,
 			filter_single: e.op(org.id, '=', u.owner.id)
 		})),
-		resource_footer: e.select(e.sys_obj.NodeObjFooter, (f) => ({
+		resource_footer: e.select(e.sys_core.SysNodeObjFooter, (f) => ({
 			id: true,
 			_codeType: f.codeType.name,
 			name: true,
@@ -307,7 +308,7 @@ export async function getUserByUserId(userId: string) {
 			queryActions: f.queryActions,
 			order_by: f.order
 		})),
-		resource_programs: e.select(u.userTypes.resources.is(e.sys_obj.NodeObj), (ut) => ({
+		resource_programs: e.select(u.userTypes.resources.is(e.sys_core.SysNodeObj), (ut) => ({
 			id: true,
 			_codeType: ut.codeType.name,
 			name: true,
@@ -318,7 +319,7 @@ export async function getUserByUserId(userId: string) {
 			order: true,
 			order_by: ut.order
 		})),
-		resource_widgets: e.select(u.userTypes.resources.is(e.sys_user.Widget), (ut) => ({
+		resource_widgets: e.select(u.userTypes.resources.is(e.sys_user.SysWidget), (ut) => ({
 			id: true,
 			name: true
 		})),
@@ -328,7 +329,7 @@ export async function getUserByUserId(userId: string) {
 }
 
 export async function getUserByUserName(userName: string) {
-	const query = e.select(e.sys_user.User, (u) => ({
+	const query = e.select(e.sys_user.SysUser, (u) => ({
 		id: true,
 		filter_single: e.op(u.userName, '=', userName)
 	}))

@@ -7,7 +7,7 @@ import {
 	strRequired,
 	valueOrDefault
 } from '$lib/utils/utils'
-import type { DataObjRaw } from '$comps/types'
+import type { DataObjRaw, DataObjRecord } from '$comps/types'
 import type { TokenApiQueryData, TokenApiQueryDataValue } from '$lib/api'
 import { FieldValue } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
@@ -29,9 +29,12 @@ export class EdgeQL {
 	table: Table
 
 	constructor(dataObjRaw: DataObjRaw) {
+		// console.log()
+		// console.log('EdgeQL...')
+		const clazz = 'EdgeQL'
 		const obj = valueOrDefault(dataObjRaw, {})
-		this.exprFilter = strOptional(obj.exprFilter, 'EdgeQL', 'exprFilter')
-		this.exprObject = strOptional(obj.exprObject, 'EdgeQL', 'exprObject')
+		this.exprFilter = strOptional(obj.exprFilter, clazz, 'exprFilter')
+		this.exprObject = strOptional(obj.exprObject, clazz, 'exprObject')
 
 		this.fieldsID = this.initFields(obj._fieldsDbId, DataFieldDataId)
 		this.fieldsOrder = this.initFields(obj._fieldsDbOrder, DataFieldOrder)
@@ -45,8 +48,6 @@ export class EdgeQL {
 		this.objName = obj.name
 		this.table = new Table(obj._table)
 
-		// console.log()
-		// console.log('EdgeQL...')
 		// console.log('exprFilter:', this.exprFilter)
 		// console.log('exprObject:', this.exprObject)
 
@@ -89,13 +90,11 @@ export class EdgeQL {
 		console.log()
 		console.log(`getScript: ${type}...`)
 		console.log(script)
-		console.log()
 	}
 
 	getScriptDataItems(dbSelect: string, data: TokenApiQueryData) {
 		const script = getValExpr(dbSelect, data)
-		console.log()
-		console.log('getScriptDataItems:', { dbSelect, data, script })
+		// this.logScript('dataItems', script)
 		return script
 	}
 	getScriptDelete(data: TokenApiQueryData) {
@@ -107,7 +106,7 @@ export class EdgeQL {
 	getScriptObjectExpr(data: TokenApiQueryData) {
 		if (this.exprObject) {
 			const script = getValExpr(this.exprObject, data)
-			this.logScript('objectExpression', script)
+			this.logScript('objectExpr', script)
 			return script
 		} else {
 			error(500, {
@@ -182,7 +181,7 @@ export class EdgeQL {
 		let exprFilter = ''
 
 		if (!this.exprFilter) {
-			exprFilter = `.id = <uuid,record,id>`
+			exprFilter = `.id = <uuid,tree,id>`
 		} else if (this.exprFilter?.toLowerCase() !== 'none') {
 			exprFilter = this.exprFilter
 		}
@@ -338,11 +337,33 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 			case DataFieldSource.parms:
 				return getValue(DataFieldSource.parms, data.parms, field.sourceKey)
 
-			case DataFieldSource.record:
-				return getValue(DataFieldSource.record, data.record, field.sourceKey)
-
 			case DataFieldSource.system:
 				return getValue(DataFieldSource.system, data.system, field.sourceKey)
+
+			case DataFieldSource.tree:
+				const items = field.sourceKey.split('.')
+				let record: DataObjRecord | undefined = undefined
+				let property = ''
+
+				switch (items.length) {
+					case 1:
+						property = items[0]
+						record = data.tree.getRecord()
+						break
+
+					case 2:
+						record = data.tree.getRecord(items[0])
+						property = items[1]
+						break
+
+					default:
+						error(500, {
+							file: FILENAME,
+							function: funct,
+							message: `Invalid configuration of tree data token: ${field.sourceKey}`
+						})
+				}
+				if (record) return getValue(DataFieldSource.tree, record, property)
 
 			case DataFieldSource.user:
 				return getValue(DataFieldSource.user, data.user, field.sourceKey)
@@ -520,7 +541,7 @@ class DataFieldData extends DataField {
 			'codeSource',
 			'DataFieldSource',
 			DataFieldSource,
-			DataFieldSource.record
+			DataFieldSource.tree
 		)
 		this.edgeTypeDefn = obj._edgeTypeDefn ? new EdgeTypeDefn(obj._edgeTypeDefn) : undefined
 		this.isLinkMember = booleanOrFalse(obj.isLinkMember, 'DataFieldData.isLinkMember')
@@ -631,7 +652,6 @@ export class Table {
 	module: string
 	name: string
 	constructor(obj: any) {
-		console.log('constructor.Table:', { obj })
 		obj = valueOrDefault(obj, {})
 		this.hasMgmt = booleanOrFalse(obj.hasMgmt, 'Table')
 		this.module = strRequired(obj.mod, 'Table', 'mod')
@@ -669,8 +689,8 @@ export enum DataFieldSource {
 	literal = 'literal',
 	parms = 'parms',
 	preset = 'preset',
-	record = 'record',
 	system = 'system',
+	tree = 'tree',
 	user = 'user'
 }
 

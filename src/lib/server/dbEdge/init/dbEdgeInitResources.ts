@@ -49,15 +49,9 @@ async function initNodeObjs() {
 	])
 
 	await nodeObjPrograms([
-		['app_cm_training', 'node_pgm_cm_training_staff_adm', 'AI-Role: Admin', 50, 'application'],
-		[
-			'app_cm_training',
-			'node_pgm_cm_training_staff_provider',
-			'AI-Role: Provider',
-			60,
-			'application'
-		],
-		['app_cm_training', 'node_pgm_cm_training_student', 'AI-Role: Student', 70, 'application']
+		['app_cm', 'node_pgm_cm_staff_adm', 'AI-Role: Admin', 50, 'application'],
+		['app_cm', 'node_pgm_cm_staff_provider', 'AI-Role: Provider', 60, 'application'],
+		['app_cm', 'node_pgm_cm_student', 'AI-Role: Student', 70, 'application']
 	])
 
 	// admin - data obj config
@@ -93,64 +87,64 @@ async function initNodeObjs() {
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_course_list',
+		dataObj: 'data_obj_cm_course_list',
 		header: 'Courses',
-		name: 'node_obj_cm_training_course_list',
+		name: 'node_obj_cm_course_list',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_pgm_cm_training_staff_provider'
+		owner: 'app_cm',
+		parentNodeName: 'node_pgm_cm_staff_provider'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_course_detail',
+		dataObj: 'data_obj_cm_course_detail',
 		header: 'Course',
-		name: 'node_obj_cm_training_course_detail',
+		name: 'node_obj_cm_course_detail',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_course_list'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_course_list'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_cohort_list',
+		dataObj: 'data_obj_cm_cohort_list',
 		header: 'Cohorts',
-		name: 'node_obj_cm_training_cohort_list',
+		name: 'node_obj_cm_cohort_list',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_course_detail'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_course_detail'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_cohort_detail',
+		dataObj: 'data_obj_cm_cohort_detail',
 		header: 'Cohort',
-		name: 'node_obj_cm_training_cohort_detail',
+		name: 'node_obj_cm_cohort_detail',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_cohort_list'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_cohort_list'
 	})
 
 	// student
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_student_list',
+		dataObj: 'data_obj_cm_student_list',
 		header: 'Students',
-		name: 'node_obj_cm_training_student_list',
+		name: 'node_obj_cm_student_list',
 		order: 20,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_pgm_cm_training_staff_provider'
+		owner: 'app_cm',
+		parentNodeName: 'node_pgm_cm_staff_provider'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_student_detail',
+		dataObj: 'data_obj_cm_student_detail',
 		header: 'Student',
-		name: 'node_obj_cm_training_student_detail',
+		name: 'node_obj_cm_student_detail',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_student_list'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_student_list'
 	})
 
 	// student-service flow
@@ -159,20 +153,20 @@ async function initNodeObjs() {
 		creator: 'user_sys',
 		dataObj: 'data_obj_cm_client_service_flow_list',
 		header: 'Service Flows',
-		name: 'node_obj_cm_training_service_flow_list',
+		name: 'node_obj_cm_service_flow_list',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_student_detail'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_student_detail'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
 		dataObj: 'data_obj_cm_client_service_flow_detail',
 		header: 'Service Flow',
-		name: 'node_obj_cm_training_service_flow_detail',
+		name: 'node_obj_cm_service_flow_detail',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_service_flow_list'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_service_flow_list'
 	})
 
 	// student - cohort
@@ -181,20 +175,20 @@ async function initNodeObjs() {
 		creator: 'user_sys',
 		dataObj: 'data_obj_cm_csf_cohort_list',
 		header: 'Cohorts',
-		name: 'node_obj_cm_training_csf_cohort_list',
+		name: 'node_obj_cm_csf_cohort_list',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_service_flow_detail'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_service_flow_detail'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
 		dataObj: 'data_obj_cm_csf_cohort_detail',
 		header: 'Cohort',
-		name: 'node_obj_cm_training_csf_cohort_detail',
+		name: 'node_obj_cm_csf_cohort_detail',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_csf_cohort_list'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_csf_cohort_list'
 	})
 
 	// student - cohort attendance
@@ -203,42 +197,42 @@ async function initNodeObjs() {
 		creator: 'user_sys',
 		dataObj: 'data_obj_cm_csf_cohort_attd_list',
 		header: 'Attendances',
-		name: 'node_obj_cm_training_csf_cohort_attd_list',
+		name: 'node_obj_cm_csf_cohort_attd_list',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_csf_cohort_detail'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_csf_cohort_detail'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
 		dataObj: 'data_obj_cm_csf_cohort_attd_detail',
 		header: 'Attendance',
-		name: 'node_obj_cm_training_csf_cohort_attd_detail',
+		name: 'node_obj_cm_csf_cohort_attd_detail',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_csf_cohort_attd_list'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_csf_cohort_attd_list'
 	})
 
 	// student - certification
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_csf_certification_list',
+		dataObj: 'data_obj_cm_csf_certification_list',
 		header: 'Certifications',
-		name: 'node_obj_cm_training_csf_certification_list',
+		name: 'node_obj_cm_csf_certification_list',
 		order: 20,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_service_flow_detail'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_service_flow_detail'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		creator: 'user_sys',
-		dataObj: 'data_obj_cm_training_csf_certification_detail',
+		dataObj: 'data_obj_cm_csf_certification_detail',
 		header: 'Certification',
-		name: 'node_obj_cm_training_csf_certification_detail',
+		name: 'node_obj_cm_csf_certification_detail',
 		order: 10,
-		owner: 'app_cm_training',
-		parentNodeName: 'node_obj_cm_training_csf_certification_list'
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_csf_certification_list'
 	})
 }
 
@@ -283,9 +277,9 @@ async function initFooter() {
 
 async function initUserResources() {
 	await userType([
-		['app_cm_training', 'ut_cm_training_staff_admin'],
-		['app_cm_training', 'ut_cm_training_staff_provider'],
-		['app_cm_training', 'ut_cm_training_student'],
+		['app_cm', 'ut_cm_staff_admin'],
+		['app_cm', 'ut_cm_staff_provider'],
+		['app_cm', 'ut_cm_student'],
 		['app_sys', 'ut_sys_admin']
 	])
 
@@ -297,38 +291,38 @@ async function initUserResources() {
 
 	await userTypeResourcesApps([
 		['ut_sys_admin', 'app_cm'],
-		['ut_sys_admin', 'app_cm_training'],
+		['ut_sys_admin', 'app_cm'],
 		['ut_sys_admin', 'app_db'],
 		['ut_sys_admin', 'app_sys']
 	])
 
 	await userTypeResourcesPrograms([
-		['ut_cm_training_staff_admin', 'node_pgm_cm_training_staff_adm'],
-		['ut_cm_training_staff_provider', 'node_pgm_cm_training_staff_provider'],
-		['ut_cm_training_student', 'node_pgm_cm_training_student'],
-		['ut_sys_admin', 'node_pgm_cm_training_staff_adm'],
-		['ut_sys_admin', 'node_pgm_cm_training_staff_provider'],
-		['ut_sys_admin', 'node_pgm_cm_training_student'],
+		['ut_cm_staff_admin', 'node_pgm_cm_staff_adm'],
+		['ut_cm_staff_provider', 'node_pgm_cm_staff_provider'],
+		['ut_cm_student', 'node_pgm_cm_student'],
+		['ut_sys_admin', 'node_pgm_cm_staff_adm'],
+		['ut_sys_admin', 'node_pgm_cm_staff_provider'],
+		['ut_sys_admin', 'node_pgm_cm_student'],
 		['ut_sys_admin', 'node_pgm_sys_admin']
 	])
 
 	await userTypeResourcesWidgets([
-		['ut_cm_training_staff_admin', 'widget_sys_user'],
-		['ut_cm_training_staff_provider', 'widget_sys_user'],
+		['ut_cm_staff_admin', 'widget_sys_user'],
+		['ut_cm_staff_provider', 'widget_sys_user'],
 		['ut_sys_admin', 'widget_sys_user']
 	])
 
 	// await userTypeResourcesWidgets([
-	// 	['ut_cm_training_staff_admin', 'widget_sys_user'],
-	// 	['ut_cm_training_staff_provider', 'widget_sys_user'],
-	// 	['ut_cm_training_student', 'widget_cm_user'],
-	// 	['ut_cm_training_student', 'widget_cm_quotes']
+	// 	['ut_cm_staff_admin', 'widget_sys_user'],
+	// 	['ut_cm_staff_provider', 'widget_sys_user'],
+	// 	['ut_cm_student', 'widget_cm_user'],
+	// 	['ut_cm_student', 'widget_cm_quotes']
 	// ])
 
 	await userUserType([
-		['user_sys', 'ut_cm_training_staff_admin'],
-		['user_sys', 'ut_cm_training_staff_provider'],
-		['user_sys', 'ut_cm_training_student'],
+		['user_sys', 'ut_cm_staff_admin'],
+		['user_sys', 'ut_cm_staff_provider'],
+		['user_sys', 'ut_cm_student'],
 		['user_sys', 'ut_sys_admin']
 	])
 
@@ -368,9 +362,9 @@ async function initUsers() {
 	await addUserOrg({ orgName: 'Atlantic Impact', userName: '3136276210' })
 	await addUserOrg({ orgName: 'Atlantic Impact', userName: '2487985578' })
 
-	await userUserType([['2482317505', 'ut_cm_training_staff_provider']])
-	await userUserType([['3136276210', 'ut_cm_training_staff_provider']])
-	await userUserType([['2487985578', 'ut_cm_training_staff_provider']])
+	await userUserType([['2482317505', 'ut_cm_staff_provider']])
+	await userUserType([['3136276210', 'ut_cm_staff_provider']])
+	await userUserType([['2487985578', 'ut_cm_staff_provider']])
 
 	await addStaff([
 		['Atlantic Impact', 'Stacy', 'Administrator'],

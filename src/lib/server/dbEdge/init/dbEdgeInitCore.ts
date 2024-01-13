@@ -38,7 +38,7 @@ async function initSysCore() {
 	await rootObj()
 	await rootUser()
 
-	await apps([['app_cm'], ['app_cm_training'], ['app_db'], ['app_sys'], ['app_sys_admin']])
+	await apps([['app_cm'], ['app_db'], ['app_sys'], ['app_sys_admin']])
 
 	await addOrgs([
 		['Atlantic Impact', 'Atlantic Impact Mobile'],
@@ -56,14 +56,14 @@ async function initSysCodeTypess() {
 	await codeTypes([
 		['app_cm', 0, 'ct_cm_service_flow_status'],
 
-		['app_cm_training', 0, 'ct_cm_training_course_cert'],
-		['app_cm_training', 0, 'ct_cm_training_course_exam'],
-		['app_cm_training', 0, 'ct_cm_training_course_items_included'],
-		['app_cm_training', 0, 'ct_cm_training_course_items_not_included'],
-		['app_cm_training', 0, 'ct_cm_training_course_rqmt'],
-		['app_cm_training', 0, 'ct_cm_training_course_sector'],
+		['app_cm', 0, 'ct_cm_course_cert'],
+		['app_cm', 0, 'ct_cm_course_exam'],
+		['app_cm', 0, 'ct_cm_course_items_included'],
+		['app_cm', 0, 'ct_cm_course_items_not_included'],
+		['app_cm', 0, 'ct_cm_course_rqmt'],
+		['app_cm', 0, 'ct_cm_course_sector'],
 
-		['app_cm_training', 0, 'ct_cm_training_payment_type'],
+		['app_cm', 0, 'ct_cm_payment_type'],
 
 		['app_db', 0, 'ct_db_col_alignment'],
 		['app_db', 0, 'ct_db_col_data_type'],
@@ -94,18 +94,18 @@ async function initSysCodeTypess() {
 	])
 
 	await addCodeType({
-		owner: 'app_cm_training',
-		parent: 'ct_cm_training_payment_type',
+		owner: 'app_cm',
+		parent: 'ct_cm_payment_type',
 		header: 'Milestone 1 (Single Payment)',
-		name: 'ct_cm_training_payment_type_milestone1',
+		name: 'ct_cm_payment_type_milestone1',
 		order: 0,
 		creator: 'user_sys'
 	})
 	await addCodeType({
-		owner: 'app_cm_training',
-		parent: 'ct_cm_training_payment_type',
+		owner: 'app_cm',
+		parent: 'ct_cm_payment_type',
 		header: 'Milestone 2 (Dual Payments)',
-		name: 'ct_cm_training_payment_type_milestone2',
+		name: 'ct_cm_payment_type_milestone2',
 		order: 1,
 		creator: 'user_sys'
 	})
@@ -120,41 +120,36 @@ async function initSysCodes() {
 		['ct_cm_service_flow_status', 'app_cm', 'Completed', 4],
 		['ct_cm_service_flow_status', 'app_cm', 'Dropped Out', 5],
 
-		// ct_cm_training_course_cert
-		['ct_cm_training_course_cert', 'app_cm_training', 'Asbestos Abatement', 0],
-		['ct_cm_training_course_cert', 'app_cm_training', 'Lead Abatement', 0],
-		['ct_cm_training_course_cert', 'app_cm_training', 'OSHA 1', 1],
-		['ct_cm_training_course_cert', 'app_cm_training', 'OSHA 2', 2],
+		// ct_cm_course_cert
+		['ct_cm_course_cert', 'app_cm', 'Asbestos Abatement', 0],
+		['ct_cm_course_cert', 'app_cm', 'Lead Abatement', 0],
+		['ct_cm_course_cert', 'app_cm', 'OSHA 1', 1],
+		['ct_cm_course_cert', 'app_cm', 'OSHA 2', 2],
 
-		// ct_cm_training_course_exam
-		['ct_cm_training_course_exam', 'app_cm_training', 'Exam 1', 0],
-		['ct_cm_training_course_exam', 'app_cm_training', 'Exam 2', 1],
+		// ct_cm_course_exam
+		['ct_cm_course_exam', 'app_cm', 'Exam 1', 0],
+		['ct_cm_course_exam', 'app_cm', 'Exam 2', 1],
 
-		// ct_cm_training_course_items_included
-		['ct_cm_training_course_items_included', 'app_cm_training', 'Fee: ACT Practice Exam', 0],
-		[
-			'ct_cm_training_course_items_included',
-			'app_cm_training',
-			'Book: Painting-Commercial & Residential Level 1',
-			0
-		],
+		// ct_cm_course_items_included
+		['ct_cm_course_items_included', 'app_cm', 'Fee: ACT Practice Exam', 0],
+		['ct_cm_course_items_included', 'app_cm', 'Book: Painting-Commercial & Residential Level 1', 0],
 
-		// ct_cm_training_course_items_not_included
-		['ct_cm_training_course_items_not_included', 'app_cm_training', 'Item 1', 0],
-		['ct_cm_training_course_items_not_included', 'app_cm_training', 'Item 2', 0],
+		// ct_cm_course_items_not_included
+		['ct_cm_course_items_not_included', 'app_cm', 'Item 1', 0],
+		['ct_cm_course_items_not_included', 'app_cm', 'Item 2', 0],
 
-		// ct_cm_training_course_rqmt
-		['ct_cm_training_course_rqmt', 'app_cm_training', 'Min math score - 8th grade math', 0],
-		['ct_cm_training_course_rqmt', 'app_cm_training', 'Min reading score - 8th grade reading', 1],
+		// ct_cm_course_rqmt
+		['ct_cm_course_rqmt', 'app_cm', 'Min math score - 8th grade math', 0],
+		['ct_cm_course_rqmt', 'app_cm', 'Min reading score - 8th grade reading', 1],
 
-		// ct_cm_training_course_sector
-		['ct_cm_training_course_sector', 'app_cm_training', 'Business and Finance', 0],
-		['ct_cm_training_course_sector', 'app_cm_training', 'Construction', 1],
-		['ct_cm_training_course_sector', 'app_cm_training', 'Food Preparation', 2],
-		['ct_cm_training_course_sector', 'app_cm_training', 'Hospitality', 3],
-		['ct_cm_training_course_sector', 'app_cm_training', 'Legal', 4],
-		['ct_cm_training_course_sector', 'app_cm_training', 'Personal Care and Services', 5],
-		['ct_cm_training_course_sector', 'app_cm_training', 'Transportation', 6],
+		// ct_cm_course_sector
+		['ct_cm_course_sector', 'app_cm', 'Business and Finance', 0],
+		['ct_cm_course_sector', 'app_cm', 'Construction', 1],
+		['ct_cm_course_sector', 'app_cm', 'Food Preparation', 2],
+		['ct_cm_course_sector', 'app_cm', 'Hospitality', 3],
+		['ct_cm_course_sector', 'app_cm', 'Legal', 4],
+		['ct_cm_course_sector', 'app_cm', 'Personal Care and Services', 5],
+		['ct_cm_course_sector', 'app_cm', 'Transportation', 6],
 
 		// db col - alignment
 		['ct_db_col_alignment', 'app_db', 'center', 0],
@@ -295,24 +290,24 @@ async function initSysCodes() {
 	])
 
 	// await addCode({
-	// 	owner: 'app_cm_training',
-	// 	codeType: 'ct_cm_training_payment_type_milestone1',
+	// 	owner: 'app_cm',
+	// 	codeType: 'ct_cm_payment_type_milestone1',
 	// 	header: 'Payment 1 - 100%',
 	// 	name: 'milestone1_payment1',
 	// 	order: 0,
 	// 	creator: 'user_sys'
 	// })
 	// await addCode({
-	// 	owner: 'app_cm_training',
-	// 	codeType: 'ct_cm_training_payment_type_milestone2',
+	// 	owner: 'app_cm',
+	// 	codeType: 'ct_cm_payment_type_milestone2',
 	// 	header: 'Payment 1 - 50%',
 	// 	name: 'milestone2_payment1',
 	// 	order: 0,
 	// 	creator: 'user_sys'
 	// })
 	// await addCode({
-	// 	owner: 'app_cm_training',
-	// 	codeType: 'ct_cm_training_payment_type_milestone2',
+	// 	owner: 'app_cm',
+	// 	codeType: 'ct_cm_payment_type_milestone2',
 	// 	header: 'Payment 2 - 50%',
 	// 	name: 'milestone2_payment1',
 	// 	order: 0,
@@ -322,20 +317,18 @@ async function initSysCodes() {
 
 async function initTables() {
 	await tables([
-		['app_cm', 'app_cm', 'ServiceFlow', true],
-		['app_cm', 'app_cm', 'Client', true],
-		['app_cm', 'app_cm', 'ClientServiceFlow', true],
-		['app_cm', 'app_cm', 'CsfCertification', true],
-		['app_cm', 'app_cm', 'CsfNote', true],
-
-		['app_cm_training', 'app_cm_training', 'Course', true],
-		['app_cm_training', 'app_cm_training', 'Cohort', true],
-		['app_cm_training', 'app_cm_training', 'CsfCohort', true],
-		['app_cm_training', 'app_cm_training', 'CsfCohortAttd', true],
-
-		['app_sys', 'default', 'Person', false],
-		['app_sys', 'sys_user', 'User', false],
-		['app_sys_admin', 'sys_admin', 'ObjConfig', true]
+		['app_cm', 'app_cm', 'CmServiceFlow', true],
+		['app_cm', 'app_cm', 'CmClient', true],
+		['app_cm', 'app_cm', 'CmClientServiceFlow', true],
+		['app_cm', 'app_cm', 'CmCourse', true],
+		['app_cm', 'app_cm', 'CmCohort', true],
+		['app_cm', 'app_cm', 'CmCsfCohort', true],
+		['app_cm', 'app_cm', 'CmCsfCohortAttd', true],
+		['app_cm', 'app_cm', 'CmCsfCertification', true],
+		['app_cm', 'app_cm', 'CmCmCsfNote', true],
+		['app_sys', 'default', 'SysPerson', false],
+		['app_sys', 'sys_user', 'SysUser', false],
+		['app_sys_admin', 'sys_admin', 'SaObjConfig', true]
 	])
 }
 
@@ -395,14 +388,8 @@ async function initColumns() {
 	})
 	await addColumn({
 		codeDataType: 'edgeType',
-		codeDataTypeComputed: 'str',
 		creator: 'user_sys',
-		edgeTypeDefn: {
-			property: 'person.fullName',
-			table: { mod: 'app_cm', name: 'Client' }
-		},
-		exprPreset:
-			'(SELECT app_cm::Client { data := .id, display := .person.fullName } FILTER .id = <uuid,record,id>)',
+		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'app_cm', name: 'CmClient' } },
 		header: 'Client',
 		name: 'client',
 		owner: 'app_cm'
@@ -413,7 +400,7 @@ async function initColumns() {
 		codeDataType: 'edgeType',
 		edgeTypeDefn: {
 			property: `serviceFlow.header ++ ' (' ++ to_str(.dateReferral) ++ ')'`,
-			table: { mod: 'app_cm', name: 'ClientServiceFlow' }
+			table: { mod: 'app_cm', name: 'CmClientServiceFlow' }
 		},
 		header: 'Service Flow',
 		name: 'clientServiceFlow'
@@ -421,7 +408,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Certification',
 		name: 'codeCertification',
 		owner: 'app_sys'
@@ -429,7 +416,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Ethnicity',
 		name: 'codeEthnicity',
 		owner: 'app_sys'
@@ -437,7 +424,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Gender',
 		name: 'codeGender',
 		owner: 'app_sys'
@@ -446,7 +433,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Certifications',
 		isMultiSelect: true,
 		name: 'codeMultiCerts'
@@ -455,7 +442,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Exams',
 		isMultiSelect: true,
 		name: 'codeMultiExams'
@@ -464,7 +451,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Items - Included',
 		isMultiSelect: true,
 		name: 'codeMultiItemsIncluded'
@@ -473,7 +460,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Items - Not Included',
 		isMultiSelect: true,
 		name: 'codeMultiItemsNotIncluded'
@@ -482,7 +469,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Requirements',
 		isMultiSelect: true,
 		name: 'codeMultiRqmts'
@@ -490,7 +477,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Race',
 		name: 'codeRace',
 		owner: 'app_sys'
@@ -499,14 +486,14 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Sector',
 		name: 'codeSector'
 	})
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'State',
 		name: 'codeState',
 		owner: 'app_sys'
@@ -514,7 +501,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Code' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
 		header: 'Status',
 		name: 'codeStatus',
 		owner: 'app_sys'
@@ -523,7 +510,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'CodeType' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCodeType' } },
 		header: 'Payment Type',
 		name: 'codeTypePayment'
 	})
@@ -533,7 +520,7 @@ async function initColumns() {
 		codeDataType: 'edgeType',
 		edgeTypeDefn: {
 			property: `course.name ++ ' (' ++ .name ++ ')'`,
-			table: { mod: 'app_cm_training', name: 'Cohort' }
+			table: { mod: 'app_cm', name: 'CmCohort' }
 		},
 		header: 'Cohort',
 		name: 'cohort'
@@ -559,7 +546,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm_training', name: 'Course' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm', name: 'CmCourse' } },
 		header: 'Course',
 		name: 'course',
 		owner: 'app_sys'
@@ -577,12 +564,9 @@ async function initColumns() {
 		codeDataType: 'edgeType',
 		codeDataTypeComputed: 'str',
 		creator: 'user_sys',
-		edgeTypeDefn: {
-			property: 'person.fullName',
-			table: { mod: 'sys_user', name: 'User' }
-		},
+		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysUser' } },
 		exprPreset:
-			'(SELECT sys_user::User { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
+			'(SELECT sys_user::SysUser { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
 		header: 'Created By',
 		isExcludeUpdate: true,
 		name: 'createdBy',
@@ -601,7 +585,7 @@ async function initColumns() {
 		codeDataType: 'edgeType',
 		edgeTypeDefn: {
 			property: `cohort.course.header ++ ' (' ++ to_str(.dateReferral) ++ ')'`,
-			table: { mod: 'app_cm_training', name: 'CsfCohort' }
+			table: { mod: 'app_cm', name: 'CmCsfCohort' }
 		},
 		header: 'Cohort',
 		name: 'csfCohort'
@@ -916,12 +900,9 @@ async function initColumns() {
 		codeDataType: 'edgeType',
 		codeDataTypeComputed: 'str',
 		creator: 'user_sys',
-		edgeTypeDefn: {
-			property: 'person.fullName',
-			table: { mod: 'sys_user', name: 'User' }
-		},
+		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysUser' } },
 		exprPreset:
-			'(SELECT sys_user::User { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
+			'(SELECT sys_user::SysUser { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
 		header: 'Modified By',
 		name: 'modifiedBy',
 		owner: 'app_sys'
@@ -992,7 +973,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Org' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysOrg' } },
 		header: 'Owner',
 		name: 'owner',
 		owner: 'app_sys'
@@ -1015,7 +996,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'Org' } },
+		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysOrg' } },
 		header: 'Provider',
 		name: 'provider'
 	})
@@ -1029,7 +1010,7 @@ async function initColumns() {
 	await addColumn({
 		codeDataType: 'edgeType',
 		creator: 'user_sys',
-		edgeTypeDefn: { property: 'header', table: { mod: 'app_cm', name: 'ServiceFlow' } },
+		edgeTypeDefn: { property: 'header', table: { mod: 'app_cm', name: 'CmServiceFlow' } },
 		header: 'Service Flow',
 		name: 'serviceFlow',
 		owner: 'app_cm'
@@ -1038,7 +1019,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'Staff' } },
+		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysStaff' } },
 		header: 'Staff - Administrator',
 		name: 'staffAdmin'
 	})
@@ -1046,7 +1027,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'Staff' } },
+		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysStaff' } },
 		header: 'Staff - Agency',
 		name: 'staffAgency'
 	})
@@ -1054,7 +1035,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'Staff' } },
+		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysStaff' } },
 		header: 'Staff - Instructor',
 		name: 'staffInstructor'
 	})
@@ -1097,17 +1078,17 @@ async function initColumns() {
 
 async function initTableColumns() {
 	await tableColumns([
-		['app_cm', 'Client', 'agencyId'],
-		['app_cm', 'Client', 'createdAt'],
-		['app_cm', 'Client', 'createdBy'],
-		['app_cm', 'Client', 'email'],
-		['app_cm', 'Client', 'firstName'],
-		['app_cm', 'Client', 'fullName'],
-		['app_cm', 'Client', 'id'],
-		['app_cm', 'Client', 'lastName'],
-		['app_cm', 'Client', 'modifiedAt'],
-		['app_cm', 'Client', 'modifiedBy'],
-		['app_cm', 'Client', 'note']
+		['app_cm', 'CmClient', 'agencyId'],
+		['app_cm', 'CmClient', 'createdAt'],
+		['app_cm', 'CmClient', 'createdBy'],
+		['app_cm', 'CmClient', 'email'],
+		['app_cm', 'CmClient', 'firstName'],
+		['app_cm', 'CmClient', 'fullName'],
+		['app_cm', 'CmClient', 'id'],
+		['app_cm', 'CmClient', 'lastName'],
+		['app_cm', 'CmClient', 'modifiedAt'],
+		['app_cm', 'CmClient', 'modifiedBy'],
+		['app_cm', 'CmClient', 'note']
 	])
 }
 
@@ -1216,7 +1197,7 @@ async function initDataObjFieldItemsLists() {
 	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_cm',
-		dbSelect: 'SELECT app_cm::ServiceFlow {data := .id, display := .header} ORDER BY .header',
+		dbSelect: 'SELECT app_cm::CmServiceFlow {data := .id, display := .header} ORDER BY .header',
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_cm_service_flow'
@@ -1224,31 +1205,29 @@ async function initDataObjFieldItemsLists() {
 	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_sys',
-		dbSelect: `SELECT app_cm_training::Cohort {data := .id, display := .course.name ++ ' (' ++ .name ++ ')'} 
-FILTER .owner in (SELECT sys_user::User FILTER .userName = <str,user,userName>).orgs
-ORDER BY .course.name`,
+		dbSelect: `SELECT app_cm::CmCohort {data := .id, display := .course.name ++ ' (' ++ .name ++ ')'} FILTER .owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs ORDER BY .course.name`,
 		propertyId: 'id',
 		propertyLabel: 'name',
-		name: 'il_cm_training_cohort_by_userName'
+		name: 'il_cm_cohort_by_userName'
 	})
 	await addDataObjFieldItems({
 		creator: 'user_sys',
-		owner: 'app_cm_training',
+		owner: 'app_cm',
 		dbSelect: `SELECT (
-      SELECT app_cm_training::CsfCohort 
+      SELECT app_cm::CmCsfCohort 
       FILTER 
-        .clientServiceFlow.id = <uuid,record,id> AND 
+        .clientServiceFlow.id = <uuid,tree,CmClientServiceFlow.id> AND 
         .codeStatus = (SELECT sys_core::getCode('ct_cm_service_flow_status', <str,parms,status>))
       ).cohort.course {data := .id, display := .name} ORDER BY .name`,
 		propertyId: 'id',
 		propertyLabel: 'name',
-		name: 'il_cm_training_course_by_csfId_status'
+		name: 'il_cm_course_by_csfId_status'
 	})
 	await addDataObjFieldItems({
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
-			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .order',
+			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .order',
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_sys_code_order_index_by_codeTypeName'
@@ -1257,7 +1236,7 @@ ORDER BY .course.name`,
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
-			'SELECT sys_core::Code {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .name',
+			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .name',
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_sys_code_order_name_by_codeTypeName'
@@ -1266,7 +1245,7 @@ ORDER BY .course.name`,
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
-			'SELECT sys_core::CodeType {data := .id, display := .header} FILTER .parent.name = <str,parms,codeTypeParentName> ORDER BY .name',
+			'SELECT sys_core::SysCodeType {data := .id, display := .header} FILTER .parent.name = <str,parms,codeTypeParentName> ORDER BY .name',
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_sys_codeType_order_name_by_codeTypeParentName'
@@ -1275,7 +1254,7 @@ ORDER BY .course.name`,
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
-			'SELECT sys_core::Org { data := .id, display := .name } FILTER .roles.name = <str,parms,codeName> ORDER BY .name',
+			'SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .roles.name = <str,parms,codeName> ORDER BY .name',
 		propertyId: 'id',
 		propertyLabel: 'name',
 		name: 'il_sys_role_org_by_codeName'
@@ -1284,7 +1263,7 @@ ORDER BY .course.name`,
 		creator: 'user_sys',
 		owner: 'app_sys',
 		dbSelect:
-			'SELECT sys_user::Staff { data := .id, display := .person.fullName } FILTER .roles.name = <str,parms,codeName> ORDER BY str_lower(.person.lastName) then str_lower(.person.firstName)',
+			'SELECT sys_user::SysStaff { data := .id, display := .person.fullName } FILTER .roles.name = <str,parms,codeName> ORDER BY str_lower(.person.lastName) then str_lower(.person.firstName)',
 		propertyId: 'id',
 		propertyLabel: 'person.fullName',
 		name: 'il_sys_role_staff_by_codeName'

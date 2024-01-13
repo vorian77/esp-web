@@ -17,11 +17,7 @@ async function initDataObjConfig() {
 		codeCardinality: 'list',
 		name: 'data_obj_sys_admin_data_obj_config_list',
 		header: 'Data Object Configs',
-		table: {
-			owner: 'app_sys_admin',
-			mod: 'sys_admin',
-			name: 'ObjConfig'
-		},
+		table: 'SysObjConfig',
 		exprFilter: 'none',
 		actions: ['noa_list_new'],
 		fields: [
@@ -67,7 +63,7 @@ async function initDataObjConfig() {
 		codeCardinality: 'detail',
 		name: 'data_obj_sys_admin_data_obj_config_detail',
 		header: 'Data Object Config',
-		table: { owner: 'app_sys_admin', mod: 'sys_admin', name: 'ObjConfig' },
+		table: 'SysObjConfig',
 		actions: ['noa_detail_new', 'noa_detail_save_as', 'noa_detail_delete'],
 		fields: [
 			{

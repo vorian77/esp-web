@@ -16,79 +16,79 @@ module sys_user {
     required modifiedBy: UserRoot
   }
   
-  type Staff extending sys_user::Mgmt {
-    required owner: sys_core::Org;
-    required person: default::Person{
+  type SysStaff extending sys_user::Mgmt {
+    required owner: sys_core::SysOrg;
+    required person: default::SysPerson{
        on source delete delete target if orphan;
     };
-    multi roles: sys_core::Code{
+    multi roles: sys_core::SysCode{
         on target delete allow;
       }; 
   }
  
   type UserRoot {
-    required person: default::Person{
+    required person: default::SysPerson{
       on source delete delete target if orphan;
     };
     required userName: str;
     constraint exclusive on (.userName);
   }
 
-  type User extending sys_user::UserRoot, sys_user::Mgmt {
-    required owner: sys_core::Org;
-    multi orgs: sys_core::Org {
+  type SysUser extending sys_user::UserRoot, sys_user::Mgmt {
+    required owner: sys_core::SysOrg;
+    multi orgs: sys_core::SysOrg {
       on target delete allow;
     };
     required password: str;
-    multi userTypes: UserType {
+    multi userTypes: sys_user::SysUserType {
       on target delete allow;
     };
     constraint exclusive on (.userName);
   }
   
-  type UserType extending sys_core::Obj {
-    multi resources: sys_core::Obj {
+  type SysUserType extending sys_core::SysObj {
+    multi resources: sys_core::SysObj {
       on target delete allow;
     };
     constraint exclusive on ((.name));
   }
-  type Widget extending sys_core::Obj {
+  type SysWidget extending sys_core::SysObj {
     constraint exclusive on (.name);
   }
 
   # GLOBALS
   global SYS_USER := (
-    select User filter .userName = 'sys_user'
+    select sys_user::SysUser filter .userName = 'sys_user'
   );
   
   global SYS_USER_ID := (
-    select User { id } filter .userName = 'sys_user'
+    select sys_user::SysUser { id } filter .userName = 'sys_user'
   );
 
   global currentUserId: uuid;
 
   global currentUser := (
-    select User filter .id = global currentUserId
+    select sys_user::SysUser filter .id = global currentUserId
   );
 
   # FUNCTIONS
-   function getRootUser() -> optional UserRoot
-    using (select assert_single((select UserRoot filter .userName = '*ROOTUSER*')));
+   function getRootUser() -> optional sys_user::UserRoot
+    using (select assert_single((select sys_user::UserRoot filter .userName = '*ROOTUSER*')));
 
-  function getStaffByName(firstName: str, lastName: str) -> optional Staff
-      using (select assert_single(Staff filter 
+  function getStaffByName(firstName: str, lastName: str) -> optional sys_user::SysStaff
+      using (select assert_single(sys_user::SysStaff filter 
         str_lower(.person.firstName) = str_lower(firstName) and
         str_lower(.person.lastName) = str_lower(lastName)
         )
       );
 
-  function getUser(userName: str) -> optional User
-      using (select User filter .userName = userName);
+  function getUser(userName: str) -> optional sys_user::SysUser
+      using (select sys_user::SysUser filter .userName = userName);
 
-  function getUserType(userTypeName: str) -> optional UserType
-    using (select UserType filter .name = userTypeName);
+  function getUserType(userTypeName: str) -> optional sys_user::SysUserType
+    using (select sys_user::SysUserType filter .name = userTypeName);
 
-  function getWidget(widgetName: str) -> optional Widget
-    using (select Widget filter .name = widgetName);
+  function getWidget(widgetName: str) -> optional sys_user::SysWidget
+    using (select sys_user::SysWidget filter .name = widgetName);
 
 }

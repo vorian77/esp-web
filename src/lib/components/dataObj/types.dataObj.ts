@@ -46,29 +46,29 @@ export class DataObj {
 	data: DataObjData
 	dataObjRaw: DataObjRaw
 	description: string
-	exprObject: string | undefined
+	exprObject?: string
 	fields: Array<Field>
 	header: string
 	isPopup: boolean
 	name: string
 	orderItems: DataObjListOrder
 	subHeader: string
-	table: Table | undefined
+	table: Table
 
 	constructor(dataObjRaw: DataObjRaw) {
+		const clazz = 'DataObj'
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
-		console.log('DataObj.constructor', { dataObjRaw })
 		this.actions = this.initActions(dataObjRaw._actions)
 		this.cardinality = memberOfEnum(
 			dataObjRaw._codeCardinality,
-			'DataObj',
+			clazz,
 			'cardinality',
 			'DataObjCardinality',
 			DataObjCardinality
 		)
 		this.component = memberOfEnum(
 			dataObjRaw._codeComponent,
-			'DataObj',
+			clazz,
 			'component',
 			'DataObjComponent',
 			DataObjComponent
@@ -77,14 +77,14 @@ export class DataObj {
 		this.dataObjRaw = dataObjRaw
 		this.data = new DataObjData(this.cardinality, [])
 		this.description = valueOrDefault(dataObjRaw.description, '')
-		this.exprObject = strOptional(dataObjRaw.exprObject, 'DataObj', 'exprObject')
+		this.exprObject = strOptional(dataObjRaw.exprObject, clazz, 'exprObject')
 		this.fields = this.initFields(dataObjRaw._fieldsEl)
 		this.header = valueOrDefault(dataObjRaw.header, '')
 		this.orderItems = this.initOrderItems(dataObjRaw._fieldsDbOrder)
 		this.isPopup = valueOrDefault(dataObjRaw.isPopup, false)
-		this.name = strRequired(dataObjRaw.name, 'DataObj', 'name')
-		if (dataObjRaw._table) this.table = new Table(dataObjRaw._table)
+		this.name = strRequired(dataObjRaw.name, clazz, 'name')
 		this.subHeader = valueOrDefault(dataObjRaw.subHeader, '')
+		this.table = new Table(dataObjRaw._table)
 	}
 
 	static async constructorCustomActions(dataObjRaw: DataObjRaw) {
@@ -453,7 +453,7 @@ export interface DataObjRaw {
 	_fieldsDbSaveUpdate: any
 	_fieldsDbSelectSys: any
 	_fieldsDbSelectUser: any
-	_table: any
+	_table: { hasMgmt: boolean; mod: string; name: string } | null
 	description: string | null
 	exprFilter: string | null
 	exprObject: string | null

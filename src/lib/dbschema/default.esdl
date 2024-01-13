@@ -1,16 +1,16 @@
 module default {
   scalar type Name extending str;
 
-  type Person {
+  type SysPerson {
     addr1: str;
     addr2: str;
     avatar: json;
     birthDate: cal::local_date;
     city: str;
-    codeEthnicity: sys_core::Code;
-    codeGender: sys_core::Code;
-    codeRace: sys_core::Code;
-    codeState: sys_core::Code;
+    codeEthnicity: sys_core::SysCode;
+    codeGender: sys_core::SysCode;
+    codeRace: sys_core::SysCode;
+    codeState: sys_core::SysCode;
     email: str;
     favFood: str;
     required firstName: Name;

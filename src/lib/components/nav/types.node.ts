@@ -22,7 +22,7 @@ export type DbNode = {
 	name: string
 	order: number
 	page?: string
-	queryActions: Array<RawQueryAction>
+	queryActions?: Array<RawQueryAction>
 }
 
 export class RawNode {
@@ -42,7 +42,7 @@ export class RawNode {
 		this.id = dbNode.id
 		this.name = dbNode.name
 		this.page = valueOrDefault(dbNode.page, '/home')
-		this.queryActions = dbNode.queryActions
+		this.queryActions = dbNode.queryActions ? dbNode.queryActions : []
 		this.type = dbNode._codeType
 	}
 }

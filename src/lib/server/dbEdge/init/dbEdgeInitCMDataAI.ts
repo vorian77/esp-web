@@ -23,9 +23,9 @@ async function initCourses() {
       ('Construction', 'Under development', 'Yes', 'Heavy Equipment (Skills for Life)', 3200, 'This training will prepare students for careers in Heavy Equipment. Program participants will learn how to safely and professionally use forklifts, aerial lifts, and skid steers. During this program students will also learn how to safely operate heavy equipment, how to properly conduct and fill out daily equipment safety checklist, and how to determine equipment load limits. At the conclusion of this program, Participants will receive 128 hours of hand-on training, certifications in OSHA 30, and asbestos abatement.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
       ('Construction', 'Under development', 'Yes', 'Residential and Commercial Masonry', 3999, 'This training introduces students to the history, materials, equipment, drawings, and measurements needed to build a career in the fields of residential and commercial masonry. Skills learned will allow students to build walkways, fences, walls, patios, and building structures using concrete blocks, bricks, and structural tiles.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),     
     }
-    union (insert app_cm_training::Course {
+    union (insert app_cm::CmCourse {
       owner := (select sys_core::getOrg('Atlantic Impact')),
-      codeSector := (select sys_core::getCode('ct_cm_training_course_sector', x.0)),
+      codeSector := (select sys_core::getCode('ct_cm_course_sector', x.0)),
       codeStatus := (select sys_core::getCode('ct_sys_status', x.1)),
       isActive := x.2,
       name := x.3,
@@ -50,9 +50,9 @@ async function initCohorts() {
       ('Residential and Commercial Masonry', 'Cohort 5', 'Under development'),   
       ('Residential and Commercial Masonry', 'Cohort 6', 'Under development'),   
     }
-    union (insert app_cm_training::Cohort {
+    union (insert app_cm::CmCohort {
       owner := (select sys_core::getOrg('Atlantic Impact')),
-      course := (select app_cm_training::getCMTrainingCourse(x.0)),
+      course := (select app_cm::getCMTrainingCourse(x.0)),
       name := x.1,
       codeStatus := (select sys_core::getCode('ct_sys_status', x.2)),
       createdBy := myCreator,
@@ -80,10 +80,10 @@ async function initStudents() {
       ('AE-196200', 'Italo', 'Rodriguez', 'ir@gmail.com', <cal::local_date>'2005-05-15'),
       
     }
-    union (insert app_cm::Client {
+    union (insert app_cm::CmClient {
       owner := (select sys_core::getOrg('Atlantic Impact')),
       agencyId := x.0,
-      person := (insert default::Person {
+      person := (insert default::SysPerson {
         firstName := x.1,
         lastName := x.2,
         email := x.3,
@@ -100,11 +100,11 @@ async function initServiceFlows() {
       with
       myCreator := (select sys_user::getUser('user_sys'))
       for x in {
-        ('sf_cm_training', 'DESC'), 
+        ('sf_cm', 'DESC'), 
         ('sf_cm_osha', 'OSHA'),    
         ('sf_cm_youth_build', 'Youth Build'),    
       }
-      union (insert app_cm::ServiceFlow {
+      union (insert app_cm::CmServiceFlow {
         owner := (select sys_core::getOrg('System')),
         name := x.0,
         header := x.1,
@@ -119,15 +119,15 @@ async function initClientServiceFlows() {
       with
       myCreator := (select sys_user::getUser('user_sys'))
       for x in {
-        ('AE-195500', 'sf_cm_training', '2023-11-05', 'Note 1'),
+        ('AE-195500', 'sf_cm', '2023-11-05', 'Note 1'),
         ('AE-195500', 'sf_cm_osha', '2023-11-15', 'Note 2'),
-        ('AE-196100', 'sf_cm_training', '2023-12-01', 'Note 3'),  
+        ('AE-196100', 'sf_cm', '2023-12-01', 'Note 3'),  
         ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Note 4'),      
       }
-      union (insert app_cm::ClientServiceFlow {
-        client := (select assert_single((select app_cm::Client filter .agencyId = x.0))),
-        serviceFlow := (select assert_single((select app_cm::ServiceFlow filter .name = x.1))),
-        codeStatus := (select assert_single((select sys_core::Code filter .codeType.name = 'ct_cm_service_flow_status' and .name = 'Pending'))),
+      union (insert app_cm::CmClientServiceFlow {
+        client := (select assert_single((select app_cm::CmClient filter .agencyId = x.0))),
+        serviceFlow := (select assert_single((select app_cm::CmServiceFlow filter .name = x.1))),
+        codeStatus := (select assert_single((select sys_core::SysCode filter .codeType.name = 'ct_cm_service_flow_status' and .name = 'Pending'))),
         dateReferral := <cal::local_date>x.2,
         note := x.3,
         createdBy := myCreator,
@@ -141,18 +141,18 @@ async function initCsfCohort() {
   with
   myCreator := (select sys_user::getUser('user_sys'))
   for x in {
-    ('AE-195500', 'sf_cm_training', '2023-11-05', 'Commercial Painting', 'Cohort 1', 'Completed', '2023-11-05'), 
+    ('AE-195500', 'sf_cm', '2023-11-05', 'Commercial Painting', 'Cohort 1', 'Completed', '2023-11-05'), 
     ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Residential and Commercial Masonry', 'Cohort 6', 'Completed', '2023-12-01'), 
   }
-  union (insert app_cm_training::CsfCohort {
-    clientServiceFlow := (select assert_single((select app_cm::ClientServiceFlow filter
-      .client = (select assert_single((select app_cm::Client filter .agencyId = x.0))) and
-      .serviceFlow = (select assert_single((select app_cm::ServiceFlow filter .name = x.1))) and
+  union (insert app_cm::CmCsfCohort {
+    clientServiceFlow := (select assert_single((select app_cm::CmClientServiceFlow filter
+      .client = (select assert_single((select app_cm::CmClient filter .agencyId = x.0))) and
+      .serviceFlow = (select assert_single((select app_cm::CmServiceFlow filter .name = x.1))) and
       .dateReferral = <cal::local_date>x.2))), 
-    cohort := (select assert_single((select app_cm_training::Cohort filter
-      .course = (select app_cm_training::getCMTrainingCourse(x.3)) and
+    cohort := (select assert_single((select app_cm::CmCohort filter
+      .course = (select app_cm::getCMTrainingCourse(x.3)) and
       .name = x.4))),
-    codeStatus := (select assert_single((select sys_core::Code filter .codeType.name = "ct_cm_service_flow_status" and .name = x.5))),
+    codeStatus := (select assert_single((select sys_core::SysCode filter .codeType.name = "ct_cm_service_flow_status" and .name = x.5))),
     dateReferral := <cal::local_date>x.6,
     createdBy := myCreator,
     modifiedBy := myCreator                         

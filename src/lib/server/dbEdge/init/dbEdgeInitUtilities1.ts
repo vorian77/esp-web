@@ -17,7 +17,7 @@ export async function rootObj() {
 
 export async function rootUser() {
 	const query = e.insert(e.sys_user.UserRoot, {
-		person: e.insert(e.default.Person, {
+		person: e.insert(e.default.SysPerson, {
 			firstName: 'Root',
 			lastName: 'User'
 		}),
@@ -28,12 +28,12 @@ export async function rootUser() {
 
 export async function sysUser(owner: string, userName: string) {
 	const CREATOR = e.select(e.sys_user.getRootUser())
-	const query = e.insert(e.sys_user.User, {
+	const query = e.insert(e.sys_user.SysUser, {
 		createdBy: CREATOR,
 		modifiedBy: CREATOR,
 		owner: e.select(e.sys_core.getOrg(owner)),
 		password: '!8394812kalsdjfa*!@#$$*&',
-		person: e.insert(e.default.Person, {
+		person: e.insert(e.default.SysPerson, {
 			firstName: 'System',
 			lastName: 'User'
 		}),
@@ -46,7 +46,7 @@ export async function apps(params: any) {
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_core.App, {
+			return e.insert(e.sys_core.SysApp, {
 				owner: e.select(e.sys_core.getRootObj()),
 				name: e.cast(e.str, i[0]),
 				createdBy: CREATOR,
@@ -60,7 +60,7 @@ export async function userType(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_user.UserType, {
+			return e.insert(e.sys_user.SysUserType, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				name: e.cast(e.str, i[1]),
 				createdBy: CREATOR,
@@ -75,7 +75,7 @@ export async function userUserType(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_user.User, (u) => ({
+			return e.update(e.sys_user.SysUser, (u) => ({
 				filter: e.op(u.userName, '=', e.cast(e.str, i[0])),
 				set: {
 					userTypes: {
@@ -92,7 +92,7 @@ export async function codeTypes(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_core.CodeType, {
+			return e.insert(e.sys_core.SysCodeType, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				order: e.cast(e.int16, i[1]),
 				name: e.cast(e.str, i[2]),
@@ -108,7 +108,7 @@ export async function codes(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_core.Code, {
+			return e.insert(e.sys_core.SysCode, {
 				codeType: e.select(e.sys_core.getCodeType(e.cast(e.str, i[0]))),
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[1]))),
 				name: e.cast(e.str, i[2]),
@@ -125,9 +125,9 @@ export async function nodeObjHeaders(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_obj.NodeObj, {
+			return e.insert(e.sys_core.SysNodeObj, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				parent: e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1]))),
+				parent: e.select(e.sys_core.getNodeObjByName(e.cast(e.str, i[1]))),
 				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'header')),
 				name: e.cast(e.str, i[2]),
 				header: e.cast(e.str, i[3]),
@@ -145,9 +145,9 @@ export async function nodeObjPages(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_obj.NodeObj, {
+			return e.insert(e.sys_core.SysNodeObj, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
-				parent: e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1]))),
+				parent: e.select(e.sys_core.getNodeObjByName(e.cast(e.str, i[1]))),
 				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'page')),
 				name: e.cast(e.str, i[2]),
 				header: e.cast(e.str, i[3]),
@@ -166,7 +166,7 @@ export async function nodeObjPrograms(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_obj.NodeObj, {
+			return e.insert(e.sys_core.SysNodeObj, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				codeType: e.select(e.sys_core.getCode('ct_sys_node_obj_type', 'program')),
 				name: e.cast(e.str, i[1]),
@@ -185,7 +185,7 @@ export async function widgets(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_user.Widget, {
+			return e.insert(e.sys_user.SysWidget, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				name: e.cast(e.str, i[1]),
 				createdBy: CREATOR,
@@ -200,7 +200,7 @@ export async function userTypeResourcesApps(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_user.UserType, (ut) => ({
+			return e.update(e.sys_user.SysUserType, (ut) => ({
 				filter: e.op(ut.name, '=', e.cast(e.str, i[0])),
 				set: {
 					resources: { '+=': e.select(e.sys_core.getEnt(e.cast(e.str, i[1]))) }
@@ -215,11 +215,11 @@ export async function userTypeResourcesPrograms(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_user.UserType, (ut) => ({
+			return e.update(e.sys_user.SysUserType, (ut) => ({
 				filter: e.op(ut.name, '=', e.cast(e.str, i[0])),
 				set: {
 					resources: {
-						'+=': e.select(e.sys_obj.getNodeObjByName(e.cast(e.str, i[1])))
+						'+=': e.select(e.sys_core.getNodeObjByName(e.cast(e.str, i[1])))
 					}
 				}
 			}))
@@ -232,7 +232,7 @@ export async function userTypeResourcesWidgets(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_user.UserType, (ut) => ({
+			return e.update(e.sys_user.SysUserType, (ut) => ({
 				filter: e.op(ut.name, '=', e.cast(e.str, i[0])),
 				set: {
 					resources: { '+=': e.select(e.sys_user.getWidget(e.cast(e.str, i[1]))) }
@@ -247,7 +247,7 @@ export async function tables(data: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_db.Table, {
+			return e.insert(e.sys_db.SysTable, {
 				owner: e.select(e.sys_core.getEnt(e.cast(e.str, i[0]))),
 				mod: e.cast(e.str, i[1]),
 				name: e.cast(e.str, i[2]),
@@ -263,7 +263,7 @@ export async function tables(data: any) {
 export async function tableColumns(data: any) {
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_db.Table, (t) => ({
+			return e.update(e.sys_db.SysTable, (t) => ({
 				filter: e.op(
 					e.op(t.owner.name, '=', e.cast(e.str, i[0])),
 					'and',
@@ -282,7 +282,7 @@ export async function addOrgs(params: any) {
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_core.Org, {
+			return e.insert(e.sys_core.SysOrg, {
 				owner: e.select(e.sys_core.getRootObj()),
 				name: e.cast(e.str, i[0]),
 				header: e.cast(e.str, i[1]),
@@ -298,7 +298,7 @@ export async function addRoleOrg(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.update(e.sys_core.Org, (o) => ({
+			return e.update(e.sys_core.SysOrg, (o) => ({
 				filter: e.op(o.name, '=', e.cast(e.str, i[0])),
 				set: {
 					roles: { '+=': e.select(e.sys_core.getCode('ct_sys_role_org', e.cast(e.str, i[1]))) }
@@ -313,9 +313,9 @@ export async function addStaff(params: any) {
 	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
-			return e.insert(e.sys_user.Staff, {
+			return e.insert(e.sys_user.SysStaff, {
 				owner: e.select(e.sys_core.getOrg(e.cast(e.str, i[0]))),
-				person: e.insert(e.default.Person, {
+				person: e.insert(e.default.SysPerson, {
 					firstName: e.cast(e.str, i[1]),
 					lastName: e.cast(e.str, i[2])
 				}),
@@ -346,33 +346,33 @@ export async function resetDB() {
 	const tables: Array<string> = []
 
 	// tables in delete order
-	tables.push('app_cm::CsfCertification')
-	tables.push('app_cm_training::CsfCohortAttd')
-	tables.push('app_cm_training::CsfCohort')
-	tables.push('app_cm::CsfNote')
-	tables.push('app_cm::ClientServiceFlow')
-	tables.push('app_cm::Client')
+	tables.push('app_cm::CmCsfCertification')
+	tables.push('app_cm::CmCsfCohortAttd')
+	tables.push('app_cm::CmCsfCohort')
+	tables.push('app_cm::CmCsfNote')
+	tables.push('app_cm::CmClientServiceFlow')
+	tables.push('app_cm::CmClient')
 
-	tables.push('app_cm_training::Cohort')
-	tables.push('app_cm_training::Course')
-	tables.push('app_cm::ServiceFlow')
+	tables.push('app_cm::CmCohort')
+	tables.push('app_cm::CmCourse')
+	tables.push('app_cm::CmServiceFlow')
 
-	tables.push('sys_obj::NodeObj')
-	tables.push('sys_obj::DataObj')
-	tables.push('sys_obj::DataObjFieldItems')
-	tables.push('sys_db::Table')
-	tables.push('sys_db::Column')
-	tables.push('sys_obj::DataObjAction')
-	tables.push('sys_user::Widget')
-	tables.push('sys_core::Code')
-	tables.push('sys_core::CodeType')
-	tables.push('sys_user::UserType')
+	tables.push('sys_core::SysNodeObj')
+	tables.push('sys_core::SysDataObj')
+	tables.push('sys_core::SysDataObjFieldItems')
+	tables.push('sys_db::SysTable')
+	tables.push('sys_db::SysColumn')
+	tables.push('sys_core::SysDataObjAction')
+	tables.push('sys_user::SysWidget')
+	tables.push('sys_core::SysCode')
+	tables.push('sys_core::SysCodeType')
+	tables.push('sys_user::SysUserType')
 
-	tables.push('sys_user::Staff')
-	tables.push('sys_user::User')
-	tables.push('default::Person filter .firstName != "Root" and .lastName != "User"')
+	tables.push('sys_user::SysStaff')
+	tables.push('sys_user::SysUser')
+	tables.push('default::SysPerson filter .firstName != "Root" and .lastName != "User"')
 
-	tables.push('sys_core::Obj')
+	tables.push('sys_core::SysObj')
 	tables.push('sys_user::UserRoot')
 	tables.push('sys_core::ObjRoot')
 
@@ -382,4 +382,9 @@ export async function resetDB() {
 	})
 
 	await execute(query)
+
+	// query = 'drop type app_cm_training::Cohort'
+	// await execute(query)
+
+	console.log('DB reset complete...')
 }
