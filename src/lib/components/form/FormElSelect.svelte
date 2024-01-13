@@ -1,14 +1,21 @@
 <script lang="ts">
 	import type { FieldSelect } from '$comps/form/fieldSelect'
-	import { onMount, onDestroy } from 'svelte'
+	import { onMount } from 'svelte'
+	import { FieldAccess } from './types.field'
 	import DataViewer from '$comps/DataViewer.svelte'
+
 	export let field: FieldSelect
 	export let onChange = (fieldName: string, valueData: any, valueDisplay: any) => {}
 
 	const fieldId = 'field' + field.index
 
 	onMount(() => {
-		if (field.valueCurrent.items.length === 1 && !field.valueCurrent.data) {
+		if (
+			field.valueCurrent.items.length === 1 &&
+			!field.valueCurrent.data &&
+			field.access === FieldAccess.required
+		) {
+			console.log('FormElSelect.onMount:', { field })
 			field.valueCurrent.update(
 				field.valueCurrent.items[0].data,
 				field.valueCurrent.items[0].display

@@ -510,7 +510,7 @@ async function initColumns() {
 		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCodeType' } },
+		edgeTypeDefn: { property: 'header', table: { mod: 'sys_core', name: 'SysCodeType' } },
 		header: 'Payment Type',
 		name: 'codeTypePayment'
 	})

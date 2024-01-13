@@ -19,17 +19,17 @@ async function initCourses() {
     with
     myCreator := (select sys_user::getUser('user_sys'))
     for x in {
-      ('Construction', 'Under development', 'Yes', 'Commercial Painting', 3999, 'Training in Commercial Painting will prepare participants for the complexities of painting large-scale business projects such as, factories, residential complexes, and retail developments. Training will focus on drywall, overcoat, and ceiling painting, sealing cracks with wall filler, repairing wood trim, decorative painting, exterior painting, and power washing.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
-      ('Construction', 'Under development', 'Yes', 'Heavy Equipment (Skills for Life)', 3200, 'This training will prepare students for careers in Heavy Equipment. Program participants will learn how to safely and professionally use forklifts, aerial lifts, and skid steers. During this program students will also learn how to safely operate heavy equipment, how to properly conduct and fill out daily equipment safety checklist, and how to determine equipment load limits. At the conclusion of this program, Participants will receive 128 hours of hand-on training, certifications in OSHA 30, and asbestos abatement.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
-      ('Construction', 'Under development', 'Yes', 'Residential and Commercial Masonry', 3999, 'This training introduces students to the history, materials, equipment, drawings, and measurements needed to build a career in the fields of residential and commercial masonry. Skills learned will allow students to build walkways, fences, walls, patios, and building structures using concrete blocks, bricks, and structural tiles.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),     
+      ('Construction', 'Under development', 'Commercial Painting', 3999, 'ct_cm_payment_type_milestone2', 'Training in Commercial Painting will prepare participants for the complexities of painting large-scale business projects such as, factories, residential complexes, and retail developments. Training will focus on drywall, overcoat, and ceiling painting, sealing cracks with wall filler, repairing wood trim, decorative painting, exterior painting, and power washing.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
+      ('Construction', 'Under development', 'Heavy Equipment (Skills for Life)', 3200, 'ct_cm_payment_type_milestone1', 'This training will prepare students for careers in Heavy Equipment. Program participants will learn how to safely and professionally use forklifts, aerial lifts, and skid steers. During this program students will also learn how to safely operate heavy equipment, how to properly conduct and fill out daily equipment safety checklist, and how to determine equipment load limits. At the conclusion of this program, Participants will receive 128 hours of hand-on training, certifications in OSHA 30, and asbestos abatement.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
+      ('Construction', 'Under development', 'Residential and Commercial Masonry', 3999, 'ct_cm_payment_type_milestone2', 'This training introduces students to the history, materials, equipment, drawings, and measurements needed to build a career in the fields of residential and commercial masonry. Skills learned will allow students to build walkways, fences, walls, patios, and building structures using concrete blocks, bricks, and structural tiles.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),     
     }
     union (insert app_cm::CmCourse {
       owner := (select sys_core::getOrg('Atlantic Impact')),
       codeSector := (select sys_core::getCode('ct_cm_course_sector', x.0)),
       codeStatus := (select sys_core::getCode('ct_sys_status', x.1)),
-      isActive := x.2,
-      name := x.3,
-      cost := x.4,
+      name := x.2,
+      cost := x.3,
+      codeTypePayment := (select sys_core::getCodeType(x.4)),
       description := x.5,
       schedule := x.6,
       createdBy := myCreator,

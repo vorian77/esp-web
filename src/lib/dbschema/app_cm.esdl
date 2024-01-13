@@ -43,7 +43,6 @@ module app_cm {
     codeTypePayment: sys_core::SysCodeType;
     cost: float32;
     description: str;
-    isActive: str;
     provider: sys_core::SysOrg;
     schedule: str;
     staffAdmin: sys_user::SysStaff;

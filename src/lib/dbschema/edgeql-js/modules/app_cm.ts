@@ -68,7 +68,6 @@ const CmCohort: $.$expr_PathNode<$.TypeSet<$CmCohort, $.Cardinality.Many>, null>
 export type $CmCourseλShape = $.typeutil.flatten<_sys_core.$SysObjλShape & {
   "cost": $.PropertyDesc<_std.$float32, $.Cardinality.AtMostOne, false, false, false, false>;
   "description": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "isActive": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "schedule": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeMultiCerts": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.Many, {}, false, false,  false, false>;
   "codeMultiExams": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.Many, {}, false, false,  false, false>;

@@ -74,7 +74,6 @@ export namespace app_cm {
   export interface CmCourse extends sys_core.SysObj {
     "cost"?: number | null;
     "description"?: string | null;
-    "isActive"?: string | null;
     "schedule"?: string | null;
     "codeMultiCerts": sys_core.SysCode[];
     "codeMultiExams": sys_core.SysCode[];

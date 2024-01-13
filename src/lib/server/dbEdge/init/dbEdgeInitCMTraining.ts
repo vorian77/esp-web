@@ -30,7 +30,7 @@ async function initCMTrainingCourse() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'isActive',
+				columnName: 'codeStatus',
 				dbOrderSelect: 20
 			},
 			{
@@ -42,8 +42,18 @@ async function initCMTrainingCourse() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'description',
+				columnName: 'cost',
+				dbOrderSelect: 40
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeTypePayment',
 				dbOrderSelect: 50
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeSector',
+				dbOrderSelect: 60
 			}
 		]
 	})
@@ -59,27 +69,29 @@ async function initCMTrainingCourse() {
 		actions: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
-				codeAccess: 'optional',
-				codeElement: 'checkbox',
-				columnName: 'isActive',
-				dbOrderSelect: 10
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				isDbFilter: true,
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'owner',
+				dbOrderSelect: 20,
+				exprPreset:
+					'(SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .name = <str,user,org.name>)',
+				isDisplay: false
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeStatus',
+				dbOrderSelect: 30,
+				itemsList: 'il_sys_code_order_index_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_sys_status' }
 			},
 			{
 				columnName: 'name',
-				dbOrderSelect: 20
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'select',
-				columnName: 'codeSector',
-				dbOrderSelect: 30,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_course_sector' }
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'textArea',
-				columnName: 'description',
 				dbOrderSelect: 40
 			},
 			{
@@ -88,27 +100,32 @@ async function initCMTrainingCourse() {
 				dbOrderSelect: 50
 			},
 			{
-				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'codeTypePayment',
-				dbOrderSelect: 70,
+				dbOrderSelect: 60,
 				itemsList: 'il_sys_codeType_order_name_by_codeTypeParentName',
 				itemsListParms: { codeTypeParentName: 'ct_cm_payment_type' }
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeSector',
+				dbOrderSelect: 70,
+				itemsList: 'il_sys_code_order_index_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_cm_course_sector' }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'description',
+				dbOrderSelect: 80
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'schedule',
-				dbOrderSelect: 80
+				dbOrderSelect: 90
 			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'select',
-				columnName: 'owner',
-				dbOrderSelect: 90,
-				itemsList: 'il_sys_role_org_by_codeName',
-				itemsListParms: { codeName: 'cm_training_role_org_agency' }
-			},
+
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
@@ -127,33 +144,18 @@ async function initCMTrainingCourse() {
 			},
 			{
 				codeAccess: 'optional',
-				codeElement: 'select',
-				columnName: 'codeStatus',
+				codeElement: 'checkbox',
+				columnName: 'codeMultiRqmts',
 				dbOrderSelect: 120,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_sys_status' }
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'checkbox',
-				columnName: 'codeMultiExams',
-				dbOrderSelect: 130,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_course_exam' }
+				itemsListParms: { codeTypeName: 'ct_cm_course_rqmt' }
 			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'checkbox',
-				columnName: 'codeMultiCerts',
-				dbOrderSelect: 140,
-				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_course_cert' }
-			},
+
 			{
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiItemsIncluded',
-				dbOrderSelect: 150,
+				dbOrderSelect: 130,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_course_items_included' }
 			},
@@ -161,25 +163,27 @@ async function initCMTrainingCourse() {
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiItemsNotIncluded',
-				dbOrderSelect: 160,
+				dbOrderSelect: 140,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
 				itemsListParms: { codeTypeName: 'ct_cm_course_items_not_included' }
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
-				columnName: 'codeMultiRqmts',
-				dbOrderSelect: 170,
+				columnName: 'codeMultiExams',
+				dbOrderSelect: 150,
 				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_course_rqmt' }
+				itemsListParms: { codeTypeName: 'ct_cm_course_exam' }
 			},
 			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 180,
-				isDbFilter: true,
-				isDisplay: false
+				codeAccess: 'optional',
+				codeElement: 'checkbox',
+				columnName: 'codeMultiCerts',
+				dbOrderSelect: 160,
+				itemsList: 'il_sys_code_order_name_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_cm_course_cert' }
 			},
+
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
@@ -228,6 +232,11 @@ async function initCMTrainingCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
+				columnName: 'codeStatus',
+				dbOrderSelect: 40
+			},
+			{
+				codeAccess: 'readOnly',
 				columnName: 'name',
 				dbOrderCrumb: 10,
 				dbOrderList: 10,
@@ -254,30 +263,37 @@ async function initCMTrainingCohort() {
 		fields: [
 			{
 				codeAccess: 'readOnly',
-				columnName: 'course',
+				columnName: 'id',
 				dbOrderSelect: 10,
-				exprPreset:
-					'(SELECT app_cm::CmCourse { data := .id, display := .name } FILTER .id = <uuid,tree,CmCourse.id>)'
+				isDbFilter: true,
+				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'owner',
-				dbOrderSelect: 15,
+				dbOrderSelect: 20,
 				exprPreset:
-					'(SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .name = <str,user,org.name>)'
+					'(SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .name = <str,user,org.name>)',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'course',
+				dbOrderSelect: 30,
+				exprPreset:
+					'(SELECT app_cm::CmCourse { data := .id, display := .name } FILTER .id = <uuid,tree,CmCourse.id>)',
+				isDisplay: false
+			},
+			{
+				columnName: 'codeStatus',
+				dbOrderSelect: 40,
+				itemsList: 'il_sys_code_order_index_by_codeTypeName',
+				itemsListParms: { codeTypeName: 'ct_sys_status' }
 			},
 			{
 				columnName: 'name',
-				dbOrderSelect: 20,
-				headerAlt: 'Cohort ID'
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'select',
-				columnName: 'codeStatus',
 				dbOrderSelect: 50,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_sys_status' }
+				headerAlt: 'Cohort ID'
 			},
 			{
 				codeAccess: 'optional',
@@ -307,37 +323,30 @@ async function initCMTrainingCohort() {
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
-				dbOrderSelect: 170
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 180,
-				isDbFilter: true,
-				isDisplay: false
+				dbOrderSelect: 90
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
-				dbOrderSelect: 190,
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdBy',
 				dbOrderSelect: 200,
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'modifiedAt',
+				columnName: 'createdBy',
 				dbOrderSelect: 210,
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'modifiedBy',
+				columnName: 'modifiedAt',
 				dbOrderSelect: 220,
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 230,
 				isDisplay: true
 			}
 		]

@@ -10,7 +10,7 @@ import initCMDataAI from '$server/dbEdge/init/dbEdgeInitCMDataAI'
 import initCMDataMOED from '$server/dbEdge/init/dbEdgeInitCMDataMOED'
 
 const FILE = '/server/dbEdge/init'
-const load = 0
+const load = 1
 
 export async function init() {
 	if (load) {
