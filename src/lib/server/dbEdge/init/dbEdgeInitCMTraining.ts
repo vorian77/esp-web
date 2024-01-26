@@ -7,7 +7,6 @@ export default async function init() {
 	console.log(`${FILE}.start...`)
 	await initCMTrainingCourse()
 	await initCMTrainingCohort()
-	await initCMTrainingReports()
 	console.log(`${FILE}.end`)
 }
 
@@ -413,61 +412,6 @@ async function initCMTrainingCohort() {
 				dbOrderSelect: 230,
 				indexTable: '0',
 				isDisplay: true
-			}
-		]
-	})
-}
-
-async function initCMTrainingReports() {
-	await addDataObj({
-		actionsField: ['noa_list_new'],
-		codeComponent: 'FormList',
-		codeCardinality: 'list',
-		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
-		header: 'Courses (Summary)',
-		name: 'data_obj_cm_ai_report_course_summary',
-		owner: 'app_cm',
-		tables: [{ index: '0', table: 'CmCourse' }],
-		fields: [
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 10,
-				isDisplay: false,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'name',
-				dbOrderCrumb: 10,
-				dbOrderList: 10,
-				dbOrderSelect: 20,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'codeStatus',
-				dbOrderSelect: 30,
-				indexTable: '0',
-				link: { columnsDisplay: ['name'] }
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'custom_select_int',
-				dbOrderSelect: 40,
-				exprCustom: `(SELECT count((SELECT app_cm::CmCohort FILTER .course.id = app_cm::CmCourse.id)))`,
-				headerAlt: 'Cohorts (Count)',
-				indexTable: '0',
-				nameCustom: 'customCohortsCount'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'custom_select_str',
-				dbOrderSelect: 50,
-				exprCustom: `(SELECT app_cm::CmCohort FILTER .course.id = app_cm::CmCourse.id).name`,
-				headerAlt: 'Cohorts',
-				indexTable: '0',
-				nameCustom: 'customCohorts'
 			}
 		]
 	})

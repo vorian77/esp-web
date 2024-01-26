@@ -1,12 +1,18 @@
 import { apps, userTypeResourcesPrograms, tables } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addColumn, addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import { execute } from '$routes/api/dbEdge/types.dbEdge'
+import initSysAdminReports from '$server/dbEdge/init/dbEdgeInitSysAdminReports'
 
 const FILENAME = 'initSysAdmin'
 
 export default async function init() {
 	console.log()
 	console.log(`${FILENAME}.start...`)
+	// await initAdmin()
+	await reports()
+	console.log(`${FILENAME}.end`)
+}
+async function initAdmin() {
 	await resetDB()
 	await initCore()
 	await initApp()
@@ -24,8 +30,10 @@ export default async function init() {
 
 	// // await initConfig()
 	await initResources()
+}
 
-	console.log(`${FILENAME}.end`)
+async function reports() {
+	await initSysAdminReports()
 }
 
 async function initCore() {

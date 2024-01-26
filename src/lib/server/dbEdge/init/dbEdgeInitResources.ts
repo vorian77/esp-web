@@ -214,16 +214,6 @@ async function initNodeObjs() {
 	await nodeObjHeaders([
 		['app_cm', 'node_pgm_cm_staff_provider', 'node_hdr_cm_ai_reports', 'Reports', 30, 'application']
 	])
-
-	await addNodeProgramObj({
-		codeIcon: 'application',
-		dataObj: 'data_obj_cm_ai_report_course_summary',
-		header: 'Courses (Summary)',
-		name: 'node_obj_cm_ai_report_course_summary',
-		order: 10,
-		owner: 'app_cm',
-		parentNodeName: 'node_hdr_cm_ai_reports'
-	})
 }
 
 async function initFooter() {
