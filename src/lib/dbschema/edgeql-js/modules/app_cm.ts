@@ -119,7 +119,6 @@ const CmCsfCertification: $.$expr_PathNode<$.TypeSet<$CmCsfCertification, $.Card
 
 export type $CmCsfCohortλShape = $.typeutil.flatten<$CmCsfDataλShape & {
   "cohort": $.LinkDesc<$CmCohort, $.Cardinality.One, {}, false, false,  false, false>;
-  "codeMultiCerts": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.Many, {}, false, false,  false, false>;
   "codeStatus": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.One, {}, false, false,  false, false>;
   "dateEnd": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;
   "dateReferral": $.PropertyDesc<_cal.$local_date, $.Cardinality.AtMostOne, false, false, false, false>;

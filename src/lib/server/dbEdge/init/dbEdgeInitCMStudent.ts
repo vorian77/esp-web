@@ -545,13 +545,6 @@ async function initStudentCsfCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'codeMultiCerts',
-				dbOrderSelect: 90,
-				indexTable: '0',
-				link: { columnsDisplay: ['name'] }
-			},
-			{
-				codeAccess: 'readOnly',
 				columnName: 'note',
 				dbOrderSelect: 100,
 				indexTable: '0'
@@ -640,17 +633,6 @@ async function initStudentCsfCohort() {
 				columnName: 'dateEnd',
 				dbOrderSelect: 90,
 				indexTable: '0'
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'checkbox',
-				columnName: 'codeMultiCerts',
-				dbOrderSelect: 100,
-				indexTable: '0',
-				headerAlt: 'Certifications Earned',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
-				itemsDbParms: { codeTypeName: 'ct_cm_course_cert' },
-				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',

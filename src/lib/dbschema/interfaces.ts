@@ -101,7 +101,6 @@ export namespace app_cm {
   }
   export interface CmCsfCohort extends CmCsfData {
     "cohort": CmCohort;
-    "codeMultiCerts": sys_core.SysCode[];
     "codeStatus": sys_core.SysCode;
     "dateEnd"?: edgedb.LocalDate | null;
     "dateReferral"?: edgedb.LocalDate | null;

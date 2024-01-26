@@ -63,7 +63,6 @@ module app_cm {
   }
 
   type CmCsfCohort extending app_cm::CmCsfData {
-    multi codeMultiCerts: sys_core::SysCode;
     required codeStatus: sys_core::SysCode;
     required cohort: app_cm::CmCohort;
     dateEnd: cal::local_date;

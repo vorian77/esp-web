@@ -323,7 +323,7 @@ async function initUsers() {
 		lastName: 'Hicks',
 		owner: 'Atlantic Impact',
 		password: 'Atlantic99!',
-		userName: '5551112222'
+		userName: '3136272756'
 	})
 	await addUser({
 		firstName: 'Phyllip',

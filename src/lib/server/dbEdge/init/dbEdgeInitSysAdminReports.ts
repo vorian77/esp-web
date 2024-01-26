@@ -79,19 +79,21 @@ async function initReportCourseSummary() {
 				columnName: 'custom_select_int',
 				dbOrderSelect: 70,
 				exprCustom: `(SELECT count((SELECT app_cm::CmCsfCohort FILTER .cohort.course.id = app_cm::CmCourse.id AND NOT EXISTS .dateStart)))`,
-				headerAlt: 'Students - Enrollment Pending',
+				headerAlt: 'Students - Pending Enrollment',
 				indexTable: '0',
 				nameCustom: 'customStudentsEnrollPending'
 			},
-			// {
-			// 	codeAccess: 'readOnly',
-			// 	columnName: 'custom_select_int',
-			// 	dbOrderSelect: 80,
-			// 	exprCustom: `(SELECT count((SELECT app_cm::CmCsfCohort FILTER .cohort.course.id = app_cm::CmCourse.id AND .dateStartEst < std::datetime_current() )))`,
-			// 	headerAlt: 'Students - Enrollment Missed',
-			// 	indexTable: '0',
-			// 	nameCustom: 'customStudentsEnrollMissed'
-			//}
+			{
+				codeAccess: 'readOnly',
+				columnName: 'custom_select_int',
+				dbOrderSelect: 80,
+				exprCustom: `(SELECT count((SELECT app_cm::CmCsfCohort {*} FILTER
+          .cohort.course.id = app_cm::CmCourse.id AND
+          .dateStartEst < cal::to_local_date(datetime_current(), 'US/Eastern') )))`,
+				headerAlt: 'Students - Missed Est. Enrollment',
+				indexTable: '0',
+				nameCustom: 'customStudentsEnrollMissed'
+			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'custom_select_int',

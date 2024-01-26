@@ -8,7 +8,7 @@ const FILENAME = 'initSysAdmin'
 export default async function init() {
 	console.log()
 	console.log(`${FILENAME}.start...`)
-	// await initAdmin()
+	await initAdmin()
 	await reports()
 	console.log(`${FILENAME}.end`)
 }
