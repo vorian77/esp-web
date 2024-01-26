@@ -12,7 +12,7 @@ import { getDataObjByName, queryMultiple, querySingle } from '$routes/api/dbEdge
 import { getDataObjId, getDataObjById } from '$routes/api/dbEdge/dbEdgeUtilities'
 
 const FILE = '/server/dbEdge/init'
-const load = 1
+const load = 0
 
 export async function init() {
 	if (load) {
