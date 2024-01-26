@@ -453,9 +453,18 @@ async function initCMTrainingReports() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'custom_select_str',
+				columnName: 'custom_select_int',
 				dbOrderSelect: 40,
 				exprCustom: `(SELECT count((SELECT app_cm::CmCohort FILTER .course.id = app_cm::CmCourse.id)))`,
+				headerAlt: 'Cohorts (Count)',
+				indexTable: '0',
+				nameCustom: 'customCohortsCount'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'custom_select_str',
+				dbOrderSelect: 50,
+				exprCustom: `(SELECT app_cm::CmCohort FILTER .course.id = app_cm::CmCourse.id).name`,
 				headerAlt: 'Cohorts',
 				indexTable: '0',
 				nameCustom: 'customCohorts'
