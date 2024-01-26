@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DataObj, DataObjAction, DataObjRowStatus } from '$comps/types'
+	import { DataObj, DataObjAction, DataObjRecordStatus } from '$comps/types'
 	import {
 		State,
 		StatePacket,
@@ -7,7 +7,7 @@
 		TokenAppDoDetail,
 		TokenAppDoDetailConfirm,
 		TokenAppDoAction
-	} from '$comps/nav/types.app'
+	} from '$comps/nav/types.appState'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
@@ -21,7 +21,7 @@
 
 	const footerOnly = ['noa_detail_cancel', 'noa_detail_save']
 	let actions: Array<DataObjAction> = []
-	dataObj.actions.forEach((a) => {
+	dataObj.actionsField.forEach((a) => {
 		if (isHeader) {
 			if (!footerOnly.includes(a.name)) actions.push(a)
 		} else {
@@ -49,7 +49,7 @@
 				break
 
 			case 'noa_detail_delete':
-				if (rowStatus === DataObjRowStatus.created) {
+				if (rowStatus === DataObjRecordStatus.created) {
 					await objAction(TokenAppDoAction.back, true)
 				} else {
 					const confirm = new TokenAppDoDetailConfirm(
@@ -101,10 +101,10 @@
 		})
 	}
 
-	async function objActionSave(rowStatus: DataObjRowStatus) {
-		if ([DataObjRowStatus.retrieved, DataObjRowStatus.updated].includes(rowStatus)) {
+	async function objActionSave(rowStatus: DataObjRecordStatus) {
+		if ([DataObjRecordStatus.retrieved, DataObjRecordStatus.updated].includes(rowStatus)) {
 			await objAction(TokenAppDoAction.detailSaveUpdate, false)
-		} else if (rowStatus === DataObjRowStatus.created) {
+		} else if (rowStatus === DataObjRecordStatus.created) {
 			await objAction(TokenAppDoAction.detailSaveInsert, false)
 		}
 	}

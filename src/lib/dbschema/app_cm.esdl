@@ -22,7 +22,7 @@ module app_cm {
   }
 
   type CmCsfData extending sys_user::Mgmt {
-    required clientServiceFlow: app_cm::CmClientServiceFlow;
+    required csf: app_cm::CmClientServiceFlow;
   }
 
   type CmCsfNote extending app_cm::CmCsfData {
@@ -67,8 +67,10 @@ module app_cm {
     required codeStatus: sys_core::SysCode;
     required cohort: app_cm::CmCohort;
     dateEnd: cal::local_date;
+    dateEndEst: cal::local_date;
     dateReferral: cal::local_date;
     dateStart: cal::local_date;
+    dateStartEst: cal::local_date;  
     note: str;
   }
 

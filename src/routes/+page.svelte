@@ -16,7 +16,6 @@
 
 	async function expressLogin() {
 		// <temp> 231026 express login
-
 		const responsePromise: Response = await fetch('/auth', {
 			method: 'POST',
 			body: JSON.stringify({

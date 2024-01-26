@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { FieldInput } from '$comps/form/fieldInput'
-	import { FieldAccess, ValidityErrorLevel } from '$comps/types'
+	import { Field, FieldAccess } from '$comps/form/field'
+	import { DataFieldDataType, ValidityErrorLevel } from '$comps/types'
+	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
+
+	const dispatch = createEventDispatcher()
 
 	export let field: FieldInput
 
@@ -9,14 +13,29 @@
 	const min = field.minValue ? field.minValue.toString() : ''
 	const max = field.maxValue ? field.maxValue.toString() : ''
 	const step = field.spinStep ? field.spinStep : ''
+	const dispatchType = 'changeItem'
+
+	function onDoubleClick(event: MouseEvent) {
+		if (field.dataType === DataFieldDataType.date) {
+			const date = new Date()
+			const year = date.getFullYear().toString()
+			const dateMonth = date.getMonth() + 1
+			const dateDay = date.getDate()
+			const month = dateMonth < 10 ? '0' + dateMonth : dateMonth.toString()
+			const day = dateDay < 10 ? '0' + dateDay : dateDay.toString()
+			const value = year + '-' + month + '-' + day
+			// field.valueCurrent = year + '-' + month + '-' + day
+			dispatch(dispatchType, { fieldName: field.name, value })
+		}
+	}
 </script>
 
 <!-- <DataViewer header="element" data={field.element} /> -->
-<!-- <DataViewer header="field.value" data={field.value} /> -->
+<!-- <DataViewer header="field.value" data={field.valueCurrent} /> -->
 
 <label class="label" for={field.name} hidden={field.access == FieldAccess.hidden}>
 	<span>{field.label}</span>
-	<div class="show_always">
+	<div>
 		<input
 			class={classValue}
 			class:input-warning={field.validity.level == ValidityErrorLevel.warning}
@@ -27,45 +46,13 @@
 			{min}
 			name={field.name}
 			on:change
+			on:dblclick={onDoubleClick}
 			on:keyup
 			placeholder={field.placeHolder}
 			readonly={field.access == FieldAccess.readonly}
 			{step}
 			type={field.element}
-			value={field.valueCurrent.display}
+			value={field.valueCurrent}
 		/>
 	</div>
 </label>
-
-<!-- <div class="show_always">
-	<input type="number" class="show_spin" step="0.5" />
-</div> -->
-
-<!-- <style>
-	/* turn off spinner */
-	/* Chrome, Safari, Edge, Opera */
-	/* disable globally if required */
-	input[type='number']::-webkit-outer-spin-button,
-	input[type='number']::-webkit-inner-spin-button {
-		-webkit-appearance: none;
-	}
-
-	/* restore to hidden until mouse over */
-	.show_spinner input[type='number']::-webkit-outer-spin-button,
-	.show_spinner input[type='number']::-webkit-inner-spin-button {
-		-webkit-appearance: inner-spin-button;
-	}
-
-	/* restore and show permanently */
-	.show_always input[type='number']::-webkit-outer-spin-button,
-	.show_always input[type='number']::-webkit-inner-spin-button {
-		-webkit-appearance: inner-spin-button;
-		opacity: 1;
-		margin-left: 10px;
-	}
-
-	/* Firefox */
-	input[type='number'] {
-		-moz-appearance: textfield;
-	}
-</style> -->

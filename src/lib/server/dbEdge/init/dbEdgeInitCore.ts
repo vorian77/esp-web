@@ -10,10 +10,11 @@ import {
 	tables
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import {
+	addCode,
 	addCodeType,
 	addColumn,
 	addDataObjAction,
-	addDataObjFieldItems,
+	addDataObjFieldItemsDb,
 	addNodeFooter,
 	addUserOrg
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
@@ -28,9 +29,9 @@ export default async function initSys() {
 	await initSysCodes()
 	await initTables()
 	await initColumns()
-	await initTableColumns()
+	// await initTableColumns()
 	await initSysDataObjActions()
-	await initDataObjFieldItemsLists()
+	await initDataObjFieldItemsDb()
 	console.log(`${FILE}.end`)
 }
 
@@ -38,8 +39,7 @@ async function initSysCore() {
 	await rootObj()
 	await rootUser()
 
-	await apps([['app_cm'], ['app_db'], ['app_sys'], ['app_sys_admin']])
-
+	await apps([['app_cm'], ['app_db'], ['app_sys']])
 	await addOrgs([
 		['Atlantic Impact', 'Atlantic Impact Mobile'],
 		['Atlantic Impact - School Site 1', ''],
@@ -51,71 +51,82 @@ async function initSysCore() {
 	await sysUser('System', 'user_sys')
 	await addUserOrg({ orgName: 'System', userName: 'user_sys' })
 }
-
 async function initSysCodeTypess() {
 	await codeTypes([
+		['app_cm', 0, 'ct_cm_case_note_type'],
 		['app_cm', 0, 'ct_cm_service_flow_status'],
-
 		['app_cm', 0, 'ct_cm_course_cert'],
 		['app_cm', 0, 'ct_cm_course_exam'],
 		['app_cm', 0, 'ct_cm_course_items_included'],
 		['app_cm', 0, 'ct_cm_course_items_not_included'],
 		['app_cm', 0, 'ct_cm_course_rqmt'],
 		['app_cm', 0, 'ct_cm_course_sector'],
-
 		['app_cm', 0, 'ct_cm_payment_type'],
-
 		['app_db', 0, 'ct_db_col_alignment'],
 		['app_db', 0, 'ct_db_col_data_type'],
-
+		['app_db', 0, 'ct_db_col_mask'],
 		['app_sys', 0, 'ct_sys_do_cardinality'],
 		['app_sys', 0, 'ct_sys_do_component'],
-
 		['app_sys', 0, 'ct_sys_do_field_access'],
 		['app_sys', 0, 'ct_sys_do_field_element'],
 		['app_sys', 0, 'ct_sys_do_field_element_custom_type'],
 		['app_sys', 0, 'ct_sys_do_field_list_dir'],
 		['app_sys', 0, 'ct_sys_do_field_op'],
 		['app_sys', 0, 'ct_sys_do_field_source'],
-
 		['app_sys', 0, 'ct_sys_do_render_type'],
-
 		['app_sys', 0, 'ct_sys_node_obj_icon'],
 		['app_sys', 0, 'ct_sys_node_obj_type'],
-
 		['app_sys', 0, 'ct_sys_person_ethnicity'],
 		['app_sys', 0, 'ct_sys_person_gender'],
 		['app_sys', 0, 'ct_sys_person_race'],
-
 		['app_sys', 0, 'ct_sys_role_org'],
 		['app_sys', 0, 'ct_sys_role_staff'],
 		['app_sys', 0, 'ct_sys_state'],
 		['app_sys', 0, 'ct_sys_status']
 	])
-
 	await addCodeType({
 		owner: 'app_cm',
 		parent: 'ct_cm_payment_type',
 		header: 'Milestone 1 (Single Payment)',
 		name: 'ct_cm_payment_type_milestone1',
-		order: 0,
-		creator: 'user_sys'
+		order: 0
 	})
 	await addCodeType({
 		owner: 'app_cm',
 		parent: 'ct_cm_payment_type',
 		header: 'Milestone 2 (Dual Payments)',
 		name: 'ct_cm_payment_type_milestone2',
-		order: 1,
-		creator: 'user_sys'
+		order: 1
 	})
 }
 
 async function initSysCodes() {
 	await codes([
+		// ct_cm_case_note_type
+		['ct_cm_case_note_type', 'app_cm', 'Assessment', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Case Assignment', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Case Closure', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Case Status', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Contact (face-to-face)', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Contact (non face-to-face)', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Crisis Situation', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Disruptive Behavior', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Eligibility Determination', 0],
+		['ct_cm_case_note_type', 'app_cm', 'File Documentation', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Follow-Up', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Medical', 0],
+		['ct_cm_case_note_type', 'app_cm', 'No Call/No Show', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Other', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Program Exit', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Punctuality', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Substance Abuse', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Supportive service', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Telephone Follow-Up', 0],
+		['ct_cm_case_note_type', 'app_cm', 'Transportation Allowance', 0],
+
 		// ct_cm_service_flow_status
 		['ct_cm_service_flow_status', 'app_cm', 'Pending', 0],
-		['ct_cm_service_flow_status', 'app_cm', 'Proceeding', 1],
+		['ct_cm_service_flow_status', 'app_cm', 'Enrolled', 1],
 		['ct_cm_service_flow_status', 'app_cm', 'Suspended', 3],
 		['ct_cm_service_flow_status', 'app_cm', 'Completed', 4],
 		['ct_cm_service_flow_status', 'app_cm', 'Dropped Out', 5],
@@ -159,17 +170,25 @@ async function initSysCodes() {
 
 		// db col - data type
 		['ct_db_col_data_type', 'app_sys', 'bool', 0],
-		['ct_db_col_data_type', 'app_sys', 'computed', 1],
-		['ct_db_col_data_type', 'app_sys', 'date', 2],
-		['ct_db_col_data_type', 'app_sys', 'datetime', 3],
-		['ct_db_col_data_type', 'app_sys', 'decimal', 4],
-		['ct_db_col_data_type', 'app_sys', 'edgeType', 5],
-		['ct_db_col_data_type', 'app_sys', 'int16', 6],
-		['ct_db_col_data_type', 'app_sys', 'int32', 7],
-		['ct_db_col_data_type', 'app_sys', 'int64', 8],
-		['ct_db_col_data_type', 'app_sys', 'json', 9],
-		['ct_db_col_data_type', 'app_sys', 'str', 10],
-		['ct_db_col_data_type', 'app_sys', 'uuid', 11],
+		['ct_db_col_data_type', 'app_sys', 'date', 1],
+		['ct_db_col_data_type', 'app_sys', 'datetime', 2],
+		['ct_db_col_data_type', 'app_sys', 'decimal', 3],
+		['ct_db_col_data_type', 'app_sys', 'file', 4],
+		['ct_db_col_data_type', 'app_sys', 'float16', 5],
+		['ct_db_col_data_type', 'app_sys', 'float64', 6],
+		['ct_db_col_data_type', 'app_sys', 'int16', 7],
+		['ct_db_col_data_type', 'app_sys', 'int32', 8],
+		['ct_db_col_data_type', 'app_sys', 'int64', 9],
+		['ct_db_col_data_type', 'app_sys', 'json', 10],
+		['ct_db_col_data_type', 'app_sys', 'link', 11],
+		['ct_db_col_data_type', 'app_sys', 'literal', 12],
+		['ct_db_col_data_type', 'app_sys', 'str', 13],
+		['ct_db_col_data_type', 'app_sys', 'uuid', 14],
+
+		// db col - mask
+		['ct_db_col_mask', 'app_sys', 'currencyUs', 0],
+		['ct_db_col_mask', 'app_sys', 'ssn', 1],
+		['ct_db_col_mask', 'app_sys', 'telephone', 2],
 
 		// data obj - cardinality
 		['ct_sys_do_cardinality', 'app_sys', 'detail', 0],
@@ -289,33 +308,38 @@ async function initSysCodes() {
 		['ct_sys_status', 'app_sys', 'Rejected', 4]
 	])
 
-	// await addCode({
-	// 	owner: 'app_cm',
-	// 	codeType: 'ct_cm_payment_type_milestone1',
-	// 	header: 'Payment 1 - 100%',
-	// 	name: 'milestone1_payment1',
-	// 	order: 0,
-	// 	creator: 'user_sys'
-	// })
-	// await addCode({
-	// 	owner: 'app_cm',
-	// 	codeType: 'ct_cm_payment_type_milestone2',
-	// 	header: 'Payment 1 - 50%',
-	// 	name: 'milestone2_payment1',
-	// 	order: 0,
-	// 	creator: 'user_sys'
-	// })
-	// await addCode({
-	// 	owner: 'app_cm',
-	// 	codeType: 'ct_cm_payment_type_milestone2',
-	// 	header: 'Payment 2 - 50%',
-	// 	name: 'milestone2_payment1',
-	// 	order: 0,
-	// 	creator: 'user_sys'
-	// })
+	await addCode({
+		owner: 'app_cm',
+		codeType: 'ct_cm_payment_type_milestone1',
+		header: 'Payment 1 - 100%',
+		name: 'milestone1_payment1',
+		order: 0
+	})
+	await addCode({
+		owner: 'app_cm',
+		codeType: 'ct_cm_payment_type_milestone2',
+		header: 'Payment 1 - 50%',
+		name: 'milestone2_payment1',
+		order: 0
+	})
+	await addCode({
+		owner: 'app_cm',
+		codeType: 'ct_cm_payment_type_milestone2',
+		header: 'Payment 2 - 50%',
+		name: 'milestone2_payment2',
+		order: 0
+	})
 }
 
 async function initTables() {
+	await tables([
+		['app_sys', 'default', 'SysPerson', false],
+		['app_sys', 'sys_core', 'SysCode', true],
+		['app_sys', 'sys_core', 'SysCodeType', true],
+		['app_sys', 'sys_core', 'SysOrg', true],
+		['app_sys', 'sys_user', 'SysStaff', true],
+		['app_sys', 'sys_user', 'SysUser', false]
+	])
 	await tables([
 		['app_cm', 'app_cm', 'CmServiceFlow', true],
 		['app_cm', 'app_cm', 'CmClient', true],
@@ -325,23 +349,18 @@ async function initTables() {
 		['app_cm', 'app_cm', 'CmCsfCohort', true],
 		['app_cm', 'app_cm', 'CmCsfCohortAttd', true],
 		['app_cm', 'app_cm', 'CmCsfCertification', true],
-		['app_cm', 'app_cm', 'CmCmCsfNote', true],
-		['app_sys', 'default', 'SysPerson', false],
-		['app_sys', 'sys_user', 'SysUser', false],
-		['app_sys_admin', 'sys_admin', 'SaObjConfig', true]
+		['app_cm', 'app_cm', 'CmCsfNote', true]
 	])
 }
 
 async function initColumns() {
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Address 1',
 		name: 'addr1'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Address 2',
@@ -349,22 +368,19 @@ async function initColumns() {
 	})
 	await addColumn({
 		codeDataType: 'str',
-		creator: 'user_sys',
 		header: 'Agency ID',
 		name: 'agencyId',
 		owner: 'app_cm',
 		placeHolder: 'Enter agency ID'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'json',
-		exprStorageKey: 'avatar_<raw,calc,random10>',
+		exprStorageKey: 'avatar_<int64,calc,random10>',
 		header: 'Avatar',
 		name: 'avatar'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'int64',
 		header: 'Security Code',
@@ -373,170 +389,125 @@ async function initColumns() {
 		patternMsg: 'Security Code should be exactly 6 digits.'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Birth Date',
 		name: 'birthDate'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'City',
 		name: 'city'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'app_cm', name: 'CmClient' } },
+		codeDataType: 'link',
 		header: 'Client',
 		name: 'client',
 		owner: 'app_cm'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: {
-			property: `serviceFlow.header ++ ' (' ++ to_str(.dateReferral) ++ ')'`,
-			table: { mod: 'app_cm', name: 'CmClientServiceFlow' }
-		},
+		codeDataType: 'link',
 		header: 'Service Flow',
-		name: 'clientServiceFlow'
+		name: 'csf'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Certification',
 		name: 'codeCertification',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Ethnicity',
 		name: 'codeEthnicity',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Gender',
 		name: 'codeGender',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Certifications',
 		isMultiSelect: true,
 		name: 'codeMultiCerts'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Exams',
 		isMultiSelect: true,
 		name: 'codeMultiExams'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Items - Included',
 		isMultiSelect: true,
 		name: 'codeMultiItemsIncluded'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Items - Not Included',
 		isMultiSelect: true,
 		name: 'codeMultiItemsNotIncluded'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Requirements',
 		isMultiSelect: true,
 		name: 'codeMultiRqmts'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Race',
 		name: 'codeRace',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Sector',
 		name: 'codeSector'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'State',
 		name: 'codeState',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysCode' } },
+		codeDataType: 'link',
 		header: 'Status',
 		name: 'codeStatus',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'header', table: { mod: 'sys_core', name: 'SysCodeType' } },
-		header: 'Payment Type',
-		name: 'codeTypePayment'
+		codeDataType: 'link',
+		header: 'Type',
+		name: 'codeType',
+		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
+		codeDataType: 'link',
+		header: 'Payment Type',
+		name: 'codeTypePayment',
+		owner: 'app_sys'
+	})
+	await addColumn({
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: {
-			property: `course.name ++ ' (' ++ .name ++ ')'`,
-			table: { mod: 'app_cm', name: 'CmCohort' }
-		},
+		codeDataType: 'link',
 		header: 'Cohort',
 		name: 'cohort'
 	})
 	await addColumn({
-		codeDataType: 'computed',
-		codeDataTypeComputed: 'str',
-		creator: 'user_sys',
-		exprSelect: `.serviceFlow { data := .id, display := .header }`,
-		header: 'Service Flow',
-		isExcludeUpdate: true,
-		name: 'computedServiceFlow',
-		owner: 'app_cm'
-	})
-	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'decimal',
 		header: 'Cost',
@@ -544,15 +515,12 @@ async function initColumns() {
 		name: 'cost'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'app_cm', name: 'CmCourse' } },
+		codeDataType: 'link',
 		header: 'Course',
 		name: 'course',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'datetime',
 		header: 'Created At',
@@ -561,37 +529,19 @@ async function initColumns() {
 		name: 'createdAt'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		codeDataTypeComputed: 'str',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysUser' } },
-		exprPreset:
-			'(SELECT sys_user::SysUser { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
+		codeDataType: 'link',
 		header: 'Created By',
 		isExcludeUpdate: true,
 		name: 'createdBy',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Creator',
-		name: 'creator'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: {
-			property: `cohort.course.header ++ ' (' ++ to_str(.dateReferral) ++ ')'`,
-			table: { mod: 'app_cm', name: 'CmCsfCohort' }
-		},
+		codeDataType: 'link',
 		header: 'Cohort',
-		name: 'csfCohort'
+		name: 'csfCohort',
+		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'custom_element',
@@ -601,128 +551,85 @@ async function initColumns() {
 		name: 'custom_element'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'str',
-		header: 'custom_select',
+		codeDataType: 'float64',
+		header: 'custom_select_float',
 		isExcludeInsert: true,
 		isExcludeUpdate: true,
-		name: 'custom_select'
+		name: 'custom_select_float'
 	})
 	await addColumn({
-		creator: 'user_sys',
+		owner: 'app_sys',
+		codeDataType: 'int64',
+		header: 'custom_select_int',
+		isExcludeInsert: true,
+		isExcludeUpdate: true,
+		name: 'custom_select_int'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'str',
+		header: 'custom_select_str',
+		isExcludeInsert: true,
+		isExcludeUpdate: true,
+		name: 'custom_select_str'
+	})
+	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Date',
 		name: 'date'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'End Date',
 		name: 'dateEnd'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Estimated End Date',
 		name: 'dateEndEst'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Expiration Date',
 		name: 'dateExpires'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Issued Date',
 		name: 'dateIssued'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Referral Date',
 		name: 'dateReferral'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Start Date',
 		name: 'dateStart'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'date',
 		header: 'Estimated Start Date',
 		name: 'dateStartEst'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Description',
 		name: 'description'
 	})
+
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Actions',
-		name: 'detailActions'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Data Object',
-		name: 'detailDataObj'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Header',
-		name: 'detailHeader'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Name',
-		name: 'detailName'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'int16',
-		header: 'Detail-Order',
-		name: 'detailOrder'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Parent Node Name',
-		name: 'detailParentNodeName'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Sub Header',
-		name: 'detailSubHeader'
-	})
-	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'decimal',
 		header: 'Duration',
@@ -732,14 +639,12 @@ async function initColumns() {
 		spinStep: '0.25'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Email',
 		name: 'email'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Favorite Food',
@@ -747,42 +652,24 @@ async function initColumns() {
 		name: 'favFood'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'First Name',
 		name: 'firstName'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Full Name',
 		name: 'fullName'
 	})
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'bool',
-		header: 'Has Management Columns',
-		name: 'hasMgmt'
-	})
-	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Header',
 		name: 'header'
 	})
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Icon',
-		name: 'icon'
-	})
-	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'uuid',
 		header: 'System ID',
@@ -790,106 +677,26 @@ async function initColumns() {
 		name: 'id'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'json',
-		exprStorageKey: 'image_certification_<raw,calc,random10>',
+		exprStorageKey: 'image_certification_<int64,calc,random10>',
 		header: 'Certification',
 		name: 'imageCertification'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Active',
 		name: 'isActive'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Last Name',
 		name: 'lastName'
 	})
+
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Link-Property',
-		name: 'linkProperty'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Link-Table Module',
-		name: 'linkTableModule'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Link-Table Name',
-		name: 'linkTableName'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Actions',
-		name: 'listActions'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Data Object',
-		name: 'listDataObj'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Expression Filter',
-		name: 'listExprFilter'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Header',
-		name: 'listHeader'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Name',
-		name: 'listName'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'int16',
-		header: 'List-Order',
-		name: 'listOrder'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Parent Node Name',
-		name: 'listParentNodeName'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Sub Header',
-		name: 'listSubHeader'
-	})
-	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'datetime',
 		header: 'Modified At',
@@ -897,178 +704,90 @@ async function initColumns() {
 		name: 'modifiedAt'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		codeDataTypeComputed: 'str',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysUser' } },
-		exprPreset:
-			'(SELECT sys_user::SysUser { data := .id, display := .person.fullName } FILTER .userName = <str,user,userName>)',
+		codeDataType: 'link',
 		header: 'Modified By',
 		name: 'modifiedBy',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Name',
 		name: 'name'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Note',
 		name: 'note'
 	})
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Objects Owner',
-		name: 'objsOwner'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output Detail-Columns',
-		name: 'outputDetailColumns'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output Detail-Node',
-		name: 'outputDetailNode'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output Detail-Data Object',
-		name: 'outputDetailDataObj'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output List-Columns',
-		name: 'outputListColumns'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output List-Data Object',
-		name: 'outputListDataObj'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output List-Node',
-		name: 'outputListNode'
-	})
-	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysOrg' } },
+		codeDataType: 'link',
 		header: 'Owner',
 		name: 'owner',
 		owner: 'app_sys'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Password',
 		name: 'password'
 	})
 	await addColumn({
-		creator: 'user_sys',
+		codeDataType: 'link',
+		header: 'Person',
+		name: 'person',
+		owner: 'app_sys'
+	})
+	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Mobile Phone',
 		name: 'phoneMobile'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'name', table: { mod: 'sys_core', name: 'SysOrg' } },
+		codeDataType: 'link',
 		header: 'Provider',
 		name: 'provider'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Schedule',
 		name: 'schedule'
 	})
 	await addColumn({
-		codeDataType: 'edgeType',
-		creator: 'user_sys',
-		edgeTypeDefn: { property: 'header', table: { mod: 'app_cm', name: 'CmServiceFlow' } },
+		codeDataType: 'link',
 		header: 'Service Flow',
 		name: 'serviceFlow',
 		owner: 'app_cm'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysStaff' } },
+		codeDataType: 'link',
 		header: 'Staff - Administrator',
 		name: 'staffAdmin'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysStaff' } },
+		codeDataType: 'link',
 		header: 'Staff - Agency',
 		name: 'staffAgency'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
-		codeDataType: 'edgeType',
-		edgeTypeDefn: { property: 'person.fullName', table: { mod: 'sys_user', name: 'SysStaff' } },
+		codeDataType: 'link',
 		header: 'Staff - Instructor',
 		name: 'staffInstructor'
 	})
 	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Table-Module',
-		name: 'tableModule'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Table-Name',
-		name: 'tableName'
-	})
-	await addColumn({
-		creator: 'user_sys',
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Table-Owner',
-		name: 'tableOwner'
-	})
-	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Mobile Phone Number',
 		name: 'userName'
 	})
 	await addColumn({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Zip',
@@ -1077,6 +796,17 @@ async function initColumns() {
 }
 
 async function initTableColumns() {
+	await tableColumns([
+		['app_sys', 'SysUser', 'avatar'],
+		['app_sys', 'SysUser', 'favFood'],
+		['app_sys', 'SysUser', 'id'],
+		['app_sys', 'SysUser', 'createdAt'],
+		['app_sys', 'SysUser', 'createdBy'],
+		['app_sys', 'SysUser', 'modifiedAt'],
+		['app_sys', 'SysUser', 'modifiedBy'],
+		['app_sys', 'SysUser', 'userName']
+	])
+
 	await tableColumns([
 		['app_cm', 'CmClient', 'agencyId'],
 		['app_cm', 'CmClient', 'createdAt'],
@@ -1094,21 +824,18 @@ async function initTableColumns() {
 
 async function initSysDataObjActions() {
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_list_save',
 		header: 'Save',
 		order: 100
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_list_new',
 		header: 'New',
 		order: 110
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_list_edit',
 		header: 'Edit',
@@ -1116,14 +843,12 @@ async function initSysDataObjActions() {
 	})
 	await addDataObjAction({
 		color: 'variant-filled-error',
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_list_delete',
 		header: 'Delete',
 		order: 130
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_list_columns',
 		header: 'Columns',
@@ -1132,7 +857,6 @@ async function initSysDataObjActions() {
 	await addDataObjAction({
 		allTabs: true,
 		color: 'none',
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_cancel',
 		header: 'Cancel',
@@ -1140,35 +864,30 @@ async function initSysDataObjActions() {
 	})
 	await addDataObjAction({
 		allTabs: true,
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_save',
 		header: 'Save',
 		order: 210
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_save_new',
 		header: 'Save/New',
 		order: 220
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_save_as',
 		header: 'Save As',
 		order: 230
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_new',
 		header: 'New',
 		order: 240
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_detail_delete',
 		header: 'Delete',
@@ -1178,14 +897,12 @@ async function initSysDataObjActions() {
 	await addDataObjAction({
 		allTabs: true,
 		color: 'bg-primary-300',
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_back',
 		header: '< Back',
 		order: 5
 	})
 	await addDataObjAction({
-		creator: 'user_sys',
 		owner: 'app_sys',
 		name: 'noa_print',
 		header: 'Print',
@@ -1193,79 +910,55 @@ async function initSysDataObjActions() {
 	})
 }
 
-async function initDataObjFieldItemsLists() {
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_cm',
-		dbSelect: 'SELECT app_cm::CmServiceFlow {data := .id, display := .header} ORDER BY .header',
-		propertyId: 'id',
-		propertyLabel: 'name',
-		name: 'il_cm_service_flow'
+async function initDataObjFieldItemsDb() {
+	await addDataObjFieldItemsDb({
+		exprSelect: 'SELECT app_cm::CmServiceFlow {data := .id, display := .header} ORDER BY .header',
+		name: 'il_cm_service_flow',
+		owner: 'app_cm'
 	})
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		dbSelect: `SELECT app_cm::CmCohort {data := .id, display := .course.name ++ ' (' ++ .name ++ ')'} FILTER .owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs ORDER BY .course.name`,
-		propertyId: 'id',
-		propertyLabel: 'name',
-		name: 'il_cm_cohort_by_userName'
+	await addDataObjFieldItemsDb({
+		exprSelect: `SELECT app_cm::CmCohort {data := .id, display := .course.name ++ ' (' ++ .name ++ ')'} FILTER .owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs ORDER BY .course.name`,
+		name: 'il_cm_cohort_by_userName',
+		owner: 'app_sys'
 	})
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_cm',
-		dbSelect: `SELECT (
+	await addDataObjFieldItemsDb({
+		exprSelect: `SELECT (
       SELECT app_cm::CmCsfCohort 
       FILTER 
-        .clientServiceFlow.id = <uuid,tree,CmClientServiceFlow.id> AND 
+        .csf.id = <uuid,tree,CmClientServiceFlow.id> AND 
         .codeStatus = (SELECT sys_core::getCode('ct_cm_service_flow_status', <str,parms,status>))
       ).cohort.course {data := .id, display := .name} ORDER BY .name`,
-		propertyId: 'id',
-		propertyLabel: 'name',
-		name: 'il_cm_course_by_csfId_status'
+		name: 'il_cm_course_by_csfId_status',
+		owner: 'app_cm'
 	})
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		dbSelect:
+	await addDataObjFieldItemsDb({
+		exprSelect:
 			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .order',
-		propertyId: 'id',
-		propertyLabel: 'name',
-		name: 'il_sys_code_order_index_by_codeTypeName'
+		name: 'il_sys_code_order_index_by_codeTypeName',
+		owner: 'app_sys'
 	})
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		dbSelect:
+	await addDataObjFieldItemsDb({
+		exprSelect:
 			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .name',
-		propertyId: 'id',
-		propertyLabel: 'name',
-		name: 'il_sys_code_order_name_by_codeTypeName'
+		name: 'il_sys_code_order_name_by_codeTypeName',
+		owner: 'app_sys'
 	})
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		dbSelect:
+	await addDataObjFieldItemsDb({
+		exprSelect:
 			'SELECT sys_core::SysCodeType {data := .id, display := .header} FILTER .parent.name = <str,parms,codeTypeParentName> ORDER BY .name',
-		propertyId: 'id',
-		propertyLabel: 'name',
-		name: 'il_sys_codeType_order_name_by_codeTypeParentName'
+		name: 'il_sys_codeType_order_name_by_codeTypeParentName',
+		owner: 'app_sys'
 	})
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		dbSelect:
+	await addDataObjFieldItemsDb({
+		exprSelect:
 			'SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .roles.name = <str,parms,codeName> ORDER BY .name',
-		propertyId: 'id',
-		propertyLabel: 'name',
-		name: 'il_sys_role_org_by_codeName'
+		name: 'il_sys_role_org_by_codeName',
+		owner: 'app_sys'
 	})
-	await addDataObjFieldItems({
-		creator: 'user_sys',
-		owner: 'app_sys',
-		dbSelect:
+	await addDataObjFieldItemsDb({
+		exprSelect:
 			'SELECT sys_user::SysStaff { data := .id, display := .person.fullName } FILTER .roles.name = <str,parms,codeName> ORDER BY str_lower(.person.lastName) then str_lower(.person.firstName)',
-		propertyId: 'id',
-		propertyLabel: 'person.fullName',
-		name: 'il_sys_role_staff_by_codeName'
+		name: 'il_sys_role_staff_by_codeName',
+		owner: 'app_sys'
 	})
 }

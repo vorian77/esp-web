@@ -10,7 +10,6 @@ import type * as _sys_user from "./sys_user";
 import type * as _app_cm from "./app_cm";
 import type * as _sys_db from "./sys_db";
 import type * as _default from "./default";
-import type * as _sys_admin from "./sys_admin";
 import type * as _sys_test from "./sys_test";
 export type $AccessKind = {
   "Select": $.$expr_Literal<$AccessKind>;
@@ -711,7 +710,7 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is sys_core::SysCodeType]": $.LinkDesc<_sys_core.$SysCodeType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysDataObj]": $.LinkDesc<_sys_core.$SysDataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysDataObjAction]": $.LinkDesc<_sys_core.$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::SysDataObjFieldItems]": $.LinkDesc<_sys_core.$SysDataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldItemsDb]": $.LinkDesc<_sys_core.$SysDataObjFieldItemsDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysEnt]": $.LinkDesc<_sys_core.$SysEnt, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysNodeObj]": $.LinkDesc<_sys_core.$SysNodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysOrg]": $.LinkDesc<_sys_core.$SysOrg, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -735,13 +734,15 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is app_cm::CmCsfCohort]": $.LinkDesc<_app_cm.$CmCsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCsfNote]": $.LinkDesc<_app_cm.$CmCsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCsfCohortAttd]": $.LinkDesc<_app_cm.$CmCsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_admin::SaObjConfig]": $.LinkDesc<_sys_admin.$SaObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysApp]": $.LinkDesc<_sys_core.$SysApp, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysNodeObjFooter]": $.LinkDesc<_sys_core.$SysNodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::SysDataObjFieldEl]": $.LinkDesc<_sys_core.$SysDataObjFieldEl, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::SysDataObjFieldDb]": $.LinkDesc<_sys_core.$SysDataObjFieldDb, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_test::Person]": $.LinkDesc<_sys_test.$Person, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_test::Movie]": $.LinkDesc<_sys_test.$Movie, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldLink]": $.LinkDesc<_sys_core.$SysDataObjFieldLink, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldLinkJoin]": $.LinkDesc<_sys_core.$SysDataObjFieldLinkJoin, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjTable]": $.LinkDesc<_sys_core.$SysDataObjTable, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysObjConfig]": $.LinkDesc<_sys_core.$SysObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjColumn]": $.LinkDesc<_sys_core.$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<intersection_of": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<subject": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

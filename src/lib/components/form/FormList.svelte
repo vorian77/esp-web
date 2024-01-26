@@ -5,7 +5,7 @@
 		StatePacketComponent,
 		TokenAppDoAction,
 		TokenAppDoList
-	} from '$comps/nav/types.app'
+	} from '$comps/nav/types.appState'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
@@ -45,12 +45,12 @@
 		}
 	}
 
-	async function onClick(rowNbr: number) {
+	async function onClick(record: any) {
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: false,
 				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, rowNbr)
+				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, record.id)
 			})
 		})
 	}
@@ -83,10 +83,10 @@
 		<tbody>
 			{#if dataObjData}
 				{#each $rows as row, i}
-					<tr on:click={() => onClick(i)} on:keyup={async () => await onClick(i)}>
+					<tr on:click={() => onClick(row)} on:keyup={async () => await onClick(row)}>
 						{#each dataObj.fields as field}
 							{#if field.isDisplayable && field.isDisplay}
-								{@const value = row[field.name].display}
+								{@const value = row[field.name]}
 								<td>{value}</td>
 							{/if}
 						{/each}

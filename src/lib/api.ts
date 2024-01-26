@@ -17,6 +17,7 @@ export enum ApiFunction {
 	dbEdgeGetNodesLevel = 'dbEdgeGetNodesLevel',
 	dbEdgeProcessQuery = 'dbEdgeProcessQuery',
 	dbEdgeGetTableColumns = 'dbEdgeGetTableColumns',
+	dbEdgeInitAdmin = 'dbEdgeInitAdmin',
 	getUser = 'getUser',
 	sendText = 'sendText'
 }
@@ -77,13 +78,27 @@ export class TokenApi extends Token {
 	}
 }
 
-export class TokenApiDataObj extends TokenApi {
-	dataObjName: string
-	constructor(dataObjName: string) {
-		const clazz = 'TokenApiDataObj'
+export class TokenApiFileUpload extends TokenApi {
+	file: File | undefined
+	fileAction: TokenApiFileUploadAction
+	storageKey: string | undefined
+	constructor(
+		fileAction: TokenApiFileUploadAction,
+		storageKey: string | undefined = undefined,
+		file: File | undefined = undefined
+	) {
+		const clazz = 'TokenApiFileUpload'
 		super()
-		this.dataObjName = dataObjName
+		this.file = file
+		this.fileAction = fileAction
+		this.storageKey = storageKey
 	}
+}
+
+export enum TokenApiFileUploadAction {
+	delete = 'delete',
+	none = 'none',
+	upload = 'upload'
 }
 
 export class TokenApiQuery extends TokenApi {
@@ -127,8 +142,11 @@ export class TokenApiQueryData {
 	setData(data: any, key: string, defaultVal: any) {
 		return Object.hasOwn(data, key) && data !== undefined ? data[key] : defaultVal
 	}
-	setDataParms(data: any) {
+	replaceParms(data: any) {
 		this.parms = data
+	}
+	setParmsValue(key: string, value: any) {
+		this.parms[key] = value
 	}
 }
 export class TokenApiQueryDataTree {
@@ -136,14 +154,14 @@ export class TokenApiQueryDataTree {
 	constructor(levels: Array<TokenApiQueryDataTreeLevel> = []) {
 		this.levels = levels
 	}
-	addData(table: string, data: any) {
-		const idx = this.levels.findIndex((t) => t.table === table)
-		if (idx >= 0) {
-			this.levels[idx].data = data
-			console.log('TokenApiQueryData.replacing:', { table, length: this.levels.length })
-		} else {
-			this.levels.push(new TokenApiQueryDataTreeLevel(table, data))
-			console.log('TokenApiQueryData.adding:', { table, length: this.levels.length })
+	upsertData(table: string | undefined, data: any) {
+		if (table) {
+			const idx = this.levels.findIndex((t) => t.table === table)
+			if (idx >= 0) {
+				this.levels[idx].data = data
+			} else {
+				this.levels.push(new TokenApiQueryDataTreeLevel(table, data))
+			}
 		}
 	}
 	getRecord(table: string | undefined = undefined) {
@@ -151,6 +169,36 @@ export class TokenApiQueryDataTree {
 			return this.levels.find((l) => l.table === table)?.data
 		} else {
 			return this.levels[this.levels.length - 1]?.data
+		}
+	}
+
+	getFieldData(table: string | undefined, fieldName: string) {
+		const record = this.getRecord(table)
+		if (fieldName && record && Object.hasOwn(record, fieldName)) {
+			return record[fieldName]
+		} else {
+			error(500, {
+				file: FILENAME,
+				function: 'TokenApiQueryDataTree.getFieldData',
+				message: `Field ${fieldName} not found in data tree - table: ${table}; record: ${JSON.stringify(
+					record
+				)}`
+			})
+		}
+	}
+
+	setFieldData(table: string | undefined, fieldName: string, value: any) {
+		const record = this.getRecord(table)
+		if (fieldName && record && Object.hasOwn(record, fieldName)) {
+			record[fieldName] = value
+		} else {
+			error(500, {
+				file: FILENAME,
+				function: 'TokenApiQueryDataTree.setFieldData',
+				message: `Field ${fieldName} not found in data tree - table: ${table}; record: ${JSON.stringify(
+					record
+				)}`
+			})
 		}
 	}
 }

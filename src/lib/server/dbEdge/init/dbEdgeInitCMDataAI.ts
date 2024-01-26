@@ -17,7 +17,7 @@ export default async function init() {
 async function initCourses() {
 	await execute(`
     with
-    myCreator := (select sys_user::getUser('user_sys'))
+    myCreator := (select sys_user::getRootUser())
     for x in {
       ('Construction', 'Under development', 'Commercial Painting', 3999, 'ct_cm_payment_type_milestone2', 'Training in Commercial Painting will prepare participants for the complexities of painting large-scale business projects such as, factories, residential complexes, and retail developments. Training will focus on drywall, overcoat, and ceiling painting, sealing cracks with wall filler, repairing wood trim, decorative painting, exterior painting, and power washing.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
       ('Construction', 'Under development', 'Heavy Equipment (Skills for Life)', 3200, 'ct_cm_payment_type_milestone1', 'This training will prepare students for careers in Heavy Equipment. Program participants will learn how to safely and professionally use forklifts, aerial lifts, and skid steers. During this program students will also learn how to safely operate heavy equipment, how to properly conduct and fill out daily equipment safety checklist, and how to determine equipment load limits. At the conclusion of this program, Participants will receive 128 hours of hand-on training, certifications in OSHA 30, and asbestos abatement.', 'Tuesday, Wednesday, Thursday, Friday 4:00 PM – 9:30 PM; Saturday 9AM – 5PM; 8 Weeks', ''),
@@ -41,7 +41,7 @@ async function initCourses() {
 async function initCohorts() {
 	await execute(`
     with
-    myCreator := (select sys_user::getUser('user_sys'))
+    myCreator := (select sys_user::getRootUser())
     for x in {
       ('Commercial Painting', 'Cohort 1', 'Under development'), 
       ('Heavy Equipment (Skills for Life)', 'Cohort 2', 'Under development'),   
@@ -64,7 +64,7 @@ async function initCohorts() {
 async function initStudents() {
 	await execute(`
     with
-    myCreator := (select sys_user::getUser('user_sys'))
+    myCreator := (select sys_user::getRootUser())
     for x in {
       ('AE-195100', 'Jose', 'Prater', 'jp@gmail.com', <cal::local_date>'2004-01-10'),
       ('AE-195200', 'Jeron', 'Johnson', 'jj@gmail.com', <cal::local_date>'2006-02-02'),
@@ -98,11 +98,13 @@ async function initStudents() {
 async function initServiceFlows() {
 	await execute(`
       with
-      myCreator := (select sys_user::getUser('user_sys'))
+      myCreator := (select sys_user::getRootUser())
       for x in {
-        ('sf_cm', 'DESC'), 
-        ('sf_cm_osha', 'OSHA'),    
-        ('sf_cm_youth_build', 'Youth Build'),    
+        ('sf_cm_det_desc', 'DESC'), 
+        ('sf_cm_exposure', 'Exposure'), 
+        ('sf_cm_dol_osha', 'OSHA'),    
+        ('sf_cm_ai_our_world', 'Our World'),  
+        ('sf_cm_ai_youth_build', 'Youth Build'),    
       }
       union (insert app_cm::CmServiceFlow {
         owner := (select sys_core::getOrg('System')),
@@ -117,12 +119,12 @@ async function initServiceFlows() {
 async function initClientServiceFlows() {
 	await execute(`
       with
-      myCreator := (select sys_user::getUser('user_sys'))
+      myCreator := (select sys_user::getRootUser())
       for x in {
-        ('AE-195500', 'sf_cm', '2023-11-05', 'Note 1'),
-        ('AE-195500', 'sf_cm_osha', '2023-11-15', 'Note 2'),
-        ('AE-196100', 'sf_cm', '2023-12-01', 'Note 3'),  
-        ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Note 4'),      
+        ('AE-195500', 'sf_cm_det_desc', '2023-11-05', 'Note 1'),
+        ('AE-195500', 'sf_cm_dol_osha', '2023-11-15', 'Note 2'),
+        ('AE-196100', 'sf_cm_det_desc', '2023-12-01', 'Note 3'),  
+        ('AE-196100', 'sf_cm_dol_osha', '2023-12-01', 'Note 4'),      
       }
       union (insert app_cm::CmClientServiceFlow {
         client := (select assert_single((select app_cm::CmClient filter .agencyId = x.0))),
@@ -139,13 +141,13 @@ async function initClientServiceFlows() {
 async function initCsfCohort() {
 	await execute(`
   with
-  myCreator := (select sys_user::getUser('user_sys'))
+  myCreator := (select sys_user::getRootUser())
   for x in {
-    ('AE-195500', 'sf_cm', '2023-11-05', 'Commercial Painting', 'Cohort 1', 'Completed', '2023-11-05'), 
-    ('AE-196100', 'sf_cm_osha', '2023-12-01', 'Residential and Commercial Masonry', 'Cohort 6', 'Completed', '2023-12-01'), 
+    ('AE-195500', 'sf_cm_det_desc', '2023-11-05', 'Commercial Painting', 'Cohort 1', 'Completed', '2023-11-05'), 
+    ('AE-196100', 'sf_cm_dol_osha', '2023-12-01', 'Residential and Commercial Masonry', 'Cohort 6', 'Completed', '2023-12-01'), 
   }
   union (insert app_cm::CmCsfCohort {
-    clientServiceFlow := (select assert_single((select app_cm::CmClientServiceFlow filter
+    csf := (select assert_single((select app_cm::CmClientServiceFlow filter
       .client = (select assert_single((select app_cm::CmClient filter .agencyId = x.0))) and
       .serviceFlow = (select assert_single((select app_cm::CmServiceFlow filter .name = x.1))) and
       .dateReferral = <cal::local_date>x.2))), 

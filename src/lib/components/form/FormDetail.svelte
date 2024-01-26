@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {
-		BinarySelect,
 		DataObj,
 		DataObjData,
 		Validation,
@@ -8,7 +7,7 @@
 		ValidityErrorLevel,
 		ValidityError
 	} from '$comps/types'
-	import type { State } from '$comps/nav/types.app'
+	import type { State } from '$comps/nav/types.appState'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
 	import DataObjActionsFooter from '$comps/dataObj/DataObjActionsFooter.svelte'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
@@ -43,60 +42,26 @@
 		state.update({ objValidToSave: dataObj.preValidate() })
 	}
 
-	function onChangeFile(fieldName: string, valData: any, valDisplay: any, saveCallback: Function) {
-		setFieldVal(fieldName, valData, valDisplay)
-		dataObj.data.callbacksAdd(fieldName, saveCallback)
-		console.log('onChangeFile:', { fieldName, valData, valDisplay })
+	function onChangeFile(fieldName: string, value: any) {
+		setFieldVal(fieldName, value)
 	}
+
 	function onChangeInput(event: any) {
 		setFieldVal(event.target.name, event.currentTarget.value)
 	}
-	function onChangeSelect(fieldName: string, valueData: any, valueDisplay: any) {
-		setFieldVal(fieldName, valueData, valueDisplay)
-	}
-	function onClickCheckbox(event: any) {
-		const eventName = event.target.name.split('.')
-		let fieldName: string
 
-		if (eventName.length === 1) {
-			// binary select
-			fieldName = eventName.toString()
-			const idx = dataObj.getFieldIdx(fieldName)
-			if (idx >= 0) {
-				const field = dataObj.fields[idx]
-				const binarySelect = new BinarySelect(field.dataType)
-				setFieldVal(fieldName, binarySelect.getValue(field.valueCurrent.data))
-			}
-		} else {
-			// multi-select
-			fieldName = eventName[0]
-			const checkedItemID: string = eventName[1]
-			const idx = dataObj.getFieldIdx(fieldName)
-			if (idx >= 0) {
-				const field = dataObj.fields[idx]
-
-				const itemIdx = field.valueCurrent.items.findIndex((i: FieldItem) => {
-					return i.data === checkedItemID
-				})
-				if (itemIdx >= 0)
-					field.valueCurrent.items[itemIdx].selected = !field.valueCurrent.items[itemIdx].selected
-
-				let values: Array<string> = []
-				field.valueCurrent.items.forEach((i: FieldItem) => {
-					if (i.selected) values.push(i.data)
-				})
-				setFieldVal(fieldName, values.toString())
-			}
-		}
+	function onChangeItem(event: CustomEvent) {
+		const fieldName = event.detail.fieldName
+		const value = event.detail.value
+		setFieldVal(fieldName, value)
 	}
 
-	function setFieldVal(fieldName: string, newValData: any, newValDisplay: any = undefined) {
-		if (newValDisplay === undefined) newValDisplay = newValData
+	function setFieldVal(fieldName: string, value: any) {
 		const idx = dataObj.getFieldIdx(fieldName)
 		if (idx >= 0) {
-			dataObj.fields[idx].valueCurrent.data = newValData
-			dataObj.fields[idx].valueCurrent.display = newValDisplay
-			validateField(idx, newValData)
+			dataObj.fields[idx].valueCurrent = value
+			validateField(idx, value)
+			// console.log('FormDetail.setFieldVal:', { fieldName, value })
 			state.update({ objHasChanged: dataObj.getStatusChanged() })
 		}
 		return idx
@@ -125,17 +90,22 @@
 			{#if field.isDisplayable && field.isDisplay}
 				<div class:mt-3={idx}>
 					{#if field instanceof FieldCheckbox}
-						<FormElInpCheckbox {field} on:click={onClickCheckbox} />
+						<FormElInpCheckbox {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldCustom}
-						<FormElCustom bind:field {state} data={dataObj.objData.dataObjRow.record} />
+						<FormElCustom bind:field {state} data={dataObj.objData.getData()} />
 					{:else if field instanceof FieldFile}
 						<FormElFile bind:field onChange={onChangeFile} />
 					{:else if field instanceof FieldInput}
-						<FormElInp {field} on:change={onChangeInput} on:keyup={onChangeInput} />
+						<FormElInp
+							{field}
+							on:change={onChangeInput}
+							on:keyup={onChangeInput}
+							on:changeItem={onChangeItem}
+						/>
 					{:else if field instanceof FieldRadio}
-						<FormElInpRadio {field} on:change={onChangeInput} />
+						<FormElInpRadio {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldSelect}
-						<FormElSelect {field} onChange={onChangeSelect} />
+						<FormElSelect {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldTextarea}
 						<FormElTextarea {field} on:change={onChangeInput} on:keyup={onChangeInput} />
 					{/if}

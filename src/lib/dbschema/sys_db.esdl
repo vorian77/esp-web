@@ -3,10 +3,6 @@ module sys_db{
     classValue: str;
     codeAlignment: sys_core::SysCode;
     required codeDataType: sys_core::SysCode;
-    codeDataTypeComputed: sys_core::SysCode;
-    edgeTypeDefn: json;
-    exprPreset: str;
-    exprSelect: str;
     exprStorageKey: str;
     headerSide: str;
     isExcludeInsert: bool;
@@ -14,6 +10,7 @@ module sys_db{
     isExcludeUpdate: bool;
     isMultiSelect: bool;
     isSetBySys: bool;
+    link: json;
     matchColumn: str;
     maxLength: default::nonNegative;
     maxValue: float64;

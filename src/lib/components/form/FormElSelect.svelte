@@ -1,40 +1,27 @@
 <script lang="ts">
 	import type { FieldSelect } from '$comps/form/fieldSelect'
 	import { onMount } from 'svelte'
-	import { FieldAccess } from './types.field'
+	import { FieldAccess } from '$comps/form/field'
+	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 
-	export let field: FieldSelect
-	export let onChange = (fieldName: string, valueData: any, valueDisplay: any) => {}
+	const dispatch = createEventDispatcher()
 
+	export let field: FieldSelect
+	const dispatchType = 'changeItem'
 	const fieldId = 'field' + field.index
 
 	onMount(() => {
-		if (
-			field.valueCurrent.items.length === 1 &&
-			!field.valueCurrent.data &&
-			field.access === FieldAccess.required
-		) {
-			console.log('FormElSelect.onMount:', { field })
-			field.valueCurrent.update(
-				field.valueCurrent.items[0].data,
-				field.valueCurrent.items[0].display
-			)
-			onChange(field.name, field.valueCurrent.items[0].data, field.valueCurrent.items[0].display)
+		if (field.items.length === 1 && !field.valueCurrent && field.access === FieldAccess.required) {
+			field.valueCurrent = field.items[0].data
+			dispatch(dispatchType, { fieldName: field.name, value: field.items[0].data })
 		}
 	})
 
-	function onChangeSelect(event: Event) {
+	function onChange(event: Event) {
 		const target = event.currentTarget as HTMLSelectElement
-		const newValData = target.value
-		let newValDisplay = null
-		if (newValData) {
-			const idx = field.valueCurrent.items.findIndex((f) => {
-				return f.data === newValData
-			})
-			newValDisplay = idx > -1 ? field.valueCurrent.items[idx].display : null
-		}
-		onChange(field.name, newValData, newValDisplay)
+		const newValue = target.value
+		dispatch(dispatchType, { fieldName: field.name, value: newValue })
 	}
 </script>
 
@@ -47,12 +34,12 @@
 		class="select rounded-lg {field.colorBackground}"
 		name={field.name}
 		id={fieldId}
-		bind:value={field.valueCurrent.data}
-		on:change={onChangeSelect}
+		bind:value={field.valueCurrent}
+		on:change={onChange}
 	>
 		<option value={null}>Select an option...</option>
-		{#each field.valueCurrent.items as { data: id, display: label }, index (id)}
-			<option value={id} selected={id === field.valueCurrent.data}>
+		{#each field.items as { data: id, display: label }, index (id)}
+			<option value={id} selected={id === field.valueCurrent}>
 				{label}
 			</option>
 		{/each}

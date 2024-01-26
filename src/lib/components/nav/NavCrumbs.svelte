@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { AppLevelCrumb } from '$comps/nav/types.app'
 	import {
-		AppLevelCrumb,
 		State,
 		StatePacket,
 		StatePacketComponent,
 		TokenAppCrumbs
-	} from '$comps/nav/types.app'
+	} from '$comps/nav/types.appState'
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const FILENAME = '/$comps/nav/NavCrumbs.svelte'

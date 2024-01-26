@@ -3,7 +3,7 @@
 	import { NodeType } from '$comps/types'
 	import DataObjActions from '$comps/dataObj/DataObjActions.svelte'
 	import { SurfaceType } from '$comps/types.master'
-	import type { State } from '$comps/nav/types.app'
+	import type { State } from '$comps/nav/types.appState'
 	import { createEventDispatcher } from 'svelte'
 
 	const dispatch = createEventDispatcher()
@@ -28,7 +28,7 @@
 	}
 </script>
 
-<div class="mb-4">
+<div class="mt-6 mb-4">
 	{#if state.nodeType === NodeType.object}
 		<div class="flex justify-between items-start">
 			<h2 class="h2 ml-2">{dataObj.header}</h2>

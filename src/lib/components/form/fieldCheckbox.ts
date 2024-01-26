@@ -1,5 +1,5 @@
-import { Field } from '$comps/form/field'
-import { type FieldRaw, Validation, ValidationStatus } from '$comps/types'
+import { Field, type FieldRaw } from '$comps/form/field'
+import { Validation, ValidationStatus } from '$comps/types'
 
 export class FieldCheckbox extends Field {
 	constructor(obj: FieldRaw, index: number) {

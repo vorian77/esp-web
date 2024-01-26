@@ -1,6 +1,4 @@
-import { dbESPAPI } from '$server/dbESP'
 import type { TokenApiUser } from '$lib/api'
-import { getServerResponse, HTMLMETHOD, type ResponseBody } from '$comps/types'
 import { getUserByUserId } from '$routes/api/dbEdge/types.dbEdge'
 import { error } from '@sveltejs/kit'
 
@@ -8,8 +6,9 @@ const FILENAME = '$sroutes/api/apiUser.ts'
 
 export async function getUser(token: TokenApiUser) {
 	const user = await getUserByUserId(token.userId)
-	// console.log('apiUser:', user)
-
+	// console.log('')
+	// console.log('apiUser.getUser.user:', user)
+	return user
 	// const parms = [
 	// 	'id',
 	// 	'lastName',
@@ -23,9 +22,8 @@ export async function getUser(token: TokenApiUser) {
 	// 	user[p] = userEdge[p]
 	// })
 	// user['organization'] = 'Atlantic Impact'
-	console.log('apiUser:', user)
+
 	// return getServerResponse(user)
-	return user
 }
 
 /*  

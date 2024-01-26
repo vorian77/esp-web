@@ -1,7 +1,4 @@
 import {
-	FieldAccess,
-	FieldElement,
-	type FieldRaw,
 	getArray,
 	memberOfEnum,
 	memberOfEnumOrDefault,
@@ -16,9 +13,16 @@ import {
 	Validity,
 	ValidityError,
 	ValidityErrorLevel,
-	ValidityField
+	ValidityField,
+	DataFieldDataType
 } from '$comps/types'
-import { type Field, FieldValue } from '$comps/form/field'
+import {
+	type Field,
+	FieldAccess,
+	FieldElement,
+	type FieldItemsRecord,
+	type FieldRaw
+} from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 import {
 	FieldCustomAction,
@@ -33,12 +37,15 @@ import { FieldFile } from '$comps/form/fieldFile'
 import { FieldRadio } from '$comps/form/fieldRadio'
 import { FieldSelect } from '$comps/form/fieldSelect'
 import { FieldTextarea } from '$comps/form/fieldTextarea'
+import { ActionsQuery, ActionQuery } from '$comps/nav/types.appQuery'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/dataObj/types.dataObj.ts'
 
 export class DataObj {
-	actions: Array<DataObjAction>
+	actionsField: Array<DataObjAction>
+	actionsQuery?: ActionsQuery
+	actionsQueryRaw: Array<ActionQuery>
 	cardinality: DataObjCardinality
 	component: DataObjComponent
 	crumbs: Array<any> = []
@@ -58,7 +65,7 @@ export class DataObj {
 	constructor(dataObjRaw: DataObjRaw) {
 		const clazz = 'DataObj'
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
-		this.actions = this.initActions(dataObjRaw._actions)
+		this.actionsField = this.initActions(dataObjRaw._actionsField)
 		this.cardinality = memberOfEnum(
 			dataObjRaw._codeCardinality,
 			clazz,
@@ -75,7 +82,7 @@ export class DataObj {
 		)
 		this.crumbs = this.initCrumbs(dataObjRaw._fieldsElCrumb)
 		this.dataObjRaw = dataObjRaw
-		this.data = new DataObjData(this.cardinality, [])
+		this.data = new DataObjData(this.cardinality)
 		this.description = valueOrDefault(dataObjRaw.description, '')
 		this.exprObject = strOptional(dataObjRaw.exprObject, clazz, 'exprObject')
 		this.fields = this.initFields(dataObjRaw._fieldsEl)
@@ -83,30 +90,52 @@ export class DataObj {
 		this.orderItems = this.initOrderItems(dataObjRaw._fieldsDbOrder)
 		this.isPopup = valueOrDefault(dataObjRaw.isPopup, false)
 		this.name = strRequired(dataObjRaw.name, clazz, 'name')
+		this.actionsQueryRaw = this.initActionsQueryRaw(dataObjRaw.actionsQuery)
 		this.subHeader = valueOrDefault(dataObjRaw.subHeader, '')
-		this.table = new Table(dataObjRaw._table)
+		this.table = new Table(dataObjRaw._tables[0]._table)
 	}
-
-	static async constructorCustomActions(dataObjRaw: DataObjRaw) {
-		const dataObj = new DataObj(dataObjRaw)
-		dataObj.fields.forEach(async (f) => {
-			if (f instanceof FieldCustomAction) await f.initAction()
+	initActionsQueryRaw(actionsQueryRaw: any) {
+		actionsQueryRaw = getArray(actionsQueryRaw)
+		let newActions: Array<ActionQuery> = []
+		actionsQueryRaw.forEach((a: ActionQuery) => {
+			newActions.push(new ActionQuery(a))
 		})
+		return newActions
+	}
+	static async loadActions(dataObjRaw: DataObjRaw) {
+		const dataObj = new DataObj(dataObjRaw)
+		await loadActionsField()
+		await loadActionsQuery()
 		return dataObj
+
+		async function loadActionsField() {
+			dataObj.fields.forEach(async (f) => {
+				if (f instanceof FieldCustomAction) await f.initAction()
+			})
+		}
+		async function loadActionsQuery() {
+			dataObj.actionsQuery = await ActionsQuery.load(dataObjRaw.actionsQuery)
+		}
 	}
 
 	get objData() {
-		let dataObjList: DataObjListRow = []
+		let data: any
 		switch (this.data.cardinality) {
 			case DataObjCardinality.list:
+				// <temp> - 240125 - will change when data is manipulated in lists
+				data = []
 				break
 
 			case DataObjCardinality.detail:
 				const record: DataObjRecord = {}
 				this.fields.forEach((f) => {
-					record[f.name] = f.valueCurrent
+					if (f.dataType === DataFieldDataType.json) {
+						record[f.name] = f.valueCurrent
+					} else {
+						record[f.name] = f.valueCurrent
+					}
 				})
-				dataObjList.push(new DataObjRow(this.data.getRowStatus(), record))
+				data = new DataObjRecordRow(this.data.getRowStatus(), record)
 				break
 
 			default:
@@ -116,13 +145,13 @@ export class DataObj {
 					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
 				})
 		}
-		return new DataObjData(this.cardinality, dataObjList, this.data.callbacks)
+		return new DataObjData(this.cardinality, data)
 	}
 	set objData(dataSource: DataObjData) {
 		this.data = dataSource
 		switch (this.data.cardinality) {
 			case DataObjCardinality.list:
-				this.dataListRecord = dataSource.dataObjList.map((row: DataObjRow) => {
+				this.dataListRecord = dataSource.dataObjRowList.map((row: DataObjRecordRow) => {
 					let newRecord: DataObjRecord = {}
 					for (let key in row.record) {
 						newRecord[key] = row.record[key]
@@ -132,42 +161,37 @@ export class DataObj {
 				break
 
 			case DataObjCardinality.detail:
-				if (dataSource.dataObjRow) {
-					const dataRow = dataSource.dataObjRow
-					// console.log('dataObj.objData.dataRow.status:', dataRow.status)
-					if (dataRow.record) {
-						this.fields.forEach((f) => {
-							if (Object.hasOwn(dataRow.record, f.name)) {
-								f.valueCurrent = FieldValue.duplicate(dataRow.record[f.name])
-								f.valueInitial = FieldValue.duplicate(dataRow.record[f.name])
-							} else if (dataRow?.status === DataObjRowStatus.created) {
-								f.valueCurrent.resetData()
-								f.valueInitial.resetData()
-							} else if (dataRow?.status === DataObjRowStatus.updated) {
-								f.valueInitial = FieldValue.duplicate(f.valueCurrent)
-							}
-						})
+				const dataRow = dataSource.dataObjRow
+				const status = dataRow.status
+				const record = dataRow.record
+				const hasData = Object.keys(record).length > 0
+				console.log('dataObj.objData.dataRow:', { record, status, hasData })
+
+				this.fields.forEach((f) => {
+					// console.log('dataObj.objData.field:', f.name)
+					if (hasData && Object.hasOwn(dataRow.record, f.name)) {
+						// console.log('from db: ', f.name)
+						f.valueCurrent = f.copyValue(dataRow.record[f.name])
+						f.valueInitial = f.copyValue(dataRow.record[f.name])
+					} else if (status === DataObjRecordStatus.created) {
+						// console.log('insert - nullifying: ', f.name)
+						f.valueCurrent = null
+						f.valueInitial = null
+					} else if (status === DataObjRecordStatus.updated) {
+						// console.log('update - copying: ', f.name)
+						f.valueInitial = f.copyValue(f.valueCurrent)
 					}
-				}
+					if (dataRow.items && Object.hasOwn(dataRow.items, f.name)) {
+						f.items = dataRow.items[f.name]
+					}
+				})
 				// console.log('dataObj.objData.fields:', this.fields)
 				break
-
-			default:
-				error(500, {
-					file: FILENAME,
-					function: 'objData',
-					message: `No case defined for cardinality: ${this.data.cardinality} in form: ${this.name}`
-				})
 		}
 	}
 
 	getFieldIdx(fieldName: string) {
 		return this.fields.findIndex((f) => f.name == fieldName)
-	}
-
-	getFieldValue(fieldName: string) {
-		const idx = this.getFieldIdx(fieldName)
-		return idx < 0 ? undefined : this.fields[idx].valueCurrent
 	}
 
 	initActions(actions: any) {
@@ -284,15 +308,15 @@ export class DataObj {
 		this.fields.forEach((f) => {
 			if (f.isDisplayable && f.isDisplay && f.access !== FieldAccess.readonly) {
 				fieldValid = true
-				if (f.valueCurrent.data) {
-					const v: Validation = f.validate(f.valueCurrent.data)
+				if (f.valueCurrent) {
+					const v: Validation = f.validate(f.valueCurrent)
 					if (v.status == ValidationStatus.invalid) {
 						formStatus = ValidationStatus.invalid
 						fieldValid = false
 						f.validity = v.validityFields[0].validity
 					}
 				} else {
-					f.setHasChanged(f.valueCurrent.data)
+					f.setHasChanged(f.valueCurrent)
 					if (f.access === FieldAccess.required) {
 						// required field/no value
 						formStatus = ValidationStatus.invalid
@@ -310,10 +334,7 @@ export class DataObj {
 	print() {
 		alert('Print functionality for this object has not yet been implemented.')
 	}
-	setFieldValue(fieldName: string, value: FieldValue) {
-		const idx = this.getFieldIdx(fieldName)
-		if (idx > -1) this.fields[idx].valueCurrent = value
-	}
+
 	getStatusChanged() {
 		return this.fields.some((f: Field) => {
 			return f.hasChanged
@@ -328,7 +349,7 @@ export class DataObj {
 		// process each field
 		this.fields.forEach((f) => {
 			if (f.isDisplayable && f.isDisplay && f.access !== FieldAccess.readonly) {
-				const v: Validation = f.validate(f.valueCurrent.data)
+				const v: Validation = f.validate(f.valueCurrent)
 				validityFields = [...v.validityFields]
 				if (v.status !== ValidationStatus.valid) status = v.status
 			}
@@ -351,14 +372,6 @@ export class DataObjAction {
 	}
 }
 
-export class DataObjCallback {
-	field: string
-	callback: Function
-	constructor(field: string, callback: Function) {
-		this.field = field
-		this.callback = callback
-	}
-}
 export enum DataObjCardinality {
 	list = 'list',
 	detail = 'detail'
@@ -371,53 +384,60 @@ export enum DataObjComponent {
 
 export class DataObjData {
 	cardinality: DataObjCardinality
-	callbacks: Array<DataObjCallback> = []
-	dataObjList: DataObjListRow
-	dataObjRow: DataObjRow
-	constructor(
-		cardinality: DataObjCardinality,
-		dataObjList: DataObjListRow,
-		callbacks: Array<DataObjCallback> = []
-	) {
+	dataObjRow: DataObjRecordRow
+	dataObjRowList: DataObjRecordRowList = []
+	constructor(cardinality: DataObjCardinality, data: any = undefined) {
 		const clazz = 'DataObjData'
-		this.callbacks = callbacks
 		this.cardinality = cardinality
-		this.dataObjList = dataObjList
-		this.dataObjRow =
-			cardinality === DataObjCardinality.detail && dataObjList.length > 0
-				? required(dataObjList[0], clazz, 'dataObjRow')
-				: {}
-	}
-	callbacksAdd(field: string, callback: Function) {
-		const idx = this.callbacks.findIndex((c) => {
-			return c.field === field
-		})
-		if (idx >= 0) {
-			this.callbacks[idx].callback = callback
+		if (data === undefined) {
+			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {}, {})
+			this.dataObjRowList = []
+		} else if (cardinality === DataObjCardinality.detail) {
+			this.dataObjRow = Array.isArray(data) ? data[0] : data
+			this.dataObjRowList = []
 		} else {
-			this.callbacks.push(new DataObjCallback(field, callback))
+			// console.log('DataObjData.constructor.list:', data)
+			this.dataObjRowList = data
+			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {}, {})
 		}
 	}
-	callbacksReset() {
-		this.callbacks = []
+	getData() {
+		return this.cardinality === DataObjCardinality.detail
+			? this.dataObjRow.record
+			: this.dataObjRowList
+	}
+	getRecordValue(key: string) {
+		if (!this.hasRecord()) return undefined
+		return this.dataObjRow.record[key]
+	}
+	hasRecord() {
+		if (!this.dataObjRow) return false
+		if (!this.dataObjRow.record) return false
+		return Object.keys(this.dataObjRow.record).length > 0
+	}
+	static loadData(data: DataObjData) {
+		if (data.cardinality === DataObjCardinality.detail) {
+			return new DataObjData(data.cardinality, data.dataObjRow)
+		} else {
+			return new DataObjData(data.cardinality, data.dataObjRowList)
+		}
+	}
+	setRecord(record: DataObjRecord) {
+		this.dataObjRow.record = record
 	}
 	getRowStatus() {
 		return this.cardinality === DataObjCardinality.detail && this.dataObjRow
 			? this.dataObjRow.status
-			: DataObjRowStatus.unknown
+			: DataObjRecordStatus.unknown
 	}
 	setSelectedRecords(selectedRowIds: Array<number>) {
-		this.dataObjList.forEach((row: DataObjRow) => {
-			row.status = selectedRowIds.includes(row.record.id.data)
-				? DataObjRowStatus.selected
-				: DataObjRowStatus.notSelected
+		this.dataObjRowList.forEach((row: DataObjRecordRow) => {
+			row.status = selectedRowIds.includes(row.record.id)
+				? DataObjRecordStatus.selected
+				: DataObjRecordStatus.notSelected
 		})
 	}
 }
-
-export type DataObjListRecord = Array<DataObjRecord>
-
-export type DataObjListRow = Array<DataObjRow>
 
 export type DataObjListOrder = Array<DataObjListOrderField>
 
@@ -431,6 +451,9 @@ export class DataObjListOrderField {
 		this.direction = obj._codeDbListDir ? obj._codeDbListDir : 'asc'
 	}
 }
+
+export type DataObjListRecord = Array<DataObjRecord>
+
 export enum DataObjProcessType {
 	delete = 'delete',
 	none = 'none',
@@ -440,20 +463,23 @@ export enum DataObjProcessType {
 	saveUpdate = 'saveUpdate',
 	select = 'select'
 }
+
 export interface DataObjRaw {
-	_actions: any
+	_actionsField: any
 	_codeCardinality: string
 	_codeComponent: string
 	_fieldsEl: any
 	_fieldsElCrumb: any
-	_fieldsDbId: any
+	_fieldsDbFilter: any
 	_fieldsDbOrder: any
 	_fieldsDbPreset: any
 	_fieldsDbSaveInsert: any
 	_fieldsDbSaveUpdate: any
 	_fieldsDbSelectSys: any
 	_fieldsDbSelectUser: any
-	_table: { hasMgmt: boolean; mod: string; name: string } | null
+	_tables: any
+	_updateTables: Array<any>
+	actionsQuery: Array<ActionQuery>
 	description: string | null
 	exprFilter: string | null
 	exprObject: string | null
@@ -465,17 +491,22 @@ export interface DataObjRaw {
 	subHeader: string | null
 }
 
-export type DataObjRecord = Record<string, FieldValue>
+export type DataObjRecord = Record<string, any>
 
-export class DataObjRow {
+export class DataObjRecordRow {
+	items: FieldItemsRecord = {}
 	record: DataObjRecord = {}
-	status: DataObjRowStatus
-	constructor(status: DataObjRowStatus, record: DataObjRecord) {
+	status: DataObjRecordStatus
+	constructor(status: DataObjRecordStatus, record: DataObjRecord, items: FieldItemsRecord = {}) {
+		this.items = items
 		this.record = record
 		this.status = status
 	}
 }
-export enum DataObjRowStatus {
+
+export type DataObjRecordRowList = Array<DataObjRecordRow>
+
+export enum DataObjRecordStatus {
 	created = 'created',
 	deleted = 'deleted',
 	notSelected = 'notSelected',

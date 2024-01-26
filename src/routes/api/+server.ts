@@ -7,6 +7,7 @@ import {
 	processQuery
 } from '$routes/api/dbEdge/types.dbEdge'
 import { getDataObjId } from '$routes/api/dbEdge/dbEdgeUtilities'
+import initSysAdmin from '$server/dbEdge/init/dbEdgeInitSysAdmin'
 import { sendText } from '$routes/api/apiTwilio'
 import { getUser } from '$routes/api/apiUser'
 import { error } from '@sveltejs/kit'
@@ -29,6 +30,10 @@ export async function POST({ request }) {
 
 		case ApiFunction.dbEdgeGetTableColumns:
 			return getServerResponse(await getTableColumns(token))
+
+		case ApiFunction.dbEdgeInitAdmin:
+			await initSysAdmin()
+			return getServerResponse(await getUser(token))
 
 		case ApiFunction.dbEdgeProcessQuery:
 			return getServerResponse(await processQuery(token))

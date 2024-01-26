@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TokenApiDbDataObj, TokenApiQuery, TokenApiQueryData, TokenApiQueryType } from '$lib/api'
 	import { NodeType } from '$comps/types'
-	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.app'
+	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import NavApp from '$comps/nav/NavApp.svelte'
 	import { SurfaceType } from '$comps/types.master'
 	import { getDrawerStore, getModalStore, getToastStore } from '@skeletonlabs/skeleton'

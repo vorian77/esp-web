@@ -1,4 +1,4 @@
-import { getArray } from '$utils/array.utils'
+import { getArray } from '$utils/utils.array'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/utils/model.utils.js'
@@ -136,13 +136,13 @@ export function nbrRequired(val: number, name: string) {
 	}
 }
 export function required(val: any, clazz: any, fieldName: string) {
-	if (val) {
+	if (val !== undefined || val !== null) {
 		return val
 	} else {
 		error(500, {
 			file: FILENAME,
 			function: clazz,
-			message: `Field: ${fieldName} - is required but is undefined.`
+			message: `Field: ${fieldName} - is required but is undefined or null.`
 		})
 	}
 }

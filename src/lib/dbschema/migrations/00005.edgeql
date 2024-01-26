@@ -1,10 +1,9 @@
-CREATE MIGRATION m1a5nnegzwbv3uu6mmiryo7m53ci2bdkgwkq53eib4qwknwvvyfptq
-    ONTO m1benebjk6gux6qepag4v2q2qotb3w635fzvk7w3bmgkgywteq5rwa
+CREATE MIGRATION m1676leinewh7ppaxxrnc3t2nnp4dudevtcunrv723elgfqvk3x42q
+    ONTO m1dq3vhukudvhqn52l5232vnimppcw7xfxte3iogywofukpocpbxjq
 {
-  ALTER TYPE sys_core::SysDataObj {
-      DROP PROPERTY table;
-  };
-  ALTER TYPE sys_core::SysDataObj {
-      CREATE LINK table: sys_db::SysTable;
+  ALTER TYPE sys_core::SysDataObjFieldItemsDb {
+      DROP LINK fieldsDb;
+      DROP LINK table;
+      DROP PROPERTY exprDisplay;
   };
 };

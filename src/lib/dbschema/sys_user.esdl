@@ -5,7 +5,7 @@ module sys_user {
       readonly := true;
     };
 
-    required createdBy: UserRoot {
+    required createdBy: sys_user::UserRoot {
       readonly := true;
     };
     
@@ -13,7 +13,7 @@ module sys_user {
       rewrite insert, update using (datetime_of_transaction())
     }
 
-    required modifiedBy: UserRoot
+    required modifiedBy: sys_user::UserRoot
   }
   
   type SysStaff extending sys_user::Mgmt {

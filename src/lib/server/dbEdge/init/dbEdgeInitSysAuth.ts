@@ -5,18 +5,150 @@ const FILE = 'initSysAuth'
 export default async function init() {
 	console.log()
 	console.log(`${FILE}.start...`)
+	await initDataObjAccount()
 	await initDataObjLogin()
 	await initDataObjResetPasswordAccount()
 	await initDataObjResetPasswordLogin()
-	// await initDataObjSignup()
 	await initDataObjVerify()
-	await initDataObjAccount()
+	// await initDataObjSignup()
 	console.log(`${FILE}.end`)
+}
+
+async function initDataObjAccount() {
+	await addDataObj({
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		header: 'My Account',
+		name: 'data_obj_auth_account',
+		owner: 'app_sys',
+		actionsQuery: [
+			{
+				name: 'qa_file_storage',
+				parms: { imageField: 'avatar' },
+				triggers: [
+					{ type: 'retrieve', timing: 'post' },
+					{ type: 'saveInsert', timing: 'pre' },
+					{ type: 'saveUpdate', timing: 'pre' },
+					{ type: 'saveInsert', timing: 'post' },
+					{ type: 'saveUpdate', timing: 'post' }
+				]
+			},
+			{
+				name: 'qa_user_update',
+				triggers: [
+					{ type: 'saveInsert', timing: 'post' },
+					{ type: 'saveUpdate', timing: 'post' }
+				]
+			}
+		],
+		table: 'SysUser',
+		tables: [
+			{ index: '0', table: 'SysUser' },
+			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
+		],
+		exprFilter: '.id = <uuid,user,id>',
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				isDbFilter: true,
+				isDisplay: false,
+				dbOrderSelect: 10,
+				indexTable: '0'
+			},
+			{
+				columnName: 'firstName',
+				dbOrderSelect: 20,
+				indexTable: '1'
+			},
+			{
+				columnName: 'lastName',
+				dbOrderSelect: 30,
+				indexTable: '1'
+			},
+			{
+				codeElement: 'tel',
+				columnName: 'userName',
+				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			// {
+			// 	codeAccess: 'optional',
+			// 	codeElement: 'select',
+			// 	columnName: 'codeRace',
+			// 	dbOrderSelect: 42,
+			// 	itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+			// 	itemsDbParms: { codeTypeName: 'ct_sys_person_race' },
+			// 	link: {
+			// 		columnsDisplay: ['name'],
+			// 		table: { module: 'sys_core', name: 'SysCode' }
+			// 	},
+			// 	indexTable: '1'
+			// },
+			// {
+			// 	codeAccess: 'optional',
+			// 	codeElement: 'checkbox',
+			// 	columnName: 'favFood',
+			// 	dbOrderSelect: 44,
+			// 	items: [
+			// 		{
+			// 			data: '10',
+			// 			display: 'Apple'
+			// 		},
+			// 		{
+			// 			data: '20',
+			// 			display: 'Pizza'
+			// 		},
+			// 		{
+			// 			data: '30',
+			// 			display: 'Spaghetti'
+			// 		}
+			// 	],
+			// 	indexTable: '1'
+			// },
+			{
+				codeAccess: 'optional',
+				codeElement: 'file',
+				columnName: 'avatar',
+				dbOrderSelect: 50,
+				indexTable: '1',
+				width: 300
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedAt',
+				dbOrderSelect: 220,
+				isDisplay: true,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				codeDbDataSource: 'user',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 230,
+				isDisplay: true,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'link',
+					action: {
+						method: 'auth',
+						type: 'page',
+						value: 'data_obj_auth_reset_password_account'
+					},
+					label: 'Reset Password?'
+				},
+				dbOrderSelect: 60
+			}
+		]
+	})
 }
 
 async function initDataObjLogin() {
 	await addDataObj({
-		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		exprObject: `WITH 
@@ -30,16 +162,22 @@ async function initDataObjLogin() {
 		name: 'data_obj_auth_login',
 		owner: 'app_sys',
 		table: 'SysUser',
+		tables: [
+			{ index: '0', table: 'SysUser' },
+			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
+		],
 		fields: [
 			{
 				codeElement: 'tel',
 				columnName: 'userName',
-				dbOrderSelect: 10
+				dbOrderSelect: 10,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'password',
 				columnName: 'password',
-				dbOrderSelect: 20
+				dbOrderSelect: 20,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
@@ -49,7 +187,8 @@ async function initDataObjLogin() {
 					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_login' },
 					label: 'Log in'
 				},
-				dbOrderSelect: 30
+				dbOrderSelect: 30,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
@@ -59,7 +198,8 @@ async function initDataObjLogin() {
 					action: { method: 'auth', type: 'page', value: 'data_obj_auth_reset_password_login' },
 					label: 'Forgot Password?'
 				},
-				dbOrderSelect: 40
+				dbOrderSelect: 40,
+				indexTable: '0'
 			}
 		]
 	})
@@ -67,7 +207,6 @@ async function initDataObjLogin() {
 
 async function initDataObjResetPasswordAccount() {
 	await addDataObj({
-		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		exprObject: `WITH
@@ -84,17 +223,23 @@ async function initDataObjResetPasswordAccount() {
 		name: 'data_obj_auth_reset_password_account',
 		owner: 'app_sys',
 		table: 'SysUser',
+		tables: [
+			{ index: '0', table: 'SysUser' },
+			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
+		],
 		fields: [
 			{
 				codeElement: 'tel',
 				columnName: 'userName',
-				dbOrderSelect: 10
+				dbOrderSelect: 10,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'password',
 				columnName: 'password',
 				dbOrderSelect: 20,
-				headerAlt: 'New Password'
+				headerAlt: 'New Password',
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
@@ -104,7 +249,8 @@ async function initDataObjResetPasswordAccount() {
 					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_reset_password_account' },
 					label: 'Confirm Mobile Phone Number'
 				},
-				dbOrderSelect: 30
+				dbOrderSelect: 30,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
@@ -114,7 +260,8 @@ async function initDataObjResetPasswordAccount() {
 					align: 'center',
 					label: `We'll text you to confirm your mobile phone number. Standard rates apply.`
 				},
-				dbOrderSelect: 40
+				dbOrderSelect: 40,
+				indexTable: '0'
 			}
 		]
 	})
@@ -122,7 +269,6 @@ async function initDataObjResetPasswordAccount() {
 
 async function initDataObjResetPasswordLogin() {
 	await addDataObj({
-		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		exprObject: `WITH
@@ -139,17 +285,23 @@ async function initDataObjResetPasswordLogin() {
 		name: 'data_obj_auth_reset_password_login',
 		owner: 'app_sys',
 		table: 'SysUser',
+		tables: [
+			{ index: '0', table: 'SysUser' },
+			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
+		],
 		fields: [
 			{
 				codeElement: 'tel',
 				columnName: 'userName',
-				dbOrderSelect: 10
+				dbOrderSelect: 10,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'password',
 				columnName: 'password',
 				dbOrderSelect: 20,
-				headerAlt: 'New Password'
+				headerAlt: 'New Password',
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
@@ -159,7 +311,8 @@ async function initDataObjResetPasswordLogin() {
 					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_reset_password_login' },
 					label: 'Confirm Mobile Phone Number'
 				},
-				dbOrderSelect: 30
+				dbOrderSelect: 30,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
@@ -169,7 +322,8 @@ async function initDataObjResetPasswordLogin() {
 					align: 'center',
 					label: `We'll text you to confirm your mobile phone number. Standard rates apply.`
 				},
-				dbOrderSelect: 40
+				dbOrderSelect: 40,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
@@ -180,7 +334,64 @@ async function initDataObjResetPasswordLogin() {
 					label: 'Log in',
 					prefix: 'Already have an account?'
 				},
-				dbOrderSelect: 50
+				dbOrderSelect: 50,
+				indexTable: '0'
+			}
+		]
+	})
+}
+
+async function initDataObjVerify() {
+	/* data_obj_auth_verify_phone_mobile */
+	await addDataObj({
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		header: 'Verify Mobile Phone Number',
+		isPopup: true,
+		name: 'data_obj_auth_verify_phone_mobile',
+		owner: 'app_sys',
+		table: 'SysUser',
+		tables: [
+			{ index: '0', table: 'SysUser' },
+			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
+		],
+		fields: [
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'text',
+					label: `Check your message app for the security code and enter it here.`
+				},
+				dbOrderSelect: 10,
+				indexTable: '0'
+			},
+			{
+				columnName: 'authSecurityCode',
+				dbOrderSelect: 20,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'button',
+					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_verify_phone_mobile' },
+					label: 'Verify'
+				},
+				dbOrderSelect: 30,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: {
+					_type: 'link',
+					action: { method: 'auth', type: 'resend_code' },
+					label: 'Resend Security Code'
+				},
+				dbOrderSelect: 40,
+				indexTable: '0'
 			}
 		]
 	})
@@ -189,7 +400,6 @@ async function initDataObjResetPasswordLogin() {
 async function initDataObjSignup() {
 	/* data_obj_auth_signup */
 	await addDataObj({
-		creator: 'user_sys',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		exprObject: `WITH 
@@ -289,116 +499,6 @@ async function initDataObjSignup() {
 					prefix: 'Already have an account?'
 				},
 				dbOrderSelect: 70
-			}
-		]
-	})
-}
-
-async function initDataObjVerify() {
-	/* data_obj_auth_verify_phone_mobile */
-	await addDataObj({
-		creator: 'user_sys',
-		codeComponent: 'FormDetail',
-		codeCardinality: 'detail',
-		header: 'Verify Mobile Phone Number',
-		isPopup: true,
-		name: 'data_obj_auth_verify_phone_mobile',
-		owner: 'app_sys',
-		table: 'SysUser',
-		fields: [
-			{
-				codeElement: 'custom',
-				columnName: 'custom_element',
-				customElement: {
-					_type: 'text',
-					label: `Check your message app for the security code and enter it here.`
-				},
-				dbOrderSelect: 10
-			},
-			{
-				columnName: 'authSecurityCode',
-				dbOrderSelect: 20
-			},
-			{
-				codeElement: 'custom',
-				columnName: 'custom_element',
-				customElement: {
-					_type: 'button',
-					action: { method: 'auth', type: 'submit', value: 'data_obj_auth_verify_phone_mobile' },
-					label: 'Verify'
-				},
-				dbOrderSelect: 30
-			},
-			{
-				codeElement: 'custom',
-				columnName: 'custom_element',
-				customElement: {
-					_type: 'link',
-					action: { method: 'auth', type: 'resend_code' },
-					label: 'Resend Security Code'
-				},
-				dbOrderSelect: 40
-			}
-		]
-	})
-}
-
-async function initDataObjAccount() {
-	await addDataObj({
-		creator: 'user_sys',
-		codeComponent: 'FormDetail',
-		codeCardinality: 'detail',
-		header: 'My Account',
-		name: 'data_obj_auth_account',
-		owner: 'app_sys',
-		table: 'SysUser',
-		link: { property: 'person', table: { mod: 'default', name: 'SysPerson' } },
-		exprFilter: '.id = <uuid,user,id>',
-		fields: [
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				isDbFilter: true,
-				isDisplay: false,
-				dbOrderSelect: 10
-			},
-			{
-				columnName: 'firstName',
-				dbOrderSelect: 20,
-				isLinkMember: true
-			},
-			{
-				columnName: 'lastName',
-				dbOrderSelect: 30,
-				isLinkMember: true
-			},
-
-			{
-				codeElement: 'tel',
-				columnName: 'userName',
-				dbOrderSelect: 40
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'file',
-				columnName: 'avatar',
-				dbOrderSelect: 50,
-				isLinkMember: true,
-				width: 300
-			},
-			{
-				codeElement: 'custom',
-				columnName: 'custom_element',
-				customElement: {
-					_type: 'link',
-					action: {
-						method: 'auth',
-						type: 'page',
-						value: 'data_obj_auth_reset_password_account'
-					},
-					label: 'Reset Password?'
-				},
-				dbOrderSelect: 60
 			}
 		]
 	})

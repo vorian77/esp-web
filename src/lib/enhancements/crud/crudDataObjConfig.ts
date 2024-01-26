@@ -1,10 +1,8 @@
-import { App, QueryActionTiming, State } from '$comps/nav/types.app'
+import { App } from '$comps/nav/types.app'
+import { ActionQueryTriggerTiming } from '$comps/nav/types.appQuery'
+import { State } from '$comps/nav/types.appState'
 import { apiFetch, ApiFunction, TokenApiDbTableColumns, TokenApiQueryType } from '$lib/api'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
-import { FieldValue } from '$comps/form/field'
-import { userUpdate } from '$comps/types'
-import { getURLDownload, objDelete, objExists, objUpload } from '$comps/fileTransferAWS'
-
 import { type ToastSettings } from '@skeletonlabs/skeleton'
 import { error } from '@sveltejs/kit'
 
@@ -15,7 +13,7 @@ const columnsMgmt = ['owner', 'createdBy', 'modifiedBy', 'createdAt', 'modifiedA
 export default async function action(
 	state: State,
 	data: DataObjRecord,
-	queryActionTiming: QueryActionTiming,
+	queryActionTiming: ActionQueryTriggerTiming,
 	queryType: TokenApiQueryType
 ) {
 	console.log('crudDataObjConfig', {
@@ -30,7 +28,7 @@ export default async function action(
 
 function setValue(data: DataObjRecord, fieldName: string, value: string) {
 	const val = JSON.stringify(value)
-	data[fieldName] = new FieldValue(val, val, [])
+	data[fieldName] = val
 }
 
 async function getColumns(tableModule: string, tableName: string) {

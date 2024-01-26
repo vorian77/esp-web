@@ -50,9 +50,9 @@ export class User {
 		return undefined !== this.user.resource_widgets.find((r: any) => r.name === resource)
 	}
 
-	update(record: DataObjRecord) {
-		this.firstName = Object.hasOwn(record, 'firstName') ? record.firstName.display : this.firstName
-		this.lastName = Object.hasOwn(record, 'lastName') ? record.lastName.display : this.lastName
+	updateName(record: DataObjRecord) {
+		this.firstName = Object.hasOwn(record, 'firstName') ? record.firstName : this.firstName
+		this.lastName = Object.hasOwn(record, 'lastName') ? record.lastName : this.lastName
 		this.fullName = this.firstName + ' ' + this.lastName
 	}
 }

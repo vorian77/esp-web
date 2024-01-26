@@ -10,37 +10,37 @@ export default async function init() {
 	await initStudentCsfCohort()
 	await initStudentCsfCohortAttd()
 	await initStudentCsfCertification()
+	await initStudentCsfNote()
 	console.log(`${FILE}.end`)
 }
 
 async function initCMStudent() {
 	await addDataObj({
-		creator: 'user_sys',
-		owner: 'app_cm',
-		codeComponent: 'FormList',
+		actionsField: ['noa_list_new'],
 		codeCardinality: 'list',
-		name: 'data_obj_cm_student_list',
-		header: 'Students',
-		subHeader: 'All students enrolled in any courses.',
-		table: 'CmClient',
+		codeComponent: 'FormList',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
-		link: { property: 'person', table: { mod: 'default', name: 'SysPerson' } },
-		actions: ['noa_list_new'],
+		header: 'Students',
+		name: 'data_obj_cm_student_list',
+		owner: 'app_cm',
+		subHeader: 'All students enrolled in any courses.',
+		tables: [
+			{ index: '0', table: 'CmClient' },
+			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
+		],
 		fields: [
-			{
-				columnName: 'owner',
-				isDisplayable: false
-			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'agencyId',
-				dbOrderSelect: 20
+				dbOrderSelect: 20,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
@@ -48,7 +48,7 @@ async function initCMStudent() {
 				dbOrderCrumb: 10,
 				dbOrderList: 20,
 				dbOrderSelect: 30,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'readOnly',
@@ -56,184 +56,202 @@ async function initCMStudent() {
 				dbOrderCrumb: 20,
 				dbOrderList: 10,
 				dbOrderSelect: 40,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'email',
 				dbOrderSelect: 50,
-				isLinkMember: true
+				indexTable: '1'
 			}
 		]
 	})
 
 	await addDataObj({
-		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		name: 'data_obj_cm_student_detail',
 		header: 'Student',
 		table: 'CmClient',
-		link: { property: 'person', table: { mod: 'default', name: 'SysPerson' } },
-		actions: ['noa_detail_new', 'noa_detail_delete'],
+		tables: [
+			{ index: '0', table: 'CmClient' },
+			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
+		],
+		actionsField: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				isDbFilter: true,
 				isDisplay: false,
-				dbOrderSelect: 10
+				dbOrderSelect: 10,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'custom',
 				columnName: 'custom_element',
 				customElement: { _type: 'header', label: 'Personal' },
-				dbOrderSelect: 20
+				dbOrderSelect: 20,
+				indexTable: '0'
 			},
 			{
 				columnName: 'agencyId',
-				dbOrderSelect: 25
+				dbOrderSelect: 25,
+				indexTable: '0'
 			},
 			{
 				columnName: 'firstName',
 				dbOrderSelect: 30,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				columnName: 'lastName',
 				dbOrderSelect: 40,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeElement: 'date',
 				columnName: 'birthDate',
 				dbOrderSelect: 50,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'codeGender',
 				dbOrderSelect: 60,
-				isLinkMember: true,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_sys_person_gender' }
+				indexTable: '1',
+				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_sys_person_gender' },
+				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'codeRace',
 				dbOrderSelect: 70,
-				isLinkMember: true,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_sys_person_race' }
+				indexTable: '1',
+				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_sys_person_race' },
+				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'codeEthnicity',
 				dbOrderSelect: 80,
-				isLinkMember: true,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_sys_person_ethnicity' }
+				indexTable: '1',
+				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_sys_person_ethnicity' },
+				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeElement: 'custom',
 				columnName: 'custom_element',
 				customElement: { _type: 'header', label: 'Contact' },
-				dbOrderSelect: 110
+				dbOrderSelect: 110,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'tel',
 				columnName: 'phoneMobile',
 				dbOrderSelect: 120,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'email',
 				columnName: 'email',
 				dbOrderSelect: 130,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'optional',
 				columnName: 'addr1',
 				dbOrderSelect: 140,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'optional',
 				columnName: 'addr2',
 				dbOrderSelect: 150,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'optional',
 				columnName: 'city',
 				dbOrderSelect: 160,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'codeState',
 				dbOrderSelect: 170,
-				isLinkMember: true,
-				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_sys_state' }
+				indexTable: '1',
+				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_sys_state' },
+				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
 				columnName: 'zip',
 				dbOrderSelect: 180,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeElement: 'custom',
 				columnName: 'custom_element',
 				customElement: { _type: 'header', label: 'Other' },
-				dbOrderSelect: 190
+				dbOrderSelect: 190,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
 				dbOrderSelect: 210,
-				isLinkMember: true
+				indexTable: '1'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'owner',
 				dbOrderSelect: 215,
-				exprPreset:
-					'(SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .name = <str,user,org.name>)',
-				isDisplay: false
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: '(SELECT sys_core::getOrg(<str,user,org.name>))',
+					table: { module: 'sys_core', name: 'SysOrg' }
+				}
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
 				dbOrderSelect: 220,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdBy',
 				dbOrderSelect: 230,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedAt',
 				dbOrderSelect: 240,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedBy',
 				dbOrderSelect: 250,
+				indexTable: '0',
 				isDisplay: true
 			}
 		]
@@ -245,7 +263,6 @@ async function initCMStudent() {
 //   codeElement: 'radio',
 //   columnName: 'gender',
 //   dbOrderSelect: 60,
-//   isLinkMember: true,
 //   items: [
 //     {
 //       data: '1',
@@ -268,140 +285,162 @@ async function initCMStudent() {
 
 async function initStudentCsf() {
 	await addDataObj({
-		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		name: 'data_obj_cm_client_service_flow_list',
 		header: 'Service Flows',
-		table: 'CmClientServiceFlow',
+		tables: [{ index: '0', table: 'CmClientServiceFlow' }],
 		exprFilter: '.client.id = <uuid,tree,CmClient.id>',
-		actions: ['noa_list_new'],
+		actionsField: ['noa_list_new'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'computedServiceFlow',
+				columnName: 'serviceFlow',
 				dbOrderCrumb: 10,
-				dbOrderSelect: 20
+				dbOrderSelect: 20,
+				indexTable: '0',
+				link: { columnsDisplay: ['header'] }
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'dateReferral',
 				dbOrderCrumb: 20,
-				dbOrderSelect: 25
+				dbOrderSelect: 25,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'codeStatus',
-				dbOrderSelect: 30
+				dbOrderSelect: 30,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'dateStartEst',
 				dbOrderSelect: 40,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'dateStart',
-				dbOrderSelect: 50
+				dbOrderSelect: 50,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'dateEndEst',
 				dbOrderSelect: 60,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'dateEnd',
-				dbOrderSelect: 70
+				dbOrderSelect: 70,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'note',
-				dbOrderSelect: 80
+				dbOrderSelect: 80,
+				indexTable: '0'
 			}
 		]
 	})
 
 	await addDataObj({
-		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		name: 'data_obj_cm_client_service_flow_detail',
 		header: 'Service Flow',
-		table: 'CmClientServiceFlow',
-		actions: ['noa_detail_new', 'noa_detail_delete'],
+		tables: [{ index: '0', table: 'CmClientServiceFlow' }],
+		actionsField: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'client',
 				dbOrderSelect: 10,
-				exprPreset:
-					'(SELECT app_cm::CmClient { data := .id, display := .person.fullName } FILTER .id = <uuid,tree,CmClient.id>)',
-				isDisplay: false
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: '(SELECT app_cm::CmClient FILTER .id = <uuid,tree,CmClient.id>)',
+					table: { module: 'app_cm', name: 'CmClient' }
+				}
 			},
 			{
 				codeElement: 'select',
 				columnName: 'serviceFlow',
 				dbOrderSelect: 20,
-				itemsList: 'il_cm_service_flow'
+				indexTable: '0',
+				itemsDb: 'il_cm_service_flow',
+				link: { table: { module: 'app_cm', name: 'CmServiceFlow' } }
 			},
 			{
 				codeElement: 'date',
 				columnName: 'dateReferral',
-				dbOrderSelect: 25
+				dbOrderSelect: 25,
+				indexTable: '0'
 			},
 			{
 				codeElement: 'select',
 				columnName: 'codeStatus',
 				dbOrderSelect: 30,
-				exprPreset: `(SELECT sys_core::SysCode { data := .id, display := .name } FILTER .codeType.name = 'ct_cm_service_flow_status' and .name = 'Pending')`,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_service_flow_status' }
+				indexTable: '0',
+				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_cm_service_flow_status' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
 				columnName: 'dateStartEst',
-				dbOrderSelect: 40
+				dbOrderSelect: 40,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
 				columnName: 'dateStart',
-				dbOrderSelect: 50
+				dbOrderSelect: 50,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
 				columnName: 'dateEndEst',
-				dbOrderSelect: 60
+				dbOrderSelect: 60,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
 				columnName: 'dateEnd',
-				dbOrderSelect: 70
+				dbOrderSelect: 70,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
-				dbOrderSelect: 80
+				dbOrderSelect: 80,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 180,
+				indexTable: '0',
 				isDbFilter: true,
 				isDisplay: false,
 				isDisplayable: true
@@ -410,24 +449,28 @@ async function initStudentCsf() {
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
 				dbOrderSelect: 190,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdBy',
 				dbOrderSelect: 200,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedAt',
 				dbOrderSelect: 210,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedBy',
 				dbOrderSelect: 220,
+				indexTable: '0',
 				isDisplay: true
 			}
 		]
@@ -436,39 +479,47 @@ async function initStudentCsf() {
 
 async function initStudentCsfCohort() {
 	await addDataObj({
-		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		name: 'data_obj_cm_csf_cohort_list',
 		header: 'Cohorts',
 		subHeader: "Student's course enrollments.",
-		table: 'CmCsfCohort',
-		exprFilter: '.clientServiceFlow.id = <uuid,tree,CmClientServiceFlow.id>',
-		actions: ['noa_list_new'],
+		tables: [{ index: '0', table: 'CmCsfCohort' }],
+		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
+		actionsField: ['noa_list_new'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
+				indexTable: '0',
 				isDisplay: false
 			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'clientServiceFlow',
-				dbOrderSelect: 20,
-				isDisplay: false
-			},
+			// {
+			// 	codeAccess: 'readOnly',
+			// 	columnName: 'csf',
+			// 	dbOrderSelect: 20,
+			// 	indexTable: '0',
+			// 	isDisplay: true,
+			// 	link: {
+			// 		exprSelect: `(.csf.serviceFlow.header ++ ' (' ++ to_str(.csf.dateReferral) ++ ')')`
+			// 	}
+			// },
 			{
 				codeAccess: 'readOnly',
 				columnName: 'cohort',
 				dbOrderCrumb: 10,
-				dbOrderSelect: 30
+				dbOrderSelect: 30,
+				indexTable: '0',
+				link: { exprSelect: `(.cohort.course.name ++ ' (' ++ .cohort.name ++ ')')` }
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'codeStatus',
-				dbOrderSelect: 40
+				dbOrderSelect: 40,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
 			},
 			{
 				codeAccess: 'readOnly',
@@ -477,125 +528,163 @@ async function initStudentCsfCohort() {
 				columnName: 'dateReferral',
 				dbOrderCrumb: 20,
 				dbOrderList: 10,
-				dbOrderSelect: 50
+				dbOrderSelect: 50,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'dateStart',
-				dbOrderSelect: 60
+				dbOrderSelect: 60,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'dateEnd',
-				dbOrderSelect: 80
+				dbOrderSelect: 80,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'codeMultiCerts',
-				dbOrderSelect: 90
+				dbOrderSelect: 90,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'note',
-				dbOrderSelect: 100
+				dbOrderSelect: 100,
+				indexTable: '0'
 			}
 		]
 	})
 
 	await addDataObj({
-		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		name: 'data_obj_cm_csf_cohort_detail',
 		header: 'Cohort',
-		subHeader: "Student's course enrollment.",
-		table: 'CmCsfCohort',
-		actions: ['noa_detail_new', 'noa_detail_delete'],
+		tables: [{ index: '0', table: 'CmCsfCohort' }],
+		actionsField: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'clientServiceFlow',
+				columnName: 'csf',
 				dbOrderSelect: 20,
-				exprPreset: `(SELECT app_cm::CmClientServiceFlow { data := .id, display := .serviceFlow.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,tree,CmClientServiceFlow.id>)`,
-				isDisplay: false
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave:
+						'(SELECT app_cm::CmClientServiceFlow filter.id = (<uuid,tree,CmClientServiceFlow.id>))',
+					table: { module: 'app_cm', name: 'CmClientServiceFlow' }
+				}
 			},
 			{
 				codeElement: 'select',
 				columnName: 'cohort',
 				dbOrderCrumb: 10,
 				dbOrderSelect: 30,
-				itemsList: 'il_cm_cohort_by_userName'
+				indexTable: '0',
+				itemsDb: 'il_cm_cohort_by_userName',
+				link: { table: { module: 'app_cm', name: 'CmCohort' } }
 			},
 			{
 				codeElement: 'select',
 				columnName: 'codeStatus',
 				dbOrderSelect: 40,
-				itemsList: 'il_sys_code_order_index_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_service_flow_status' }
+				indexTable: '0',
+				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_cm_service_flow_status' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeElement: 'date',
 				columnName: 'dateReferral',
 				dbOrderCrumb: 20,
 				dbOrderList: 10,
-				dbOrderSelect: 50
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'date',
+				columnName: 'dateStartEst',
+				dbOrderSelect: 60,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
 				columnName: 'dateStart',
-				dbOrderSelect: 60
+				dbOrderSelect: 70,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'date',
+				columnName: 'dateEndEst',
+				dbOrderSelect: 80,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
 				columnName: 'dateEnd',
-				dbOrderSelect: 80
+				dbOrderSelect: 90,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'checkbox',
 				columnName: 'codeMultiCerts',
-				dbOrderSelect: 90,
+				dbOrderSelect: 100,
+				indexTable: '0',
 				headerAlt: 'Certifications Earned',
-				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_course_cert' }
+				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_cm_course_cert' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
-				dbOrderSelect: 100
+				dbOrderSelect: 110,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
 				dbOrderSelect: 200,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdBy',
 				dbOrderSelect: 210,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedAt',
 				dbOrderSelect: 220,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedBy',
 				dbOrderSelect: 230,
+				indexTable: '0',
 				isDisplay: true
 			}
 		]
@@ -604,26 +693,335 @@ async function initStudentCsfCohort() {
 
 async function initStudentCsfCohortAttd() {
 	await addDataObj({
-		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		name: 'data_obj_cm_csf_cohort_attd_list',
 		header: 'Attendances',
-		table: 'CmCsfCohortAttd',
+		tables: [{ index: '0', table: 'CmCsfCohortAttd' }],
 		exprFilter: '.csfCohort.id = <uuid,tree,CmCsfCohort.id>',
-		actions: ['noa_list_new'],
+		actionsField: ['noa_list_new'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'csfCohort',
 				dbOrderSelect: 20,
+				indexTable: '0',
+				isDisplay: false,
+				link: { columnsDisplay: ['id'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				codeDbListDir: 'desc',
+				codeElement: 'date',
+				columnName: 'date',
+				dbOrderCrumb: 10,
+				dbOrderList: 10,
+				dbOrderSelect: 30,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'duration',
+				dbOrderSelect: 40,
+				indexTable: '0'
+			}
+		]
+	})
+
+	await addDataObj({
+		owner: 'app_cm',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		name: 'data_obj_cm_csf_cohort_attd_detail',
+		header: 'Attendance',
+		tables: [{ index: '0', table: 'CmCsfCohortAttd' }],
+		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'csfCohort',
+				dbOrderSelect: 20,
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: '(SELECT app_cm::CmCsfCohort filter.id = (<uuid,tree,CmCsfCohort.id>))',
+					table: { module: 'app_cm', name: 'CmCsfCohort' }
+				}
+			},
+			{
+				codeElement: 'date',
+				columnName: 'date',
+				dbOrderCrumb: 10,
+				dbOrderList: 10,
+				dbOrderSelect: 30,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'number',
+				columnName: 'duration',
+				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'note',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdAt',
+				dbOrderSelect: 200,
+				indexTable: '0',
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdBy',
+				dbOrderSelect: 210,
+				indexTable: '0',
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedAt',
+				dbOrderSelect: 220,
+				indexTable: '0',
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 230,
+				indexTable: '0',
+				isDisplay: true
+			}
+		]
+	})
+}
+
+async function initStudentCsfCertification() {
+	await addDataObj({
+		owner: 'app_cm',
+		codeComponent: 'FormList',
+		codeCardinality: 'list',
+		name: 'data_obj_cm_csf_certification_list',
+		header: 'Certifications',
+		tables: [{ index: '0', table: 'CmCsfCertification' }],
+		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
+		actionsField: ['noa_list_new'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'csf',
+				dbOrderSelect: 20,
+				indexTable: '0',
+				isDisplay: false,
+				link: { columnsDisplay: ['id'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'course',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeCertification',
+				dbOrderSelect: 40,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateIssued',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateExpires',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'note',
+				dbOrderSelect: 60,
+				indexTable: '0',
+				isDisplay: false
+			}
+		]
+	})
+
+	await addDataObj({
+		owner: 'app_cm',
+		codeComponent: 'FormDetail',
+		codeCardinality: 'detail',
+		name: 'data_obj_cm_csf_certification_detail',
+		header: 'Certification',
+		tables: [{ index: '0', table: 'CmCsfCertification' }],
+		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsQuery: [
+			{
+				name: 'qa_file_storage',
+				parms: { imageField: 'imageCertification' },
+				triggers: [
+					{ type: 'retrieve', timing: 'post' },
+					{ type: 'saveInsert', timing: 'pre' },
+					{ type: 'saveUpdate', timing: 'pre' },
+					{ type: 'saveInsert', timing: 'post' },
+					{ type: 'saveUpdate', timing: 'post' }
+				]
+			}
+		],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'csf',
+				dbOrderSelect: 20,
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave:
+						'(SELECT app_cm::CmClientServiceFlow filter.id = (<uuid,tree,CmClientServiceFlow.id>))',
+					table: { module: 'app_cm', name: 'CmClientServiceFlow' }
+				}
+			},
+			{
+				codeElement: 'select',
+				columnName: 'course',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				itemsDb: 'il_cm_course_by_csfId_status',
+				itemsDbParms: { status: 'Completed' },
+				link: { table: { module: 'app_cm', name: 'CmCourse' } }
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeCertification',
+				dbOrderSelect: 40,
+				indexTable: '0',
+				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_cm_course_cert' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
+				codeElement: 'date',
+				columnName: 'dateIssued',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'date',
+				columnName: 'dateExpires',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'select',
+				columnName: 'staffAgency',
+				dbOrderSelect: 70,
+				indexTable: '0',
+				itemsDb: 'il_sys_role_staff_by_codeName',
+				itemsDbParms: { codeName: 'cm_training_role_staff_agency' },
+				link: { table: { module: 'sys_user', name: 'SysStaff' } }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'file',
+				columnName: 'imageCertification',
+				dbOrderSelect: 80,
+				indexTable: '0',
+				width: 300
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'note',
+				dbOrderSelect: 90,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdAt',
+				dbOrderSelect: 200,
+				indexTable: '0',
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'createdBy',
+				dbOrderSelect: 210,
+				indexTable: '0',
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedAt',
+				dbOrderSelect: 220,
+				indexTable: '0',
+				isDisplay: true
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'modifiedBy',
+				dbOrderSelect: 230,
+				indexTable: '0',
+				isDisplay: true
+			}
+		]
+	})
+}
+
+async function initStudentCsfNote() {
+	await addDataObj({
+		owner: 'app_cm',
+		codeComponent: 'FormList',
+		codeCardinality: 'list',
+		name: 'data_obj_cm_csf_note_list',
+		header: 'Case Notes',
+		tables: [{ index: '0', table: 'CmCsfNote' }],
+		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
+		actionsField: ['noa_list_new'],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
@@ -633,246 +1031,105 @@ async function initStudentCsfCohortAttd() {
 				columnName: 'date',
 				dbOrderCrumb: 10,
 				dbOrderList: 10,
-				dbOrderSelect: 30
+				dbOrderSelect: 30,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'duration',
-				dbOrderSelect: 40
+				columnName: 'codeType',
+				dbOrderSelect: 40,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'note',
+				dbOrderSelect: 50,
+				indexTable: '0'
 			}
 		]
 	})
 
 	await addDataObj({
-		creator: 'user_sys',
 		owner: 'app_cm',
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
-		name: 'data_obj_cm_csf_cohort_attd_detail',
-		header: 'Attendance',
-		table: 'CmCsfCohortAttd',
-		actions: ['noa_detail_new', 'noa_detail_delete'],
+		name: 'data_obj_cm_csf_note_detail',
+		header: 'Case Note',
+		tables: [{ index: '0', table: 'CmCsfNote' }],
+		actionsField: ['noa_detail_new', 'noa_detail_delete'],
 		fields: [
 			{
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
+				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'csfCohort',
+				columnName: 'csf',
 				dbOrderSelect: 20,
-				exprPreset: `(SELECT app_cm::CmCsfCohort { data := .id, display := .cohort.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,tree,CmCsfCohort.id>)`,
-				isDisplay: false
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave:
+						'(SELECT app_cm::CmClientServiceFlow filter.id = (<uuid,tree,CmClientServiceFlow.id>))',
+					table: { module: 'app_cm', name: 'CmClientServiceFlow' }
+				}
 			},
 			{
 				codeElement: 'date',
 				columnName: 'date',
 				dbOrderCrumb: 10,
 				dbOrderList: 10,
-				dbOrderSelect: 30
-			},
-			{
-				codeElement: 'number',
-				columnName: 'duration',
-				dbOrderSelect: 40
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'textArea',
-				columnName: 'note',
-				dbOrderSelect: 50
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdAt',
-				dbOrderSelect: 200,
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdBy',
-				dbOrderSelect: 210,
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'modifiedAt',
-				dbOrderSelect: 220,
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'modifiedBy',
-				dbOrderSelect: 230,
-				isDisplay: true
-			}
-		]
-	})
-}
-
-async function initStudentCsfCertification() {
-	await addDataObj({
-		creator: 'user_sys',
-		owner: 'app_cm',
-		codeComponent: 'FormList',
-		codeCardinality: 'list',
-		name: 'data_obj_cm_csf_certification_list',
-		header: 'Certifications',
-		table: 'CmCsfCertification',
-		exprFilter: '.clientServiceFlow.id = <uuid,tree,CmClientServiceFlow.id>',
-		actions: ['noa_list_new'],
-		fields: [
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 10,
-				isDisplay: false
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'clientServiceFlow',
-				dbOrderSelect: 20,
-				isDisplay: false
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'course',
-				dbOrderSelect: 30
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'codeCertification',
-				dbOrderSelect: 40
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'dateIssued',
-				dbOrderSelect: 50
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'dateExpires',
-				dbOrderSelect: 60
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'note',
-				dbOrderSelect: 60,
-				isDisplay: false
-			}
-		]
-	})
-
-	await addDataObj({
-		creator: 'user_sys',
-		owner: 'app_cm',
-		codeComponent: 'FormDetail',
-		codeCardinality: 'detail',
-		name: 'data_obj_cm_csf_certification_detail',
-		header: 'Certification',
-		table: 'CmCsfCertification',
-		actions: ['noa_detail_new', 'noa_detail_delete'],
-		fields: [
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 10,
-				isDisplay: false
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'clientServiceFlow',
-				dbOrderSelect: 20,
-				exprPreset: `(SELECT app_cm::CmClientServiceFlow { data := .id, display := .serviceFlow.name ++ ' (' ++ to_str(.dateReferral) ++ ')'} FILTER .id = <uuid,tree,CmClientServiceFlow.id>)`,
-				isDisplay: false
-			},
-			{
-				codeElement: 'select',
-				columnName: 'course',
 				dbOrderSelect: 30,
-				itemsList: 'il_cm_course_by_csfId_status',
-				itemsListParms: { status: 'Completed' }
+				indexTable: '0'
 			},
 			{
 				codeElement: 'select',
-				columnName: 'codeCertification',
+				columnName: 'codeType',
 				dbOrderSelect: 40,
-				itemsList: 'il_sys_code_order_name_by_codeTypeName',
-				itemsListParms: { codeTypeName: 'ct_cm_course_cert' }
-			},
-			{
-				codeElement: 'date',
-				columnName: 'dateIssued',
-				dbOrderSelect: 50
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'date',
-				columnName: 'dateExpires',
-				dbOrderSelect: 60
-			},
-			{
-				codeElement: 'select',
-				columnName: 'staffAgency',
-				dbOrderSelect: 70,
-				itemsList: 'il_sys_role_staff_by_codeName',
-				itemsListParms: { codeName: 'cm_training_role_staff_agency' }
+				indexTable: '0',
+				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDbParms: { codeTypeName: 'ct_cm_case_note_type' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
-				dbOrderSelect: 80
+				dbOrderSelect: 50,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
 				dbOrderSelect: 200,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdBy',
 				dbOrderSelect: 210,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedAt',
 				dbOrderSelect: 220,
+				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedBy',
 				dbOrderSelect: 230,
+				indexTable: '0',
 				isDisplay: true
 			}
 		]
 	})
 }
-
-// {
-// 	codeAccess: 'optional',
-// 	codeElement: 'checkbox',
-// 	columnName: 'favFood',
-// 	dbOrderSelect: 200,
-// 	isLinkMember: true,
-// 	items: [
-// 		{
-// 			data: '10',
-// 			display: 'Apple'
-// 		},
-// 		{
-// 			data: '20',
-// 			display: 'Pizza'
-// 		},
-// 		{
-// 			data: '30',
-// 			display: 'Spaghetti'
-// 		}
-// 	]
-// },
-//

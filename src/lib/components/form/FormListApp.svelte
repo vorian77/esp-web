@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { State } from '$comps/nav/types.app'
+	import type { State } from '$comps/nav/types.appState'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import FormList from '$comps/form/FormList.svelte'
 	import { getContext } from 'svelte'

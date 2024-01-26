@@ -1,6 +1,4 @@
-import { Field } from '$comps/form/field'
-import type { FieldRaw } from '$comps/types'
-
+import { Field, type FieldRaw } from '$comps/form/field'
 import { valueOrDefault } from '$utils/utils'
 
 const COMPONENT = '/$comps/form/fieldList.ts/'

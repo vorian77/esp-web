@@ -1,32 +1,21 @@
 import {
 	DataObj,
-	DataObjCardinality,
 	DataObjData,
-	DataObjRow,
-	DataObjRowStatus,
-	getArray,
-	memberOfEnum,
+	DataObjRecordStatus,
 	Node,
 	NodeApp,
-	NodeNav,
-	NodeType,
-	ResponseBody,
-	strRequired,
-	valueOrDefault
+	RawNode,
+	ResponseBody
 } from '$comps/types'
 import type { DataObjRaw, DataObjRecord, DbNode } from '$comps/types'
+import { apiFetch, ApiFunction, TokenApiQueryType, TokenApiQuery } from '$lib/api'
+import { query } from '$comps/nav/types.appQuery'
 import {
-	apiFetch,
-	ApiFunction,
-	TokenApiDbDataObj,
-	TokenApiQueryType,
-	TokenApiQuery,
-	TokenApiQueryData,
-	TokenApiQueryDataTree,
-	TokenApiQueryDataTreeLevel
-} from '$lib/api'
-import { SurfaceType, Token } from '$comps/types.master'
-import { getEnhancement } from '$enhance/crud/_crud'
+	State,
+	TokenAppTreeNodeId,
+	TokenAppCrumbs,
+	TokenAppDoDetail
+} from '$comps/nav/types.appState'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/nav/types.app.ts'
@@ -41,14 +30,14 @@ export class App {
 		return new App(await AppLevel.initDataObj(state, token))
 	}
 	static async initNode(state: State, node: Node) {
-		return new App(await AppLevel.initNode(state, await NodeApp.initTree(node)))
+		return new App(await AppLevel.initNode(state, new NodeApp(node)))
 	}
 	async addLevel(state: State, queryType: TokenApiQueryType) {
 		const newLevelIdx = this.levels.length
 		const newLevel = await AppLevel.add(newLevelIdx, this.getCurrLevel().getCurrTab())
 		if (newLevel) {
 			this.levels.push(newLevel)
-			await AppLevelTab.query(state, this.getCurrTab(), queryType, this)
+			await query(state, this.getCurrTab(), queryType, this)
 			return true
 		} else {
 			return false
@@ -106,13 +95,13 @@ export class App {
 			const tabCurrent = this.getCurrTab()
 			tabCurrent.setDataDetail(tabParent.getDataList())
 
-			await AppLevelTab.query(state, tabCurrent, TokenApiQueryType.retrieve, this)
+			await query(state, tabCurrent, TokenApiQueryType.retrieve, this)
 		}
 	}
 	async tabDuplicate(state: State, token: TokenAppDoDetail) {
 		const currTab = this.getCurrTab()
 		currTab.data = token.dataObj.objData
-		currTab.data.dataObjRow.status = DataObjRowStatus.created
+		currTab.data.dataObjRow.status = DataObjRecordStatus.created
 		return true
 	}
 	async tabUpdate(state: State, token: TokenAppDoDetail, queryType: TokenApiQueryType) {
@@ -120,7 +109,7 @@ export class App {
 
 		const currTab = this.getCurrTab()
 		currTab.data = token.dataObj.objData
-		if (!(await AppLevelTab.query(state, currTab, queryType, this))) return false
+		if (!(await query(state, currTab, queryType, this))) return false
 
 		if (this.levels.length > 1) await this.getCurrTabParent().updateParentList(state, currTab, this)
 		return true
@@ -137,12 +126,12 @@ export class AppLevel {
 	}
 	static async initDataObj(state: State, token: TokenApiQuery) {
 		const newLevel = new AppLevel([await AppLevelTab.initDataObj(token)])
-		await AppLevelTab.query(state, newLevel.getCurrTab(), token.queryType)
+		await query(state, newLevel.getCurrTab(), token.queryType)
 		return newLevel
 	}
 	static async initNode(state: State, node: NodeApp) {
-		const newLevel = new AppLevel([await AppLevelTab.initNode(0, 0, node)])
-		await AppLevelTab.query(state, newLevel.getCurrTab(), TokenApiQueryType.retrieve)
+		const newLevel = new AppLevel([AppLevelTab.initNode(0, 0, node)])
+		await query(state, newLevel.getCurrTab(), TokenApiQueryType.retrieve)
 		return newLevel
 	}
 	static async add(newLevelIdx: number, currTab: AppLevelTab) {
@@ -155,11 +144,11 @@ export class AppLevel {
 
 		if (rawNodes.root.length === 1) {
 			// add root
-			tabs.push(await AppLevelTab.initNode(newLevelIdx, 0, await NodeApp.initDb(rawNodes.root[0])))
+			tabs.push(AppLevelTab.initNode(newLevelIdx, 0, new NodeApp(new RawNode(rawNodes.root[0]))))
 
 			// add children
 			rawNodes.children.forEach(async (rawNode, idx) => {
-				tabs.push(await AppLevelTab.initNode(newLevelIdx, idx + 1, await NodeApp.initDb(rawNode)))
+				tabs.push(AppLevelTab.initNode(newLevelIdx, idx + 1, new NodeApp(new RawNode(rawNode))))
 			})
 			return new AppLevel(tabs)
 		}
@@ -167,7 +156,6 @@ export class AppLevel {
 	getCrumbLabel(tabIdx: number, parentLevel: AppLevel | undefined = undefined) {
 		const label = this.tabs[tabIdx].label
 		const labelId = parentLevel ? parentLevel.getCurrTab().getCrumbLabelId() : ''
-		// console.log('AppLevel.getCrumbLabel:', { label, labelId })
 		return label + labelId
 	}
 	getCurrTab() {
@@ -219,12 +207,10 @@ export class AppLevelTab {
 	label: string
 	levelIdx: number
 	nodeId: string
-	queryActions: QueryActions
 	private constructor(
 		levelIdx: number,
 		idx: number,
 		dataObjId: string,
-		queryActions: QueryActions,
 		label: string = '',
 		nodeId: string = ''
 	) {
@@ -233,12 +219,11 @@ export class AppLevelTab {
 		this.label = label
 		this.levelIdx = levelIdx
 		this.nodeId = nodeId
-		this.queryActions = queryActions
 	}
 	static async initDataObj(token: TokenApiQuery) {
 		const result: ResponseBody = await apiFetch(ApiFunction.dbEdgeGetDataObjId, token)
 		if (result.success) {
-			return new AppLevelTab(0, 0, result.data.id, new QueryActions([]))
+			return new AppLevelTab(0, 0, result.data.id)
 		} else {
 			error(500, {
 				file: FILENAME,
@@ -247,175 +232,8 @@ export class AppLevelTab {
 			})
 		}
 	}
-	static async initNode(levelIdx: number, idx: number, node: NodeApp) {
-		return new AppLevelTab(levelIdx, idx, node.dataObjId, node.queryActions, node.label, node.id)
-	}
-
-	static async query(
-		state: State,
-		tab: AppLevelTab,
-		queryType: TokenApiQueryType,
-		app: App | undefined = undefined
-	) {
-		let treeData = this.queryDataPre(tab, queryType, app)
-
-		// treeData = await this.queryExecuteActions(
-		// 	state,
-		// 	treeData,
-		// 	tab.queryActions,
-		// 	QueryActionTiming.pre,
-		// 	queryType
-		// )
-		console.log('AppLevelTab.query:', { queryType, treeData })
-
-		if (!(await this.queryExecute(tab, queryType, new TokenApiQueryData({ tree: treeData }))))
-			return false
-
-		// await this.queryExecuteActions(
-		// 	state,
-		// 	tab?.data?.dataObjRow.record ? tab.data.dataObjRow.record : {},
-		// 	tab.queryActions,
-		// 	QueryActionTiming.post,
-		// 	queryType
-		// )
-
-		return true
-	}
-
-	static queryDataPre(
-		tab: AppLevelTab,
-		queryType: TokenApiQueryType,
-		app: App | undefined = undefined
-	) {
-		console.log('queryDataPre.currentTab:', {
-			name: tab?.dataObj?.name,
-			cardinality: tab?.dataObj?.cardinality,
-			levels: app?.levels.length
-		})
-		let treeData = new TokenApiQueryDataTree()
-		if (app) {
-			let offset = 0
-			switch (queryType) {
-				case TokenApiQueryType.delete:
-				case TokenApiQueryType.saveInsert:
-				case TokenApiQueryType.saveUpdate:
-					offset = 0
-					break
-				case TokenApiQueryType.new:
-					offset = 2
-					break
-				case TokenApiQueryType.retrieve:
-					offset = 1
-					break
-
-				default:
-					error(500, {
-						file: FILENAME,
-						function: 'queryDataPre',
-						message: `No case defined for queryType: ${queryType}`
-					})
-			}
-			for (let i = 0; i < app.levels.length - offset; i++) {
-				const currTab = app.levels[i].getCurrTab()
-				const dataObj = currTab.dataObj
-				if (dataObj) {
-					if (dataObj.cardinality === DataObjCardinality.list) {
-						if (currTab.currRow !== undefined && currTab.currRow > -1) {
-							treeData.addData(dataObj.table.name, currTab.getDataList())
-						}
-					} else {
-						if (currTab.data) treeData.addData(dataObj.table.name, currTab.getDataDetail())
-					}
-				}
-			}
-		}
-		console.log('queryDataPre.1:', { levels: treeData.levels.length })
-		return treeData
-	}
-
-	static queryDataPost(tab: AppLevelTab, queryType: TokenApiQueryType, newData: DataObjData) {
-		newData = new DataObjData(newData.cardinality, newData.dataObjList)
-		switch (newData.cardinality) {
-			case DataObjCardinality.list:
-				return newData
-
-			case DataObjCardinality.detail:
-				if (newData.dataObjRow) {
-					const recordCurrent = tab.data?.dataObjRow?.record
-					let recordNew = newData.dataObjRow.record
-					if (recordCurrent) {
-						for (const [key, value] of Object.entries(recordCurrent)) {
-							if (!Object.hasOwn(recordNew, key)) recordNew[key] = value
-						}
-						newData.dataObjRow.record = recordNew
-					}
-					return newData
-				}
-
-			default:
-				error(500, {
-					file: FILENAME,
-					function: 'queryDataPost',
-					message: `No case defined for cardinality: ${newData.cardinality}`
-				})
-		}
-	}
-
-	static async queryExecute(
-		tab: AppLevelTab,
-		queryType: TokenApiQueryType,
-		queryData: TokenApiQueryData
-	) {
-		const result: ResponseBody = await apiFetch(
-			ApiFunction.dbEdgeProcessQuery,
-			new TokenApiQuery(
-				queryType,
-				new TokenApiDbDataObj({ dataObjId: tab.dataObjId, dataObjRaw: tab.dataObjRaw }),
-				queryData
-			)
-		)
-
-		if (result.success) {
-			tab.data = this.queryDataPost(tab, queryType, result.data.dataObjData)
-			tab.dataObj = await DataObj.constructorCustomActions(result.data.dataObjRaw)
-			tab.dataObjRaw = result.data.dataObjRaw
-			tab.isRetrieved = true
-			return true
-		} else {
-			let errMsg = result.message
-			if (result.message.toLowerCase().includes('invalid query')) {
-				if (queryType === TokenApiQueryType.delete) {
-					errMsg = 'Unable to delete this record.'
-					if (result.message.toLowerCase().includes('still referenced in link')) {
-						let parts = result.message.split('::')
-						let table = parts[parts.length - 1]
-						table = table.split(' ')[0]
-						errMsg += ` It is referenced in record(s) of child table: ${table}.\n\nThe child table record(s) must be deleted before the parent table record can be deleted.`
-					}
-				}
-			}
-			alert(errMsg)
-			return false
-		}
-	}
-
-	static async queryExecuteActions(
-		state: State,
-		data: any,
-		queryActions: QueryActions,
-		queryActionTiming: QueryActionTiming,
-		queryType: TokenApiQueryType
-	) {
-		let newData: any = data
-		let counter = 0
-		queryActions.actions.forEach(async (action) => {
-			if (action.timings.includes(queryActionTiming) && action.queryTypes.includes(queryType)) {
-				counter++
-				newData = await action.func(state, data, queryActionTiming, queryType)
-			}
-		})
-		return counter === 1 ? newData : data
-		return data
+	static initNode(levelIdx: number, idx: number, node: NodeApp) {
+		return new AppLevelTab(levelIdx, idx, node.dataObjId, node.label, node.id)
 	}
 
 	getCrumbLabelId() {
@@ -426,7 +244,7 @@ export class AppLevelTab {
 			crumbFieldNames.forEach((f) => {
 				if (Object.hasOwn(dataRow, f)) {
 					if (id) id += ' '
-					id += Object.hasOwn(dataRow[f], 'display') ? dataRow[f].display : dataRow[f]
+					id += Object.hasOwn(dataRow[f], 'display') ? dataRow[f] : dataRow[f]
 				}
 			})
 		}
@@ -434,24 +252,27 @@ export class AppLevelTab {
 	}
 
 	getDataDetail() {
-		return this.data ? this.data.dataObjRow.record : {}
+		return this.data ? this.data.getData() : {}
 	}
 
 	getDataList() {
 		return this.currRow !== undefined && this.currRow > -1 && this.data
-			? this.data.dataObjList[this.currRow].record
+			? this.data.dataObjRowList[this.currRow].record
 			: {}
 	}
 	getRowStatus() {
-		const currLength = this.data?.dataObjList.length
+		const currLength = this.data?.dataObjRowList.length
 		if (currLength !== undefined && this.currRow !== undefined && this.currRow > -1)
 			return new AppLevelRowStatus(currLength, this.currRow)
+	}
+	getTable() {
+		return this.dataObj?.table.name
 	}
 	reset() {
 		this.isRetrieved = false
 	}
 	setCurrRowByAction(rowAction: AppRowActionType) {
-		const rowCount = this.data?.dataObjList.length
+		const rowCount = this.data?.dataObjRowList.length
 		if (this.currRow === undefined || rowCount === undefined) return
 		let newRow: number
 		switch (rowAction) {
@@ -480,25 +301,29 @@ export class AppLevelTab {
 		}
 		this.currRow = newRow
 	}
-	setCurrRowByNum(rowNum: number) {
-		this.currRow = rowNum
+	setCurrRowByNum(recordId: string) {
+		if (this.data) {
+			this.currRow = this.data.dataObjRowList.findIndex((row) => {
+				return row.record.id === recordId
+			})
+		}
 	}
 	setDataDetail(data: DataObjRecord) {
-		if (this.data) this.data.dataObjRow.record = data
+		if (this.data) this.data.setRecord(data)
 	}
 	async updateParentList(state: State, currTab: AppLevelTab, app: App) {
 		this.reset()
-		await AppLevelTab.query(state, this, TokenApiQueryType.retrieve, app)
-
+		await query(state, this, TokenApiQueryType.retrieve, app)
 		// set parent list curr row
 		let rowIdx = -1
-		if (this.data && currTab.data?.dataObjRow && Object.hasOwn(currTab.data.dataObjRow, 'record')) {
-			const rowId = currTab.data?.dataObjRow.record.id.data
-			rowIdx = this.data.dataObjList.findIndex((row) => {
-				return row.record.id.data === rowId
-			})
+		if (
+			this.data &&
+			currTab.data?.dataObjRow &&
+			Object.hasOwn(currTab.data.dataObjRow, 'record') &&
+			currTab.data.hasRecord()
+		) {
+			this.setCurrRowByNum(currTab.data.getRecordValue('id'))
 		}
-		this.setCurrRowByNum(rowIdx)
 	}
 }
 
@@ -507,126 +332,6 @@ export enum AppRowActionType {
 	left = 'left',
 	right = 'right',
 	last = 'last'
-}
-
-export type RawQueryAction = {
-	name: string
-	queryTypes: Array<TokenApiQueryType>
-	timings: Array<QueryActionTiming>
-}
-
-export class QueryAction {
-	func: Function
-	name: string
-	queryTypes: Array<TokenApiQueryType>
-	timings: Array<QueryActionTiming>
-	constructor(rawAction: RawQueryAction, func: Function) {
-		const clazz = 'QueryAction'
-		this.func = func
-		this.name = strRequired(rawAction.name, clazz, 'name')
-		this.queryTypes = this.initQueryTypes(clazz, rawAction.queryTypes)
-		this.timings = this.initTimings(clazz, rawAction.timings)
-	}
-	initQueryTypes(clazz: string, queryTypes: any) {
-		return getArray(queryTypes).map((queryType: string) => {
-			return memberOfEnum(queryType, clazz, 'queryTypes', 'TokenApiQueryType', TokenApiQueryType)
-		})
-	}
-	initTimings(clazz: string, timings: any) {
-		return getArray(timings).map((timing: string) => {
-			return memberOfEnum(timing, clazz, 'timings', 'QueryActionTiming', QueryActionTiming)
-		})
-	}
-}
-
-export class QueryActions {
-	actions: Array<QueryAction> = []
-	constructor(actions: Array<QueryAction>) {
-		this.actions = actions
-	}
-	static async init(rawQueryActions: Array<RawQueryAction>) {
-		let actions: Array<QueryAction> = []
-
-		if (rawQueryActions) {
-			for (let i = 0; i < rawQueryActions.length; i++) {
-				const rawAction = rawQueryActions[i]
-				actions.push(new QueryAction(rawAction, await getEnhancement(rawAction.name)))
-			}
-		}
-		return new QueryActions(actions)
-	}
-}
-
-export enum QueryActionTiming {
-	post = 'post',
-	pre = 'pre'
-}
-
-export class State {
-	messageDrawer: any
-	messageModal: any
-	messageToast: any
-	nodeType: NodeType = NodeType.home
-	objHasChanged: boolean = false
-	objValidToSave: boolean = true
-	packet: StatePacket | undefined
-	page: string = '/home'
-	surface: SurfaceType = SurfaceType.default
-	updateFunction: Function
-	constructor(updateFunction: Function, drawer: any, modal: any, toast: any) {
-		this.updateFunction = updateFunction
-		this.messageDrawer = drawer
-		this.messageModal = modal
-		this.messageToast = toast
-	}
-	consume(components: StatePacketComponent | Array<StatePacketComponent>) {
-		if (this.packet && this.packet.component && components.includes(this.packet.component)) {
-			const packet = this.packet
-			this.packet = undefined
-			return packet
-		} else {
-			return undefined
-		}
-	}
-	statusReset() {
-		// console.log('State.resetStatus...')
-		this.updateFunction({ objHasChanged: false, objValidToSave: true })
-	}
-	set(packet: StatePacket) {
-		this.packet = packet
-	}
-	update(obj: any) {
-		this.updateFunction(obj)
-	}
-	updateProperties(obj: any) {
-		if (Object.hasOwn(obj, 'nodeType')) this.nodeType = obj.nodeType
-		if (Object.hasOwn(obj, 'objHasChanged')) this.objHasChanged = obj.objHasChanged
-		if (Object.hasOwn(obj, 'objValidToSave')) this.objValidToSave = obj.objValidToSave
-		if (Object.hasOwn(obj, 'page')) this.page = obj.page
-		if (Object.hasOwn(obj, 'surface')) this.surface = obj.surface
-		return this
-	}
-}
-export class StatePacket {
-	callbacks: Array<Function>
-	checkObjChanged: boolean = true
-	component: StatePacketComponent
-	token?: Token
-	constructor(obj: any) {
-		obj = valueOrDefault(obj, {})
-		this.callbacks = obj.callbacks ? obj.callbacks : []
-		this.checkObjChanged = Object.hasOwn(obj, 'checkObjChanged') ? obj.checkObjChanged : true
-		this.component = Object.hasOwn(obj, 'component') ? obj.component : undefined
-		this.token = obj.token ? obj.token : undefined
-	}
-}
-export enum StatePacketComponent {
-	appCrumbs = 'appCrumbs',
-	appDataObj = 'appDataObj',
-	appRow = 'appRow',
-	appTab = 'appTab',
-	navApp = 'navApp',
-	navTree = 'navTree'
 }
 
 async function getNodesLevel(nodeId: string) {
@@ -642,114 +347,5 @@ async function getNodesLevel(nodeId: string) {
 			function: 'getNodes',
 			message: `Error retrieving nodes for nodeId: ${nodeId}`
 		})
-	}
-}
-
-export class TokenApp extends Token {
-	constructor() {
-		super()
-	}
-}
-export class TokenAppCrumbs extends TokenApp {
-	crumbIdx: number
-	constructor(crumbIdx: number) {
-		super()
-		this.crumbIdx = crumbIdx
-	}
-}
-
-export class TokenAppDo extends TokenApp {
-	action: TokenAppDoAction
-	dataObj: DataObj
-	constructor(action: TokenAppDoAction, dataObj: DataObj) {
-		super()
-		this.action = action
-		this.dataObj = dataObj
-	}
-}
-export enum TokenAppDoAction {
-	back = 'back',
-	listEdit = 'listEdit',
-	listNew = 'listNew',
-	detailDelete = 'detailDelete',
-	detailNew = 'detailNew',
-	detailSaveAs = 'detailSaveAs',
-	detailSaveInsert = 'detailSaveInsert',
-	detailSaveUpdate = 'detailSaveUpdate',
-	none = 'none'
-}
-
-export class TokenAppDoDetail extends TokenAppDo {
-	confirm: TokenAppDoDetailConfirm | undefined
-	constructor(action: TokenAppDoAction, dataObj: DataObj, confirm?: TokenAppDoDetailConfirm) {
-		super(action, dataObj)
-		this.confirm = confirm
-	}
-}
-
-export class TokenAppDoDetailConfirm {
-	buttonConfirmLabel: string
-	msg: string
-	title: string
-	constructor(title: string, msg: string, buttonConfirmLabel: string) {
-		this.buttonConfirmLabel = buttonConfirmLabel
-		this.msg = msg
-		this.title = title
-	}
-}
-
-export class TokenAppDoList extends TokenAppDo {
-	rowNbr: number
-	constructor(action: TokenAppDoAction, dataObj: DataObj, rowNbr: number) {
-		super(action, dataObj)
-		this.rowNbr = rowNbr
-	}
-}
-
-export class TokenAppDoName extends TokenApp {
-	dataObjName: string
-	constructor(dataObjName: string) {
-		super()
-		this.dataObjName = dataObjName
-	}
-}
-
-export class TokenAppRow extends TokenApp {
-	rowAction: AppRowActionType
-	constructor(rowAction: AppRowActionType) {
-		super()
-		this.rowAction = rowAction
-	}
-}
-export class TokenAppTab extends TokenApp {
-	tabIdx: number
-	constructor(tabIdx: number) {
-		super()
-		this.tabIdx = tabIdx
-	}
-}
-export class TokenAppTreeNodeId extends TokenApp {
-	nodeId: string
-	constructor(nodeId: string) {
-		super()
-		this.nodeId = nodeId
-	}
-}
-export class TokenAppTreeNode extends TokenApp {
-	node: Node
-	constructor(node: Node) {
-		super()
-		this.node = node
-	}
-}
-export class TokenAppTreeReset extends TokenApp {
-	constructor() {
-		super()
-	}
-}
-
-export class TokenAppTreeSetParent extends TokenApp {
-	constructor() {
-		super()
 	}
 }

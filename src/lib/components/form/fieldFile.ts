@@ -1,6 +1,6 @@
-import { Field } from '$comps/form/field'
+import { Field, type FieldRaw } from '$comps/form/field'
 import { strRequired, valueOrDefault } from '$utils/utils'
-import { getValExpr, type FieldRaw, Validation, ValidationStatus } from '$comps/types'
+import { getValExpr, Validation, ValidationStatus } from '$comps/types'
 import { TokenApiQueryData } from '$lib/api'
 import { get } from 'svelte/store'
 
@@ -9,7 +9,6 @@ const FILENAME = '$comps/Form/fieldFile.ts'
 export class FieldFile extends Field {
 	storageKeyExpr: string
 	width: number
-
 	constructor(obj: FieldRaw, index: number) {
 		super(obj, index)
 		obj = valueOrDefault(obj, {})
@@ -18,6 +17,7 @@ export class FieldFile extends Field {
 	}
 
 	getKey() {
+		console.log('FieldFile.getKey.expr:', this.storageKeyExpr)
 		return getValExpr(this.storageKeyExpr, new TokenApiQueryData({}))
 	}
 

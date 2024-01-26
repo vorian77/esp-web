@@ -1,14 +1,14 @@
 import { apiFetch, ApiFunction } from '$lib/api'
 import { NodeNav, NodeType, ResponseBody } from '$comps/types'
 import type { DbNode, RawNode, User } from '$comps/types'
+import { ActionsQuery } from '$comps/nav/types.appQuery'
 import {
-	QueryActions,
 	State,
 	StatePacket,
 	StatePacketComponent,
 	TokenAppTreeNode,
 	TokenAppTreeNodeId
-} from '$comps/nav/types.app'
+} from '$comps/nav/types.appState'
 import { localStorageStore } from '@skeletonlabs/skeleton'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'
@@ -94,8 +94,8 @@ export class NavTree {
 					nodeType: node.type,
 					packet: new StatePacket({
 						component: StatePacketComponent.navApp,
-						token: new TokenAppTreeNode(node),
-						callbacks: [() => dispatch('treeChanged')]
+						token: new TokenAppTreeNode(node)
+						// callbacks: [() => dispatch('treeChanged')]
 					})
 				})
 				break

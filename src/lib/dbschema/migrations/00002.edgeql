@@ -1,10 +1,7 @@
-CREATE MIGRATION m1vot3gwta7jzxhgiq4mwhd2wpwrn2ez2ucwzs3iopv3i3mii2bkfa
-    ONTO m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
+CREATE MIGRATION m1i27p6ja4ltvxo3wfyeajb46ur3qiq45wsbg4simiplxgsigtdr2q
+    ONTO m1ce7zh5dsazbqhb3ahmxs7wt6gqtdxahqeu2wehrlxpf5vb3lkh3a
 {
-  ALTER TYPE sys_core::SysDataObj {
-      DROP LINK table;
-  };
-  ALTER TYPE sys_core::SysDataObj {
-      CREATE PROPERTY table: std::str;
+  ALTER TYPE sys_db::SysColumn {
+      CREATE PROPERTY exprSave: std::str;
   };
 };

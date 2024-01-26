@@ -1,12 +1,6 @@
 <script lang="ts">
-	import {
-		type AppLevelRowStatus,
-		AppRowActionType,
-		State,
-		StatePacket,
-		StatePacketComponent,
-		TokenAppRow
-	} from '$comps/nav/types.app'
+	import { type AppLevelRowStatus, AppRowActionType } from '$comps/nav/types.app'
+	import { State, StatePacket, StatePacketComponent, TokenAppRow } from '$comps/nav/types.appState'
 	import NavRowAction from '$comps/nav/NavRowAction.svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 

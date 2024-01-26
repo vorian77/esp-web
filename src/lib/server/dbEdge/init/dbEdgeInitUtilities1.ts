@@ -8,6 +8,8 @@ const client = createClient({
 	secretKey: EDGEDB_SECRET_KEY
 })
 
+const rootUserName = '*ROOTUSER*'
+
 export async function rootObj() {
 	const query = e.insert(e.sys_core.ObjRoot, {
 		name: '*ROOTOBJ*'
@@ -21,7 +23,7 @@ export async function rootUser() {
 			firstName: 'Root',
 			lastName: 'User'
 		}),
-		userName: '*ROOTUSER*'
+		userName: rootUserName
 	})
 	return await query.run(client)
 }
@@ -57,7 +59,7 @@ export async function apps(params: any) {
 	return await query.run(client, { data: params })
 }
 export async function userType(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_user.SysUserType, {
@@ -72,7 +74,7 @@ export async function userType(params: any) {
 }
 
 export async function userUserType(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_user.SysUser, (u) => ({
@@ -89,7 +91,7 @@ export async function userUserType(params: any) {
 }
 
 export async function codeTypes(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.SysCodeType, {
@@ -105,7 +107,7 @@ export async function codeTypes(params: any) {
 }
 
 export async function codes(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.SysCode, {
@@ -122,7 +124,7 @@ export async function codes(params: any) {
 }
 
 export async function nodeObjHeaders(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.SysNodeObj, {
@@ -142,7 +144,7 @@ export async function nodeObjHeaders(params: any) {
 }
 
 export async function nodeObjPages(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.SysNodeObj, {
@@ -163,7 +165,7 @@ export async function nodeObjPages(params: any) {
 }
 
 export async function nodeObjPrograms(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_core.SysNodeObj, {
@@ -182,7 +184,7 @@ export async function nodeObjPrograms(params: any) {
 }
 
 export async function widgets(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_user.SysWidget, {
@@ -197,7 +199,7 @@ export async function widgets(params: any) {
 }
 
 export async function userTypeResourcesApps(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_user.SysUserType, (ut) => ({
@@ -212,7 +214,7 @@ export async function userTypeResourcesApps(params: any) {
 }
 
 export async function userTypeResourcesPrograms(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_user.SysUserType, (ut) => ({
@@ -229,7 +231,7 @@ export async function userTypeResourcesPrograms(params: any) {
 }
 
 export async function userTypeResourcesWidgets(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_user.SysUserType, (ut) => ({
@@ -244,7 +246,7 @@ export async function userTypeResourcesWidgets(params: any) {
 }
 
 export async function tables(data: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_db.SysTable, {
@@ -295,7 +297,7 @@ export async function addOrgs(params: any) {
 }
 
 export async function addRoleOrg(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_core.SysOrg, (o) => ({
@@ -310,7 +312,7 @@ export async function addRoleOrg(params: any) {
 }
 
 export async function addStaff(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.insert(e.sys_user.SysStaff, {
@@ -328,7 +330,7 @@ export async function addStaff(params: any) {
 }
 
 export async function addRoleStaff(params: any) {
-	const CREATOR = e.select(e.sys_user.getUser('user_sys'))
+	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_user.getStaffByName(e.cast(e.str, i[0]), e.cast(e.str, i[1])), (o) => ({
@@ -345,6 +347,8 @@ export async function resetDB() {
 	let query = ''
 	const tables: Array<string> = []
 
+	// addStatement('UPDATE sys_user::SysUser SET { modifiedBy := sys_user::getRootUser()}')
+
 	// tables in delete order
 	tables.push('app_cm::CmCsfCertification')
 	tables.push('app_cm::CmCsfCohortAttd')
@@ -358,33 +362,40 @@ export async function resetDB() {
 	tables.push('app_cm::CmServiceFlow')
 
 	tables.push('sys_core::SysNodeObj')
+
 	tables.push('sys_core::SysDataObj')
-	tables.push('sys_core::SysDataObjFieldItems')
+	tables.push('sys_core::SysDataObjFieldItemsDb')
+	tables.push('sys_core::SysDataObjTable')
+
 	tables.push('sys_db::SysTable')
 	tables.push('sys_db::SysColumn')
 	tables.push('sys_core::SysDataObjAction')
 	tables.push('sys_user::SysWidget')
-	tables.push('sys_core::SysCode')
-	tables.push('sys_core::SysCodeType')
 	tables.push('sys_user::SysUserType')
 
 	tables.push('sys_user::SysStaff')
+
 	tables.push('sys_user::SysUser')
-	tables.push('default::SysPerson filter .firstName != "Root" and .lastName != "User"')
+
+	tables.push('sys_core::SysCode')
+	tables.push('sys_core::SysCodeType')
+
+	tables.push(`default::SysPerson filter .firstName not in  {"Root", "System"}`)
 
 	tables.push('sys_core::SysObj')
 	tables.push('sys_user::UserRoot')
 	tables.push('sys_core::ObjRoot')
 
 	tables.forEach((t) => {
-		if (query) query += ' '
-		query += 'delete ' + t + ';'
+		addStatement('delete ' + t)
 	})
 
-	await execute(query)
+	function addStatement(statement: string) {
+		if (query) query += ' '
+		query += statement + ';'
+	}
 
-	// query = 'drop type app_cm_training::Cohort'
-	// await execute(query)
+	await execute(query)
 
 	console.log('DB reset complete...')
 }

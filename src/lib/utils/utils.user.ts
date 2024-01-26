@@ -12,10 +12,10 @@ export function userGet() {
 	return user && Object.keys(user).length > 0 ? new User(user) : undefined
 }
 
-export function userUpdate(record: DataObjRecord) {
+export function userUpdate(record: DataObjRecord | undefined) {
 	let user = userGet()
-	if (user) {
-		user.update(record)
+	if (user && record) {
+		user.updateName(record)
 		userSet(user)
 	}
 }

@@ -88,7 +88,7 @@ export namespace app_cm {
     "staffAgency"?: sys_user.SysStaff | null;
   }
   export interface CmCsfData extends sys_user.Mgmt {
-    "clientServiceFlow": CmClientServiceFlow;
+    "csf": CmClientServiceFlow;
   }
   export interface CmCsfCertification extends CmCsfData {
     "course": CmCourse;
@@ -107,6 +107,8 @@ export namespace app_cm {
     "dateReferral"?: edgedb.LocalDate | null;
     "dateStart"?: edgedb.LocalDate | null;
     "note"?: string | null;
+    "dateEndEst"?: edgedb.LocalDate | null;
+    "dateStartEst"?: edgedb.LocalDate | null;
   }
   export interface CmCsfCohortAttd extends sys_user.Mgmt {
     "csfCohort": CmCsfCohort;
@@ -152,53 +154,71 @@ export namespace sys_core {
     "exprFilter"?: string | null;
     "exprObject"?: string | null;
     "isPopup"?: boolean | null;
-    "link"?: unknown | null;
     "subHeader"?: string | null;
-    "actions": SysDataObjAction[];
-    "fieldsDb": SysDataObjFieldDb[];
-    "fieldsEl": SysDataObjFieldEl[];
-    "table"?: sys_db.SysTable | null;
+    "tables": SysDataObjTable[];
+    "columns": SysDataObjColumn[];
+    "actionsQuery"?: unknown[] | null;
+    "actionsField": SysDataObjAction[];
   }
   export interface SysDataObjAction extends SysObj {
     "allTabs"?: boolean | null;
     "color"?: string | null;
     "order": number;
   }
-  export interface SysDataObjFieldDb extends std.$Object {
+  export interface SysDataObjColumn extends std.$Object {
+    "codeAccess"?: SysCode | null;
     "codeDbDataOp"?: SysCode | null;
     "codeDbDataSource"?: SysCode | null;
     "codeDbListDir"?: SysCode | null;
-    "column": sys_db.SysColumn;
-    "dbDataSourceKey"?: string | null;
-    "dbOrderList"?: number | null;
-    "exprFilter"?: string | null;
-    "exprPreset"?: string | null;
-    "fieldName"?: string | null;
-    "isDbAllowNull"?: boolean | null;
-    "isDbFilter"?: boolean | null;
-    "isLinkMember"?: boolean | null;
-  }
-  export interface SysDataObjFieldEl extends std.$Object {
-    "codeAccess"?: SysCode | null;
     "codeElement"?: SysCode | null;
     "column": sys_db.SysColumn;
-    "itemsList"?: SysDataObjFieldItems | null;
+    "itemsDb"?: SysDataObjFieldItemsDb | null;
     "customElement"?: unknown | null;
+    "dbDataSourceKey"?: string | null;
     "dbOrderCrumb"?: number | null;
+    "dbOrderList"?: number | null;
     "dbOrderSelect"?: number | null;
+    "exprPresetScalar"?: string | null;
+    "fieldName"?: string | null;
     "headerAlt"?: string | null;
     "height"?: number | null;
+    "indexTable"?: string | null;
+    "isDbAllowNull"?: boolean | null;
+    "isDbFilter"?: boolean | null;
     "isDisplay"?: boolean | null;
     "isDisplayable"?: boolean | null;
     "items"?: unknown[] | null;
-    "itemsListParms"?: unknown | null;
+    "itemsDbParms"?: unknown | null;
+    "link"?: unknown | null;
     "width"?: number | null;
+    "exprCustom"?: string | null;
+    "nameCustom"?: string | null;
   }
-  export interface SysDataObjFieldItems extends SysObj {
-    "dbSelect": string;
-    "propertyId": string;
-    "propertyLabel": string;
-    "fieldsDb": SysDataObjFieldDb[];
+  export interface SysDataObjFieldItemsDb extends SysObj {
+    "codeDataTypeDisplay"?: SysCode | null;
+    "codeMask"?: SysCode | null;
+    "exprSelect": string;
+  }
+  export interface SysDataObjFieldLink extends std.$Object {
+    "exprSelect"?: string | null;
+    "codeDisplayDataType"?: SysCode | null;
+    "codeDisplayMask"?: SysCode | null;
+    "exprPreset"?: string | null;
+    "exprSave"?: string | null;
+    "columnsDisplay": sys_db.SysColumn[];
+    "joins": SysDataObjFieldLinkJoin[];
+  }
+  export interface SysDataObjFieldLinkJoin extends std.$Object {
+    "column": sys_db.SysColumn;
+    "order": number;
+    "table": sys_db.SysTable;
+  }
+  export interface SysDataObjTable extends std.$Object {
+    "table": sys_db.SysTable;
+    "index": string;
+    "indexParent"?: string | null;
+    "columnParent"?: sys_db.SysColumn | null;
+    "order": number;
   }
   export interface SysNodeObj extends SysObj {
     "codeIcon": SysCode;
@@ -207,9 +227,41 @@ export namespace sys_core {
     "parent"?: SysNodeObj | null;
     "order": number;
     "page"?: string | null;
-    "queryActions"?: unknown[] | null;
   }
   export interface SysNodeObjFooter extends SysNodeObj {}
+  export interface SysObjConfig extends SysObj {
+    "creator"?: string | null;
+    "detailActions"?: string | null;
+    "detailDataObj"?: string | null;
+    "detailHeader"?: string | null;
+    "detailName"?: string | null;
+    "detailOrder"?: number | null;
+    "detailParentNodeName"?: string | null;
+    "detailSubHeader"?: string | null;
+    "hasMgmt"?: boolean | null;
+    "icon"?: string | null;
+    "linkProperty"?: string | null;
+    "linkTableModule"?: string | null;
+    "linkTableName"?: string | null;
+    "listActions"?: string | null;
+    "listDataObj"?: string | null;
+    "listExprFilter"?: string | null;
+    "listHeader"?: string | null;
+    "listName"?: string | null;
+    "listOrder"?: number | null;
+    "listParentNodeName"?: string | null;
+    "listSubHeader"?: string | null;
+    "objsOwner"?: string | null;
+    "outputDetailColumns"?: string | null;
+    "outputDetailDataObj"?: string | null;
+    "outputDetailNode"?: string | null;
+    "outputListColumns"?: string | null;
+    "outputListDataObj"?: string | null;
+    "outputListNode"?: string | null;
+    "tableModule"?: string | null;
+    "tableName"?: string | null;
+    "tableOwner"?: string | null;
+  }
   export interface SysOrg extends SysEnt {
     "state"?: SysCodeType | null;
     "addr1"?: string | null;
@@ -517,50 +569,11 @@ export namespace sys {
   export type TransactionIsolation = "RepeatableRead" | "Serializable";
   export type VersionStage = "dev" | "alpha" | "beta" | "rc" | "final";
 }
-export namespace sys_admin {
-  export interface SaObjConfig extends sys_core.SysObj {
-    "creator"?: string | null;
-    "detailActions"?: string | null;
-    "detailDataObj"?: string | null;
-    "detailHeader"?: string | null;
-    "detailName"?: string | null;
-    "detailOrder"?: number | null;
-    "detailParentNodeName"?: string | null;
-    "detailSubHeader"?: string | null;
-    "hasMgmt"?: boolean | null;
-    "icon"?: string | null;
-    "linkProperty"?: string | null;
-    "linkTableModule"?: string | null;
-    "linkTableName"?: string | null;
-    "listActions"?: string | null;
-    "listDataObj"?: string | null;
-    "listExprFilter"?: string | null;
-    "listHeader"?: string | null;
-    "listName"?: string | null;
-    "listOrder"?: number | null;
-    "listParentNodeName"?: string | null;
-    "listSubHeader"?: string | null;
-    "objsOwner"?: string | null;
-    "outputDetailColumns"?: string | null;
-    "outputDetailDataObj"?: string | null;
-    "outputDetailNode"?: string | null;
-    "outputListColumns"?: string | null;
-    "outputListDataObj"?: string | null;
-    "outputListNode"?: string | null;
-    "tableModule"?: string | null;
-    "tableName"?: string | null;
-    "tableOwner"?: string | null;
-  }
-}
 export namespace sys_db {
   export interface SysColumn extends sys_core.SysObj {
     "codeAlignment"?: sys_core.SysCode | null;
     "codeDataType": sys_core.SysCode;
-    "codeDataTypeComputed"?: sys_core.SysCode | null;
     "classValue"?: string | null;
-    "edgeTypeDefn"?: unknown | null;
-    "exprPreset"?: string | null;
-    "exprSelect"?: string | null;
     "exprStorageKey"?: string | null;
     "headerSide"?: string | null;
     "isExcludeInsert"?: boolean | null;
@@ -568,6 +581,7 @@ export namespace sys_db {
     "isExcludeUpdate"?: boolean | null;
     "isMultiSelect"?: boolean | null;
     "isSetBySys"?: boolean | null;
+    "link"?: unknown | null;
     "matchColumn"?: string | null;
     "maxLength"?: number | null;
     "maxValue"?: number | null;
@@ -636,11 +650,14 @@ export interface types {
     "SysCodeType": sys_core.SysCodeType;
     "SysDataObj": sys_core.SysDataObj;
     "SysDataObjAction": sys_core.SysDataObjAction;
-    "SysDataObjFieldDb": sys_core.SysDataObjFieldDb;
-    "SysDataObjFieldEl": sys_core.SysDataObjFieldEl;
-    "SysDataObjFieldItems": sys_core.SysDataObjFieldItems;
+    "SysDataObjColumn": sys_core.SysDataObjColumn;
+    "SysDataObjFieldItemsDb": sys_core.SysDataObjFieldItemsDb;
+    "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;
+    "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;
+    "SysDataObjTable": sys_core.SysDataObjTable;
     "SysNodeObj": sys_core.SysNodeObj;
     "SysNodeObjFooter": sys_core.SysNodeObjFooter;
+    "SysObjConfig": sys_core.SysObjConfig;
     "SysOrg": sys_core.SysOrg;
   };
   "default": {
@@ -736,9 +753,6 @@ export interface types {
     "Role": sys.Role;
     "TransactionIsolation": sys.TransactionIsolation;
     "VersionStage": sys.VersionStage;
-  };
-  "sys_admin": {
-    "SaObjConfig": sys_admin.SaObjConfig;
   };
   "sys_db": {
     "SysColumn": sys_db.SysColumn;

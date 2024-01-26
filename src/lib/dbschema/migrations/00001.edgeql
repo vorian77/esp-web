@@ -1,4 +1,4 @@
-CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
+CREATE MIGRATION m1ce7zh5dsazbqhb3ahmxs7wt6gqtdxahqeu2wehrlxpf5vb3lkh3a
     ONTO initial
 {
   CREATE MODULE app_cm IF NOT EXISTS;
@@ -31,7 +31,6 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
   CREATE TYPE app_cm::CmCourse EXTENDING sys_core::SysObj {
       CREATE PROPERTY cost: std::float32;
       CREATE PROPERTY description: std::str;
-      CREATE PROPERTY isActive: std::str;
       CREATE PROPERTY schedule: std::str;
   };
   CREATE FUNCTION app_cm::getCMTrainingCourse(name: std::str) -> OPTIONAL app_cm::CmCourse USING (SELECT
@@ -97,14 +96,14 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
   FILTER
       (.name = dataObjActionName)
   );
-  CREATE TYPE sys_core::SysDataObjFieldItems EXTENDING sys_core::SysObj {
+  CREATE TYPE sys_core::SysDataObjFieldItemsDb EXTENDING sys_core::SysObj {
       CREATE CONSTRAINT std::exclusive ON (.name);
       CREATE REQUIRED PROPERTY dbSelect: std::str;
       CREATE REQUIRED PROPERTY propertyId: std::str;
       CREATE REQUIRED PROPERTY propertyLabel: std::str;
   };
-  CREATE FUNCTION sys_core::getDataObjFieldItems(name: std::str) -> OPTIONAL sys_core::SysDataObjFieldItems USING (SELECT
-      sys_core::SysDataObjFieldItems
+  CREATE FUNCTION sys_core::getDataObjFieldItemsDb(name: std::str) -> OPTIONAL sys_core::SysDataObjFieldItemsDb USING (SELECT
+      sys_core::SysDataObjFieldItemsDb
   FILTER
       (.name = name)
   );
@@ -167,8 +166,8 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
       CREATE LINK codeAlignment: sys_core::SysCode;
       CREATE REQUIRED LINK codeDataType: sys_core::SysCode;
       CREATE LINK codeDataTypeComputed: sys_core::SysCode;
+      CREATE PROPERTY JsonIdProperty: std::str;
       CREATE PROPERTY classValue: std::str;
-      CREATE PROPERTY edgeTypeDefn: std::json;
       CREATE PROPERTY exprPreset: std::str;
       CREATE PROPERTY exprSelect: std::str;
       CREATE PROPERTY exprStorageKey: std::str;
@@ -178,6 +177,7 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
       CREATE PROPERTY isExcludeUpdate: std::bool;
       CREATE PROPERTY isMultiSelect: std::bool;
       CREATE PROPERTY isSetBySys: std::bool;
+      CREATE PROPERTY link: std::json;
       CREATE PROPERTY matchColumn: std::str;
       CREATE PROPERTY maxLength: default::nonNegative;
       CREATE PROPERTY maxValue: std::float64;
@@ -198,6 +198,7 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
       CREATE CONSTRAINT std::exclusive ON (.name);
       CREATE MULTI LINK columns: sys_db::SysColumn;
       CREATE REQUIRED PROPERTY hasMgmt: std::bool;
+      CREATE REQUIRED PROPERTY mod: std::str;
   };
   CREATE FUNCTION sys_db::getTable(tableName: std::str) -> OPTIONAL sys_db::SysTable USING (SELECT
       sys_db::SysTable
@@ -433,7 +434,7 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
       CREATE REQUIRED LINK column: sys_db::SysColumn {
           ON SOURCE DELETE ALLOW;
       };
-      CREATE LINK itemsList: sys_core::SysDataObjFieldItems {
+      CREATE LINK itemsDb: sys_core::SysDataObjFieldItemsDb {
           ON SOURCE DELETE ALLOW;
       };
       CREATE PROPERTY customElement: std::json;
@@ -444,7 +445,7 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
       CREATE PROPERTY isDisplay: std::bool;
       CREATE PROPERTY isDisplayable: std::bool;
       CREATE PROPERTY items: array<std::json>;
-      CREATE PROPERTY itemsListParms: std::json;
+      CREATE PROPERTY itemsDbParms: std::json;
       CREATE PROPERTY width: std::int16;
   };
   CREATE TYPE sys_core::SysDataObjFieldDb {
@@ -473,7 +474,7 @@ CREATE MIGRATION m17pkq6pyiylxs5fadflzdhxrnketxhjnumwxrluhg43epjxhqpurq
       };
       CREATE LINK table: sys_db::SysTable;
   };
-  ALTER TYPE sys_core::SysDataObjFieldItems {
+  ALTER TYPE sys_core::SysDataObjFieldItemsDb {
       CREATE MULTI LINK fieldsDb: sys_core::SysDataObjFieldDb {
           ON SOURCE DELETE DELETE TARGET;
       };

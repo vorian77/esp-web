@@ -1,8 +1,13 @@
 <script lang="ts">
-	import type { AppLevel, AppLevelCrumb, AppLevelRowStatus } from '$comps/nav/types.app'
 	import {
 		App,
-		AppLevelTab,
+		AppLevel,
+		AppLevelCrumb,
+		AppLevelRowStatus,
+		AppLevelTab
+	} from '$comps/nav/types.app'
+	import { query } from '$comps/nav/types.appQuery'
+	import {
 		State,
 		StatePacket,
 		StatePacketComponent,
@@ -15,7 +20,7 @@
 		TokenAppTab,
 		TokenAppTreeNode,
 		TokenAppTreeSetParent
-	} from '$comps/nav/types.app'
+	} from '$comps/nav/types.appState'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { NodeType } from '$comps/types'
 	import { TokenApiQuery, TokenApiQueryType } from '$lib/api'
@@ -110,8 +115,8 @@
 							break
 
 						case TokenAppDoAction.detailNew:
-							app.getCurrLevel().getCurrTab().setCurrRowByNum(-1)
-							await AppLevelTab.query(state, app.getCurrTab(), TokenApiQueryType.new, app)
+							app.getCurrLevel().getCurrTab().setCurrRowByNum('')
+							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
 
@@ -138,7 +143,7 @@
 
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
-								app.getCurrLevel().getCurrTab().setCurrRowByNum(token.rowNbr)
+								app.getCurrLevel().getCurrTab().setCurrRowByNum(token.recordId)
 								await app.addLevel(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
@@ -172,7 +177,7 @@
 					currLevel.setTabIdx(token.tabIdx)
 					currTab = currLevel.getCurrTab()
 					if (!currTab.isRetrieved) {
-						await AppLevelTab.query(state, currLevel.getCurrTab(), TokenApiQueryType.retrieve, app)
+						await query(state, currLevel.getCurrTab(), TokenApiQueryType.retrieve, app)
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 					}
 				}
@@ -269,29 +274,31 @@
 		</svelte:fragment>
 
 		{#if currLevel}
-			<TabGroup>
-				{#each currLevel.tabs as tab, idx}
-					{@const name = 'tab' + idx}
-					{@const hidden = isEditing && idx > 0}
-					<div {hidden}>
-						<Tab bind:group={currLevel.tabSet} {name} value={idx} {hidden} on:click={onClickTab}>
-							{tab.label}
-						</Tab>
-					</div>
-				{/each}
+			<div class="mt-2">
+				<TabGroup>
+					{#each currLevel.tabs as tab, idx}
+						{@const name = 'tab' + idx}
+						{@const hidden = isEditing && idx > 0}
+						<div {hidden}>
+							<Tab bind:group={currLevel.tabSet} {name} value={idx} {hidden} on:click={onClickTab}>
+								{tab.label}
+							</Tab>
+						</div>
+					{/each}
 
-				<svelte:fragment slot="panel">
-					{#if currTab}
-						<svelte:component
-							this={currComponent}
-							{state}
-							{dataObj}
-							{dataObjData}
-							on:formCancelled
-						/>
-					{/if}
-				</svelte:fragment>
-			</TabGroup>
+					<svelte:fragment slot="panel">
+						{#if currTab}
+							<svelte:component
+								this={currComponent}
+								{state}
+								{dataObj}
+								{dataObjData}
+								on:formCancelled
+							/>
+						{/if}
+					</svelte:fragment>
+				</TabGroup>
+			</div>
 		{/if}
 	</AppShell>
 {:else if state?.nodeType === NodeType.object && currTab}

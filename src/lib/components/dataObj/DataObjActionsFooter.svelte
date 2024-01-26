@@ -11,7 +11,7 @@
 	let hidden = false
 	$: hidden =
 		state.surface === SurfaceType.default
-			? dataObj.actions.length === 0 || !state.objHasChanged
+			? dataObj.actionsField.length === 0 || !state.objHasChanged
 			: true
 </script>
 

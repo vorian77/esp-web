@@ -8,10 +8,10 @@ import type * as _cal from "./cal";
 import type * as _sys_user from "./sys_user";
 import type * as _app_cm from "./app_cm";
 export type $Name = $.ScalarType<"std::str", string>;
-const Name: $.scalarTypeWithConstructor<_std.$str, never> = $.makeType<$.scalarTypeWithConstructor<_std.$str, never>>(_.spec, "a90a4b50-b15a-11ee-b2b3-9b445b83d6f0", _.syntax.literal);
+const Name: $.scalarTypeWithConstructor<_std.$str, never> = $.makeType<$.scalarTypeWithConstructor<_std.$str, never>>(_.spec, "5061cd07-b3c2-11ee-b459-95308b4e5073", _.syntax.literal);
 
 export type $nonNegative = $.ScalarType<"std::number", number>;
-const nonNegative: $.scalarTypeWithConstructor<_std.$number, string> = $.makeType<$.scalarTypeWithConstructor<_std.$number, string>>(_.spec, "a8d9c931-b15a-11ee-8a6b-033832728ab7", _.syntax.literal);
+const nonNegative: $.scalarTypeWithConstructor<_std.$number, string> = $.makeType<$.scalarTypeWithConstructor<_std.$number, string>>(_.spec, "50312c72-b3c2-11ee-8e6a-23f218a1f329", _.syntax.literal);
 
 export type $SysPersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
   "firstName": $.PropertyDesc<$Name, $.Cardinality.One, false, false, false, false>;
@@ -43,7 +43,7 @@ export type $SysPersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73
 type $SysPerson = $.ObjectType<"default::SysPerson", $SysPersonλShape, null, [
   ..._std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588['__exclusives__'],
 ]>;
-const $SysPerson = $.makeType<$SysPerson>(_.spec, "a90a5935-b15a-11ee-881f-5d8e7a472f6d", _.syntax.literal);
+const $SysPerson = $.makeType<$SysPerson>(_.spec, "5061da6e-b3c2-11ee-bf41-01b5a8f3a48e", _.syntax.literal);
 
 const SysPerson: $.$expr_PathNode<$.TypeSet<$SysPerson, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysPerson, $.Cardinality.Many), null);
 

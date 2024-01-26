@@ -1,12 +1,5 @@
-import {
-	memberOfEnum,
-	nbrOptional,
-	nbrRequired,
-	strOptional,
-	strRequired,
-	valueOrDefault
-} from '$utils/utils'
-import { QueryActions, type RawQueryAction } from '$comps/nav/types.app'
+import { memberOfEnum, strRequired, valueOrDefault } from '$utils/utils'
+
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/lib/components/nav/types.node.ts'
@@ -22,7 +15,6 @@ export type DbNode = {
 	name: string
 	order: number
 	page?: string
-	queryActions?: Array<RawQueryAction>
 }
 
 export class RawNode {
@@ -32,7 +24,6 @@ export class RawNode {
 	id: string
 	name: string
 	page: string
-	queryActions: Array<RawQueryAction>
 	type: string
 	constructor(dbNode: DbNode) {
 		const clazz = 'RawNode'
@@ -42,7 +33,6 @@ export class RawNode {
 		this.id = dbNode.id
 		this.name = dbNode.name
 		this.page = valueOrDefault(dbNode.page, '/home')
-		this.queryActions = dbNode.queryActions ? dbNode.queryActions : []
 		this.type = dbNode._codeType
 	}
 }
@@ -54,7 +44,6 @@ export class Node {
 	id: string
 	name: string
 	page: string
-	queryActions: Array<RawQueryAction>
 	type: NodeType
 	constructor(rawNode: RawNode) {
 		const clazz = 'Node'
@@ -65,29 +54,18 @@ export class Node {
 		this.name = rawNode.name
 		this.page = rawNode.page
 		this.type = memberOfEnum(rawNode.type, clazz, 'type', 'NodeType', NodeType)
-		this.queryActions = rawNode.queryActions
 	}
 }
 export class NodeApp {
 	dataObjId: string
 	label: string
 	id: string
-	queryActions: QueryActions
-	private constructor(clazz: string, obj: any, queryActions: QueryActions) {
+	constructor(obj: any) {
+		const clazz = 'NodeApp'
 		obj = valueOrDefault(obj, {})
 		this.dataObjId = strRequired(obj.dataObjId, clazz, 'dataObjId')
 		this.label = strRequired(obj.header, clazz, 'header')
 		this.id = strRequired(obj.id, clazz, 'id')
-		this.queryActions = queryActions
-	}
-	static async initDb(dbNode: DbNode) {
-		const rawNode = new RawNode(dbNode)
-		const queryActions = await QueryActions.init(rawNode.queryActions)
-		return new NodeApp('NodeApp-Db', rawNode, queryActions)
-	}
-	static async initTree(node: Node) {
-		const queryActions = await QueryActions.init(node.queryActions)
-		return new NodeApp('NodeApp-Tree', node, queryActions)
 	}
 }
 export class NodeNav extends Node {

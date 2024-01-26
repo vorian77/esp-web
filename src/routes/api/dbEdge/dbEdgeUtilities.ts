@@ -1,7 +1,7 @@
 import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
-import type { TokenAppTreeNodeId } from '$comps/nav/types.app'
+import type { TokenAppTreeNodeId } from '$comps/nav/types.appState'
 import { TokenApiDbTableColumns } from '$lib/api'
 
 const client = createClient({
@@ -23,7 +23,7 @@ export async function getDataObjId(dataObjName: string) {
 
 export async function getDataObjById(dataObjId: string) {
 	const query = e.select(e.sys_core.SysDataObj, (do1) => {
-		const actionBack = e.select(e.sys_core.SysDataObjAction, (doa) => ({
+		const actionFieldBack = e.select(e.sys_core.SysDataObjAction, (doa) => ({
 			allTabs: true,
 			color: true,
 			header: true,
@@ -31,7 +31,7 @@ export async function getDataObjById(dataObjId: string) {
 			order: true,
 			filter: e.op(doa.allTabs, '=', true)
 		}))
-		const actionsDataObj = e.select(do1.actions, (a) => ({
+		const actionsField = e.select(do1.actionsField, (a) => ({
 			allTabs: true,
 			color: true,
 			header: true,
@@ -39,7 +39,7 @@ export async function getDataObjById(dataObjId: string) {
 			order: true,
 			filter: e.op(do1.id, '=', e.cast(e.uuid, dataObjId))
 		}))
-		const _actions = e.select(e.op(actionBack, 'union', actionsDataObj), (a) => ({
+		const _actionsField = e.select(e.op(actionFieldBack, 'union', actionsField), (a) => ({
 			allTabs: true,
 			color: true,
 			header: true,
@@ -49,33 +49,37 @@ export async function getDataObjById(dataObjId: string) {
 		}))
 
 		return {
+			actionsQuery: true,
 			description: true,
 			exprFilter: true,
 			exprObject: true,
 			header: true,
 			id: true,
 			isPopup: true,
-			link: true,
 			name: true,
 			subHeader: true,
 
-			_actions,
+			_actionsField,
 			_codeCardinality: do1.codeCardinality.name,
 			_codeComponent: do1.codeComponent.name,
 
-			_table: e.select(do1.table, (t) => ({
-				mod: true,
-				name: true,
-				hasMgmt: true
+			_tables: e.select(do1.tables, (t) => ({
+				_columnParent: t.columnParent.name,
+				index: true,
+				indexParent: true,
+				_table: e.select(t.table, (tbl) => ({
+					hasMgmt: true,
+					module: tbl.mod,
+					name: true
+				})),
+				order_by: t.index
 			})),
 
-			_fieldsEl: e.select(do1.fieldsEl, (f) => ({
+			_fieldsEl: e.select(do1.columns, (f) => ({
 				_column: e.select(f.column, (c) => ({
 					_codeAlignment: c.codeAlignment.name,
 					_codeDataType: c.codeDataType.name,
-					_codeDataTypeComputed: c.codeDataTypeComputed.name,
 					classValue: true,
-					exprSelect: true,
 					exprStorageKey: true,
 					header: true,
 					headerSide: true,
@@ -94,11 +98,11 @@ export async function getDataObjById(dataObjId: string) {
 				})),
 				_codeAccess: f.codeAccess.name,
 				_codeElement: f.codeElement.name,
-				_itemsList: e.select(f.itemsList, (il) => ({
-					dbSelect: true,
-					name: true,
-					propertyId: true,
-					propertyLabel: true
+				_itemsDb: e.select(f.itemsDb, (idb) => ({
+					_codeDataTypeDisplay: idb.codeDataTypeDisplay.name,
+					_codeMask: idb.codeMask.name,
+					exprSelect: true,
+					name: true
 				})),
 				customElement: true,
 				headerAlt: true,
@@ -106,100 +110,130 @@ export async function getDataObjById(dataObjId: string) {
 				isDisplay: true,
 				isDisplayable: true,
 				items: true,
-				itemsListParms: true,
+				itemsDbParms: true,
+				nameCustom: true,
 				width: true,
 				order_by: f.dbOrderSelect
 			})),
 
-			_fieldsElCrumb: e.select(do1.fieldsEl, (f) => ({
+			_fieldsElCrumb: e.select(do1.columns, (f) => ({
 				_name: f.column.name,
 				filter: e.op('exists', f.dbOrderCrumb),
 				order_by: f.dbOrderCrumb
 			})),
 
-			_fieldsDbId: e.select(do1.fieldsDb, (f) => ({
+			_fieldsDbFilter: e.select(do1.columns, (f) => ({
 				_codeDataType: f.column.codeDataType.name,
 				_codeDbDataOp: f.codeDbDataOp.name,
 				_codeDbDataSource: f.codeDbDataSource.name,
-				_exprFilter: f.exprFilter,
 				_name: f.column.name,
 				dbDataSourceKey: true,
+				hasItems: e.select(e.bool(false)),
+				indexTable: true,
 				filter: e.op(f.isDbFilter, '=', e.bool(true))
 			})),
 
-			_fieldsDbOrder: e.select(do1.fieldsDb, (f) => ({
+			_fieldsDbOrder: e.select(do1.columns, (f) => ({
 				_codeDataType: f.column.codeDataType.name,
 				_codeDbListDir: f.codeDbListDir.name,
-				_exprFilter: f.exprFilter,
 				_name: f.column.name,
+				dbOrderList: true,
+				indexTable: true,
 				filter: e.op('exists', f.dbOrderList),
 				order_by: f.dbOrderList
 			})),
 
-			_fieldsDbPreset: e.select(do1.fieldsDb, (f) => ({
-				_expr: e.op(e.op(f.column.exprPreset, '??', f.column.exprSelect), '??', f.exprPreset),
+			_fieldsDbPreset: e.select(do1.columns, (f) => ({
 				_name: f.column.name,
+				exprPresetScalar: true,
+				hasItems: e.op(
+					'exists',
+					e.select(do1.columns, (c) => ({
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.itemsDb))
+					}))
+				),
+				indexTable: true,
+				link: true,
 				filter: e.op(
-					e.op(e.op('exists', f.column.exprPreset), 'or', e.op('exists', f.column.exprSelect)),
+					e.op(
+						e.op('exists', f.exprPresetScalar),
+						'or',
+						e.op('exists', e.cast(e.str, e.json_get(f.link, 'exprPreset')))
+					),
 					'or',
-					e.op('exists', f.exprPreset)
+					e.op(e.op(f.column.name, '=', 'createdBy'), 'or', e.op(f.column.name, '=', 'modifiedBy'))
 				)
 			})),
 
-			_fieldsDbSaveInsert: e.select(do1.fieldsDb, (f) => ({
+			_fieldsDbSaveInsert: e.select(do1.columns, (f) => ({
 				_codeDataType: f.column.codeDataType.name,
 				_codeDbDataSource: f.codeDbDataSource.name,
-				_edgeTypeDefn: f.column.edgeTypeDefn,
 				_isMultiSelect: f.column.isMultiSelect,
 				_name: f.column.name,
 				dbDataSourceKey: true,
-				isLinkMember: true,
-
+				hasItems: e.op(
+					'exists',
+					e.select(do1.columns, (c) => ({
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.itemsDb))
+					}))
+				),
+				indexTable: true,
+				link: true,
 				filter: e.op(
-					e.op(f.column.codeDataType.name, '!=', 'computed'),
+					e.op('not', e.op('exists', f.column.isExcludeInsert)),
 					'and',
-					e.op(
-						e.op('not', e.op('exists', f.column.isExcludeInsert)),
-						'and',
-						e.op('not', e.op('exists', f.column.isSetBySys))
-					)
+					e.op('not', e.op('exists', f.column.isSetBySys))
 				)
 			})),
 
-			_fieldsDbSaveUpdate: e.select(do1.fieldsDb, (f) => ({
+			_fieldsDbSaveUpdate: e.select(do1.columns, (f) => ({
 				_codeDataType: f.column.codeDataType.name,
 				_codeDbDataSource: f.codeDbDataSource.name,
-				_edgeTypeDefn: f.column.edgeTypeDefn,
 				_isMultiSelect: f.column.isMultiSelect,
 				_name: f.column.name,
 				dbDataSourceKey: true,
-				isLinkMember: true,
+				hasItems: e.op(
+					'exists',
+					e.select(do1.columns, (c) => ({
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.itemsDb))
+					}))
+				),
+				indexTable: true,
+				link: true,
 				filter: e.op(
-					e.op(f.column.codeDataType.name, '!=', 'computed'),
+					e.op('not', e.op('exists', f.column.isExcludeUpdate)),
 					'and',
-					e.op(
-						e.op('not', e.op('exists', f.column.isExcludeUpdate)),
-						'and',
-						e.op('not', e.op('exists', f.column.isSetBySys))
-					)
+					e.op('not', e.op('exists', f.column.isSetBySys))
 				)
 			})),
 
-			_fieldsDbSelectSys: e.select(do1.fieldsDb, (f) => ({
+			_fieldsDbSelectSys: e.select(do1.columns, (f) => ({
 				_codeDataType: f.column.codeDataType.name,
-				_edgeTypeDefn: f.column.edgeTypeDefn,
-				_expr: f.column.exprSelect,
 				_name: f.column.name,
-				isLinkMember: true,
+				hasItems: e.op(
+					'exists',
+					e.select(do1.columns, (c) => ({
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.itemsDb))
+					}))
+				),
+				indexTable: true,
+				link: true,
 				filter: e.op(f.column.isSetBySys, '=', true)
 			})),
 
-			_fieldsDbSelectUser: e.select(do1.fieldsDb, (f) => ({
+			_fieldsDbSelectUser: e.select(do1.columns, (f) => ({
 				_codeDataType: f.column.codeDataType.name,
-				_edgeTypeDefn: f.column.edgeTypeDefn,
-				_expr: f.column.exprSelect,
 				_name: f.column.name,
-				isLinkMember: true,
+				exprCustom: true,
+				hasItems: e.op(
+					'exists',
+					e.select(do1.columns, (c) => ({
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.itemsDb))
+					}))
+				),
+				indexTable: true,
+				link: true,
+				nameCustom: true,
 				filter: e.op('not', e.op('exists', f.column.isExcludeSelect))
 			})),
 
@@ -222,15 +256,14 @@ export async function getDataObjByName(dataObjName: string) {
 export async function getNodesBranch(token: TokenAppTreeNodeId) {
 	const parentNodeId = token.nodeId
 	const query = e.select(e.sys_core.SysNodeObj, (n) => ({
-		id: true,
-		_codeType: n.codeType.name,
-		name: true,
-		header: true,
 		_codeIcon: n.codeIcon.name,
-		page: true,
+		_codeType: n.codeType.name,
 		dataObjId: n.dataObj.id,
+		header: true,
+		id: true,
+		name: true,
 		order: true,
-		queryActions: n.queryActions,
+		page: true,
 		filter: e.op(n.parent.id, '=', e.cast(e.uuid, parentNodeId)),
 		order_by: n.order
 	}))
@@ -240,16 +273,15 @@ export async function getNodesBranch(token: TokenAppTreeNodeId) {
 export async function getNodesLevel(token: TokenAppTreeNodeId) {
 	const parentNodeId = token.nodeId
 	const baseShape = e.shape(e.sys_core.SysNodeObj, (n) => ({
-		id: true,
-		_codeType: n.codeType.name,
-		name: true,
-		header: true,
 		_codeIcon: n.codeIcon.name,
-		page: true,
+		_codeType: n.codeType.name,
 		dataObjId: n.dataObj.id,
+		header: true,
+		id: true,
+		name: true,
 		order: true,
-		order_by: n.order,
-		queryActions: n.queryActions
+		page: true,
+		order_by: n.order
 	}))
 	const root = e.select(e.sys_core.SysNodeObj, (n: any) => ({
 		...baseShape(n),
@@ -305,7 +337,6 @@ export async function getUserByUserId(userId: string) {
 			page: true,
 			dataObjId: f.dataObj.id,
 			order: true,
-			queryActions: f.queryActions,
 			order_by: f.order
 		})),
 		resource_programs: e.select(u.userTypes.resources.is(e.sys_core.SysNodeObj), (ut) => ({
@@ -339,4 +370,9 @@ export async function getUserByUserName(userName: string) {
 	} else {
 		return undefined
 	}
+}
+
+export async function isObjectLink(objName: string, linkName: string) {
+	const query = e.select(e.sys_core.isObjectLink(objName, linkName))
+	return await query.run(client)
 }

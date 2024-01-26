@@ -12,7 +12,7 @@
 		StatePacket,
 		TokenAppDoDetail,
 		TokenAppDoDetailConfirm
-	} from '$comps/nav/types.app'
+	} from '$comps/nav/types.appState'
 	import {
 		AppBar,
 		AppShell,
@@ -99,9 +99,6 @@
 		while (statePackets.length > 0 && !state.packet) {
 			const packet = statePacketPop()
 
-			// execute callbacks
-			packet.callbacks.forEach(async (c) => await c())
-
 			// set packet in global state
 			state.packet = packet
 		}
@@ -128,16 +125,19 @@
 			id: 'navLeft',
 			position: 'left',
 			width: 'w-[50%]',
-			meta: { state: state }
+			meta: { state }
 		}
 		drawerStore.open(settings)
 	}
 
 	function navRight(): void {
+		const isSysAdmin = user ? ['user_sys', '2487985578'].includes(user.userName) : false
+		const userId = user ? user.id : ''
 		const settings: DrawerSettings = {
 			id: 'navRight',
 			position: 'right',
-			width: 'w-[20%]'
+			width: 'w-[20%]',
+			meta: { isSysAdmin, userId, state }
 		}
 		drawerStore.open(settings)
 	}

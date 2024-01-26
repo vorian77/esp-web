@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { FieldValue } from '$comps/form/field'
 	import type { FieldFile } from '$comps/form/fieldFile'
-	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
-	import type { ResponseBody } from '$comps/types'
-	import { getURLDownload, objDelete, objExists, objUpload } from '$comps/fileTransferAWS'
+	import { getToastStore } from '@skeletonlabs/skeleton'
+	import { TokenApiFileUpload, TokenApiFileUploadAction } from '$lib/api'
+	import { getURLDownload, objDelete, objExists, objUpload } from '$utils/utils.aws'
 
 	const FILENAME = '$comps/form/FormElFile.svelte'
 
 	const toastStore = getToastStore()
 
 	export let field: FieldFile
-	export let onChange = (fieldName: string, valData: any, valDisplay: any, saveCallbacks: any) => {}
+	export let onChange = (fieldName: string, value: any) => {}
 
 	enum Mode {
 		unchanged = 'unchanged',
@@ -21,9 +20,9 @@
 	let files: FileList
 	let elInput: any
 	let mode: Mode = Mode.unchanged
-	let keyInput: string | null = '-1'
-	let keyDelete = ''
-	let keyUpload: string
+	let storageAction: TokenApiFileUploadAction
+	let storageKeyAction = 'none'
+	let storageKeyField: string | undefined
 	let imgFileName: string
 
 	let labelSelect: string
@@ -34,18 +33,19 @@
 	$: labelSelect = imgFileName ? 'Choose New ' + field.label : 'Choose ' + field.label
 
 	$: {
+		setState(field.valueCurrent)
+
 		// set mode
-		const keyData = getKey(field.valueCurrent)
-		if (keyData !== keyInput && mode !== Mode.changing) {
+		if (!equals(storageKeyField, storageKeyAction) && mode !== Mode.changing) {
 			mode = Mode.unchanged
-		} else if (keyData === keyInput && mode === Mode.changing) {
+		} else if (equals(storageKeyField, storageKeyAction) && mode === Mode.changing) {
 			mode = Mode.changed
 		}
 
 		// render image based on mode
 		if (mode === Mode.unchanged) {
 			;(async () => {
-				imgFileName = keyData ? await getURLDownload(keyData) : ''
+				imgFileName = storageKeyField ? await getURLDownload(storageKeyField) : ''
 			})()
 		} else {
 			imgFileName = files && files[0] ? URL.createObjectURL(files[0]) : ''
@@ -58,62 +58,27 @@
 
 	function onDelete(event: Event) {
 		mode = Mode.changing
-		keyDelete = getKey(field.valueCurrent)
-		keyInput = null
+		storageKeyAction = 'delete'
 		elInput.value = ''
-		onChange(field.name, null, null, fieldObjDelete)
+		onChange(field.name, new TokenApiFileUpload(TokenApiFileUploadAction.delete, storageKeyField))
 	}
 
-	function onChangeInput(event: Event) {
+	function onNew(event: Event) {
 		mode = Mode.changing
-		keyUpload = getKeyNew(field.valueCurrent)
-		keyInput = keyUpload
-		console.log('fieldObjUpload:', { file: files[0] })
-		onChange(field.name, files[0], keyUpload, fieldObjUpload)
+		storageKeyAction = storageKeyField ? storageKeyField : field.getKey()
+		onChange(
+			field.name,
+			new TokenApiFileUpload(TokenApiFileUploadAction.upload, storageKeyAction, files[0])
+		)
 	}
 
-	const fieldObjDelete = async function () {
-		let objKey = keyDelete
-		let fieldLabel = field.label
-
-		if (await objExists(objKey)) {
-			const result: ResponseBody = await objDelete(objKey)
-			if (!result.success) {
-				alert(`Could not delete object: ${objKey} for field: ${fieldLabel}.`)
-				return false
-			}
-			const toastSettings: ToastSettings = {
-				background: 'variant-filled-secondary',
-				message: field.label + ' deleted successfully!'
-			}
-			toastStore.trigger(toastSettings)
-		}
+	function setState(valueField: TokenApiFileUpload | undefined) {
+		storageAction = TokenApiFileUploadAction.none
+		storageKeyField = valueField ? valueField.storageKey : undefined
 	}
 
-	const fieldObjUpload = async function () {
-		let objKey = keyUpload
-		let fieldLabel = field.label
-		let file = files[0]
-
-		const result: ResponseBody = await objUpload(objKey, file)
-		if (!result.success) {
-			alert(`Unabled to upload ${fieldLabel}. Processing cancelled.`)
-			return
-		}
-
-		const toastSettings: ToastSettings = {
-			background: 'variant-filled-secondary',
-			message: field.label + ' uploaded successfully!'
-		}
-		toastStore.trigger(toastSettings)
-	}
-
-	function getKey(fieldVal: FieldValue) {
-		return fieldVal.display ? fieldVal.display : null
-	}
-	function getKeyNew(fieldVal: FieldValue) {
-		let key = getKey(fieldVal)
-		return key ? key : field.getKey()
+	function equals(val1: any, val2: any) {
+		return JSON.stringify(val1) === JSON.stringify(val2)
 	}
 </script>
 
@@ -149,7 +114,7 @@
 			hidden={true}
 			bind:files
 			bind:this={elInput}
-			on:change={onChangeInput}
+			on:change={onNew}
 		/>
 	</div>
 </fieldset>

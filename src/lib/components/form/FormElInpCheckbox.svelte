@@ -1,27 +1,69 @@
 <script lang="ts">
 	import type { FieldCheckbox } from '$comps/form/fieldCheckbox'
-	import type { FieldValue } from '$comps/form/field'
-	import { BinarySelect, FieldAccess } from '$comps/types'
+	import { BinarySelect, FieldAccess } from '$comps/form/field'
+	import { getArray } from '$comps/types'
+	import { createEventDispatcher } from 'svelte'
+
+	const dispatch = createEventDispatcher()
+
 	export let field: FieldCheckbox
-	let isSelected: boolean
+	const dispatchType = 'changeItem'
+	const binarySelect = new BinarySelect(field.dataType, field.valueCurrent)
+	let binarySelectChecked = binarySelect.isChecked()
 
 	$: {
-		if (field.isMultiSelect) {
-			let vals: any = []
-			if (field.valueCurrent.data) vals = field.valueCurrent.data.split(',')
-			field.valueCurrent.items.forEach((i) => (i.selected = vals.includes(i.data)))
+		if (!binarySelect.isBinarySelect)
+			if (field.isMultiSelect) {
+				const vals = getArray(field.valueCurrent)
+				field.items.forEach((i) => (i.selected = vals.includes(i.data)))
+			} else {
+				field.items.forEach((i) => (i.selected = i.data === field.valueCurrent))
+			}
+	}
+
+	function onChange(event: Event) {
+		const target = event.currentTarget as HTMLInputElement
+		const value = target.value
+
+		if (binarySelect.isBinarySelect) {
+			binarySelect.changeValue()
+			binarySelectChecked = binarySelect.isChecked()
+			dispatch(dispatchType, { fieldName: field.name, value: binarySelect.getValue() })
+		} else if (field.isMultiSelect) {
+			const idx = field.items.findIndex((i) => i.data === value)
+			if (idx >= 0) {
+				field.items[idx].selected = !field.items[idx].selected
+				const newVal = field.items.map((i) => (i.selected ? i.data : null))
+				dispatch(dispatchType, { fieldName: field.name, value: newVal })
+			}
 		} else {
-			const binarySelect = new BinarySelect(field.dataType)
-			if (!field.valueCurrent.data) field.valueCurrent.data = binarySelect.getDefault()
-			isSelected = binarySelect.isSelected(field.valueCurrent.data)
+			const idx = field.items.findIndex((i) => i.data === value)
+			if (idx >= 0) {
+				field.items[idx].selected = !field.items[idx].selected
+				const newVal = field.items[idx].selected ? value : null
+				dispatch(dispatchType, { fieldName: field.name, value: newVal })
+			}
 		}
 	}
 </script>
 
-{#if field.isMultiSelect}
+{#if binarySelect.isBinarySelect}
+	<div class="flex">
+		<label for={field.name}></label>
+		<input
+			type="checkbox"
+			id={field.name}
+			name={field.name}
+			class="mt-1 rounded-sm"
+			bind:checked={binarySelectChecked}
+			on:change={onChange}
+		/>
+		<div class="ml-2">{field.label}</div>
+	</div>
+{:else}
 	<legend>{field.label}</legend>
 	<fieldset class={field.access === FieldAccess.required ? 'fieldsetRequired' : 'fieldsetOptional'}>
-		{#each field.valueCurrent.items as { data: id, display: label, selected }, i (id)}
+		{#each field.items as { data: id, display: label, selected }, i (id)}
 			{@const itemName = field.name + '.' + id}
 			<div class="mt-1">
 				<label for={field.name} class="flex items-center space-x-2">
@@ -32,24 +74,11 @@
 						class="rounded-sm {i === 0 ? 'mt-2' : ''}"
 						value={id}
 						bind:checked={selected}
-						on:click
+						on:change={onChange}
 					/>
 					<p class={i === 0 ? 'mt-2' : ''}>{label}</p>
 				</label>
 			</div>
 		{/each}
 	</fieldset>
-{:else}
-	<div class="flex">
-		<label for={field.name}></label>
-		<input
-			type="checkbox"
-			id={field.name}
-			name={field.name}
-			class="mt-1 rounded-sm"
-			bind:checked={isSelected}
-			on:click
-		/>
-		<div class="ml-2">{field.label}</div>
-	</div>
 {/if}

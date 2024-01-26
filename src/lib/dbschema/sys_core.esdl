@@ -50,7 +50,6 @@ module sys_core {
     parent: sys_core::SysNodeObj;
     required order: default::nonNegative;
     page: str;
-    queryActions: array<json>;
     constraint exclusive on (.name);
   }
 
@@ -64,46 +63,44 @@ module sys_core {
   }
 
   type SysDataObj extending sys_core::SysObj {
-    multi actions: sys_core::SysDataObjAction;
+    multi actionsField: sys_core::SysDataObjAction;
+    actionsQuery: array<json>;
     required codeCardinality: sys_core::SysCode;
     required codeComponent: sys_core::SysCode;
+    multi columns: sys_core::SysDataObjColumn {
+      on source delete delete target;
+    };
     description: str;
     exprFilter: str;
     exprObject: str;
-    multi fieldsDb: sys_core::SysDataObjFieldDb {
-      on source delete delete target;
-    };
-    multi fieldsEl: sys_core::SysDataObjFieldEl {
-      on source delete delete target;
-    };
     isPopup: bool;
-    link: json;
     subHeader: str;
-    table: sys_db::SysTable;
+    multi tables: sys_core::SysDataObjTable {
+      on source delete delete target;
+    };
     constraint exclusive on (.name);
   } 
   
-  type SysDataObjFieldDb {
+  type SysDataObjColumn {
+    required column: sys_db::SysColumn;
+    
+    nameCustom: str;
+
+    # fields - db
     codeDbDataOp: sys_core::SysCode;
     codeDbDataSource: sys_core::SysCode;
     codeDbListDir: sys_core::SysCode;
-    required column: sys_db::SysColumn {
-      on source delete allow;
-    };
     dbDataSourceKey: str;
     dbOrderList: default::nonNegative;
-    exprFilter: str;
-    exprPreset: str;
+    exprPresetScalar: str;
+    exprCustom: str;
     fieldName: str;
+    indexTable: str;
     isDbAllowNull: bool;
     isDbFilter: bool;
-    isLinkMember: bool;
-  }
-
-  type SysDataObjFieldEl {
-    required column: sys_db::SysColumn {
-      on source delete allow;
-    };   
+    link: json;
+  
+    # fields - el
     codeAccess: sys_core::SysCode;
     codeElement: sys_core::SysCode;
     customElement: json;
@@ -114,22 +111,76 @@ module sys_core {
     isDisplay: bool;
     isDisplayable: bool;
     items: array<json>;
-    itemsList: sys_core::SysDataObjFieldItems{
-     on source delete allow;
-    };
-    itemsListParms: json;
+    itemsDb: sys_core::SysDataObjFieldItemsDb;
+    itemsDbParms: json;
     width: int16;
   }
 
- type SysDataObjFieldItems extending sys_core::SysObj {
-    required dbSelect: str;
-    required propertyId: str;
-    required propertyLabel: str;
-    multi fieldsDb: sys_core::SysDataObjFieldDb {
-      on source delete delete target;
-    };
+ type SysDataObjFieldItemsDb extending sys_core::SysObj {
+    codeDataTypeDisplay: sys_core::SysCode;
+    codeMask: sys_core::SysCode;
+    required exprSelect: str;
     constraint exclusive on (.name);
  }
+
+ type SysDataObjFieldLink {
+    codeDisplayDataType: sys_core::SysCode;
+    codeDisplayMask: sys_core::SysCode;
+    multi columnsDisplay: sys_db::SysColumn; 
+    exprPreset: str;
+    exprSave: str;
+    exprSelect: str;
+    multi joins: sys_core::SysDataObjFieldLinkJoin;
+ }
+
+  type SysDataObjFieldLinkJoin {
+    required column: sys_db::SysColumn;
+    required table: sys_db::SysTable;
+    required order: default::nonNegative;
+  }
+
+  type SysDataObjTable {
+    columnParent: sys_db::SysColumn;   
+    required index: str;
+    indexParent: str;
+    required order: default::nonNegative;
+    required table: sys_db::SysTable;
+  }
+
+  type SysObjConfig extending sys_core::SysObj {
+    creator: str;
+    detailActions: str;
+    detailDataObj: str;
+    detailHeader: str;
+    detailName: str;
+    detailOrder: int16;
+    detailParentNodeName: str;
+    detailSubHeader: str;  
+    hasMgmt: bool;
+    icon: str;  
+    linkProperty: str;
+    linkTableModule: str;
+    linkTableName: str;
+    listActions: str;
+    listDataObj: str;
+    listExprFilter: str;
+    listHeader: str;
+    listName: str;
+    listOrder: int16;
+    listParentNodeName: str;
+    listSubHeader: str;
+    objsOwner: str; 
+    outputDetailColumns: str;
+    outputDetailNode: str;
+    outputDetailDataObj: str;    
+    outputListColumns: str;
+    outputListNode: str;
+    outputListDataObj: str;
+    tableOwner: str;
+    tableModule: str;
+    tableName: str;    
+    constraint exclusive on (.name);
+  }
 
   # FUNCTIONS
   function getRootObj() -> optional sys_core::ObjRoot
@@ -155,14 +206,18 @@ module sys_core {
   function getDataObjAction(dataObjActionName: str) -> optional sys_core::SysDataObjAction
     using (select sys_core::SysDataObjAction filter .name = dataObjActionName);        
     
-  function getDataObjFieldItems(name: str) -> optional sys_core::SysDataObjFieldItems
-    using (select sys_core::SysDataObjFieldItems filter .name = name);  
+  function getDataObjFieldItemsDb(name: str) -> optional sys_core::SysDataObjFieldItemsDb
+    using (select sys_core::SysDataObjFieldItemsDb filter .name = name);  
     
   function getNodeObjByName(nodeObjName: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .name = nodeObjName);
 
   function getNodeObjById(nodeObjId: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .id = <uuid>nodeObjId);     
+
+  function isObjectLink(objName: str, linkName: str) -> optional bool
+    using (select count(schema::ObjectType filter .name = objName and .links.name = linkName) > 0);     
+
 
   # <temp> migrate itemsList to functions rather than raw selects
   # have to beable to return an array from a function

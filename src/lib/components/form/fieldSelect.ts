@@ -1,6 +1,5 @@
-import { Field, type FieldValue } from '$comps/form/field'
-import { valueOrDefault } from '$utils/utils'
-import { type FieldRaw, Validation, ValidationStatus } from '$comps/types'
+import { Field, type FieldRaw } from '$comps/form/field'
+import { Validation, ValidationStatus } from '$comps/types'
 
 export class FieldSelect extends Field {
 	constructor(obj: FieldRaw, index: number) {

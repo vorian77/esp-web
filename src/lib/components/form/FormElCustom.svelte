@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { State } from '$comps/nav/types.app'
+	import type { State } from '$comps/nav/types.appState'
 	import {
 		FieldCustom,
 		FieldCustomAction,

@@ -1,12 +1,5 @@
-import { Field } from '$comps/form/field'
-import {
-	FieldAccess,
-	type FieldRaw,
-	type FieldCustomRaw,
-	memberOfEnum,
-	strRequired,
-	valueOrDefault
-} from '$comps/types'
+import { Field, FieldAccess, type FieldRaw, type FieldCustomRaw } from '$comps/form/field'
+import { memberOfEnum, strRequired, valueOrDefault } from '$comps/types'
 import { getEnhancement } from '$enhance/actions/_actions'
 import { error } from '@sveltejs/kit'
 

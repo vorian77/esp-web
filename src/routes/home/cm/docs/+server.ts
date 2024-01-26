@@ -1,5 +1,5 @@
 import { getForm } from '$server/dbForm'
-import { getURLDownload } from '$comps/fileTransferAWS'
+import { getURLDownload } from '$utils/utils.aws'
 import { dbESPAPI } from '$server/dbESP'
 import { HTMLMETHOD } from '$comps/types'
 import { getEnvVar } from '$server/env'
@@ -25,10 +25,10 @@ export const POST = async ({ request, locals }) => {
 			formDefn.fields[idx].value = responData.data.url
 		} else {
 			error(500, {
-            				file: FILENAME,
-            				function: 'POST',
-            				message: `Required field element missing: (${pictEl}).`
-            			});
+				file: FILENAME,
+				function: 'POST',
+				message: `Required field element missing: (${pictEl}).`
+			})
 		}
 	}
 	return new Response(JSON.stringify({ formDefn }))

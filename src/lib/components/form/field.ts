@@ -3,14 +3,13 @@ import {
 	memberOfEnum,
 	memberOfEnumOrDefault,
 	required,
+	strOptional,
 	strRequired,
 	valueOrDefault
 } from '$utils/utils'
 import {
 	DataFieldDataType,
-	FieldAccess,
-	FieldElement,
-	type FieldRaw,
+	DataFieldMask,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -34,14 +33,14 @@ export class Field {
 	isDisplayable: boolean
 	isMultiSelect: boolean
 	index: number
-	items: Array<FieldValue>
-	itemsList: FieldItemsList | undefined
+	items: Array<FieldItem> = []
+	itemsDb: FieldItemsDb | undefined
 	label: string
 	labelSide: string
 	name: string
 	validity: Validity
-	valueInitial: FieldValue
-	valueCurrent: FieldValue
+	valueInitial: any
+	valueCurrent: any
 
 	constructor(obj: FieldRaw, index: number) {
 		obj = valueOrDefault(obj, {})
@@ -66,15 +65,6 @@ export class Field {
 			'DataFieldDataType',
 			DataFieldDataType
 		)
-		this.dataTypePreset = obj._column._codeDataTypeComputed
-			? memberOfEnum(
-					obj._column._codeDataTypeComputed,
-					'Field',
-					'dataType',
-					'DataFieldDataType',
-					DataFieldDataType
-				)
-			: undefined
 		this.element = memberOfEnumOrDefault(
 			obj._codeElement,
 			'Field',
@@ -88,32 +78,27 @@ export class Field {
 		this.isDisplay = valueOrDefault(obj.isDisplay, true)
 		this.isDisplayable = valueOrDefault(obj.isDisplayable, true)
 		this.isMultiSelect = valueOrDefault(obj._column.isMultiSelect, false)
-		this.items = this.initItems(obj.items)
-		this.itemsList = obj._itemsList
-			? new FieldItemsList(obj._itemsList, obj.itemsListParms)
-			: undefined
+		this.items = valueOrDefault(obj.items, [])
+		this.itemsDb = obj._itemsDb ? new FieldItemsDb(obj._itemsDb, obj.itemsDbParms) : undefined
 		this.label = strRequired(obj.headerAlt || obj._column.header, 'Field', 'label')
 		this.labelSide = valueOrDefault(obj._column.headerSide, this.label)
-		this.name = strRequired(obj._column.name, 'Field', 'name')
+		this.name = strRequired(obj.nameCustom || obj._column.name, 'Field', 'name')
 		this.validity = new Validity()
-		this.valueInitial = new FieldValue(undefined, undefined, [])
-		this.valueCurrent = new FieldValue(undefined, undefined, [])
+		this.valueInitial = null
+		this.valueCurrent = null
+	}
+
+	copyValue(value: any) {
+		return structuredClone(value)
 	}
 
 	getValue(formData: FormData) {
 		// overridden for FormElInpCheckbox
 		return formData.get(this.name)
 	}
-	initItems(items: Array<{ data: any; display: any }>) {
-		items = getArray(items)
-		let newItems: Array<FieldValue> = []
-		items.forEach((item) => {
-			newItems.push(new FieldValue(item.data, item.display, []))
-		})
-		return newItems
-	}
+
 	setHasChanged(dataValue: any) {
-		this.hasChanged = valueHasChanged(this.valueInitial.data, dataValue)
+		this.hasChanged = valueHasChanged(this.valueInitial, dataValue)
 	}
 	validate(dataValue: any): Validation {
 		this.setHasChanged(dataValue)
@@ -169,51 +154,164 @@ export class Field {
 	}
 }
 
-export class FieldItemsList {
-	dbSelect: string
+export enum FieldAccess {
+	readonly = 'readonly',
+	hidden = 'hidden',
+	optional = 'optional',
+	required = 'required'
+}
+
+export interface FieldCustomRaw {
+	_type: string
+	action: { method: string; type: string; value: string }
+	align: string
+	color: string
+	label: string
+	prefix: string
+	size: string
+	source: string
+	sourceKey: string
+}
+
+export enum FieldElement {
+	checkbox = 'checkbox',
+	custom = 'custom',
+	date = 'date',
+	email = 'email',
+	file = 'file',
+	number = 'number',
+	password = 'password',
+	radio = 'radio',
+	select = 'select',
+	tel = 'tel',
+	text = 'text',
+	textArea = 'textArea'
+}
+
+export class FieldItemsDb {
+	codeDataTypeDisplay: DataFieldDataType | undefined
+	codeMask: DataFieldMask | undefined
+	exprSelect: string
 	name: string
 	parms: any
-	propertyId: string
-	propertyLabel: string
 	constructor(obj: any, parms: any) {
-		const clazz = 'FieldItemList'
+		const clazz = 'FieldItemsDb'
 		obj = valueOrDefault(obj, {})
-		this.dbSelect = strRequired(obj.dbSelect, clazz, 'dbSelect')
+		this.codeDataTypeDisplay = obj._codeDataTypeDisplay
+			? memberOfEnum(
+					obj._codeDataTypeDisplay,
+					clazz,
+					'codeDataTypeDisplay',
+					'DataFieldDataType',
+					DataFieldDataType
+				)
+			: undefined
+		this.codeMask = obj._codeMask
+			? memberOfEnum(obj._codeMask, clazz, 'codeMask', 'DataFieldMask', DataFieldMask)
+			: undefined
+		this.exprSelect = strRequired(obj.exprSelect, clazz, 'exprSelect')
 		this.name = strRequired(obj.name, clazz, 'name')
 		this.parms = parms
-		this.propertyId = strRequired(obj.propertyId, clazz, 'propertyId')
-		this.propertyLabel = strRequired(obj.propertyLabel, clazz, 'propertyLabel')
 	}
 }
 
-export type FieldItem = Record<string, any>
-
-export class FieldValue {
+export class FieldItem {
 	data: any
 	display: any
-	items: Array<FieldItem>
-	selected: boolean | undefined
-	constructor(
-		data: any,
-		display: any,
-		items: Array<FieldItem>,
-		selected: boolean | undefined = undefined
-	) {
+	selected?: boolean
+	constructor(data: any, display: any, selected: boolean | undefined = false) {
 		this.data = data
 		this.display = display
-		this.items = items
 		this.selected = selected
 	}
-	static duplicate(value: FieldValue) {
-		return new FieldValue(value.data, value.display, value.items, value.selected)
+}
+
+export type FieldItemsRecord = Record<string, Array<FieldItem>>
+
+export interface FieldRaw {
+	_codeAccess: string
+	_codeElement: string
+	_column: {
+		_codeAlignment: string
+		_codeDataType: string
+		classValue: string
+		exprSelect: string
+		exprStorageKey: string
+		header: string
+		headerSide: string
+		isExcludeInsert: boolean
+		isExcludeSelect: boolean
+		isExcludeUpdate: boolean
+		isMultiSelect: boolean
+		isSetBySys: boolean
+		matchColumn: string
+		maxLength: number
+		maxValue: number
+		minLength: number
+		minValue: number
+		name: string
+		pattern: string
+		patternMsg: string
+		patternReplacement: string
+		placeHolder: string
+		spinStep: string
 	}
-	resetData() {
-		this.data = null
-		this.display = null
-		this.selected = undefined
+	_itemsDb: {
+		_codeDataTypeDisplay: string
+		_codeMask: string
+		exprSelect: string
+		name: string
 	}
-	update(newValData: any, newValDisplay: any) {
-		this.data = newValData
-		this.display = newValDisplay
+	customElement: FieldCustomRaw
+	headerAlt: string
+	height: number
+	isDisplay: boolean
+	isDisplayable: boolean
+	items: Array<FieldItem>
+	itemsDbParms: any
+	nameCustom: string
+	width: number
+}
+
+export class BinarySelect {
+	BinarySelectTypes: Partial<Record<DataFieldDataType, [any, any]>> = {
+		bool: [true, false],
+		int16: [1, 0],
+		str: ['Yes', 'No']
+	}
+	currentValue: any
+	isBinarySelect: boolean
+	selections: any
+	constructor(dataType: DataFieldDataType, value: any) {
+		const clazz = 'BinarySelect'
+		this.isBinarySelect = [
+			DataFieldDataType.bool,
+			DataFieldDataType.int16,
+			DataFieldDataType.str
+		].includes(dataType)
+		if (this.isBinarySelect) {
+			this.selections = this.BinarySelectTypes[dataType]
+			const idx = this.getIdx(value)
+			this.currentValue = idx > -1 ? idx : this.selections[1]
+		}
+	}
+
+	changeValue() {
+		this.currentValue = this.selections[(this.getIdx(this.currentValue) + 1) % 2]
+		return this.currentValue
+	}
+
+	getIdx(value: any) {
+		return this.selections.findIndex((s: any) => {
+			return s === value
+		})
+	}
+
+	getValue() {
+		return this.currentValue
+	}
+
+	isChecked() {
+		return this.isBinarySelect ? this.currentValue === this.selections[0] : false
 	}
 }

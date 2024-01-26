@@ -1,9 +1,8 @@
-import { State } from '$comps/nav/types.app'
+import { State } from '$comps/nav/types.appState'
 import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
 import { encrypt, userSet } from '$comps/types'
-import { FieldValue } from '$comps/form/field'
 import {
 	apiFetch,
 	ApiFunction,
@@ -44,7 +43,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 					break
 
 				case 'data_obj_auth_verify_phone_mobile':
-					const securityCode = getDataValue(data, 'authSecurityCode')
+					const securityCode = data['authSecurityCode']
 					if (securityCode !== authSecurityCode.toString()) {
 						alert('The security code you entered is not correct. Please try again.')
 						return
@@ -57,7 +56,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 				case 'data_obj_auth_reset_password_login':
 					verifyFrom = value
 					verifyData = data
-					await sendCode(getDataValue(data, 'userName'))
+					await sendCode(data['userName'])
 					openDrawer('data_obj_auth_verify_phone_mobile')
 					break
 
@@ -83,11 +82,9 @@ export default async function action(state: State, field: FieldCustomAction, dat
 
 		// encrypt password
 		if (Object.hasOwn(data, 'password')) {
-			const password = await encrypt(getDataValue(data, 'password'))
-			data['password'] = new FieldValue(password, password, [])
+			const password = await encrypt(data['password'])
+			data['password'] = password
 		}
-
-		console.log('processAuthCredentials', { dataObjName, data })
 
 		// process
 		let result: ResponseBody = await apiFetch(
@@ -149,8 +146,4 @@ async function sendCode(phoneMobile: string) {
 		ApiFunction.sendText,
 		new TokenApiSendText(phoneMobile, `Mobile phone number verification code: ${authSecurityCode}`)
 	)
-}
-
-function getDataValue(data: DataObjRecord, key: string) {
-	return data[key].data
 }

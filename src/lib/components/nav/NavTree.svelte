@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { appStoreNavTree, NavTree, NodeNav } from '$comps/types'
-	import type { State } from '$comps/nav/types.app'
+	import type { State } from '$comps/nav/types.appState'
 	import {
 		StatePacketComponent,
 		TokenAppTreeReset,
 		TokenAppTreeSetParent
-	} from '$comps/nav/types.app'
+	} from '$comps/nav/types.appState'
 	import { createEventDispatcher } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'

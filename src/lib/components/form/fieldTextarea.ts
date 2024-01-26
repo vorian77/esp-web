@@ -1,6 +1,6 @@
-import { Field } from '$comps/form/field'
+import { Field, type FieldRaw } from '$comps/form/field'
 import { valueOrDefault } from '$utils/utils'
-import { type FieldRaw, Validation, ValidationStatus } from '$comps/types'
+import { Validation, ValidationStatus } from '$comps/types'
 
 export class FieldTextarea extends Field {
 	rows: number
