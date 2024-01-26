@@ -244,7 +244,7 @@ function formatDataForDisplayScalar(value: any, codeDataTypeField: DataFieldData
 			return !value ? '' : formatDateTime(value)
 
 		default:
-			return !value ? '' : value
+			return !value && !['0', 0].includes(value) ? '' : value
 	}
 }
 
