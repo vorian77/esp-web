@@ -107,13 +107,6 @@ class DataObjTables {
 		return this.getScriptTable(this.getTableRoot(), actionType, data)
 	}
 
-	getScriptAll(actionType: DataObjTableActionType, data: TokenApiQueryData) {
-		// let script = new DataObjTableScript()
-		// this.tables.forEach((table) => {
-		// 	script.append(this.getScriptTable(table, actionType, data))
-		// })
-		// return script
-	}
 	getScriptItemsTable(
 		table: DataObjTable,
 		actionType: DataObjTableActionType,
@@ -185,7 +178,7 @@ class DataObjTables {
 				scriptObj = this.getScriptTable(table, action, data)
 				prefix = scriptObj.concatSpace(prefix, scriptObj.prefix)
 				if (tableArray.length === 0 || (prevTable && table.index === prevTable.indexParent)) {
-					scriptObj.addItemField(branch)
+					if (branch) scriptObj.addItemField(branch)
 					script = scriptObj.getScriptTable()
 					branch = script
 				} else {
@@ -360,11 +353,10 @@ class DataObjTableAction {
 		// root table and native fields
 		fields.forEach((f) => {
 			const expr = f?.link?.exprSave ? f.link.exprSave : ''
-			const value = expr ? `(${getValExpr(expr, data)})` : getValSave(f, data)
+			const value = expr ? `${getValExpr(expr, data)}` : getValSave(f, data)
 			const item = f.name + ' := ' + value
 			script.addItemField(item)
 		})
-
 		return script
 	}
 	initList(fieldClass: any, fieldsSource: any) {
@@ -384,7 +376,7 @@ class DataObjTableAction {
 			fields[idx].link = new DataFieldLink({
 				columnsDisplay: ['person', 'fullName'],
 				exprPreset: `(SELECT sys_user::SysUser FILTER .id = <uuid,user,id>).person.fullName`,
-				exprSave: 'SELECT sys_user::SysUser FILTER .id = <uuid,user,id>',
+				exprSave: '(SELECT sys_user::SysUser FILTER .id = <uuid,user,id>)',
 				table: { module: 'sys_user', name: 'SysUser' }
 			})
 		}
@@ -531,6 +523,7 @@ class DataObjTableScript {
 		this.script = Object.hasOwn(obj, 'script') ? obj.script : this.script
 	}
 	addItemField(item: string) {
+		if (!item) return
 		if (this.itemsField) this.itemsField += ', '
 		this.itemsField += item
 	}
