@@ -1,5 +1,5 @@
 import { AppRowActionType } from '$comps/nav/types.app'
-import { DataObj, initNavTree, Node, NodeType, User, userSet, valueOrDefault } from '$comps/types'
+import { DataObj, initNavTree, Node, NodeType, User, userInit, valueOrDefault } from '$comps/types'
 import { SurfaceType, Token } from '$comps/types.master'
 import { error } from '@sveltejs/kit'
 
@@ -16,11 +16,19 @@ export class State {
 	page: string = '/home'
 	surface: SurfaceType = SurfaceType.default
 	updateFunction: Function
-	constructor(updateFunction: Function, drawer: any, modal: any, toast: any) {
+	user: User | undefined = undefined
+	constructor(
+		updateFunction: Function,
+		drawer: any,
+		modal: any,
+		toast: any,
+		user: User | undefined = undefined
+	) {
 		this.updateFunction = updateFunction
 		this.messageDrawer = drawer
 		this.messageModal = modal
 		this.messageToast = toast
+		this.user = user
 	}
 	consume(components: StatePacketComponent | Array<StatePacketComponent>) {
 		if (this.packet && this.packet.component && components.includes(this.packet.component)) {
@@ -31,18 +39,20 @@ export class State {
 			return undefined
 		}
 	}
-	async resetUI(user: User) {
-		if (user) {
-			await initNavTree(user)
-			this.update({
-				page: '/home',
-				nodeType: NodeType.home,
-				packet: this.packet
-			})
+	async resetUser(loadHome: boolean) {
+		if (this.user) {
+			const user = await userInit(this.user.id)
+			await initNavTree(this.user)
+			if (loadHome) {
+				this.update({
+					page: '/home',
+					nodeType: NodeType.home,
+					packet: this.packet
+				})
+			}
 		}
 	}
 	statusReset() {
-		// console.log('State.resetStatus...')
 		this.updateFunction({ objHasChanged: false, objValidToSave: true })
 	}
 	set(packet: StatePacket) {

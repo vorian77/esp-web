@@ -35,7 +35,7 @@ export async function query(
 	let dataTree = queryDataPre(queryType, app)
 	let table = tab.getTable() // table will be undefined prior to retrieve
 
-	console.log('query.0:', { table, dataPre })
+	// console.log('query.0:', { table, dataPre })
 
 	dataTree = await queryExecuteActions(
 		state,
@@ -58,11 +58,11 @@ export async function query(
 	if (tab.dataObj) {
 		if (tab.dataObj.cardinality === DataObjCardinality.list) {
 			tab.data = queryData
-			console.log('query.list.data:', {
-				raw: result.data.dataObjData,
-				tabData: tab.data,
-				length: tab.data?.dataObjRowList.length
-			})
+			// console.log('query.list.data:', {
+			// 	raw: result.data.dataObjData,
+			// 	tabData: tab.data,
+			// 	length: tab.data?.dataObjRowList.length
+			// })
 			return true
 		}
 

@@ -2,7 +2,7 @@ import { State } from '$comps/nav/types.appState'
 import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
-import { encrypt, userSet } from '$comps/types'
+import { encrypt, userInit } from '$comps/types'
 import {
 	apiFetch,
 	ApiFunction,
@@ -11,7 +11,7 @@ import {
 	TokenApiQueryData,
 	TokenApiQueryType,
 	TokenApiSendText,
-	TokenApiUser
+	TokenApiUserId
 } from '$lib/api'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'
@@ -96,35 +96,21 @@ export default async function action(state: State, field: FieldCustomAction, dat
 			)
 		)
 
-		if (result.success && Object.hasOwn(result.data, 'userId')) {
-			const userId = result.data['userId']
-			result = await apiFetch(ApiFunction.getUser, new TokenApiUser(userId))
-			if (result.success) {
-				userSet(result.data)
-				state.messageDrawer.close()
-				if (['data_obj_auth_login', 'data_obj_auth_reset_password_login'].includes(dataObjName)) {
-					// set cookie
-					await fetch('/auth', {
-						method: 'POST',
-						body: JSON.stringify({
-							action: 'set_cookie',
-							userId
-						})
-					})
-					goto('/home')
-				}
-			} else {
-				error(500, {
-					file: FILENAME,
-					function: 'processAuthCredentials',
-					message: `Unable to retrieve user id: ${userId}`
-				})
-			}
-		} else {
+		if (!result.success || !Object.hasOwn(result.data, 'userId')) {
 			alert(msgFail)
 			return
 		}
+
+		const userId = result.data['userId']
+		const user = await userInit(userId)
+		if (user && Object.hasOwn(user, 'id')) {
+			state.messageDrawer.close()
+			if (['data_obj_auth_login', 'data_obj_auth_reset_password_login'].includes(dataObjName)) {
+				goto('/home')
+			}
+		}
 	}
+
 	function openDrawer(dataObjName: string) {
 		const settings: DrawerSettings = {
 			id: 'auth',

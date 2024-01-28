@@ -1,12 +1,15 @@
 import type { DataObjRecord } from '$comps/types'
 import { nbrOptional, nbrRequired, strRequired, valueOrDefault } from '$utils/utils'
+import { error } from '@sveltejs/kit'
+
+const FILENAME = '$utils/utils.user.ts'
 
 export class User {
 	user: any
 	firstName: string
-	fullName: string
+	fullName: string = ''
 	id: string
-	initials: string
+	initials: string = ''
 	lastName: string
 	org: { name: string; header: string } | undefined
 	resource_footer: Array<any> = []
@@ -23,17 +26,18 @@ export class User {
 
 	constructor(obj: any) {
 		this.user = valueOrDefault(obj, {})
-		this.fullName = strRequired(obj.fullName, 'User', 'fullName')
 		this.firstName = strRequired(obj.firstName, 'User', 'firstName')
-		this.lastName = strRequired(obj.lastName, 'User', 'lastName')
-		this.initials = this.firstName.toUpperCase()[0] + this.lastName.toUpperCase()[0]
-
+		this.fullName = strRequired(obj.fullName, 'User', 'fullName')
 		this.id = strRequired(obj.id, 'User', 'id')
+		this.lastName = strRequired(obj.lastName, 'User', 'lastName')
 		this.org = obj.org ? { name: obj.org.name, header: obj.org.header } : undefined
 		this.resource_footer = obj.resource_footer
 		this.resource_programs = obj.resource_programs
 		this.resource_widgets = obj.resource_widgets
 		this.userName = strRequired(obj.userName, 'User', 'userName')
+
+		// derived
+		this.initials = this.firstName.toUpperCase()[0] + this.lastName.toUpperCase()[0]
 
 		// old
 		// this.cm_ssr_disclosure = nbrOptional(obj.cm_ssr_disclosure, 'cm_ssr_disclosure')
@@ -50,9 +54,7 @@ export class User {
 		return undefined !== this.user.resource_widgets.find((r: any) => r.name === resource)
 	}
 
-	updateName(record: DataObjRecord) {
-		this.firstName = Object.hasOwn(record, 'firstName') ? record.firstName : this.firstName
-		this.lastName = Object.hasOwn(record, 'lastName') ? record.lastName : this.lastName
-		this.fullName = this.firstName + ' ' + this.lastName
+	setName() {
+		this.fullName = `${this.firstName} ${this.lastName}`
 	}
 }

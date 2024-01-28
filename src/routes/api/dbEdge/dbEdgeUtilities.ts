@@ -2,7 +2,7 @@ import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
 import type { TokenAppTreeNodeId } from '$comps/nav/types.appState'
-import { TokenApiDbTableColumns } from '$lib/api'
+import { TokenApiDbTableColumns, TokenApiUserId, TokenApiUserName } from '$lib/api'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
@@ -316,12 +316,12 @@ export async function getTableColumns(token: TokenApiDbTableColumns) {
 	return await query.run(client)
 }
 
-export async function getUserByUserId(userId: string) {
+export async function getUserByUserId(token: TokenApiUserId) {
 	const query = e.select(e.sys_user.SysUser, (u) => ({
-		id: true,
-		lastName: u.person.lastName,
 		firstName: u.person.firstName,
 		fullName: u.person.fullName,
+		id: true,
+		lastName: u.person.lastName,
 		userName: true,
 		org: e.select(e.sys_core.SysOrg, (org) => ({
 			name: true,
@@ -354,22 +354,18 @@ export async function getUserByUserId(userId: string) {
 			id: true,
 			name: true
 		})),
-		filter_single: e.op(u.id, '=', e.cast(e.uuid, userId))
+		filter_single: e.op(u.id, '=', e.cast(e.uuid, token.userId))
 	}))
 	return await query.run(client)
 }
 
-export async function getUserByUserName(userName: string) {
+export async function getUserIdByUserName(token: TokenApiUserName) {
 	const query = e.select(e.sys_user.SysUser, (u) => ({
 		id: true,
-		filter_single: e.op(u.userName, '=', userName)
+		filter_single: e.op(u.userName, '=', token.userName)
 	}))
 	const user = await query.run(client)
-	if (user) {
-		return await getUserByUserId(user.id)
-	} else {
-		return undefined
-	}
+	return user ? user.id : undefined
 }
 
 export async function isObjectLink(objName: string, linkName: string) {

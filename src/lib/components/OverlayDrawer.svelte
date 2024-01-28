@@ -2,8 +2,9 @@
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
 	import NavTree from '$comps/nav/NavTree.svelte'
 	import NavAppDrawer from '$comps/nav/NavAppDrawer.svelte'
-	import { apiFetch, ApiFunction, TokenApiUser } from '$lib/api'
-	import { ResponseBody, userSet } from '$comps/types'
+	import { apiFetch, ApiFunction, TokenApiUserId } from '$lib/api'
+	import { ResponseBody } from '$comps/types'
+	import { State } from '$comps/nav/types.appState'
 
 	const drawerStore = getDrawerStore()
 	const FILENAME = 'OverlayDrawer.svelte'
@@ -24,15 +25,15 @@
 
 	async function dbInitAdmin(event: MouseEvent) {
 		// <temp> - 240125
+		const state: State = $drawerStore.meta.state
+		const userId = state.user!.id
 		const result: ResponseBody = await apiFetch(
 			ApiFunction.dbEdgeInitAdmin,
-			new TokenApiUser($drawerStore.meta.userId)
+			new TokenApiUserId(userId)
 		)
-		closeDrawer()
 		if (result.success) {
-			const user = result.data
-			userSet(user)
-			await $drawerStore.meta.state.resetUI(user)
+			closeDrawer()
+			await state.resetUser(true)
 		}
 	}
 </script>

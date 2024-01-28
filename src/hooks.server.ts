@@ -9,8 +9,15 @@ export async function handle({ event, resolve }) {
 	console.log()
 	console.log(FILENAME, `url: ${event.url.pathname}`)
 
+	// event.cookies.set('test', 'abc', {
+	// 	path: '/',
+	// 	httpOnly: true,
+	// 	sameSite: 'strict',
+	// 	secure: true
+	// })
+
 	if (event.url.pathname === '/') {
-		console.log(FILENAME, 'home path - deleting cookie...')
+		console.log(FILENAME, 'root path - deleting cookie...')
 		event.cookies.delete('session_id', { path: '/' })
 		return resolve(event)
 	}
@@ -35,16 +42,18 @@ export async function handle({ event, resolve }) {
 	// remaining routes require sessionId
 	const sessionId = event.cookies.get('session_id')
 	if (!sessionId) {
-		console.log(FILENAME, 'redirect - no sessionid...')
+		console.log(FILENAME, 'redirect - no sessionId...')
 		redirect(303, '/')
 	}
 
 	// get user info
-	const user = await getUserByUserId(sessionId)
-	if (!user) {
-		console.log(FILENAME, `redirect - could not retrieve user: ${sessionId}`)
-		redirect(303, '/')
-	}
+	// <temp> 240127 - only retrieved for legal disclosure???
+	// const user = await getUserByUserId(sessionId)
+	// console.log(FILENAME, `retrieved user...`)
+	// if (!user) {
+	// 	console.log(FILENAME, `redirect - could not retrieve user: ${sessionId}`)
+	// 	redirect(303, '/')
+	// }
 
 	// confirm legal disclosure
 	// if (!user.cm_ssr_disclosure) {

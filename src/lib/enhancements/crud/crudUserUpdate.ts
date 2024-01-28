@@ -1,4 +1,3 @@
-import { userUpdate } from '$comps/types'
 import { TokenApiQueryDataTree } from '$lib/api'
 import { type ActionQueryParms, ActionQueryTriggerTiming } from '$comps/nav/types.appQuery'
 import { State } from '$comps/nav/types.appState'
@@ -16,7 +15,8 @@ export async function qaExecuteUserUpdate(
 	data: TokenApiQueryDataTree,
 	parms: ActionQueryParms
 ): Promise<TokenApiQueryDataTree> {
-	if (queryType === TokenApiQueryType.saveUpdate && queryTiming === ActionQueryTriggerTiming.post)
-		userUpdate(data.getRecord(table))
+	if (queryType === TokenApiQueryType.saveUpdate && queryTiming === ActionQueryTriggerTiming.post) {
+		state.resetUser(false)
+	}
 	return data
 }

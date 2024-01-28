@@ -185,10 +185,10 @@ async function processDataPost(
 		}
 	}
 
-	console.log()
-	console.log('processDataPost.data.return.record[0]:', {
-		record: dataRows[0].record
-	})
+	// console.log()
+	// console.log('processDataPost.data.return.record[0]:', {
+	// 	record: dataRows[0].record
+	// })
 	return new DataObjData(dataObj.cardinality, dataRows)
 
 	function formatDataForDisplay(
@@ -221,7 +221,7 @@ async function processDataPost(
 				if (field.isMultiSelect) {
 					return value ? value.map((v: any) => v) : {}
 				} else {
-					return value ? value : null
+					return value ? value : ''
 				}
 				break
 

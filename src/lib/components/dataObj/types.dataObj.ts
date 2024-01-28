@@ -165,7 +165,7 @@ export class DataObj {
 				const status = dataRow.status
 				const record = dataRow.record
 				const hasData = Object.keys(record).length > 0
-				console.log('dataObj.objData.dataRow:', { record, status, hasData })
+				// console.log('dataObj.objData.dataRow:', { record, status, hasData })
 
 				this.fields.forEach((f) => {
 					// console.log('dataObj.objData.field:', f.name)

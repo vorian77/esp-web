@@ -500,7 +500,6 @@ class DataObjTableActionSelectUser extends DataObjTableAction {
 	constructor(query: EdgeQL, table: DataObjTable, action: DataObjTableActionType, obj: DataObjRaw) {
 		super(query, table, action, obj)
 		this.fields = this.initList(DataFieldSelect, obj._fieldsDbSelectUser)
-		console.log('DataObjTableActionSelectUser.fields:', this.fields)
 	}
 	getScriptItems(data: TokenApiQueryData) {
 		return this.getScriptItemsSelect(this.fields, data)

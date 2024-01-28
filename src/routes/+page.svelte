@@ -2,7 +2,8 @@
 	// import logo from '$assets/YO-Baltimore-logo.png'
 	import logo from '$assets/clientLogo-AtlanticImpact.png'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
-	import { userSet } from '$comps/types'
+	import { userInit } from '$comps/types'
+	import { apiFetch, ApiFunction, TokenApiUserName } from '$lib/api'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -15,17 +16,11 @@
 	let pageCurrent = ''
 
 	async function expressLogin() {
-		// <temp> 231026 express login
-		const responsePromise: Response = await fetch('/auth', {
-			method: 'POST',
-			body: JSON.stringify({
-				action: 'express_login'
-			})
-		})
-		const resp = await responsePromise.json()
-		if (resp) {
-			const user = resp.data
-			userSet(user)
+		const userName = '2487985578'
+		// const userName = 'user_sys'
+		const result = await apiFetch(ApiFunction.dbEdgeGetUserId, new TokenApiUserName(userName))
+		if (result.success) {
+			await userInit(result.data.userId)
 			goto('/home')
 		}
 	}

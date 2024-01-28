@@ -17,8 +17,9 @@ export enum ApiFunction {
 	dbEdgeGetNodesLevel = 'dbEdgeGetNodesLevel',
 	dbEdgeProcessQuery = 'dbEdgeProcessQuery',
 	dbEdgeGetTableColumns = 'dbEdgeGetTableColumns',
+	dbEdgeGetUser = 'dbEdgeGetUser',
+	dbEdgeGetUserId = 'dbEdgeGetUserId',
 	dbEdgeInitAdmin = 'dbEdgeInitAdmin',
-	getUser = 'getUser',
 	sendText = 'sendText'
 }
 
@@ -262,10 +263,18 @@ export class TokenApiSendText extends Token {
 	}
 }
 
-export class TokenApiUser extends TokenApi {
+export class TokenApiUserId extends TokenApi {
 	userId: string
 	constructor(userId: string) {
 		super()
 		this.userId = userId
+	}
+}
+
+export class TokenApiUserName extends TokenApi {
+	userName: string
+	constructor(userName: string) {
+		super()
+		this.userName = userName
 	}
 }

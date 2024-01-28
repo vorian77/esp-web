@@ -58,7 +58,7 @@
 		;(async () => {
 			await initNavTree(user)
 		})()
-		state = new State(stateUpdate, drawerStore, modalStore, toastStore)
+		state = new State(stateUpdate, drawerStore, modalStore, toastStore, user)
 		launchApp = false
 	}
 
@@ -132,16 +132,16 @@
 
 	function navRight(): void {
 		const isSysAdmin = user ? ['user_sys', '2487985578'].includes(user.userName) : false
-		const userId = user ? user.id : ''
 		const settings: DrawerSettings = {
 			id: 'navRight',
 			position: 'right',
 			width: 'w-[20%]',
-			meta: { isSysAdmin, userId, state }
+			meta: { isSysAdmin, state }
 		}
 		drawerStore.open(settings)
 	}
 	function goHome() {
+		alert('goHome')
 		goto('/home')
 	}
 	async function askB4Transition(obj: any, confirm: TokenAppDoDetailConfirm) {

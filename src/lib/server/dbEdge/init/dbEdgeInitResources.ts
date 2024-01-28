@@ -337,12 +337,12 @@ async function initUsers() {
 	await addUserOrg({ orgName: 'Atlantic Impact', userName: '2482317505' })
 	await addUserOrg({ orgName: 'Atlantic Impact', userName: '3136276210' })
 	await addUserOrg({ orgName: 'Atlantic Impact', userName: '2487985578' })
-	await addUserOrg({ orgName: 'Atlantic Impact', userName: '5551112222' })
+	await addUserOrg({ orgName: 'Atlantic Impact', userName: '3136272756' })
 
 	await userUserType([['2482317505', 'ut_cm_staff_provider']])
 	await userUserType([['3136276210', 'ut_cm_staff_provider']])
 	await userUserType([['2487985578', 'ut_cm_staff_provider']])
-	await userUserType([['5551112222', 'ut_cm_staff_provider']])
+	await userUserType([['3136272756', 'ut_cm_staff_provider']])
 
 	await addStaff([
 		['Atlantic Impact', 'Stacy', 'Administrator'],

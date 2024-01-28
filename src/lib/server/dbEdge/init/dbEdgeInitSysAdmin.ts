@@ -1,5 +1,10 @@
 import { apps, userTypeResourcesPrograms, tables } from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import { addColumn, addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import {
+	addColumn,
+	addDataObj,
+	addDataObjFieldItemsDb,
+	addNodeProgramObj
+} from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import { execute } from '$routes/api/dbEdge/types.dbEdge'
 import initSysAdminReports from '$server/dbEdge/init/dbEdgeInitSysAdminReports'
 
@@ -9,16 +14,18 @@ export default async function init() {
 	console.log()
 	console.log(`${FILENAME}.start...`)
 	await initAdmin()
-	await reports()
+	// await reports()
 	console.log(`${FILENAME}.end`)
 }
 async function initAdmin() {
 	await resetDB()
 	await initCore()
+	await initDataObjFieldItems()
+	await initColumns()
+
 	await initApp()
 	await initCodeType()
 	// await initCode()
-	// await initColumns()
 
 	// await initDataObj()
 	// await initDataObjTable()
@@ -43,6 +50,7 @@ async function initCore() {
 		['app_sys_admin', 'sys_core', 'SysApp', false],
 		['app_sys_admin', 'sys_db', 'SysColumn', true],
 		['app_sys_admin', 'sys_core', 'SysDataObj', true],
+		['app_sys_admin', 'sys_core', 'SysDataObjFieldItemsDb', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjAction', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjTable', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjColumn', true],
@@ -78,6 +86,12 @@ async function initApp() {
 				dbOrderList: 10,
 				dbOrderSelect: 20,
 				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'header',
+				dbOrderSelect: 30,
+				indexTable: '0'
 			}
 		]
 	})
@@ -110,6 +124,13 @@ async function initApp() {
 			{
 				columnName: 'name',
 				dbOrderCrumb: 10,
+				dbOrderSelect: 30,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'header',
+				dbOrderCrumb: 15,
 				dbOrderSelect: 30,
 				indexTable: '0'
 			},
@@ -184,10 +205,29 @@ async function initCodeType() {
 			},
 			{
 				codeAccess: 'readOnly',
+				columnName: 'parent',
+				dbOrderSelect: 20,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
 				columnName: 'name',
 				dbOrderCrumb: 10,
 				dbOrderList: 10,
-				dbOrderSelect: 20,
+				dbOrderSelect: 30,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'header',
+				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'order',
+				dbOrderSelect: 50,
 				indexTable: '0'
 			}
 		]
@@ -209,9 +249,40 @@ async function initCodeType() {
 				isDisplay: false
 			},
 			{
+				columnName: 'owner',
+				dbOrderSelect: 20,
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: `(SELECT sys_core::getOrg('System'))`,
+					table: { module: 'sys_core', name: 'SysOrg' }
+				}
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'parent',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				itemsDb: 'il_sys_codeType_order_name_by_codeType',
+				link: { table: { module: 'sys_core', name: 'SysCodeType' } }
+			},
+			{
 				columnName: 'name',
 				dbOrderCrumb: 10,
-				dbOrderSelect: 20,
+				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'header',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'number',
+				columnName: 'order',
+				dbOrderSelect: 60,
 				indexTable: '0'
 			},
 			{
@@ -286,10 +357,54 @@ async function initCode() {
 			},
 			{
 				codeAccess: 'readOnly',
+				columnName: 'parent',
+				dbOrderSelect: 20,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeType',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
 				columnName: 'name',
 				dbOrderCrumb: 10,
 				dbOrderList: 10,
-				dbOrderSelect: 20,
+				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'header',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'valueDecimal',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'valueInteger',
+				dbOrderSelect: 70,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'valueString',
+				dbOrderSelect: 80,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'order',
+				dbOrderSelect: 90,
 				indexTable: '0'
 			}
 		]
@@ -1341,6 +1456,12 @@ async function initColumns() {
 	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'link',
+		header: 'Parent',
+		name: 'parent'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'link',
 		header: 'Table',
 		name: 'table'
 	})
@@ -1391,6 +1512,7 @@ export async function resetDB() {
 	tables.push('sys_db::SysColumn')
 	tables.push('sys_core::SysDataObjAction')
 
+	tables.push('sys_core::SysDataObjFieldItemsDb')
 	tables.push('sys_core::SysCode')
 	tables.push('sys_core::SysCodeType')
 
@@ -1498,7 +1620,6 @@ async function initConfig() {
 				dbOrderSelect: 45,
 				exprPresetScalar: `(SELECT true)`
 			},
-
 			{
 				codeElement: 'custom',
 				columnName: 'custom_element',
@@ -1526,7 +1647,6 @@ async function initConfig() {
 				dbOrderSelect: 430,
 				height: 30
 			},
-
 			{
 				codeElement: 'custom',
 				columnName: 'custom_element',
@@ -1554,7 +1674,6 @@ async function initConfig() {
 				dbOrderSelect: 530,
 				height: 20
 			},
-
 			{
 				codeElement: 'custom',
 				columnName: 'custom_element',
@@ -1601,5 +1720,13 @@ async function initConfig() {
 		order: 10,
 		owner: 'app_sys_admin',
 		parentNodeName: 'node_obj_sys_admin_data_obj_config_list'
+	})
+}
+
+async function initDataObjFieldItems() {
+	await addDataObjFieldItemsDb({
+		exprSelect: 'SELECT sys_core::SysCodeType {data := .id, display := .name} ORDER BY .name',
+		name: 'il_sys_codeType_order_name_by_codeType',
+		owner: 'app_sys_admin'
 	})
 }
