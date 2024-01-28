@@ -591,6 +591,7 @@ export namespace sys_db {
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
     "spinStep"?: string | null;
+    "isSelfReference"?: boolean | null;
   }
   export interface SysTable extends sys_core.SysObj {
     "columns": SysColumn[];

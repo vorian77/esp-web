@@ -83,6 +83,7 @@ export async function addCodeType(data: any) {
 }
 
 export async function addColumn(data: any) {
+	console.log('addColumn.name:', data.name)
 	const query = e.params(
 		{
 			classValue: e.optional(e.str),
@@ -96,6 +97,7 @@ export async function addColumn(data: any) {
 			isExcludeSelect: e.optional(e.bool),
 			isExcludeUpdate: e.optional(e.bool),
 			isMultiSelect: e.optional(e.bool),
+			isSelfReference: e.optional(e.bool),
 			isSetBySys: e.optional(e.bool),
 			link: e.optional(e.json),
 			matchColumn: e.optional(e.str),
@@ -124,6 +126,7 @@ export async function addColumn(data: any) {
 				isExcludeSelect: p.isExcludeSelect,
 				isExcludeUpdate: p.isExcludeUpdate,
 				isMultiSelect: p.isMultiSelect,
+				isSelfReference: p.isSelfReference,
 				isSetBySys: p.isSetBySys,
 				link: p.link,
 				matchColumn: p.matchColumn,
@@ -146,6 +149,8 @@ export async function addColumn(data: any) {
 }
 
 export async function addDataObj(data: any) {
+	console.log()
+	console.log('addDataObj.name:', data.name)
 	let orderTables = 1
 	const actionsQuery = data.actionsQuery && data.actionsQuery.length > 0 ? data.actionsQuery : []
 

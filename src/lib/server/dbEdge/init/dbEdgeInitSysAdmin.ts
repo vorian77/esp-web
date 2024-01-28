@@ -25,7 +25,7 @@ async function initAdmin() {
 
 	await initApp()
 	await initCodeType()
-	// await initCode()
+	await initCode()
 
 	// await initDataObj()
 	// await initDataObjTable()
@@ -254,7 +254,7 @@ async function initCodeType() {
 				indexTable: '0',
 				isDisplay: false,
 				link: {
-					exprSave: `(SELECT sys_core::getOrg('System'))`,
+					exprSave: `(SELECT sys_core::SysApp FILTER .id = <uuid,tree,SysApp.id>)`,
 					table: { module: 'sys_core', name: 'SysOrg' }
 				}
 			},
@@ -264,7 +264,7 @@ async function initCodeType() {
 				columnName: 'parent',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_codeType_order_name_by_codeType',
+				itemsDb: 'il_sys_codeType_order_name',
 				link: { table: { module: 'sys_core', name: 'SysCodeType' } }
 			},
 			{
@@ -426,9 +426,70 @@ async function initCode() {
 				isDisplay: false
 			},
 			{
+				columnName: 'owner',
+				dbOrderSelect: 20,
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: `(SELECT sys_core::SysApp FILTER .id = <uuid,tree,SysApp.id>)`,
+					table: { module: 'sys_core', name: 'SysOrg' }
+				}
+			},
+			{
+				columnName: 'codeType',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: `(SELECT sys_core::SysCodeType FILTER .id = <uuid,tree,SysCodeType.id>))`,
+					table: { module: 'sys_core', name: 'SysCodeType' }
+				}
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'parent',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				itemsDb: 'il_sys_code_order_name',
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
 				columnName: 'name',
 				dbOrderCrumb: 10,
-				dbOrderSelect: 20,
+				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'header',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'number',
+				codeAccess: 'optional',
+				columnName: 'valueDecimal',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'number',
+				codeAccess: 'optional',
+				columnName: 'valueInteger',
+				dbOrderSelect: 70,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'valueString',
+				dbOrderSelect: 80,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'number',
+				columnName: 'order',
+				dbOrderSelect: 90,
 				indexTable: '0'
 			},
 			{
@@ -1251,12 +1312,6 @@ async function initDataObjNodeObjFooter() {
 async function initColumns() {
 	await addColumn({
 		owner: 'app_sys_admin',
-		codeDataType: 'int16',
-		header: 'Order - Select',
-		name: 'dbOrderSelect'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
 		codeDataType: 'link',
 		header: 'Column',
 		name: 'column'
@@ -1266,6 +1321,12 @@ async function initColumns() {
 		codeDataType: 'str',
 		header: 'Creator',
 		name: 'creator'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'int16',
+		header: 'Order - Select',
+		name: 'dbOrderSelect'
 	})
 	await addColumn({
 		owner: 'app_sys_admin',
@@ -1457,6 +1518,7 @@ async function initColumns() {
 		owner: 'app_sys_admin',
 		codeDataType: 'link',
 		header: 'Parent',
+		isSelfReference: true,
 		name: 'parent'
 	})
 	await addColumn({
@@ -1485,9 +1547,21 @@ async function initColumns() {
 	})
 	await addColumn({
 		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Tables',
-		name: 'tables'
+		codeDataType: 'float64',
+		header: 'Value-Decimal',
+		name: 'valueDecimal'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'int64',
+		header: 'Value-Integer',
+		name: 'valueInteger'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'str',
+		header: 'Value-Decimal',
+		name: 'valueString'
 	})
 }
 
@@ -1725,8 +1799,14 @@ async function initConfig() {
 
 async function initDataObjFieldItems() {
 	await addDataObjFieldItemsDb({
+		exprSelect: 'SELECT sys_core::SysCode {data := .id, display := .name} ORDER BY .name',
+		name: 'il_sys_code_order_name',
+		owner: 'app_sys_admin'
+	})
+
+	await addDataObjFieldItemsDb({
 		exprSelect: 'SELECT sys_core::SysCodeType {data := .id, display := .name} ORDER BY .name',
-		name: 'il_sys_codeType_order_name_by_codeType',
+		name: 'il_sys_codeType_order_name',
 		owner: 'app_sys_admin'
 	})
 }

@@ -9,6 +9,7 @@ module sys_db{
     isExcludeSelect: bool;
     isExcludeUpdate: bool;
     isMultiSelect: bool;
+    isSelfReference: bool;
     isSetBySys: bool;
     link: json;
     matchColumn: str;

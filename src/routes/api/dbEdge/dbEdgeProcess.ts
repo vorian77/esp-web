@@ -1,6 +1,5 @@
 import {
 	ApiResultData,
-	ApiResultDoFail,
 	ApiResultDoSuccess,
 	TokenApiQuery,
 	TokenApiQueryData,
@@ -14,8 +13,7 @@ import {
 	DataObjData,
 	DataObjRecordRow,
 	DataObjRecordStatus,
-	formatDateTime,
-	getArray
+	formatDateTime
 } from '$comps/types'
 import { EdgeQL } from '$routes/api/dbEdge/dbEdgeScriptBuilder'
 import type { DataObjRecord, DataObjRecordRowList, DataObjRaw } from '$comps/types'
@@ -26,7 +24,6 @@ import {
 	querySingle
 } from '$routes/api/dbEdge/types.dbEdge'
 import type { RawDataList } from '$routes/api/dbEdge/types.dbEdge'
-import { Tree, TreeNode, TreeNodeRaw, TreeTraverseType } from '$utils/utils.tree'
 import { FieldItem, type FieldItemsRecord } from '$comps/form/field'
 import type { Field } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
@@ -109,6 +106,7 @@ export async function processQuery(token: TokenApiQuery) {
 	)
 
 	if (dataResult.dataObjRowList.length > 0) {
+		console.log()
 		console.log('processQuery.3:', { dataResult: dataResult.dataObjRowList[0] })
 	}
 	return new ApiResultDoSuccess(dataObjRaw, dataResult)

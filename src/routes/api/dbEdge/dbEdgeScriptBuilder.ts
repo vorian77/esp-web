@@ -281,7 +281,6 @@ class DataObjTableAction {
 			let column
 
 			if (f.nameCustom && f.exprCustom) {
-				console.log('getScriptItemsSelect.custom:', f)
 				item = f.nameCustom + ' := ' + getValExpr(f.exprCustom, data)
 			} else if (!prefix && !f.link) {
 				// root scalar column
@@ -353,7 +352,8 @@ class DataObjTableAction {
 		// root table and native fields
 		fields.forEach((f) => {
 			const expr = f?.link?.exprSave ? f.link.exprSave : ''
-			const value = expr ? `${getValExpr(expr, data)}` : getValSave(f, data)
+			let value = expr ? `${getValExpr(expr, data)}` : getValSave(f, data)
+			if (f.isSelfReference) value = 'DETACHED ' + value
 			const item = f.name + ' := ' + value
 			script.addItemField(item)
 		})
@@ -849,6 +849,7 @@ export class DataFieldData extends DataField {
 	codeSource: DataFieldSource
 	hasItems: boolean
 	isMultiSelect: boolean
+	isSelfReference: boolean
 	name: string
 	sourceKey: string
 	constructor(obj: any) {
@@ -871,6 +872,7 @@ export class DataFieldData extends DataField {
 		)
 		this.hasItems = required(obj.hasItems, clazz, 'hasItems')
 		this.isMultiSelect = booleanOrFalse(obj._isMultiSelect, 'DataFieldData.isMultiLink')
+		this.isSelfReference = booleanOrFalse(obj._isSelfReference, clazz)
 		this.name = strRequired(obj._name, clazz, 'name')
 		this.sourceKey = valueOrDefault(obj.QueryParmDataSourceKey, obj._name)
 	}

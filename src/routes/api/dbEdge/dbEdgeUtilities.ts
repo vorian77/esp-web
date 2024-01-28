@@ -169,6 +169,7 @@ export async function getDataObjById(dataObjId: string) {
 				_codeDataType: f.column.codeDataType.name,
 				_codeDbDataSource: f.codeDbDataSource.name,
 				_isMultiSelect: f.column.isMultiSelect,
+				_isSelfReference: f.column.isSelfReference,
 				_name: f.column.name,
 				dbDataSourceKey: true,
 				hasItems: e.op(

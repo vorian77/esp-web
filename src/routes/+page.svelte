@@ -16,8 +16,8 @@
 	let pageCurrent = ''
 
 	async function expressLogin() {
-		const userName = '2487985578'
-		// const userName = 'user_sys'
+		// const userName = '2487985578'
+		const userName = 'user_sys'
 		const result = await apiFetch(ApiFunction.dbEdgeGetUserId, new TokenApiUserName(userName))
 		if (result.success) {
 			await userInit(result.data.userId)
