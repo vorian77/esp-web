@@ -10,8 +10,7 @@ import {
 	TokenApiQuery,
 	TokenApiQueryData,
 	TokenApiQueryType,
-	TokenApiSendText,
-	TokenApiUserId
+	TokenApiSendText
 } from '$lib/api'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'

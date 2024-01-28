@@ -41,7 +41,7 @@ export class State {
 	}
 	async resetUser(loadHome: boolean) {
 		if (this.user) {
-			const user = await userInit(this.user.id)
+			this.user = await userInit(this.user.id)
 			await initNavTree(this.user)
 			if (loadHome) {
 				this.update({
