@@ -22,21 +22,14 @@ async function initAdmin() {
 	await initCore()
 	await initDataObjFieldItems()
 	await initColumns()
-
-	await initApp()
-	await initCodeType()
-	await initCode()
-
-	// await initDataObj()
-	// await initDataObjTable()
-	// await initDataObjColumn()
-	// await initColumn()
-	// await initDataObjAction()
-	// await initDataObjNodeObj()
-	// await initDataObjNodeObjFooter()
-
-	// // await initConfig()
+	await initDataObjects()
+	// await initConfig()
 	await initResources()
+}
+
+function sectionHeader(section: string) {
+	console.log()
+	console.log(`--- ${section} ---`)
 }
 
 async function reports() {
@@ -59,6 +52,22 @@ async function initCore() {
 		['app_sys_admin', 'sys_core', 'SysObjConfig', true],
 		['app_sys_admin', 'sys_db', 'SysTable', true]
 	])
+}
+
+async function initDataObjects() {
+	sectionHeader('DataObjects')
+
+	await initApp()
+	await initCodeType()
+	await initCode()
+
+	// await initDataObj()
+	// await initDataObjTable()
+	// await initDataObjColumn()
+	// await initColumn()
+	// await initDataObjAction()
+	// await initDataObjNodeObj()
+	// await initDataObjNodeObjFooter()
 }
 
 async function initApp() {
@@ -441,7 +450,7 @@ async function initCode() {
 				indexTable: '0',
 				isDisplay: false,
 				link: {
-					exprSave: `(SELECT sys_core::SysCodeType FILTER .id = <uuid,tree,SysCodeType.id>))`,
+					exprSave: `(SELECT sys_core::SysCodeType FILTER .id = <uuid,tree,SysCodeType.id>)`,
 					table: { module: 'sys_core', name: 'SysCodeType' }
 				}
 			},
@@ -451,7 +460,7 @@ async function initCode() {
 				columnName: 'parent',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name',
+				itemsDb: 'il_sys_code_order_name_by_codeType_id',
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1310,6 +1319,8 @@ async function initDataObjNodeObjFooter() {
 }
 
 async function initColumns() {
+	sectionHeader('columns')
+
 	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'link',
@@ -1560,7 +1571,7 @@ async function initColumns() {
 	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'str',
-		header: 'Value-Decimal',
+		header: 'Value-String',
 		name: 'valueString'
 	})
 }
@@ -1799,8 +1810,9 @@ async function initConfig() {
 
 async function initDataObjFieldItems() {
 	await addDataObjFieldItemsDb({
-		exprSelect: 'SELECT sys_core::SysCode {data := .id, display := .name} ORDER BY .name',
-		name: 'il_sys_code_order_name',
+		exprSelect:
+			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.id = <uuid,tree,SysCodeType.id> ORDER BY .name',
+		name: 'il_sys_code_order_name_by_codeType_id',
 		owner: 'app_sys_admin'
 	})
 

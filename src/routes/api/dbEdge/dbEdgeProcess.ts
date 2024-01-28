@@ -200,7 +200,7 @@ async function processDataPost(
 			case DataFieldDataType.bool:
 			case DataFieldDataType.date:
 			case DataFieldDataType.datetime:
-			case DataFieldDataType.decimal:
+			case DataFieldDataType.float64:
 			case DataFieldDataType.int16:
 			case DataFieldDataType.int32:
 			case DataFieldDataType.int64:

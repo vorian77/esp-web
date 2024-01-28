@@ -12,21 +12,22 @@ import { getDataObjByName, queryMultiple, querySingle } from '$routes/api/dbEdge
 import { getDataObjId, getDataObjById } from '$routes/api/dbEdge/dbEdgeUtilities'
 
 const FILE = '/server/dbEdge/init'
-const load = 0
+const load = 1
 
 export async function init() {
 	if (load) {
+		console.log('dbEdgeInit...')
 		await resetDB()
 		await initCore()
 		await initSysAuth()
 		await initCMTraining()
 		await initCMStudent()
 		await initResources()
-		await initCMDataAI()
+		// await initCMDataAI()
 		// await initCMDataMOED()
 		// await reviewDO()
 		// await initReviewQuery()
-		// await initSysAdmin()
+		await initSysAdmin()
 	}
 }
 

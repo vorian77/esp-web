@@ -366,6 +366,7 @@ export async function resetDB() {
 	tables.push('sys_core::SysDataObj')
 	tables.push('sys_core::SysDataObjFieldItemsDb')
 	tables.push('sys_core::SysDataObjTable')
+	tables.push('sys_core::SysObjConfig')
 
 	tables.push('sys_db::SysTable')
 	tables.push('sys_db::SysColumn')

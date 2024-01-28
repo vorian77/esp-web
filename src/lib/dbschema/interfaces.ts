@@ -137,10 +137,10 @@ export namespace sys_core {
   export interface SysCode extends SysObj {
     "parent"?: SysCode | null;
     "order": number;
-    "valueDecimal"?: string | null;
     "valueInteger"?: number | null;
     "valueString"?: string | null;
     "codeType": SysCodeType;
+    "valueDecimal"?: number | null;
   }
   export interface SysCodeType extends SysObj {
     "parent"?: SysCodeType | null;

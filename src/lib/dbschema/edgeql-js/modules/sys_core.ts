@@ -73,10 +73,10 @@ const SysApp: $.$expr_PathNode<$.TypeSet<$SysApp, $.Cardinality.Many>, null> = _
 export type $SysCodeλShape = $.typeutil.flatten<$SysObjλShape & {
   "parent": $.LinkDesc<$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "order": $.PropertyDesc<_default.$nonNegative, $.Cardinality.One, false, false, false, false>;
-  "valueDecimal": $.PropertyDesc<_std.$decimal, $.Cardinality.AtMostOne, false, false, false, false>;
   "valueInteger": $.PropertyDesc<_std.$int64, $.Cardinality.AtMostOne, false, false, false, false>;
   "valueString": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "codeType": $.LinkDesc<$SysCodeType, $.Cardinality.One, {}, false, false,  false, false>;
+  "valueDecimal": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, false, false, false>;
   "<codeSector[is app_cm::CmCourse]": $.LinkDesc<_app_cm.$CmCourse, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeStatus[is app_cm::CmCourse]": $.LinkDesc<_app_cm.$CmCourse, $.Cardinality.Many, {}, false, false,  false, false>;
   "<parent[is sys_core::SysCode]": $.LinkDesc<$SysCode, $.Cardinality.Many, {}, false, false,  false, false>;

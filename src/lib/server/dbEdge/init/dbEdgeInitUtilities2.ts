@@ -30,7 +30,7 @@ export async function addCode(data: any) {
 			header: e.optional(e.str),
 			name: e.str,
 			order: e.int16,
-			valueDecimal: e.optional(e.decimal),
+			valueDecimal: e.optional(e.float64),
 			valueInteger: e.optional(e.int64),
 			valueString: e.optional(e.str)
 		},
@@ -149,7 +149,6 @@ export async function addColumn(data: any) {
 }
 
 export async function addDataObj(data: any) {
-	console.log()
 	console.log('addDataObj.name:', data.name)
 	let orderTables = 1
 	const actionsQuery = data.actionsQuery && data.actionsQuery.length > 0 ? data.actionsQuery : []

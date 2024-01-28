@@ -1,5 +1,4 @@
 import { redirect } from '@sveltejs/kit'
-import { getUserByUserId } from '$routes/api/dbEdge/types.dbEdge'
 
 const FILENAME = 'hooks.server'
 
@@ -7,18 +6,13 @@ const routesUnprotected = ['/about', '/auth', '/legalDisclosure']
 
 export async function handle({ event, resolve }) {
 	console.log()
-	console.log(FILENAME, `url: ${event.url.pathname}`)
-
-	// event.cookies.set('test', 'abc', {
-	// 	path: '/',
-	// 	httpOnly: true,
-	// 	sameSite: 'strict',
-	// 	secure: true
-	// })
+	console.log(FILENAME, `url.pathname: ${event.url.pathname}`)
 
 	if (event.url.pathname === '/') {
-		console.log(FILENAME, 'root path - deleting cookie...')
-		event.cookies.delete('session_id', { path: '/' })
+		if (event.cookies.get('session_id')) {
+			console.log(FILENAME, 'root path - deleting cookie...')
+			event.cookies.delete('session_id', { path: '/' })
+		}
 		return resolve(event)
 	}
 

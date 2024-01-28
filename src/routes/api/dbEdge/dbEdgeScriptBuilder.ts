@@ -752,7 +752,7 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 				val = 'DATETIME(' + getValQuote(val) + ')'
 				break
 
-			case DataFieldDataType.decimal:
+			case DataFieldDataType.float64:
 			case DataFieldDataType.int16:
 			case DataFieldDataType.int32:
 			case DataFieldDataType.int64:
@@ -1015,9 +1015,7 @@ export enum DataFieldDataType {
 	bool = 'bool',
 	date = 'date',
 	datetime = 'datetime',
-	decimal = 'decimal',
 	file = 'file',
-	float16 = 'float16',
 	float64 = 'float64',
 	int16 = 'int16',
 	int32 = 'int32',

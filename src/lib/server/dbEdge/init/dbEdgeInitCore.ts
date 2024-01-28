@@ -172,18 +172,16 @@ async function initSysCodes() {
 		['ct_db_col_data_type', 'app_sys', 'bool', 0],
 		['ct_db_col_data_type', 'app_sys', 'date', 1],
 		['ct_db_col_data_type', 'app_sys', 'datetime', 2],
-		['ct_db_col_data_type', 'app_sys', 'decimal', 3],
-		['ct_db_col_data_type', 'app_sys', 'file', 4],
-		['ct_db_col_data_type', 'app_sys', 'float16', 5],
-		['ct_db_col_data_type', 'app_sys', 'float64', 6],
-		['ct_db_col_data_type', 'app_sys', 'int16', 7],
-		['ct_db_col_data_type', 'app_sys', 'int32', 8],
-		['ct_db_col_data_type', 'app_sys', 'int64', 9],
-		['ct_db_col_data_type', 'app_sys', 'json', 10],
-		['ct_db_col_data_type', 'app_sys', 'link', 11],
-		['ct_db_col_data_type', 'app_sys', 'literal', 12],
-		['ct_db_col_data_type', 'app_sys', 'str', 13],
-		['ct_db_col_data_type', 'app_sys', 'uuid', 14],
+		['ct_db_col_data_type', 'app_sys', 'file', 3],
+		['ct_db_col_data_type', 'app_sys', 'float64', 4],
+		['ct_db_col_data_type', 'app_sys', 'int16', 5],
+		['ct_db_col_data_type', 'app_sys', 'int32', 6],
+		['ct_db_col_data_type', 'app_sys', 'int64', 7],
+		['ct_db_col_data_type', 'app_sys', 'json', 8],
+		['ct_db_col_data_type', 'app_sys', 'link', 9],
+		['ct_db_col_data_type', 'app_sys', 'literal', 10],
+		['ct_db_col_data_type', 'app_sys', 'str', 11],
+		['ct_db_col_data_type', 'app_sys', 'uuid', 12],
 
 		// db col - mask
 		['ct_db_col_mask', 'app_sys', 'currencyUs', 0],
@@ -509,7 +507,7 @@ async function initColumns() {
 	})
 	await addColumn({
 		owner: 'app_sys',
-		codeDataType: 'decimal',
+		codeDataType: 'float64',
 		header: 'Cost',
 		minValue: 0,
 		name: 'cost'
@@ -631,7 +629,7 @@ async function initColumns() {
 
 	await addColumn({
 		owner: 'app_sys',
-		codeDataType: 'decimal',
+		codeDataType: 'float64',
 		header: 'Duration',
 		maxValue: 24,
 		minValue: 0,

@@ -35,7 +35,7 @@ module sys_core {
     parent: sys_core::SysCode;
     required codeType: sys_core::SysCodeType;
     required order: default::nonNegative;
-    valueDecimal: decimal;
+    valueDecimal: float64;
     valueInteger: int64;
     valueString: str;
     constraint exclusive on ((.codeType, .name));
