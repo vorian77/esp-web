@@ -37,6 +37,7 @@ import { FieldFile } from '$comps/form/fieldFile'
 import { FieldRadio } from '$comps/form/fieldRadio'
 import { FieldSelect } from '$comps/form/fieldSelect'
 import { FieldTextarea } from '$comps/form/fieldTextarea'
+import { FieldToggle } from '$comps/form/fieldToggle'
 import { ActionsQuery, ActionQuery } from '$comps/nav/types.appQuery'
 import { error } from '@sveltejs/kit'
 
@@ -279,6 +280,9 @@ export class DataObj {
 
 				case FieldElement.textArea:
 					newField = new FieldTextarea(field, index)
+					break
+				case FieldElement.toggle:
+					newField = new FieldToggle(field, index)
 					break
 				default:
 					error(500, {

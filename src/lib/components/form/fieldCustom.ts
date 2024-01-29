@@ -85,5 +85,5 @@ export enum FieldCustomType {
 	header = 'header',
 	link = 'link',
 	text = 'text',
-	textDynamic = 'textDynamie'
+	textDynamic = 'textDynamic'
 }

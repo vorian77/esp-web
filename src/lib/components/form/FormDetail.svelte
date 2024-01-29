@@ -17,6 +17,7 @@
 	import FormElInpRadio from '$comps/form/FormElInpRadio.svelte'
 	import FormElSelect from '$comps/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/form/FormElTextarea.svelte'
+	import FormElToggle from '$comps/form/FormElToggle.svelte'
 	import type { FieldItem } from '$comps/form/field'
 	import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 	import { FieldCustom } from '$comps/form/fieldCustom'
@@ -25,6 +26,7 @@
 	import { FieldRadio } from '$comps/form/fieldRadio'
 	import { FieldSelect } from '$comps/form/fieldSelect'
 	import { FieldTextarea } from '$comps/form/fieldTextarea'
+	import { FieldToggle } from '$comps/form/fieldToggle'
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const FILENAME = '$comps/form/FormDetail.svelte'
@@ -108,6 +110,8 @@
 						<FormElSelect {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldTextarea}
 						<FormElTextarea {field} on:change={onChangeInput} on:keyup={onChangeInput} />
+					{:else if field instanceof FieldToggle}
+						<FormElToggle {field} on:changeItem={onChangeItem} />
 					{/if}
 				</div>
 

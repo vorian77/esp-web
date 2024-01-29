@@ -185,7 +185,8 @@ export enum FieldElement {
 	select = 'select',
 	tel = 'tel',
 	text = 'text',
-	textArea = 'textArea'
+	textArea = 'textArea',
+	toggle = 'toggle'
 }
 
 export class FieldItemsDb {
@@ -255,6 +256,8 @@ export interface FieldRaw {
 		patternReplacement: string
 		placeHolder: string
 		spinStep: string
+		toggleLabelFalse: string
+		toggleLabelTrue: string
 	}
 	_itemsDb: {
 		_codeDataTypeDisplay: string
@@ -271,47 +274,4 @@ export interface FieldRaw {
 	itemsDbParms: any
 	nameCustom: string
 	width: number
-}
-
-export class BinarySelect {
-	BinarySelectTypes: Partial<Record<DataFieldDataType, [any, any]>> = {
-		bool: [true, false],
-		int16: [1, 0],
-		str: ['Yes', 'No']
-	}
-	currentValue: any
-	isBinarySelect: boolean
-	selections: any
-	constructor(dataType: DataFieldDataType, value: any) {
-		const clazz = 'BinarySelect'
-		this.isBinarySelect = [
-			DataFieldDataType.bool,
-			DataFieldDataType.int16,
-			DataFieldDataType.str
-		].includes(dataType)
-		if (this.isBinarySelect) {
-			this.selections = this.BinarySelectTypes[dataType]
-			const idx = this.getIdx(value)
-			this.currentValue = idx > -1 ? idx : this.selections[1]
-		}
-	}
-
-	changeValue() {
-		this.currentValue = this.selections[(this.getIdx(this.currentValue) + 1) % 2]
-		return this.currentValue
-	}
-
-	getIdx(value: any) {
-		return this.selections.findIndex((s: any) => {
-			return s === value
-		})
-	}
-
-	getValue() {
-		return this.currentValue
-	}
-
-	isChecked() {
-		return this.isBinarySelect ? this.currentValue === this.selections[0] : false
-	}
 }
