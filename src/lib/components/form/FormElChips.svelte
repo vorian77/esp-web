@@ -18,7 +18,7 @@
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalItems',
+				component: 'overlayModalForm',
 				meta: { overlayNode: field.overlayNode },
 				response: (r: any) => {
 					resolve(r)
