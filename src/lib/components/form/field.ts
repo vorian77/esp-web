@@ -1,4 +1,5 @@
 import {
+	booleanOrFalse,
 	getArray,
 	memberOfEnum,
 	memberOfEnumOrDefault,
@@ -10,6 +11,7 @@ import {
 import {
 	DataFieldDataType,
 	DataFieldMask,
+	type DataObjListRecord,
 	Validation,
 	ValidationType,
 	ValidationStatus,
@@ -175,6 +177,7 @@ export interface FieldCustomRaw {
 
 export enum FieldElement {
 	checkbox = 'checkbox',
+	chips = 'chips',
 	custom = 'custom',
 	date = 'date',
 	email = 'email',
@@ -265,6 +268,13 @@ export interface FieldRaw {
 		exprSelect: string
 		name: string
 	}
+	_overlayNode: {
+		_codeType: string
+		_dataObjName: string
+		btnLabelComplete?: string
+		exprDisplay: string
+		name: string
+	}
 	customElement: FieldCustomRaw
 	headerAlt: string
 	height: number
@@ -274,4 +284,51 @@ export interface FieldRaw {
 	itemsDbParms: any
 	nameCustom: string
 	width: number
+}
+
+export class OverlayNode {
+	btnLabelComplete: string
+	codeType: OverlayNodeType
+	data: OverlayNodeData = []
+	dataObjName: string
+	exprDisplay: string
+	exprDisplayFields: string[] = []
+	constructor(obj: any) {
+		const clazz = 'OverlayNode'
+		obj = valueOrDefault(obj, {})
+		this.codeType = memberOfEnum(
+			obj._codeType,
+			clazz,
+			'codeType',
+			'OverlayNodeType',
+			OverlayNodeType
+		)
+		this.btnLabelComplete = obj.btnLabelComplete ? obj.btnLabelComplete : 'Complete'
+		this.dataObjName = strRequired(obj._dataObjName, clazz, 'dataObj')
+		this.exprDisplay = strRequired(obj.exprDisplay, clazz, 'exprDisplay')
+		this.exprDisplayFields =
+			this.exprDisplay.match(/<([^>]*)>/g)?.map((f) => f.slice(1, f.length - 1)) || []
+	}
+	setSelected(dataList: DataObjListRecord, selected: any) {
+		let data: OverlayNodeData = []
+		dataList.forEach((row: any) => {
+			if (selected.includes(row.id)) {
+				let display = this.exprDisplay
+				this.exprDisplayFields.forEach((field) => {
+					display = display.replace(`<${field}>`, row[field])
+				})
+				data.push({ data: row.id, display })
+			}
+		})
+		this.data = data
+	}
+}
+
+export type OverlayNodeData = { data: string; display: any }[]
+
+export enum OverlayNodeType {
+	'none' = 'none',
+	'record' = 'record',
+	'select' = 'select',
+	'selectMulti' = 'selectMulti'
 }

@@ -78,6 +78,10 @@
 				await objAction(TokenAppDoAction.listNew, false)
 				break
 
+			case 'noa_common_refresh':
+				await objAction(TokenAppDoAction.refresh, false)
+				break
+
 			default:
 				error(500, {
 					file: FILENAME,

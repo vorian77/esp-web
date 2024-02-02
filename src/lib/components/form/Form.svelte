@@ -154,6 +154,11 @@
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break
 
+						case TokenAppDoAction.refresh:
+							await query(state, app.getCurrTab(), TokenApiQueryType.retrieve, app)
+							dataObjUpdate = new DataObjUpdate(false, false, true)
+							break
+
 						default:
 							error(500, {
 								file: FILENAME,

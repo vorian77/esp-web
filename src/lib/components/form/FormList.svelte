@@ -23,6 +23,13 @@
 
 	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
 	const rows = handler.getRows()
+	const selected = handler.getSelected()
+	const isAllSelected = handler.isAllSelected()
+	const isSelect = state.overlayNode !== undefined
+
+	if (isSelect && state.overlayNode) {
+		state.overlayNode.data.forEach((i) => handler.select(i.data))
+	}
 
 	type DataRow = Record<string, any>
 
@@ -33,6 +40,7 @@
 		handler.clearFilters()
 		sortList()
 	}
+	$: if (state.overlayNode) state.overlayNode.setSelected(dataObj.dataListRecord, $selected)
 
 	function sortList() {
 		// apply sort items backwards
@@ -56,12 +64,21 @@
 	}
 </script>
 
-<DataObjActionsHeader {state} {dataObj} />
+<DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
 <Datatable {handler}>
 	<table>
 		<thead>
 			<tr>
+				{#if isSelect}
+					<th class="selection">
+						<input
+							type="checkbox"
+							on:click={() => handler.selectAll({ selectBy: 'id' })}
+							checked={$isAllSelected}
+						/>
+					</th>
+				{/if}
 				{#if dataObj.fields}
 					{#each dataObj.fields as field}
 						{#if field.isDisplayable && field.isDisplay}
@@ -71,6 +88,9 @@
 				{/if}
 			</tr>
 			<tr>
+				{#if isSelect}
+					<th class="selection" />
+				{/if}
 				{#if dataObj.fields}
 					{#each dataObj.fields as field}
 						{#if field.isDisplayable && field.isDisplay}
@@ -83,7 +103,20 @@
 		<tbody>
 			{#if dataObjData}
 				{#each $rows as row, i}
-					<tr on:click={() => onClick(row)} on:keyup={async () => await onClick(row)}>
+					<tr
+						class:active={$selected.includes(row.id)}
+						on:click={() => onClick(row)}
+						on:keyup={async () => await onClick(row)}
+					>
+						{#if isSelect}
+							<td class="selection">
+								<input
+									type="checkbox"
+									on:click={() => handler.select(row.id)}
+									checked={$selected.includes(row.id)}
+								/>
+							</td>
+						{/if}
 						{#each dataObj.fields as field}
 							{#if field.isDisplayable && field.isDisplay}
 								{@const value = row[field.name]}
@@ -99,10 +132,17 @@
 
 <!-- <DataViewer header="sort" data={sort} /> -->
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->
+<!-- <DataViewer header="$selected" data={state?.overlayNode?.selected} /> -->
+<!-- <DataViewer header="isSelect" data={isSelect} /> -->
 
 <style>
 	thead {
 		background: #fff;
+	}
+	thead th.selection {
+		width: 48px;
+		padding-left: 8px;
+		border-bottom: 1px solid #97ed9e;
 	}
 	tbody td {
 		border: 1px solid #f5f5f5;
@@ -114,7 +154,19 @@
 	tbody tr:hover {
 		background: #f5f5f5;
 	}
+	tbody tr.active:hover {
+		background: var(--primary-lighten-2);
+	}
+	td :global(b) {
+		font-weight: normal;
+		color: #bdbdbd;
+		font-family: JetBrains;
+		font-size: 11px;
+	}
+	td.selection {
+		padding-left: 24px;
+	}
 	tr:nth-child(even) {
-		background-color: #84f08f;
+		background-color: #97ed9e;
 	}
 </style>

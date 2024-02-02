@@ -1,7 +1,7 @@
 <script lang="ts">
 	import DataObjActions from '$comps/dataObj/DataObjActions.svelte'
 	import type { DataObj } from '$comps/types'
-	import type { State } from '$comps/nav/types.app'
+	import type { State } from '$comps/nav/types.appState'
 	import { SurfaceType } from '$comps/types.master'
 
 	export let state: State

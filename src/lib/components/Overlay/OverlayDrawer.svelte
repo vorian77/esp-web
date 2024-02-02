@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
 	import NavTree from '$comps/nav/NavTree.svelte'
-	import NavAppDrawer from '$comps/nav/NavAppDrawer.svelte'
+	import OverlayObjForm from '$comps/Overlay/OverlayObjForm.svelte'
 	import { apiFetch, ApiFunction, TokenApiUserId } from '$lib/api'
 	import { ResponseBody } from '$comps/types'
 	import { State } from '$comps/nav/types.appState'
 
 	const drawerStore = getDrawerStore()
+
 	const FILENAME = 'OverlayDrawer.svelte'
 
 	function closeDrawer() {
@@ -41,8 +42,8 @@
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'auth'}
 		<div>
-			<NavAppDrawer
-				bind:dataObjName={$drawerStore.meta.dataObjName}
+			<OverlayObjForm
+				bind:overlayNode={$drawerStore.meta.overlayNode}
 				on:formCancelled={onformCancelled}
 			/>
 		</div>

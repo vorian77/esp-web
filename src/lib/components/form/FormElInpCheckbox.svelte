@@ -25,9 +25,12 @@
 		if (field.isMultiSelect) {
 			const idx = field.items.findIndex((i) => i.data === value)
 			if (idx >= 0) {
+				let newValues: string[] = []
 				field.items[idx].selected = !field.items[idx].selected
-				const newVal = field.items.map((i) => (i.selected ? i.data : null))
-				dispatch(dispatchType, { fieldName: field.name, value: newVal })
+				field.items.forEach((i) => {
+					if (i.selected) newValues.push(i.data)
+				})
+				dispatch(dispatchType, { fieldName: field.name, value: newValues })
 			}
 		} else {
 			const idx = field.items.findIndex((i) => i.data === value)

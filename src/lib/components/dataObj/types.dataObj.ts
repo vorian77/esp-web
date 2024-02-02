@@ -24,6 +24,7 @@ import {
 	type FieldRaw
 } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
+import { FieldChips } from '$comps/form/fieldChips'
 import {
 	FieldCustomAction,
 	FieldCustomActionButton,
@@ -52,7 +53,6 @@ export class DataObj {
 	crumbs: Array<any> = []
 	dataListRecord: DataObjListRecord = []
 	data: DataObjData
-	dataObjRaw: DataObjRaw
 	description: string
 	exprObject?: string
 	fields: Array<Field>
@@ -82,7 +82,6 @@ export class DataObj {
 			DataObjComponent
 		)
 		this.crumbs = this.initCrumbs(dataObjRaw._fieldsElCrumb)
-		this.dataObjRaw = dataObjRaw
 		this.data = new DataObjData(this.cardinality)
 		this.description = valueOrDefault(dataObjRaw.description, '')
 		this.exprObject = strOptional(dataObjRaw.exprObject, clazz, 'exprObject')
@@ -227,6 +226,7 @@ export class DataObj {
 				FieldElement,
 				FieldElement.text
 			)
+
 			switch (element) {
 				// input
 				case FieldElement.date:
@@ -240,6 +240,10 @@ export class DataObj {
 
 				case FieldElement.checkbox:
 					newField = new FieldCheckbox(field, index)
+					break
+
+				case FieldElement.chips:
+					newField = new FieldChips(field, index)
 					break
 
 				case FieldElement.custom:

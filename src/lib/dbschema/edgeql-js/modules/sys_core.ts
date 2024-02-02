@@ -29,6 +29,7 @@ export type $ObjRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f7384
   "<owner[is sys_core::SysApp]": $.LinkDesc<$SysApp, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_core::SysNodeObjFooter]": $.LinkDesc<$SysNodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_core::SysObjConfig]": $.LinkDesc<$SysObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<owner[is sys_core::SysOverlayNode]": $.LinkDesc<$SysOverlayNode, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $ObjRoot = $.ObjectType<"sys_core::ObjRoot", $ObjRootλShape, null, [
@@ -115,6 +116,7 @@ export type $SysCodeλShape = $.typeutil.flatten<$SysObjλShape & {
   "<codeDbDataSource[is sys_core::SysDataObjColumn]": $.LinkDesc<$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDbListDir[is sys_core::SysDataObjColumn]": $.LinkDesc<$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeElement[is sys_core::SysDataObjColumn]": $.LinkDesc<$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeType[is sys_core::SysOverlayNode]": $.LinkDesc<$SysOverlayNode, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAccess": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAlignment": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeCardinality": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -185,6 +187,7 @@ export type $SysDataObjλShape = $.typeutil.flatten<$SysObjλShape & {
   "actionsField": $.LinkDesc<$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj[is sys_core::SysNodeObj]": $.LinkDesc<$SysNodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj[is sys_core::SysNodeObjFooter]": $.LinkDesc<$SysNodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<dataObj[is sys_core::SysOverlayNode]": $.LinkDesc<$SysOverlayNode, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $SysDataObj = $.ObjectType<"sys_core::SysDataObj", $SysDataObjλShape, null, [
@@ -236,6 +239,7 @@ export type $SysDataObjColumnλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee
   "width": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
   "exprCustom": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "nameCustom": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "overlayNode": $.LinkDesc<$SysOverlayNode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "<columns[is sys_core::SysDataObj]": $.LinkDesc<$SysDataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columns": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
@@ -402,6 +406,21 @@ type $SysOrg = $.ObjectType<"sys_core::SysOrg", $SysOrgλShape, null, [
 const $SysOrg = $.makeType<$SysOrg>(_.spec, "504fffbe-b3c2-11ee-b5d1-fba024f44f35", _.syntax.literal);
 
 const SysOrg: $.$expr_PathNode<$.TypeSet<$SysOrg, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysOrg, $.Cardinality.Many), null);
+
+export type $SysOverlayNodeλShape = $.typeutil.flatten<$SysObjλShape & {
+  "codeType": $.LinkDesc<$SysCode, $.Cardinality.One, {}, false, false,  false, false>;
+  "dataObj": $.LinkDesc<$SysDataObj, $.Cardinality.One, {}, false, false,  false, false>;
+  "btnLabelComplete": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "exprDisplay": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
+  "<overlayNode[is sys_core::SysDataObjColumn]": $.LinkDesc<$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<overlayNode": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+}>;
+type $SysOverlayNode = $.ObjectType<"sys_core::SysOverlayNode", $SysOverlayNodeλShape, null, [
+  ...$SysObj['__exclusives__'],
+]>;
+const $SysOverlayNode = $.makeType<$SysOverlayNode>(_.spec, "209d716e-c083-11ee-9fb0-db7d9d181d91", _.syntax.literal);
+
+const SysOverlayNode: $.$expr_PathNode<$.TypeSet<$SysOverlayNode, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysOverlayNode, $.Cardinality.Many), null);
 
 type getCodeλFuncExpr<
   P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
@@ -667,9 +686,33 @@ function isObjectLink(...args: any[]) {
   }) as any;
 };
 
+type getOverlayNodeλFuncExpr<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+> = $.$expr_Function<
+  $SysOverlayNode, $.cardutil.overrideLowerBound<$.cardutil.paramCardinality<P1>, 'Zero'>
+>;
+function getOverlayNode<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+>(
+  overlayNodeName: P1,
+): getOverlayNodeλFuncExpr<P1>;
+function getOverlayNode(...args: any[]) {
+  const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_core::getOverlayNode', args, _.spec, [
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "209d716e-c083-11ee-9fb0-db7d9d181d91", returnTypemod: "OptionalType"},
+  ]);
+  return _.syntax.$expressionify({
+    __kind__: $.ExpressionKind.Function,
+    __element__: returnType,
+    __cardinality__: cardinality,
+    __name__: "sys_core::getOverlayNode",
+    __args__: positionalArgs,
+    __namedargs__: namedArgs,
+  }) as any;
+};
 
 
-export { $ObjRoot, ObjRoot, $SysObj, SysObj, $SysEnt, SysEnt, $SysApp, SysApp, $SysCode, SysCode, $SysCodeType, SysCodeType, $SysDataObj, SysDataObj, $SysDataObjAction, SysDataObjAction, $SysDataObjColumn, SysDataObjColumn, $SysDataObjFieldItemsDb, SysDataObjFieldItemsDb, $SysDataObjFieldLink, SysDataObjFieldLink, $SysDataObjFieldLinkJoin, SysDataObjFieldLinkJoin, $SysDataObjTable, SysDataObjTable, $SysNodeObj, SysNodeObj, $SysNodeObjFooter, SysNodeObjFooter, $SysObjConfig, SysObjConfig, $SysOrg, SysOrg };
+
+export { $ObjRoot, ObjRoot, $SysObj, SysObj, $SysEnt, SysEnt, $SysApp, SysApp, $SysCode, SysCode, $SysCodeType, SysCodeType, $SysDataObj, SysDataObj, $SysDataObjAction, SysDataObjAction, $SysDataObjColumn, SysDataObjColumn, $SysDataObjFieldItemsDb, SysDataObjFieldItemsDb, $SysDataObjFieldLink, SysDataObjFieldLink, $SysDataObjFieldLinkJoin, SysDataObjFieldLinkJoin, $SysDataObjTable, SysDataObjTable, $SysNodeObj, SysNodeObj, $SysNodeObjFooter, SysNodeObjFooter, $SysObjConfig, SysObjConfig, $SysOrg, SysOrg, $SysOverlayNode, SysOverlayNode };
 
 type __defaultExports = {
   "ObjRoot": typeof ObjRoot;
@@ -689,6 +732,7 @@ type __defaultExports = {
   "SysNodeObjFooter": typeof SysNodeObjFooter;
   "SysObjConfig": typeof SysObjConfig;
   "SysOrg": typeof SysOrg;
+  "SysOverlayNode": typeof SysOverlayNode;
   "getCode": typeof getCode;
   "getCodeType": typeof getCodeType;
   "getDataObj": typeof getDataObj;
@@ -699,7 +743,8 @@ type __defaultExports = {
   "getNodeObjByName": typeof getNodeObjByName;
   "getOrg": typeof getOrg;
   "getRootObj": typeof getRootObj;
-  "isObjectLink": typeof isObjectLink
+  "isObjectLink": typeof isObjectLink;
+  "getOverlayNode": typeof getOverlayNode
 };
 const __defaultExports: __defaultExports = {
   "ObjRoot": ObjRoot,
@@ -719,6 +764,7 @@ const __defaultExports: __defaultExports = {
   "SysNodeObjFooter": SysNodeObjFooter,
   "SysObjConfig": SysObjConfig,
   "SysOrg": SysOrg,
+  "SysOverlayNode": SysOverlayNode,
   "getCode": getCode,
   "getCodeType": getCodeType,
   "getDataObj": getDataObj,
@@ -729,6 +775,7 @@ const __defaultExports: __defaultExports = {
   "getNodeObjByName": getNodeObjByName,
   "getOrg": getOrg,
   "getRootObj": getRootObj,
-  "isObjectLink": isObjectLink
+  "isObjectLink": isObjectLink,
+  "getOverlayNode": getOverlayNode
 };
 export default __defaultExports;

@@ -14,21 +14,19 @@
 	const isHeader = true
 
 	let isEditing = false
-	$: isEditing = state.objHasChanged && state.surface === SurfaceType.default
+	let isOverlay = false
+	let classMain = ''
 
-	let classPopup = ''
-	let classPopupHeader = ''
-	$: {
-		classPopup = dataObj.isPopup ? 'grid grid-cols-10 gap-4' : ''
-		classPopupHeader = dataObj.isPopup ? 'col-span-9' : ''
-	}
+	$: isEditing = state.objHasChanged && state.surface === SurfaceType.default
+	$: isOverlay = state.surface === SurfaceType.overlay
+	$: classMain = isOverlay ? 'mb-4' : 'mt-6 mb-4'
 
 	function cancel(event: MouseEvent) {
 		dispatch('formCancelled')
 	}
 </script>
 
-<div class="mt-6 mb-4">
+<div class={classMain}>
 	{#if state.nodeType === NodeType.object}
 		<div class="flex justify-between items-start">
 			<h2 class="h2 ml-2">{dataObj.header}</h2>
@@ -36,7 +34,7 @@
 				{#if isEditing}
 					<div class="mr-4"><p class="text-lg text-blue-600">Editing...</p></div>
 				{/if}
-				{#if state.surface === SurfaceType.overlay}
+				{#if isOverlay}
 					<div>
 						<button
 							type="button"
@@ -62,7 +60,7 @@
 				{#if isEditing}
 					<div class="mr-4"><p class="text-lg text-blue-600">Editing...</p></div>
 				{/if}
-				{#if state.surface === SurfaceType.overlay}
+				{#if isOverlay}
 					<div>
 						<button
 							type="button"

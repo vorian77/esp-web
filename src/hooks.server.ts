@@ -13,7 +13,8 @@ export async function handle({ event, resolve }) {
 			console.log(FILENAME, 'root path - deleting cookie...')
 			event.cookies.delete('session_id', { path: '/' })
 		}
-		return resolve(event)
+		console.log(FILENAME, 'resolving root path...')
+		return await resolve(event)
 	}
 
 	if (event.url.pathname.startsWith('/logout')) {
@@ -23,14 +24,14 @@ export async function handle({ event, resolve }) {
 
 	if (event.url.pathname.toLowerCase().startsWith('/api')) {
 		console.log(FILENAME, 'api endpoint...')
-		return resolve(event)
+		return await resolve(event)
 	}
 
 	if (
 		routesUnprotected.findIndex((r) => r.toLowerCase() === event.url.pathname.toLowerCase()) >= 0
 	) {
 		console.log(FILENAME, 'unprotected route...')
-		return resolve(event)
+		return await resolve(event)
 	}
 
 	// remaining routes require sessionId

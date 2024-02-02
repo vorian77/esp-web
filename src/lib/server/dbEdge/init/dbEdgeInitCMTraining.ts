@@ -177,7 +177,6 @@ async function initCMTrainingCourse() {
 				itemsDbParms: { codeTypeName: 'ct_cm_course_rqmt' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
-
 			{
 				codeAccess: 'optional',
 				codeElement: 'checkbox',

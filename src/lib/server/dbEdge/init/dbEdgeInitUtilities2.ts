@@ -111,7 +111,9 @@ export async function addColumn(data: any) {
 			patternMsg: e.optional(e.str),
 			patternReplacement: e.optional(e.str),
 			placeHolder: e.optional(e.str),
-			spinStep: e.optional(e.str)
+			spinStep: e.optional(e.str),
+			toggleLabelFalse: e.optional(e.str),
+			toggleLabelTrue: e.optional(e.str)
 		},
 		(p) => {
 			return e.insert(e.sys_db.SysColumn, {
@@ -119,6 +121,7 @@ export async function addColumn(data: any) {
 				classValue: p.classValue,
 				codeAlignment: e.sys_core.getCode('ct_db_col_alignment', p.codeAlignment),
 				codeDataType: e.sys_core.getCode('ct_db_col_data_type', p.codeDataType),
+				createdBy: e.select(e.sys_user.getRootUser()),
 				exprStorageKey: p.exprStorageKey,
 				header: p.header,
 				headerSide: p.headerSide,
@@ -134,14 +137,15 @@ export async function addColumn(data: any) {
 				maxValue: p.maxValue,
 				minLength: p.minLength,
 				minValue: p.minValue,
+				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,
 				pattern: p.pattern,
 				patternMsg: p.patternMsg,
 				patternReplacement: p.patternReplacement,
 				placeHolder: p.placeHolder,
 				spinStep: p.spinStep,
-				createdBy: e.select(e.sys_user.getRootUser()),
-				modifiedBy: e.select(e.sys_user.getRootUser())
+				toggleLabelFalse: p.toggleLabelFalse,
+				toggleLabelTrue: p.toggleLabelTrue
 			})
 		}
 	)
@@ -259,6 +263,10 @@ export async function addDataObj(data: any) {
 						itemsDbParms: e.cast(e.json, e.json_get(f, 'itemsDbParms')),
 
 						nameCustom: e.cast(e.str, e.json_get(f, 'nameCustom')),
+
+						overlayNode: e.select(
+							e.sys_core.getOverlayNode(e.cast(e.str, e.json_get(f, 'overlayNode')))
+						),
 
 						width: e.cast(e.int16, e.json_get(f, 'width'))
 					})
@@ -415,6 +423,33 @@ export async function addOrg(data: any) {
 				header: p.header,
 				createdBy: e.select(e.sys_user.getRootUser()),
 				modifiedBy: e.select(e.sys_user.getRootUser())
+			})
+		}
+	)
+	return await query.run(client, data)
+}
+
+export async function addOverlayNode(data: any) {
+	const query = e.params(
+		{
+			btnLabelComplete: e.optional(e.str),
+			codeType: e.str,
+			dataObj: e.str,
+			exprDisplay: e.str,
+			isMultiSelect: e.optional(e.bool),
+			name: e.str,
+			owner: e.str
+		},
+		(p) => {
+			return e.insert(e.sys_core.SysOverlayNode, {
+				btnLabelComplete: p.btnLabelComplete,
+				codeType: e.select(e.sys_core.getCode('ct_sys_overlay_node_type', p.codeType)),
+				createdBy: e.select(e.sys_user.getRootUser()),
+				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
+				exprDisplay: p.exprDisplay,
+				modifiedBy: e.select(e.sys_user.getRootUser()),
+				name: p.name,
+				owner: e.select(e.sys_core.getEnt(p.owner))
 			})
 		}
 	)

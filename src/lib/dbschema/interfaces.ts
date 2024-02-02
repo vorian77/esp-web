@@ -192,6 +192,7 @@ export namespace sys_core {
     "width"?: number | null;
     "exprCustom"?: string | null;
     "nameCustom"?: string | null;
+    "overlayNode"?: SysOverlayNode | null;
   }
   export interface SysDataObjFieldItemsDb extends SysObj {
     "codeDataTypeDisplay"?: SysCode | null;
@@ -267,6 +268,12 @@ export namespace sys_core {
     "addr2"?: string | null;
     "city"?: string | null;
     "zip"?: string | null;
+  }
+  export interface SysOverlayNode extends SysObj {
+    "codeType": SysCode;
+    "dataObj": SysDataObj;
+    "btnLabelComplete"?: string | null;
+    "exprDisplay": string;
   }
 }
 export interface SysPerson extends std.$Object {
@@ -592,6 +599,8 @@ export namespace sys_db {
     "placeHolder"?: string | null;
     "spinStep"?: string | null;
     "isSelfReference"?: boolean | null;
+    "toggleLabelFalse"?: string | null;
+    "toggleLabelTrue"?: string | null;
   }
   export interface SysTable extends sys_core.SysObj {
     "columns": SysColumn[];
@@ -659,6 +668,7 @@ export interface types {
     "SysNodeObjFooter": sys_core.SysNodeObjFooter;
     "SysObjConfig": sys_core.SysObjConfig;
     "SysOrg": sys_core.SysOrg;
+    "SysOverlayNode": sys_core.SysOverlayNode;
   };
   "default": {
     "SysPerson": SysPerson;

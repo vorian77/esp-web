@@ -15,7 +15,6 @@ export async function userInit(userId: string) {
 	const result = await apiFetch(ApiFunction.dbEdgeGetUser, new TokenApiUserId(userId))
 	if (result.success) {
 		const user = new User(result.data)
-		console.log('utils.user.userInit.result:', { user })
 		appStoreUser.set(user)
 		return user
 	} else {

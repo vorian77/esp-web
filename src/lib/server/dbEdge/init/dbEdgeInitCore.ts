@@ -76,6 +76,7 @@ async function initSysCodeTypess() {
 		['app_sys', 0, 'ct_sys_do_render_type'],
 		['app_sys', 0, 'ct_sys_node_obj_icon'],
 		['app_sys', 0, 'ct_sys_node_obj_type'],
+		['app_sys', 0, 'ct_sys_overlay_node_type'],
 		['app_sys', 0, 'ct_sys_person_ethnicity'],
 		['app_sys', 0, 'ct_sys_person_gender'],
 		['app_sys', 0, 'ct_sys_person_race'],
@@ -134,12 +135,12 @@ async function initSysCodes() {
 		// ct_cm_course_cert
 		['ct_cm_course_cert', 'app_cm', 'Asbestos Abatement', 0],
 		['ct_cm_course_cert', 'app_cm', 'Lead Abatement', 0],
-		['ct_cm_course_cert', 'app_cm', 'OSHA 1', 1],
-		['ct_cm_course_cert', 'app_cm', 'OSHA 2', 2],
+		['ct_cm_course_cert', 'app_cm', 'OSHA 1', 0],
+		['ct_cm_course_cert', 'app_cm', 'OSHA 2', 0],
 
 		// ct_cm_course_exam
 		['ct_cm_course_exam', 'app_cm', 'Exam 1', 0],
-		['ct_cm_course_exam', 'app_cm', 'Exam 2', 1],
+		['ct_cm_course_exam', 'app_cm', 'Exam 2', 0],
 
 		// ct_cm_course_items_included
 		['ct_cm_course_items_included', 'app_cm', 'Fee: ACT Practice Exam', 0],
@@ -151,16 +152,16 @@ async function initSysCodes() {
 
 		// ct_cm_course_rqmt
 		['ct_cm_course_rqmt', 'app_cm', 'Min math score - 8th grade math', 0],
-		['ct_cm_course_rqmt', 'app_cm', 'Min reading score - 8th grade reading', 1],
+		['ct_cm_course_rqmt', 'app_cm', 'Min reading score - 8th grade reading', 0],
 
 		// ct_cm_course_sector
 		['ct_cm_course_sector', 'app_cm', 'Business and Finance', 0],
-		['ct_cm_course_sector', 'app_cm', 'Construction', 1],
-		['ct_cm_course_sector', 'app_cm', 'Food Preparation', 2],
-		['ct_cm_course_sector', 'app_cm', 'Hospitality', 3],
-		['ct_cm_course_sector', 'app_cm', 'Legal', 4],
-		['ct_cm_course_sector', 'app_cm', 'Personal Care and Services', 5],
-		['ct_cm_course_sector', 'app_cm', 'Transportation', 6],
+		['ct_cm_course_sector', 'app_cm', 'Construction', 0],
+		['ct_cm_course_sector', 'app_cm', 'Food Preparation', 0],
+		['ct_cm_course_sector', 'app_cm', 'Hospitality', 0],
+		['ct_cm_course_sector', 'app_cm', 'Legal', 0],
+		['ct_cm_course_sector', 'app_cm', 'Personal Care and Services', 0],
+		['ct_cm_course_sector', 'app_cm', 'Transportation', 0],
 
 		// db col - alignment
 		['ct_db_col_alignment', 'app_db', 'center', 0],
@@ -170,54 +171,56 @@ async function initSysCodes() {
 
 		// db col - data type
 		['ct_db_col_data_type', 'app_sys', 'bool', 0],
-		['ct_db_col_data_type', 'app_sys', 'date', 1],
-		['ct_db_col_data_type', 'app_sys', 'datetime', 2],
-		['ct_db_col_data_type', 'app_sys', 'file', 3],
-		['ct_db_col_data_type', 'app_sys', 'float64', 4],
-		['ct_db_col_data_type', 'app_sys', 'int16', 5],
-		['ct_db_col_data_type', 'app_sys', 'int32', 6],
-		['ct_db_col_data_type', 'app_sys', 'int64', 7],
-		['ct_db_col_data_type', 'app_sys', 'json', 8],
-		['ct_db_col_data_type', 'app_sys', 'link', 9],
-		['ct_db_col_data_type', 'app_sys', 'literal', 10],
-		['ct_db_col_data_type', 'app_sys', 'str', 11],
-		['ct_db_col_data_type', 'app_sys', 'uuid', 12],
+		['ct_db_col_data_type', 'app_sys', 'date', 0],
+		['ct_db_col_data_type', 'app_sys', 'datetime', 0],
+		['ct_db_col_data_type', 'app_sys', 'file', 0],
+		['ct_db_col_data_type', 'app_sys', 'float64', 0],
+		['ct_db_col_data_type', 'app_sys', 'int16', 0],
+		['ct_db_col_data_type', 'app_sys', 'int32', 0],
+		['ct_db_col_data_type', 'app_sys', 'int64', 0],
+		['ct_db_col_data_type', 'app_sys', 'json', 0],
+		['ct_db_col_data_type', 'app_sys', 'link', 0],
+		['ct_db_col_data_type', 'app_sys', 'literal', 0],
+		['ct_db_col_data_type', 'app_sys', 'str', 0],
+		['ct_db_col_data_type', 'app_sys', 'uuid', 0],
 
 		// db col - mask
 		['ct_db_col_mask', 'app_sys', 'currencyUs', 0],
-		['ct_db_col_mask', 'app_sys', 'ssn', 1],
-		['ct_db_col_mask', 'app_sys', 'telephone', 2],
+		['ct_db_col_mask', 'app_sys', 'ssn', 0],
+		['ct_db_col_mask', 'app_sys', 'telephone', 0],
 
 		// data obj - cardinality
 		['ct_sys_do_cardinality', 'app_sys', 'detail', 0],
-		['ct_sys_do_cardinality', 'app_sys', 'list', 1],
+		['ct_sys_do_cardinality', 'app_sys', 'list', 0],
 
 		// data obj - components
 		['ct_sys_do_component', 'app_sys', 'Home', 0],
-		['ct_sys_do_component', 'app_sys', 'FormDetail', 1],
-		['ct_sys_do_component', 'app_sys', 'FormList', 2],
+		['ct_sys_do_component', 'app_sys', 'FormDetail', 0],
+		['ct_sys_do_component', 'app_sys', 'FormList', 0],
 
 		// data obj field - access
 		['ct_sys_do_field_access', 'app_sys', 'optional', 0],
-		['ct_sys_do_field_access', 'app_sys', 'readOnly', 1],
-		['ct_sys_do_field_access', 'app_sys', 'required', 2],
+		['ct_sys_do_field_access', 'app_sys', 'readOnly', 0],
+		['ct_sys_do_field_access', 'app_sys', 'required', 0],
 
 		// data obj field - element
 		['ct_sys_do_field_element', 'app_sys', 'checkbox', 0],
-		['ct_sys_do_field_element', 'app_sys', 'custom', 1],
-		['ct_sys_do_field_element', 'app_sys', 'date', 2],
-		['ct_sys_do_field_element', 'app_sys', 'email', 3],
-		['ct_sys_do_field_element', 'app_sys', 'file', 4],
-		['ct_sys_do_field_element', 'app_sys', 'input', 5],
-		['ct_sys_do_field_element', 'app_sys', 'number', 6],
-		['ct_sys_do_field_element', 'app_sys', 'password', 7],
-		['ct_sys_do_field_element', 'app_sys', 'radio', 8],
-		['ct_sys_do_field_element', 'app_sys', 'select', 9],
-		['ct_sys_do_field_element', 'app_sys', 'tel', 10],
-		['ct_sys_do_field_element', 'app_sys', 'text', 11],
-		['ct_sys_do_field_element', 'app_sys', 'textArea', 12],
+		['ct_sys_do_field_element', 'app_sys', 'chips', 0],
+		['ct_sys_do_field_element', 'app_sys', 'custom', 0],
+		['ct_sys_do_field_element', 'app_sys', 'date', 0],
+		['ct_sys_do_field_element', 'app_sys', 'email', 0],
+		['ct_sys_do_field_element', 'app_sys', 'file', 0],
+		['ct_sys_do_field_element', 'app_sys', 'input', 0],
+		['ct_sys_do_field_element', 'app_sys', 'number', 0],
+		['ct_sys_do_field_element', 'app_sys', 'password', 0],
+		['ct_sys_do_field_element', 'app_sys', 'radio', 0],
+		['ct_sys_do_field_element', 'app_sys', 'select', 0],
+		['ct_sys_do_field_element', 'app_sys', 'tel', 0],
+		['ct_sys_do_field_element', 'app_sys', 'text', 0],
+		['ct_sys_do_field_element', 'app_sys', 'textArea', 0],
+		['ct_sys_do_field_element', 'app_sys', 'toggle', 0],
 
-		// data obj field - cusotm element type
+		// data obj field - custom element type
 		['ct_sys_do_field_element_custom_type', 'app_sys', 'button', 0],
 		['ct_sys_do_field_element_custom_type', 'app_sys', 'header', 0],
 		['ct_sys_do_field_element_custom_type', 'app_sys', 'link', 0],
@@ -226,40 +229,45 @@ async function initSysCodes() {
 
 		// data obj field - list direction
 		['ct_sys_do_field_list_dir', 'app_sys', 'asc', 0],
-		['ct_sys_do_field_list_dir', 'app_sys', 'desc', 1],
+		['ct_sys_do_field_list_dir', 'app_sys', 'desc', 0],
 
 		// data obj field - op
 		['ct_sys_do_field_op', 'app_sys', 'eq', 0],
 
 		// data obj field - source
 		['ct_sys_do_field_source', 'app_sys', 'calc', 0],
-		['ct_sys_do_field_source', 'app_sys', 'env', 1],
-		['ct_sys_do_field_source', 'app_sys', 'literal', 2],
-		['ct_sys_do_field_source', 'app_sys', 'parms', 3],
-		['ct_sys_do_field_source', 'app_sys', 'preset', 4],
-		['ct_sys_do_field_source', 'app_sys', 'retrieve', 5],
-		['ct_sys_do_field_source', 'app_sys', 'user', 6],
+		['ct_sys_do_field_source', 'app_sys', 'env', 0],
+		['ct_sys_do_field_source', 'app_sys', 'literal', 0],
+		['ct_sys_do_field_source', 'app_sys', 'parms', 0],
+		['ct_sys_do_field_source', 'app_sys', 'preset', 0],
+		['ct_sys_do_field_source', 'app_sys', 'retrieve', 0],
+		['ct_sys_do_field_source', 'app_sys', 'user', 0],
 
 		// data obj - render type
 		['ct_sys_do_render_type', 'app_sys', 'form', 0],
 
 		// node obj - icons
 		['ct_sys_node_obj_icon', 'app_cm', 'activities', 0],
-		['ct_sys_node_obj_icon', 'app_cm', 'goals', 1],
-		['ct_sys_node_obj_icon', 'app_cm', 'message', 2],
-		['ct_sys_node_obj_icon', 'app_cm', 'quote-enclosed', 3],
+		['ct_sys_node_obj_icon', 'app_cm', 'goals', 0],
+		['ct_sys_node_obj_icon', 'app_cm', 'message', 0],
+		['ct_sys_node_obj_icon', 'app_cm', 'quote-enclosed', 0],
 
-		['ct_sys_node_obj_icon', 'app_sys', 'application', 4],
-		['ct_sys_node_obj_icon', 'app_sys', 'root', 5],
+		['ct_sys_node_obj_icon', 'app_sys', 'application', 0],
+		['ct_sys_node_obj_icon', 'app_sys', 'root', 0],
 
 		// node obj - types
 		['ct_sys_node_obj_type', 'app_sys', 'header', 0],
-		['ct_sys_node_obj_type', 'app_sys', 'home', 1],
-		['ct_sys_node_obj_type', 'app_sys', 'object', 2],
-		['ct_sys_node_obj_type', 'app_sys', 'page', 3],
-		['ct_sys_node_obj_type', 'app_sys', 'program', 4],
-		['ct_sys_node_obj_type', 'app_sys', 'programObject', 5],
-		['ct_sys_node_obj_type', 'app_sys', 'treeRoot', 6],
+		['ct_sys_node_obj_type', 'app_sys', 'home', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'object', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'page', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'program', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'programObject', 0],
+		['ct_sys_node_obj_type', 'app_sys', 'treeRoot', 0],
+
+		// ct_sys_overlay_node_type
+		['ct_sys_overlay_node_type', 'app_sys', 'record', 0],
+		['ct_sys_overlay_node_type', 'app_sys', 'select', 0],
+		['ct_sys_overlay_node_type', 'app_sys', 'selectMulti', 0],
 
 		// sys - person - ethnicity
 		['ct_sys_person_ethnicity', 'app_sys', 'Hispanic-Latino', 0],
@@ -550,6 +558,14 @@ async function initColumns() {
 	})
 	await addColumn({
 		owner: 'app_sys',
+		codeDataType: 'bool',
+		header: 'custom_select_bool',
+		isExcludeInsert: true,
+		isExcludeUpdate: true,
+		name: 'custom_select_bool'
+	})
+	await addColumn({
+		owner: 'app_sys',
 		codeDataType: 'float64',
 		header: 'custom_select_float',
 		isExcludeInsert: true,
@@ -795,28 +811,28 @@ async function initColumns() {
 
 async function initTableColumns() {
 	await tableColumns([
-		['app_sys', 'SysUser', 'avatar'],
-		['app_sys', 'SysUser', 'favFood'],
-		['app_sys', 'SysUser', 'id'],
-		['app_sys', 'SysUser', 'createdAt'],
-		['app_sys', 'SysUser', 'createdBy'],
-		['app_sys', 'SysUser', 'modifiedAt'],
-		['app_sys', 'SysUser', 'modifiedBy'],
-		['app_sys', 'SysUser', 'userName']
+		['SysUser', 'avatar'],
+		['SysUser', 'favFood'],
+		['SysUser', 'id'],
+		['SysUser', 'createdAt'],
+		['SysUser', 'createdBy'],
+		['SysUser', 'modifiedAt'],
+		['SysUser', 'modifiedBy'],
+		['SysUser', 'userName']
 	])
 
 	await tableColumns([
-		['app_cm', 'CmClient', 'agencyId'],
-		['app_cm', 'CmClient', 'createdAt'],
-		['app_cm', 'CmClient', 'createdBy'],
-		['app_cm', 'CmClient', 'email'],
-		['app_cm', 'CmClient', 'firstName'],
-		['app_cm', 'CmClient', 'fullName'],
-		['app_cm', 'CmClient', 'id'],
-		['app_cm', 'CmClient', 'lastName'],
-		['app_cm', 'CmClient', 'modifiedAt'],
-		['app_cm', 'CmClient', 'modifiedBy'],
-		['app_cm', 'CmClient', 'note']
+		['CmClient', 'agencyId'],
+		['CmClient', 'createdAt'],
+		['CmClient', 'createdBy'],
+		['CmClient', 'email'],
+		['CmClient', 'firstName'],
+		['CmClient', 'fullName'],
+		['CmClient', 'id'],
+		['CmClient', 'lastName'],
+		['CmClient', 'modifiedAt'],
+		['CmClient', 'modifiedBy'],
+		['CmClient', 'note']
 	])
 }
 
@@ -894,7 +910,7 @@ async function initSysDataObjActions() {
 	})
 	await addDataObjAction({
 		allTabs: true,
-		color: 'bg-primary-300',
+		color: 'variant-ghost-primary',
 		owner: 'app_sys',
 		name: 'noa_back',
 		header: '< Back',
@@ -902,9 +918,15 @@ async function initSysDataObjActions() {
 	})
 	await addDataObjAction({
 		owner: 'app_sys',
-		name: 'noa_print',
-		header: 'Print',
+		name: 'noa_common_refresh',
+		header: 'Refresh',
 		order: 300
+	})
+	await addDataObjAction({
+		owner: 'app_sys',
+		name: 'noa_common_print',
+		header: 'Print',
+		order: 400
 	})
 }
 

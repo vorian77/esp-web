@@ -266,13 +266,9 @@ export async function tableColumns(data: any) {
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_db.SysTable, (t) => ({
-				filter: e.op(
-					e.op(t.owner.name, '=', e.cast(e.str, i[0])),
-					'and',
-					e.op(t.name, '=', e.cast(e.str, i[1]))
-				),
+				filter: e.op(t.name, '=', e.cast(e.str, i[0])),
 				set: {
-					columns: { '+=': e.select(e.sys_db.getColumn(e.cast(e.str, i[2]))) }
+					columns: { '+=': e.select(e.sys_db.getColumn(e.cast(e.str, i[1]))) }
 				}
 			}))
 		})
@@ -343,60 +339,38 @@ export async function addRoleStaff(params: any) {
 	return await query.run(client, { data: params })
 }
 
-export async function resetDB() {
-	let query = ''
-	const tables: Array<string> = []
+export function sectionHeader(section: string) {
+	console.log()
+	console.log(`--- ${section} ---`)
+}
 
-	// addStatement('UPDATE sys_user::SysUser SET { modifiedBy := sys_user::getRootUser()}')
-
-	// tables in delete order
-	tables.push('app_cm::CmCsfCertification')
-	tables.push('app_cm::CmCsfCohortAttd')
-	tables.push('app_cm::CmCsfCohort')
-	tables.push('app_cm::CmCsfNote')
-	tables.push('app_cm::CmClientServiceFlow')
-	tables.push('app_cm::CmClient')
-
-	tables.push('app_cm::CmCohort')
-	tables.push('app_cm::CmCourse')
-	tables.push('app_cm::CmServiceFlow')
-
-	tables.push('sys_core::SysNodeObj')
-
-	tables.push('sys_core::SysDataObj')
-	tables.push('sys_core::SysDataObjFieldItemsDb')
-	tables.push('sys_core::SysDataObjTable')
-	tables.push('sys_core::SysObjConfig')
-
-	tables.push('sys_db::SysTable')
-	tables.push('sys_db::SysColumn')
-	tables.push('sys_core::SysDataObjAction')
-	tables.push('sys_user::SysWidget')
-	tables.push('sys_user::SysUserType')
-
-	tables.push('sys_user::SysStaff')
-
-	tables.push('sys_user::SysUser')
-
-	tables.push('sys_core::SysCode')
-	tables.push('sys_core::SysCodeType')
-
-	tables.push(`default::SysPerson filter .firstName not in  {"Root", "System"}`)
-
-	tables.push('sys_core::SysObj')
-	tables.push('sys_user::UserRoot')
-	tables.push('sys_core::ObjRoot')
-
-	tables.forEach((t) => {
-		addStatement('delete ' + t)
-	})
-
-	function addStatement(statement: string) {
-		if (query) query += ' '
-		query += statement + ';'
+export class ResetDb {
+	owner: string
+	query: string
+	constructor(owner: string = '') {
+		this.owner = owner
+		this.query = ''
+		console.log('ResetDb.constructor...')
 	}
-
-	await execute(query)
-
-	console.log('DB reset complete...')
+	addStatement(statement: string) {
+		this.query += statement + ';\n'
+	}
+	addDataObj(dataObj: string) {
+		const filter = this.owner ? `AND .owner.name = '${this.owner}'` : ''
+		this.addStatement(`DELETE sys_core::SysDataObj FILTER .name = '${dataObj}' ${filter}`)
+	}
+	addNode(node: string) {
+		const filter = this.owner ? `AND .owner.name = '${this.owner}'` : ''
+		this.addStatement(`DELETE sys_core::SysNodeObj FILTER .name = '${node}' ${filter}`)
+	}
+	addTable(table: string) {
+		const filter = this.owner ? `FILTER .owner.name = '${this.owner}'` : ''
+		this.addStatement(`DELETE ${table} ${filter}`)
+	}
+	async execute() {
+		sectionHeader('Reset DB')
+		console.log(this.query)
+		await execute(this.query)
+		this.query = ''
+	}
 }

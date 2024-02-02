@@ -113,6 +113,7 @@ module sys_core {
     items: array<json>;
     itemsDb: sys_core::SysDataObjFieldItemsDb;
     itemsDbParms: json;
+    overlayNode: sys_core::SysOverlayNode;
     width: int16;
   }
 
@@ -182,6 +183,14 @@ module sys_core {
     constraint exclusive on (.name);
   }
 
+  type SysOverlayNode extending sys_core::SysObj {
+    btnLabelComplete: str;
+    required codeType: sys_core::SysCode;
+    required dataObj: sys_core::SysDataObj;
+    required exprDisplay: str;
+    constraint exclusive on (.name);
+ }
+
   # FUNCTIONS
   function getRootObj() -> optional sys_core::ObjRoot
     using (select assert_single((select sys_core::ObjRoot filter .name = '*ROOTOBJ*')));
@@ -215,6 +224,9 @@ module sys_core {
   function getNodeObjById(nodeObjId: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .id = <uuid>nodeObjId);     
 
+   function getOverlayNode(overlayNodeName: str) -> optional sys_core::SysOverlayNode
+    using (select sys_core::SysOverlayNode filter .name = overlayNodeName);
+    
   function isObjectLink(objName: str, linkName: str) -> optional bool
     using (select count(schema::ObjectType filter .name = objName and .links.name = linkName) > 0);     
 

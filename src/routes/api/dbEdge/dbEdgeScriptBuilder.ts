@@ -11,7 +11,6 @@ import {
 import { DataObjCardinality } from '$comps/types'
 import type { DataObjRaw, DataObjRecord } from '$comps/types'
 import { TokenApiQueryData, type TokenApiQueryDataValue, TokenApiQueryType } from '$lib/api'
-// import { DataObjTables } from '$comps/dataObj/dbScriptDataObjTable'
 import { Tree } from '$utils/utils.tree'
 import { error } from '@sveltejs/kit'
 
@@ -204,7 +203,13 @@ class DataObjTables {
 		const queryOrder = this.queryScriptOrder()
 
 		const script =
-			'SELECT ' + this.getDbTableRoot() + ' {' + querySelectItems + '} ' + queryFilter + queryOrder
+			'SELECT ' +
+			this.getDbTableRoot() +
+			' { ' +
+			querySelectItems +
+			' } ' +
+			queryFilter +
+			queryOrder
 		this.logScript('select', script)
 		return script
 	}
@@ -523,9 +528,7 @@ class DataObjTableScript {
 		this.script = Object.hasOwn(obj, 'script') ? obj.script : this.script
 	}
 	addItemField(item: string) {
-		if (!item) return
-		if (this.itemsField) this.itemsField += ', '
-		this.itemsField += item
+		this.itemsField = this.concat(this.itemsField, item, ', ')
 	}
 	addItemOrder(item: string, direction: string, order: number) {
 		if (this.exprOrder) return
@@ -550,8 +553,7 @@ class DataObjTableScript {
 		return this.concat(val1, val2, ', ')
 	}
 	concatItemsField(script: DataObjTableScript) {
-		if (this.itemsField) this.itemsField += ', '
-		this.itemsField += script.itemsField
+		this.itemsField = this.concatComma(this.itemsField, script.itemsField)
 	}
 	concatItemsOrder(script: DataObjTableScript) {
 		script.itemsOrder.forEach((item) => {

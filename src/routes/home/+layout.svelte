@@ -24,7 +24,7 @@
 		type ModalSettings,
 		type ToastSettings
 	} from '@skeletonlabs/skeleton'
-	import NavApp from '$comps/nav/NavApp.svelte'
+	import Form from '$comps/form/Form.svelte'
 	import NavHome from '$comps/nav/NavHome.svelte'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
@@ -141,10 +141,10 @@
 		drawerStore.open(settings)
 	}
 	function goHome() {
-		alert('goHome')
 		goto('/home')
 	}
 	async function askB4Transition(obj: any, confirm: TokenAppDoDetailConfirm) {
+		console.log('askB4Transition:', { obj, confirm })
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: confirm.title,
@@ -220,7 +220,7 @@
 			{#if state?.nodeType === NodeType.home}
 				<NavHome />
 			{:else}
-				<NavApp {state} />
+				<Form {state} />
 			{/if}
 		{:else}
 			<slot />

@@ -10,6 +10,7 @@
 	import type { State } from '$comps/nav/types.appState'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
 	import DataObjActionsFooter from '$comps/dataObj/DataObjActionsFooter.svelte'
+	import FormElChips from '$comps/form/FormElChips.svelte'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
 	import FormElFile from '$comps/form/FormElFile.svelte'
 	import FormElInp from '$comps/form/FormElInp.svelte'
@@ -18,8 +19,8 @@
 	import FormElSelect from '$comps/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/form/FormElTextarea.svelte'
 	import FormElToggle from '$comps/form/FormElToggle.svelte'
-	import type { FieldItem } from '$comps/form/field'
 	import { FieldCheckbox } from '$comps/form/fieldCheckbox'
+	import { FieldChips } from '$comps/form/fieldChips'
 	import { FieldCustom } from '$comps/form/fieldCustom'
 	import { FieldFile } from '$comps/form/fieldFile'
 	import { FieldInput } from '$comps/form/fieldInput'
@@ -36,6 +37,8 @@
 	export let state: State
 	export let dataObj: DataObj
 	export let dataObjData: DataObjData
+
+	let list: string[] = ['id', 'name', 'description', 'status', 'created_at', 'updated_at']
 
 	$: loadData(dataObjData)
 
@@ -93,6 +96,8 @@
 				<div class:mt-3={idx}>
 					{#if field instanceof FieldCheckbox}
 						<FormElInpCheckbox {field} on:changeItem={onChangeItem} />
+					{:else if field instanceof FieldChips}
+						<FormElChips {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldCustom}
 						<FormElCustom bind:field {state} data={dataObj.objData.getData()} />
 					{:else if field instanceof FieldFile}

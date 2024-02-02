@@ -1,4 +1,4 @@
-import { resetDB } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { ResetDb } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import initCore from '$server/dbEdge/init/dbEdgeInitCore'
 import initSysAuth from '$server/dbEdge/init/dbEdgeInitSysAuth'
@@ -12,21 +12,19 @@ import { getDataObjByName, queryMultiple, querySingle } from '$routes/api/dbEdge
 import { getDataObjId, getDataObjById } from '$routes/api/dbEdge/dbEdgeUtilities'
 
 const FILE = '/server/dbEdge/init'
-const load = 1
+const load = false
 
 export async function init() {
 	if (load) {
-		console.log('dbEdgeInit...')
-		await resetDB()
+		await reset()
 		await initCore()
 		await initSysAuth()
 		await initCMTraining()
 		await initCMStudent()
 		await initResources()
-		// await initCMDataAI()
+		await initCMDataAI()
 		// await initCMDataMOED()
 		// await reviewDO()
-		// await initReviewQuery()
 		await initSysAdmin()
 	}
 }
@@ -72,4 +70,52 @@ async function initReviewQuery() {
 	//let reviewQuery = ''
 	// reviewQuery = `select sys_core::ObjRoot {**} filter .name = 'root' order by .name`
 	//await review(FILE, reviewQuery)
+}
+
+async function reset() {
+	const resetDb = new ResetDb()
+
+	resetDb.addStatement('UPDATE sys_user::SysUser SET { modifiedBy := sys_user::getRootUser()}')
+
+	resetDb.addTable('app_cm::CmCsfCertification')
+	resetDb.addTable('app_cm::CmCsfCohortAttd')
+	resetDb.addTable('app_cm::CmCsfCohort')
+	resetDb.addTable('app_cm::CmCsfNote')
+	resetDb.addTable('app_cm::CmClientServiceFlow')
+	resetDb.addTable('app_cm::CmClient')
+
+	resetDb.addTable('app_cm::CmCohort')
+	resetDb.addTable('app_cm::CmCourse')
+	resetDb.addTable('app_cm::CmServiceFlow')
+
+	resetDb.addTable('sys_core::SysNodeObj')
+
+	resetDb.addStatement(`UPDATE sys_core::SysDataObjColumn SET { overlayNode := {} }`)
+	resetDb.addTable('sys_core::SysOverlayNode')
+
+	resetDb.addTable('sys_core::SysDataObj')
+	resetDb.addTable('sys_core::SysDataObjFieldItemsDb')
+	resetDb.addTable('sys_core::SysDataObjTable')
+	resetDb.addTable('sys_core::SysObjConfig')
+
+	resetDb.addTable('sys_db::SysTable')
+	resetDb.addTable('sys_db::SysColumn')
+	resetDb.addTable('sys_core::SysDataObjAction')
+	resetDb.addTable('sys_user::SysWidget')
+	resetDb.addTable('sys_user::SysUserType')
+
+	resetDb.addTable('sys_user::SysStaff')
+
+	resetDb.addTable('sys_user::SysUser')
+
+	resetDb.addTable('sys_core::SysCode')
+	resetDb.addTable('sys_core::SysCodeType')
+
+	resetDb.addStatement(`DELETE default::SysPerson FILTER .firstName not in  {"Root", "System"}`)
+
+	resetDb.addTable('sys_core::SysObj')
+	resetDb.addTable('sys_user::UserRoot')
+	resetDb.addTable('sys_core::ObjRoot')
+
+	await resetDb.execute()
 }

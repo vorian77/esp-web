@@ -1,14 +1,11 @@
 <script lang="ts">
 	import '../app.postcss'
 
-	// initialize stores
-	import { initializeStores } from '@skeletonlabs/skeleton'
-	initializeStores()
-
 	// overlays
-	import OverlayDrawer from '$comps/OverlayDrawer.svelte'
-	import OverlayModal from '$comps/OverlayModal.svelte'
-	import { Toast } from '@skeletonlabs/skeleton'
+	import OverlayDrawer from '$comps/Overlay/OverlayDrawer.svelte'
+	import OverlayModal from '$comps/Overlay/OverlayModal.svelte'
+	import { Toast, initializeStores } from '@skeletonlabs/skeleton'
+	initializeStores()
 
 	// popup
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom'

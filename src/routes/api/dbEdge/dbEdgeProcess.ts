@@ -44,6 +44,8 @@ export async function processQuery(token: TokenApiQuery) {
 	let rawDataList: RawDataList = []
 	let script = ''
 
+	console.log('processQuery.queryType:', token.queryType)
+
 	switch (token.queryType) {
 		case TokenApiQueryType.delete:
 			dataRowStatus = DataObjRecordStatus.deleted
@@ -148,6 +150,8 @@ async function processDataPost(
 ) {
 	// console.log('processDataPost.rawDataList:', { rawDataList })
 	const dataRows: DataObjRecordRowList = []
+
+	console.log('processDataPost.rawDataList:', { rows: rawDataList.length, row0: rawDataList[0] })
 
 	if (rawDataList.length === 0) {
 		if (dataObj.cardinality === DataObjCardinality.list) {
