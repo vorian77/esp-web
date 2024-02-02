@@ -291,7 +291,7 @@ export class OverlayNode {
 	codeType: OverlayNodeType
 	data: OverlayNodeData = []
 	dataObjName: string
-	exprDisplay: string
+	exprDisplay?: string
 	exprDisplayFields: string[] = []
 	constructor(obj: any) {
 		const clazz = 'OverlayNode'
@@ -305,9 +305,10 @@ export class OverlayNode {
 		)
 		this.btnLabelComplete = obj.btnLabelComplete ? obj.btnLabelComplete : 'Complete'
 		this.dataObjName = strRequired(obj._dataObjName, clazz, 'dataObj')
-		this.exprDisplay = strRequired(obj.exprDisplay, clazz, 'exprDisplay')
-		this.exprDisplayFields =
-			this.exprDisplay.match(/<([^>]*)>/g)?.map((f) => f.slice(1, f.length - 1)) || []
+		this.exprDisplay = strOptional(obj.exprDisplay, clazz, 'exprDisplay')
+		this.exprDisplayFields = this.exprDisplay
+			? this.exprDisplay.match(/<([^>]*)>/g)?.map((f) => f.slice(1, f.length - 1)) || []
+			: []
 	}
 	setSelected(dataList: DataObjListRecord, selected: any) {
 		let data: OverlayNodeData = []
