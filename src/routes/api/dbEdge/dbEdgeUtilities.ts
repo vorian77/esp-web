@@ -106,11 +106,12 @@ export async function getDataObjById(dataObjId: string) {
 					exprSelect: true,
 					name: true
 				})),
-				_overlayNode: e.select(f.overlayNode, (on) => ({
-					_codeType: on.codeType.name,
-					_dataObjName: on.dataObj.name,
+				_overlayNodeFieldItems: e.select(f.overlayNodeFieldItems, (i) => ({
 					btnLabelComplete: true,
-					exprDisplay: true,
+					columnLabelDisplay: true,
+					header: true,
+					headerSub: true,
+					isMultiSelect: true,
 					name: true
 				})),
 				customElement: true,

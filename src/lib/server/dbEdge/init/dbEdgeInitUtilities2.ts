@@ -257,15 +257,17 @@ export async function addDataObj(data: any) {
 						items: e.cast(e.array(e.json), e.json_get(f, 'items')),
 
 						itemsDb: e.select(
-							e.sys_core.getDataObjFieldItemsDb(e.cast(e.str, e.json_get(f, 'itemsDb')))
+							e.sys_core.getDataObjFieldItems(e.cast(e.str, e.json_get(f, 'itemsDb')))
 						),
 
 						itemsDbParms: e.cast(e.json, e.json_get(f, 'itemsDbParms')),
 
 						nameCustom: e.cast(e.str, e.json_get(f, 'nameCustom')),
 
-						overlayNode: e.select(
-							e.sys_core.getOverlayNode(e.cast(e.str, e.json_get(f, 'overlayNode')))
+						overlayNodeFieldItems: e.select(
+							e.sys_core.getOverlayNodeFieldItems(
+								e.cast(e.str, e.json_get(f, 'overlayNodeFieldItems'))
+							)
 						),
 
 						width: e.cast(e.int16, e.json_get(f, 'width'))
@@ -326,7 +328,7 @@ export async function addDataObjAction(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addDataObjFieldItemsDb(data: any) {
+export async function addDataObjFieldItems(data: any) {
 	const query = e.params(
 		{
 			codeDataTypeDisplay: e.optional(e.str),
@@ -336,7 +338,7 @@ export async function addDataObjFieldItemsDb(data: any) {
 			owner: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.SysDataObjFieldItemsDb, {
+			return e.insert(e.sys_core.SysDataObjFieldItems, {
 				codeDataTypeDisplay: e.sys_core.getCode('ct_db_col_data_type', p.codeDataTypeDisplay),
 				codeMask: e.sys_core.getCode('ct_db_col_mask', p.codeMask),
 				createdBy: e.select(e.sys_user.getRootUser()),
@@ -429,24 +431,25 @@ export async function addOrg(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addOverlayNode(data: any) {
+export async function addOverlayNodeFieldItems(data: any) {
 	const query = e.params(
 		{
-			btnLabelComplete: e.optional(e.str),
-			codeType: e.str,
-			dataObj: e.str,
-			exprDisplay: e.str,
-			isMultiSelect: e.optional(e.bool),
+			btnLabelComplete: e.str,
+			columnLabelDisplay: e.str,
+			header: e.str,
+			headerSub: e.optional(e.str),
+			isMultiSelect: e.bool,
 			name: e.str,
 			owner: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.SysOverlayNode, {
+			return e.insert(e.sys_core.SysOverlayNodeFieldItems, {
 				btnLabelComplete: p.btnLabelComplete,
-				codeType: e.select(e.sys_core.getCode('ct_sys_overlay_node_type', p.codeType)),
+				columnLabelDisplay: p.columnLabelDisplay,
 				createdBy: e.select(e.sys_user.getRootUser()),
-				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
-				exprDisplay: p.exprDisplay,
+				header: p.header,
+				headerSub: p.headerSub,
+				isMultiSelect: p.isMultiSelect,
 				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,
 				owner: e.select(e.sys_core.getEnt(p.owner))

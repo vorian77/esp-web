@@ -46,7 +46,7 @@
 			</div>
 		</div>
 		{#if dataObj.subHeader}
-			<h4 class="h4 text-gray-500">{dataObj.subHeader}</h4>
+			<h4 class="h4 ml-2 text-gray-500">{dataObj.subHeader}</h4>
 		{/if}
 	{:else if state.nodeType === NodeType.programObject}
 		{#if dataObj.subHeader}

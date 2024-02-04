@@ -266,7 +266,7 @@ export class AppLevelTab {
 			return new AppLevelRowStatus(currLength, this.currRow)
 	}
 	getTable() {
-		return this.dataObj?.table.name
+		return this.dataObj?.table?.name
 	}
 	reset() {
 		this.isRetrieved = false

@@ -268,11 +268,12 @@ export interface FieldRaw {
 		exprSelect: string
 		name: string
 	}
-	_overlayNode: {
-		_codeType: string
-		_dataObjName: string
-		btnLabelComplete?: string
-		exprDisplay: string
+	_overlayNodeFieldItems: {
+		btnLabelComplete: string
+		columnLabelDisplay: string
+		header: string
+		headerSub: string
+		isMultiSelect: boolean
 		name: string
 	}
 	customElement: FieldCustomRaw
@@ -287,49 +288,47 @@ export interface FieldRaw {
 }
 
 export class OverlayNode {
-	btnLabelComplete: string
-	codeType: OverlayNodeType
-	data: OverlayNodeData = []
-	dataObjName: string
-	exprDisplay?: string
-	exprDisplayFields: string[] = []
+	btnLabelComplete?: string
 	constructor(obj: any) {
 		const clazz = 'OverlayNode'
 		obj = valueOrDefault(obj, {})
-		this.codeType = memberOfEnum(
-			obj._codeType,
-			clazz,
-			'codeType',
-			'OverlayNodeType',
-			OverlayNodeType
-		)
-		this.btnLabelComplete = obj.btnLabelComplete ? obj.btnLabelComplete : 'Complete'
-		this.dataObjName = strRequired(obj._dataObjName, clazz, 'dataObj')
-		this.exprDisplay = strOptional(obj.exprDisplay, clazz, 'exprDisplay')
-		this.exprDisplayFields = this.exprDisplay
-			? this.exprDisplay.match(/<([^>]*)>/g)?.map((f) => f.slice(1, f.length - 1)) || []
-			: []
-	}
-	setSelected(dataList: DataObjListRecord, selected: any) {
-		let data: OverlayNodeData = []
-		dataList.forEach((row: any) => {
-			if (selected.includes(row.id)) {
-				let display = this.exprDisplay
-				this.exprDisplayFields.forEach((field) => {
-					display = display.replace(`<${field}>`, row[field])
-				})
-				data.push({ data: row.id, display })
-			}
-		})
-		this.data = data
+		this.btnLabelComplete = strOptional(obj.btnLabelComplete, clazz, 'btnLabelComplete')
 	}
 }
 
-export type OverlayNodeData = { data: string; display: any }[]
+export class OverlayNodeFieldItems extends OverlayNode {
+	columnLabelDisplay: string
+	header: string
+	headerSub?: string
+	isMultiSelect: boolean
+	itemsList: Array<FieldItem> = []
+	itemsSelected: string[] = []
+	constructor(obj: any) {
+		const clazz = 'OverlayNodeFieldItems'
+		super(obj)
+		this.columnLabelDisplay = strRequired(obj.columnLabelDisplay, clazz, 'columnLabelDisplay')
+		this.header = strRequired(obj.header, clazz, 'header')
+		this.headerSub = strOptional(obj.headerSub, clazz, 'headerSub')
+		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
+	}
+	setSelected(selected: string[]) {
+		this.itemsSelected = selected
+	}
+	getItemsDisplay() {
+		let items: Array<FieldItem> = []
+		this.itemsList.forEach((item) => {
+			if (this.itemsSelected.includes(item.data)) items.push(item)
+		})
+		return items
+	}
+}
 
-export enum OverlayNodeType {
-	'none' = 'none',
-	'record' = 'record',
-	'select' = 'select',
-	'selectMulti' = 'selectMulti'
+export class OverlayNodeRecord extends OverlayNode {
+	dataObjName: string
+	recordSubmitted: Record<string, any> = {}
+	constructor(obj: any) {
+		const clazz = 'OverlayNodeRecord'
+		super(obj)
+		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
+	}
 }

@@ -9,9 +9,9 @@ import {
 import {
 	addColumn,
 	addDataObj,
-	addDataObjFieldItemsDb,
+	addDataObjFieldItems,
 	addNodeProgramObj,
-	addOverlayNode
+	addOverlayNodeFieldItems
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import initSysAdminReports from '$server/dbEdge/init/dbEdgeInitSysAdminReports'
 
@@ -30,7 +30,7 @@ async function initAdmin() {
 	await initDataObjFieldItems()
 	await initColumns()
 	await initTableColumns()
-	await initOverlayNodes()
+	await initOverlayNodeFieldItems()
 	await initDataObjs()
 	await initResources()
 }
@@ -48,7 +48,7 @@ async function initCore() {
 		['app_sys_admin', 'sys_core', 'SysDataObj', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjAction', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjColumn', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjFieldItemsDb', true],
+		['app_sys_admin', 'sys_core', 'SysDataObjFieldItems', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjFieldLink', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjFieldLinkJoin', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjTable', true],
@@ -1566,7 +1566,7 @@ async function initTable() {
 				indexTable: '0',
 				itemsDb: 'il_sys_table_column_order_name',
 				link: { table: { module: 'sys_db', name: 'SysColumn' } },
-				overlayNode: 'overlay_node_select_multi_sys_column'
+				overlayNodeFieldItems: 'overlay_node_field_items_sys_column'
 			},
 			{
 				codeElement: 'toggle',
@@ -1973,14 +1973,14 @@ export async function reset() {
 		`UPDATE sys_user::SysUserType FILTER .name = 'ut_sys_amin' SET { resources -= (SELECT sys_core::getNodeObjByName('node_pgm_sys_admin')) }`
 	)
 
-	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { overlayNode := {} }`)
-	reset.addTable('sys_core::SysOverlayNode')
+	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { overlayNodeFieldItems := {} }`)
+	reset.addTable('sys_core::SysOverlayNodeFieldItems')
 
 	reset.addTable('sys_core::SysNodeObj')
 	reset.addTable('sys_core::SysDataObj')
 
 	reset.addTable('sys_core::SysDataObjAction')
-	reset.addTable('sys_core::SysDataObjFieldItemsDb')
+	reset.addTable('sys_core::SysDataObjFieldItems')
 
 	reset.addTable('sys_core::SysObjConfig')
 
@@ -2188,77 +2188,43 @@ async function initConfig() {
 	})
 }
 
-async function initOverlayNodes() {
-	sectionHeader('OverlayNodes')
-	await initOverlayNodeSelectMultiColumn()
+async function initOverlayNodeFieldItems() {
+	sectionHeader('OverlayNodeFieldItems')
 
-	async function initOverlayNodeSelectMultiColumn() {
-		await addDataObj({
-			codeCardinality: 'list',
-			codeComponent: 'FormList',
-			exprFilter: 'none',
-			header: 'Select Columns(s)',
-			name: 'data_obj_overlay_node_select_multi_sys_column',
-			owner: 'app_sys_admin',
-			tables: [{ index: '0', table: 'SysColumn' }],
-			fields: [
-				{
-					codeAccess: 'readOnly',
-					columnName: 'id',
-					dbOrderSelect: 10,
-					indexTable: '0',
-					isDisplay: true
-				},
-				{
-					codeAccess: 'readOnly',
-					columnName: 'name',
-					dbOrderList: 10,
-					dbOrderSelect: 20,
-					indexTable: '0'
-				},
-				{
-					codeAccess: 'readOnly',
-					columnName: 'codeDataType',
-					dbOrderSelect: 30,
-					indexTable: '0',
-					link: { columnsDisplay: ['name'] }
-				}
-			]
-		})
-	}
-	await addOverlayNode({
+	await addOverlayNodeFieldItems({
 		btnLabelComplete: 'Select Columns',
-		codeType: 'selectMulti',
-		dataObj: 'data_obj_overlay_node_select_multi_sys_column',
-		exprDisplay: '<name> (<codeDataType>)',
-		name: 'overlay_node_select_multi_sys_column',
+		columnLabelDisplay: 'Column',
+		header: 'Select Columns',
+		headerSub: 'Columns associated with the selected table.',
+		isMultiSelect: true,
+		name: 'overlay_node_field_items_sys_column',
 		owner: 'app_sys_admin'
 	})
 }
 
 async function initDataObjFieldItems() {
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect:
 			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.id = <uuid,tree,SysCodeType.id> ORDER BY .name',
 		name: 'il_sys_code_order_name_by_codeType_id',
 		owner: 'app_sys_admin'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect: 'SELECT sys_core::SysCodeType {data := .id, display := .name} ORDER BY .name',
 		name: 'il_sys_codeType_order_name',
 		owner: 'app_sys_admin'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect: 'SELECT sys_core::SysDataObj {data := .id, display := .name} ORDER BY .name',
 		name: 'il_sys_data_obj_order_name',
 		owner: 'app_sys_admin'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect: 'SELECT sys_core::SysNodeObj {data := .id, display := .name} ORDER BY .name',
 		name: 'il_sys_node_obj_order_name',
 		owner: 'app_sys_admin'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect: 'SELECT sys_db::SysColumn {data := .id, display := .name} ORDER BY .name',
 		name: 'il_sys_table_column_order_name',
 		owner: 'app_sys_admin'

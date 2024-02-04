@@ -4,7 +4,7 @@
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { userInit } from '$comps/types'
 	import { apiFetch, ApiFunction, TokenApiUserName } from '$lib/api'
-	import { OverlayNode } from '$comps/form/field'
+	import { OverlayNodeRecord } from '$comps/form/field'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -31,7 +31,7 @@
 			id: 'auth',
 			position: 'bottom',
 			height: 'h-[50%]',
-			meta: { overlayNode: new OverlayNode({ _dataObjName: dataObjName, _codeType: 'record' }) }
+			meta: { overlayNodeRecord: new OverlayNodeRecord({ dataObjName }) }
 		}
 		drawerStore.open(settings)
 	}

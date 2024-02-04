@@ -1,4 +1,5 @@
 import {
+	DataFieldDataType,
 	getArray,
 	memberOfEnum,
 	memberOfEnumOrDefault,
@@ -13,8 +14,7 @@ import {
 	Validity,
 	ValidityError,
 	ValidityErrorLevel,
-	ValidityField,
-	DataFieldDataType
+	ValidityField
 } from '$comps/types'
 import {
 	type Field,
@@ -61,7 +61,7 @@ export class DataObj {
 	name: string
 	orderItems: DataObjListOrder
 	subHeader: string
-	table: Table
+	table?: Table
 
 	constructor(dataObjRaw: DataObjRaw) {
 		const clazz = 'DataObj'
@@ -92,7 +92,10 @@ export class DataObj {
 		this.name = strRequired(dataObjRaw.name, clazz, 'name')
 		this.actionsQueryRaw = this.initActionsQueryRaw(dataObjRaw.actionsQuery)
 		this.subHeader = valueOrDefault(dataObjRaw.subHeader, '')
-		this.table = new Table(dataObjRaw._tables[0]._table)
+		this.table =
+			dataObjRaw._tables && dataObjRaw._tables.length > 0
+				? new Table(dataObjRaw._tables[0]._table)
+				: undefined
 	}
 	initActionsQueryRaw(actionsQueryRaw: any) {
 		actionsQueryRaw = getArray(actionsQueryRaw)
@@ -404,7 +407,6 @@ export class DataObjData {
 			this.dataObjRow = Array.isArray(data) ? data[0] : data
 			this.dataObjRowList = []
 		} else {
-			// console.log('DataObjData.constructor.list:', data)
 			this.dataObjRowList = data
 			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {}, {})
 		}
@@ -473,30 +475,30 @@ export enum DataObjProcessType {
 }
 
 export interface DataObjRaw {
-	_actionsField: any
+	_actionsField?: any
 	_codeCardinality: string
 	_codeComponent: string
 	_fieldsEl: any
-	_fieldsElCrumb: any
-	_fieldsDbFilter: any
-	_fieldsDbOrder: any
-	_fieldsDbPreset: any
-	_fieldsDbSaveInsert: any
-	_fieldsDbSaveUpdate: any
-	_fieldsDbSelectSys: any
-	_fieldsDbSelectUser: any
-	_tables: any
-	_updateTables: Array<any>
-	actionsQuery: Array<ActionQuery>
-	description: string | null
-	exprFilter: string | null
-	exprObject: string | null
+	_fieldsElCrumb?: any
+	_fieldsDbFilter?: any
+	_fieldsDbOrder?: any
+	_fieldsDbPreset?: any
+	_fieldsDbSaveInsert?: any
+	_fieldsDbSaveUpdate?: any
+	_fieldsDbSelectSys?: any
+	_fieldsDbSelectUser?: any
+	_tables?: any
+	_updateTables?: Array<any>
+	actionsQuery?: Array<ActionQuery>
+	description?: string | null
+	exprFilter?: string | null
+	exprObject?: string | null
 	header: string | null
-	id: string
+	id?: string
 	isPopup: boolean | null
-	link: any
+	link?: any
 	name: string
-	subHeader: string | null
+	subHeader?: string | null
 }
 
 export type DataObjRecord = Record<string, any>

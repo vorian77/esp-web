@@ -6,38 +6,43 @@
 	import { createEventDispatcher } from 'svelte'
 
 	const dispatch = createEventDispatcher()
-	const dispatchType = 'changeItem'
 
 	const modalStore = getModalStore()
 
 	export let field: FieldChips
 
-	let valuesDisplay: any[] = field.valueCurrent
+	$: {
+		field.overlayNodeFieldItems.itemsSelected = field.valueCurrent
+		field.overlayNodeFieldItems.itemsList = field.items
+	}
 
 	function add() {
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalForm',
-				meta: { overlayNode: field.overlayNode },
+				component: 'overlayModalItems',
+				meta: { overlayNodeFieldItems: field.overlayNodeFieldItems },
 				response: (r: any) => {
 					resolve(r)
 				}
 			}
 			modalStore.trigger(modal)
 		}).then((response) => {
-			field.overlayNode = response
-			valuesDisplay = field.overlayNode.data.map((i) => i.display)
-
-			const valuesData = field.overlayNode.data.map((i) => i.data)
-			dispatch(dispatchType, { fieldName: field.name, value: valuesData })
-			console.log('FormElChips.values: ', { valuesDisplay, valuesData })
+			field.overlayNodeFieldItems.itemsSelected = response
+			setValue(field.overlayNodeFieldItems.itemsSelected)
 		})
 	}
 
-	function remove(i: number) {
-		console.log('remove...')
-		valuesDisplay = valuesDisplay.slice(0, i).concat(valuesDisplay.slice(i + 1))
+	function remove(dataValue: string) {
+		const idx = field.overlayNodeFieldItems.itemsSelected.findIndex((item) => item === dataValue)
+		if (idx > -1) {
+			field.overlayNodeFieldItems.itemsSelected.splice(idx, 1)
+			setValue(field.overlayNodeFieldItems.itemsSelected)
+		}
+	}
+
+	function setValue(value: string[]) {
+		dispatch('changeItem', { fieldName: field.name, value })
 	}
 </script>
 
@@ -52,26 +57,11 @@
 
 <div class="border-2 border-solid rounded-lg mt-2 p-2 min-h-11">
 	<div class="flex flex-wrap items-center gap-2">
-		{#each valuesDisplay as item, i}
-			<button class="chip variant-filled-primary text-base" on:click={() => remove(i)}>
-				<span>{item}</span>
+		{#each field.overlayNodeFieldItems.getItemsDisplay() as item}
+			<button class="chip variant-filled-primary text-base" on:click={() => remove(item.data)}>
+				<span>{item.display}</span>
 				<span>x</span>
 			</button>
 		{/each}
 	</div>
 </div>
-
-<!-- <textarea
-	id={field.name}
-	name={field.name}
-	rows={field.rows}
-	cols={field.cols}
-	hidden={field.access == FieldAccess.hidden}
-	readonly={field.access == FieldAccess.readonly}
-	class={classValue}
-	class:input-warning={field.validity.level == ValidityErrorLevel.warning}
-	class:input-error={field.validity.level == ValidityErrorLevel.error}
-	on:change
-	on:keyup|preventDefault
-	bind:value={field.valueCurrent}
-/> -->

@@ -116,10 +116,10 @@ function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undef
 			if (dataObj) {
 				if (dataObj.cardinality === DataObjCardinality.list) {
 					if (currTab.currRow !== undefined && currTab.currRow > -1) {
-						dataTree.upsertData(dataObj.table.name, currTab.getDataList())
+						dataTree.upsertData(dataObj.table?.name, currTab.getDataList())
 					}
 				} else {
-					if (currTab.data) dataTree.upsertData(dataObj.table.name, currTab.getDataDetail())
+					if (currTab.data) dataTree.upsertData(dataObj.table?.name, currTab.getDataDetail())
 				}
 			}
 		}

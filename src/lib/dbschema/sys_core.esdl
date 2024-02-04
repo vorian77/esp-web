@@ -111,13 +111,13 @@ module sys_core {
     isDisplay: bool;
     isDisplayable: bool;
     items: array<json>;
-    itemsDb: sys_core::SysDataObjFieldItemsDb;
+    itemsDb: sys_core::SysDataObjFieldItems;
     itemsDbParms: json;
-    overlayNode: sys_core::SysOverlayNode;
+    overlayNodeFieldItems: sys_core::SysOverlayNodeFieldItems;
     width: int16;
   }
 
- type SysDataObjFieldItemsDb extending sys_core::SysObj {
+ type SysDataObjFieldItems extending sys_core::SysObj {
     codeDataTypeDisplay: sys_core::SysCode;
     codeMask: sys_core::SysCode;
     required exprSelect: str;
@@ -183,11 +183,11 @@ module sys_core {
     constraint exclusive on (.name);
   }
 
-  type SysOverlayNode extending sys_core::SysObj {
-    btnLabelComplete: str;
-    required codeType: sys_core::SysCode;
-    required dataObj: sys_core::SysDataObj;
-    required exprDisplay: str;
+  type SysOverlayNodeFieldItems extending sys_core::SysObj {
+    required btnLabelComplete: str;
+    required columnLabelDisplay: str;
+    headerSub: str;
+    required isMultiSelect: bool;
     constraint exclusive on (.name);
  }
 
@@ -215,8 +215,8 @@ module sys_core {
   function getDataObjAction(dataObjActionName: str) -> optional sys_core::SysDataObjAction
     using (select sys_core::SysDataObjAction filter .name = dataObjActionName);        
     
-  function getDataObjFieldItemsDb(name: str) -> optional sys_core::SysDataObjFieldItemsDb
-    using (select sys_core::SysDataObjFieldItemsDb filter .name = name);  
+  function getDataObjFieldItems(name: str) -> optional sys_core::SysDataObjFieldItems
+    using (select sys_core::SysDataObjFieldItems filter .name = name);  
     
   function getNodeObjByName(nodeObjName: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .name = nodeObjName);
@@ -224,8 +224,8 @@ module sys_core {
   function getNodeObjById(nodeObjId: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .id = <uuid>nodeObjId);     
 
-   function getOverlayNode(overlayNodeName: str) -> optional sys_core::SysOverlayNode
-    using (select sys_core::SysOverlayNode filter .name = overlayNodeName);
+   function getOverlayNodeFieldItems(name: str) -> optional sys_core::SysOverlayNodeFieldItems
+    using (select sys_core::SysOverlayNodeFieldItems filter .name = name);
     
   function isObjectLink(objName: str, linkName: str) -> optional bool
     using (select count(schema::ObjectType filter .name = objName and .links.name = linkName) > 0);     

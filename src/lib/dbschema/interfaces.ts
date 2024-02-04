@@ -171,7 +171,7 @@ export namespace sys_core {
     "codeDbListDir"?: SysCode | null;
     "codeElement"?: SysCode | null;
     "column": sys_db.SysColumn;
-    "itemsDb"?: SysDataObjFieldItemsDb | null;
+    "itemsDb"?: SysDataObjFieldItems | null;
     "customElement"?: unknown | null;
     "dbDataSourceKey"?: string | null;
     "dbOrderCrumb"?: number | null;
@@ -192,9 +192,9 @@ export namespace sys_core {
     "width"?: number | null;
     "exprCustom"?: string | null;
     "nameCustom"?: string | null;
-    "overlayNode"?: SysOverlayNode | null;
+    "overlayNodeFieldItems"?: SysOverlayNodeFieldItems | null;
   }
-  export interface SysDataObjFieldItemsDb extends SysObj {
+  export interface SysDataObjFieldItems extends SysObj {
     "codeDataTypeDisplay"?: SysCode | null;
     "codeMask"?: SysCode | null;
     "exprSelect": string;
@@ -269,11 +269,11 @@ export namespace sys_core {
     "city"?: string | null;
     "zip"?: string | null;
   }
-  export interface SysOverlayNode extends SysObj {
-    "codeType": SysCode;
-    "dataObj": SysDataObj;
-    "btnLabelComplete"?: string | null;
-    "exprDisplay": string;
+  export interface SysOverlayNodeFieldItems extends SysObj {
+    "btnLabelComplete": string;
+    "columnLabelDisplay": string;
+    "headerSub"?: string | null;
+    "isMultiSelect": boolean;
   }
 }
 export interface SysPerson extends std.$Object {
@@ -660,7 +660,7 @@ export interface types {
     "SysDataObj": sys_core.SysDataObj;
     "SysDataObjAction": sys_core.SysDataObjAction;
     "SysDataObjColumn": sys_core.SysDataObjColumn;
-    "SysDataObjFieldItemsDb": sys_core.SysDataObjFieldItemsDb;
+    "SysDataObjFieldItems": sys_core.SysDataObjFieldItems;
     "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;
     "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;
     "SysDataObjTable": sys_core.SysDataObjTable;
@@ -668,7 +668,7 @@ export interface types {
     "SysNodeObjFooter": sys_core.SysNodeObjFooter;
     "SysObjConfig": sys_core.SysObjConfig;
     "SysOrg": sys_core.SysOrg;
-    "SysOverlayNode": sys_core.SysOverlayNode;
+    "SysOverlayNodeFieldItems": sys_core.SysOverlayNodeFieldItems;
   };
   "default": {
     "SysPerson": SysPerson;

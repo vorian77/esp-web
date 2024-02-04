@@ -90,11 +90,11 @@ async function reset() {
 
 	resetDb.addTable('sys_core::SysNodeObj')
 
-	resetDb.addStatement(`UPDATE sys_core::SysDataObjColumn SET { overlayNode := {} }`)
-	resetDb.addTable('sys_core::SysOverlayNode')
+	resetDb.addStatement(`UPDATE sys_core::SysDataObjColumn SET { overlayNodeFieldItems := {} }`)
+	resetDb.addTable('sys_core::SysOverlayNodeFieldItems')
 
 	resetDb.addTable('sys_core::SysDataObj')
-	resetDb.addTable('sys_core::SysDataObjFieldItemsDb')
+	resetDb.addTable('sys_core::SysDataObjFieldItems')
 	resetDb.addTable('sys_core::SysDataObjTable')
 	resetDb.addTable('sys_core::SysObjConfig')
 

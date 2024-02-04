@@ -25,10 +25,11 @@
 	const rows = handler.getRows()
 	const selected = handler.getSelected()
 	const isAllSelected = handler.isAllSelected()
-	const isSelect = state.overlayNode !== undefined
+	const isSelect = state.overlayNodeFieldItems !== undefined
+	const fieldItemsDataField = 'data'
 
-	if (isSelect && state.overlayNode) {
-		state.overlayNode.data.forEach((i) => handler.select(i.data))
+	if (isSelect && state.overlayNodeFieldItems) {
+		state.overlayNodeFieldItems.itemsSelected.forEach((i) => handler.select(i))
 	}
 
 	type DataRow = Record<string, any>
@@ -40,7 +41,7 @@
 		handler.clearFilters()
 		sortList()
 	}
-	$: if (state.overlayNode) state.overlayNode.setSelected(dataObj.dataListRecord, $selected)
+	$: if (state.overlayNodeFieldItems) state.overlayNodeFieldItems.setSelected($selected)
 
 	function sortList() {
 		// apply sort items backwards
@@ -74,7 +75,7 @@
 					<th class="selection">
 						<input
 							type="checkbox"
-							on:click={() => handler.selectAll({ selectBy: 'id' })}
+							on:click={() => handler.selectAll({ selectBy: fieldItemsDataField })}
 							checked={$isAllSelected}
 						/>
 					</th>
@@ -104,7 +105,7 @@
 			{#if dataObjData}
 				{#each $rows as row, i}
 					<tr
-						class:active={$selected.includes(row.id)}
+						class:active={$selected.includes(row[fieldItemsDataField])}
 						on:click={() => onClick(row)}
 						on:keyup={async () => await onClick(row)}
 					>
@@ -112,8 +113,8 @@
 							<td class="selection">
 								<input
 									type="checkbox"
-									on:click={() => handler.select(row.id)}
-									checked={$selected.includes(row.id)}
+									on:click={() => handler.select(row[fieldItemsDataField])}
+									checked={$selected.includes(row[fieldItemsDataField])}
 								/>
 							</td>
 						{/if}

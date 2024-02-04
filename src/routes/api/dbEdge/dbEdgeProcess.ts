@@ -74,7 +74,7 @@ export async function processQuery(token: TokenApiQuery) {
 			dataRowRaw = await querySingle(script)
 			checkResult(script, dataRowRaw)
 
-			queryData.tree.upsertData(dataObj.table.name, dataRowRaw)
+			queryData.tree.upsertData(dataObj.table?.name, dataRowRaw)
 			script = query.tables.queryScriptSelectUser(queryData)
 			rawDataList = await queryMultiple(script)
 			break

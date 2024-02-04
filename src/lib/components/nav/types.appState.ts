@@ -1,4 +1,4 @@
-import { OverlayNode } from '$comps/form/field'
+import { OverlayNodeFieldItems, OverlayNodeRecord } from '$comps/form/field'
 import { AppRowActionType } from '$comps/nav/types.app'
 import { DataObj, initNavTree, Node, NodeType, User, userInit, valueOrDefault } from '$comps/types'
 import { SurfaceType, Token } from '$comps/types.master'
@@ -13,8 +13,8 @@ export class State {
 	nodeType: NodeType = NodeType.home
 	objHasChanged: boolean = false
 	objValidToSave: boolean = true
-	overlayNode?: OverlayNode
-	overlayNodeSelected: any
+	overlayNodeFieldItems?: OverlayNodeFieldItems
+	overlayNodeRecord?: OverlayNodeRecord
 	packet: StatePacket | undefined
 	page: string = '/home'
 	surface: SurfaceType = SurfaceType.default

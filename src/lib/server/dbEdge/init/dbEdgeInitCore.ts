@@ -14,7 +14,7 @@ import {
 	addCodeType,
 	addColumn,
 	addDataObjAction,
-	addDataObjFieldItemsDb,
+	addDataObjFieldItems,
 	addNodeFooter,
 	addUserOrg
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
@@ -76,7 +76,6 @@ async function initSysCodeTypess() {
 		['app_sys', 0, 'ct_sys_do_render_type'],
 		['app_sys', 0, 'ct_sys_node_obj_icon'],
 		['app_sys', 0, 'ct_sys_node_obj_type'],
-		['app_sys', 0, 'ct_sys_overlay_node_type'],
 		['app_sys', 0, 'ct_sys_person_ethnicity'],
 		['app_sys', 0, 'ct_sys_person_gender'],
 		['app_sys', 0, 'ct_sys_person_race'],
@@ -263,11 +262,6 @@ async function initSysCodes() {
 		['ct_sys_node_obj_type', 'app_sys', 'program', 0],
 		['ct_sys_node_obj_type', 'app_sys', 'programObject', 0],
 		['ct_sys_node_obj_type', 'app_sys', 'treeRoot', 0],
-
-		// ct_sys_overlay_node_type
-		['ct_sys_overlay_node_type', 'app_sys', 'record', 0],
-		['ct_sys_overlay_node_type', 'app_sys', 'select', 0],
-		['ct_sys_overlay_node_type', 'app_sys', 'selectMulti', 0],
 
 		// sys - person - ethnicity
 		['ct_sys_person_ethnicity', 'app_sys', 'Hispanic-Latino', 0],
@@ -931,17 +925,17 @@ async function initSysDataObjActions() {
 }
 
 async function initDataObjFieldItemsDb() {
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect: 'SELECT app_cm::CmServiceFlow {data := .id, display := .header} ORDER BY .header',
 		name: 'il_cm_service_flow',
 		owner: 'app_cm'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect: `SELECT app_cm::CmCohort {data := .id, display := .course.name ++ ' (' ++ .name ++ ')'} FILTER .owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs ORDER BY .course.name`,
 		name: 'il_cm_cohort_by_userName',
 		owner: 'app_sys'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect: `SELECT (
       SELECT app_cm::CmCsfCohort 
       FILTER 
@@ -951,31 +945,31 @@ async function initDataObjFieldItemsDb() {
 		name: 'il_cm_course_by_csfId_status',
 		owner: 'app_cm'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect:
 			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .order',
 		name: 'il_sys_code_order_index_by_codeTypeName',
 		owner: 'app_sys'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect:
 			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.name = <str,parms,codeTypeName> ORDER BY .name',
 		name: 'il_sys_code_order_name_by_codeTypeName',
 		owner: 'app_sys'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect:
 			'SELECT sys_core::SysCodeType {data := .id, display := .header} FILTER .parent.name = <str,parms,codeTypeParentName> ORDER BY .name',
 		name: 'il_sys_codeType_order_name_by_codeTypeParentName',
 		owner: 'app_sys'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect:
 			'SELECT sys_core::SysOrg { data := .id, display := .name } FILTER .roles.name = <str,parms,codeName> ORDER BY .name',
 		name: 'il_sys_role_org_by_codeName',
 		owner: 'app_sys'
 	})
-	await addDataObjFieldItemsDb({
+	await addDataObjFieldItems({
 		exprSelect:
 			'SELECT sys_user::SysStaff { data := .id, display := .person.fullName } FILTER .roles.name = <str,parms,codeName> ORDER BY str_lower(.person.lastName) then str_lower(.person.firstName)',
 		name: 'il_sys_role_staff_by_codeName',

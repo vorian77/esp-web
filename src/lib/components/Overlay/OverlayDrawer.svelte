@@ -43,7 +43,7 @@
 	{#if $drawerStore.id === 'auth'}
 		<div>
 			<OverlayObjForm
-				bind:overlayNode={$drawerStore.meta.overlayNode}
+				bind:overlayNodeRecord={$drawerStore.meta.overlayNodeRecord}
 				on:formCancelled={onformCancelled}
 			/>
 		</div>
