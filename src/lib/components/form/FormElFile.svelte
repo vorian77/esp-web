@@ -103,16 +103,10 @@
 
 	<div>
 		{#if imgFileName && storageData && storageData.isImage}
-			<img
-				class="mx-auto p-2"
-				src={imgFileName}
-				alt={field.label}
-				width={field.width}
-				hidden={!showImg}
-			/>
+			<img class="mx-auto p-2" src={imgFileName} alt={field.label} width="80%" hidden={!showImg} />
 		{:else}
 			<div class="flex justify-center">
-				<iframe src={imgFileName} style="width:800px; height:800px;" frameborder="0"></iframe>
+				<iframe src={imgFileName} width="80%" height="600px" title={field.label} frameborder="0" />
 			</div>
 		{/if}
 
