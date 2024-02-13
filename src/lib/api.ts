@@ -112,7 +112,6 @@ export class TokenApiFileUploadData {
 		this.fileType = fileType
 		this.isImage = fileType ? fileType.includes('image') : false
 		this.isPDF = fileType ? fileType.includes('pdf') : false
-		console.log('TokenApiFileUploadData', this)
 	}
 }
 
