@@ -1,16 +1,18 @@
-import { ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { nodeObjHeaders, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
-import { execute } from '$routes/api/dbEdge/types.dbEdge'
 
-const FILENAME = 'initSysAdminReports'
-
-export default async function init() {
-	console.log()
-	console.log(`${FILENAME}.start...`)
-	await reset()
+export default async function initDOReport() {
+	sectionHeader('DataObject - Reports')
+	await initNodeObjHeaders()
 	await initReportCourseSummary()
 	await initReportStudentSummary()
-	console.log(`${FILENAME}.end`)
+}
+async function initNodeObjHeaders() {
+	sectionHeader('NodeObjHeader - Report')
+	// reports
+	await nodeObjHeaders([
+		['app_cm', 'node_pgm_cm_staff_provider', 'node_hdr_cm_ai_reports', 'Reports', 30, 'application']
+	])
 }
 
 async function initReportStudentSummary() {
@@ -220,12 +222,12 @@ async function initReportStudentSummary() {
 				codeAccess: 'readOnly',
 				columnName: 'custom_select_str',
 				dbOrderSelect: 170,
-				exprCustom: `(SELECT app_cm::CmCsfCertification FILTER 
+				exprCustom: `(SELECT app_cm::CmCsfDocument FILTER 
 					.csf.client.id = app_cm::CmClient.id
 					).dateIssued`,
-				headerAlt: 'Certifications (Date Issued)',
+				headerAlt: 'Documents (Date Issued)',
 				indexTable: '0',
-				nameCustom: 'customCertifications'
+				nameCustom: 'customDocuments'
 			}
 		]
 	})
@@ -351,15 +353,6 @@ async function initReportCourseSummary() {
 				headerAlt: 'Students - Dropped Out',
 				indexTable: '0',
 				nameCustom: 'customStudentsDroppedOut'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'custom_select_int',
-				dbOrderSelect: 200,
-				exprCustom: `(SELECT count((SELECT app_cm::CmCsfCertification FILTER .course.id = app_cm::CmCourse.id )))`,
-				headerAlt: 'Certifications Earned',
-				indexTable: '0',
-				nameCustom: 'customCertificationsEarned'
 			}
 		]
 	})
@@ -373,16 +366,4 @@ async function initReportCourseSummary() {
 		owner: 'app_cm',
 		parentNodeName: 'node_hdr_cm_ai_reports'
 	})
-}
-
-export async function reset() {
-	const reset = new ResetDb()
-
-	reset.addNode('node_obj_cm_ai_report_course_summary')
-	reset.addNode('node_obj_cm_ai_report_student_summary')
-
-	reset.addDataObj('data_obj_cm_ai_report_course_summary')
-	reset.addDataObj('data_obj_cm_ai_report_student_summary')
-
-	await reset.execute()
 }

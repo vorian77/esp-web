@@ -1,17 +1,15 @@
-import { addDataObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
-
-const FILE = 'initSysAuth'
+import { sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { addDataObj, addNodeFooter } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 export default async function init() {
-	console.log()
-	console.log(`${FILE}.start...`)
+	sectionHeader('DataObject - SysAuth')
 	await initDataObjAccount()
 	await initDataObjLogin()
 	await initDataObjResetPasswordAccount()
 	await initDataObjResetPasswordLogin()
 	await initDataObjVerify()
+	await initNodeObjFooter()
 	// await initDataObjSignup()
-	console.log(`${FILE}.end`)
 }
 
 async function initDataObjAccount() {
@@ -77,7 +75,7 @@ async function initDataObjAccount() {
 			// 	codeElement: 'select',
 			// 	columnName: 'codeRace',
 			// 	dbOrderSelect: 42,
-			// 	itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+			// 	itemsDb: 'il_sys_code_order_index_by_codeType_name',
 			// 	itemsDbParms: { codeTypeName: 'ct_sys_person_race' },
 			// 	link: {
 			// 		columnsDisplay: ['name'],
@@ -501,5 +499,36 @@ async function initDataObjSignup() {
 				dbOrderSelect: 70
 			}
 		]
+	})
+}
+
+async function initNodeObjFooter() {
+	sectionHeader('NodeObj-Footer')
+
+	await addNodeFooter({
+		codeIcon: 'application',
+		codeType: 'home',
+		header: 'Home',
+		name: 'node_obj_sys_footer_home',
+		order: 10,
+		owner: 'app_sys'
+	})
+	await addNodeFooter({
+		codeIcon: 'application',
+		codeType: 'page',
+		header: 'Contact Us',
+		name: 'node_obj_sys_footer_contact_us',
+		order: 20,
+		owner: 'app_sys',
+		page: '/home/cm/contactUs'
+	})
+	await addNodeFooter({
+		codeIcon: 'application',
+		codeType: 'object',
+		dataObj: 'data_obj_auth_account',
+		header: 'My Account',
+		name: 'node_obj_sys_footer_auth_account',
+		order: 30,
+		owner: 'app_sys'
 	})
 }

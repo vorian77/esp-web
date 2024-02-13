@@ -4,6 +4,13 @@ const FILENAME = 'hooks.server'
 
 const routesUnprotected = ['/about', '/auth', '/legalDisclosure']
 
+// <temp> - 240206 - possible way to control user reload of a page
+// function beforeNavigate(
+// 	callback: (
+// 		navigation: import('@sveltejs/kit').BeforeNavigate
+// 	) => void
+// ): void;
+
 export async function handle({ event, resolve }) {
 	console.log()
 	console.log(FILENAME, `url.pathname: ${event.url.pathname}`)

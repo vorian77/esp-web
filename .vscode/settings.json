@@ -93,5 +93,6 @@
 		"text",
 		"track",
 		"width"
-	]
+	],
+	"svelte.enable-ts-plugin": true
 }

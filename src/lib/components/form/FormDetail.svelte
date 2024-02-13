@@ -48,6 +48,7 @@
 	}
 
 	function onChangeFile(fieldName: string, value: any) {
+		console.log('FormDetail.onChangeFile:', value)
 		setFieldVal(fieldName, value)
 	}
 

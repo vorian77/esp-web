@@ -24,15 +24,13 @@ import {
 	querySingle
 } from '$routes/api/dbEdge/types.dbEdge'
 import type { RawDataList } from '$routes/api/dbEdge/types.dbEdge'
-import { FieldItem, type FieldItemsRecord } from '$comps/form/field'
 import type { Field } from '$comps/form/field'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
 export async function processQuery(token: TokenApiQuery) {
-	// console.log()
-	// console.log('processQuery.0...')
+	// log('processQuery.0...')
 
 	const queryData = TokenApiQueryData.load(token.queryData)
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
@@ -44,9 +42,12 @@ export async function processQuery(token: TokenApiQuery) {
 	let rawDataList: RawDataList = []
 	let script = ''
 
-	console.log('processQuery.queryType:', token.queryType)
+	log('processQuery.queryType:', token.queryType)
 
 	switch (token.queryType) {
+		case TokenApiQueryType.dataObj:
+			return dataObj
+
 		case TokenApiQueryType.delete:
 			dataRowStatus = DataObjRecordStatus.deleted
 			script = query.tables.queryScriptDelete(queryData)
@@ -57,6 +58,9 @@ export async function processQuery(token: TokenApiQuery) {
 		case TokenApiQueryType.expression:
 			return new ApiResultData(await querySingle(query.queryScriptObjectExpr(queryData)))
 			break
+
+		case TokenApiQueryType.fieldItems:
+			return await getDataItems(query, queryData)
 
 		case TokenApiQueryType.new:
 			dataRowStatus = DataObjRecordStatus.created
@@ -97,7 +101,7 @@ export async function processQuery(token: TokenApiQuery) {
 			})
 	}
 
-	// console.log('processQuery.2:', { rawDataList, dataRowStatus })
+	// log('processQuery.2:', { rawDataList, dataRowStatus })
 
 	const dataResult: DataObjData = await processDataPost(
 		query,
@@ -108,8 +112,7 @@ export async function processQuery(token: TokenApiQuery) {
 	)
 
 	if (dataResult.dataObjRowList.length > 0) {
-		console.log()
-		console.log('processQuery.3:', { dataResult: dataResult.dataObjRowList[0] })
+		log('processQuery.3:', { dataResult: dataResult.dataObjRowList[0] })
 	}
 	return new ApiResultDoSuccess(dataObjRaw, dataResult)
 	// return new ApiResultDoFail('failed under testing...')
@@ -148,28 +151,21 @@ async function processDataPost(
 	rawDataList: RawDataList,
 	dataRowStatus: DataObjRecordStatus
 ) {
-	// console.log('processDataPost.rawDataList:', { rawDataList })
+	// log('processDataPost.rawDataList:', { rawDataList })
 	const dataRows: DataObjRecordRowList = []
 
-	console.log('processDataPost.rawDataList:', { rows: rawDataList.length, row0: rawDataList[0] })
+	log('processDataPost.rawDataList:', { rows: rawDataList.length, row0: rawDataList[0] })
 
 	if (rawDataList.length === 0) {
 		if (dataObj.cardinality === DataObjCardinality.list) {
 			return new DataObjData(dataObj.cardinality)
 		} else {
-			// only set field data items
-			let fieldItemsRecord: FieldItemsRecord = {}
-			for (const field of dataObj.fields) {
-				const fieldName = field.name
-				fieldItemsRecord[fieldName] = await getDataItems(query, queryData, field)
-			}
-			dataRows.push(new DataObjRecordRow(dataRowStatus, {}, fieldItemsRecord))
+			dataRows.push(new DataObjRecordRow(dataRowStatus, {}))
 		}
 	} else {
 		// format data and get field data items for each row
 		for (const row of rawDataList) {
 			const record: DataObjRecord = {}
-			let fieldItemsRecord: FieldItemsRecord = {}
 			for (const field of dataObj.fields) {
 				const fieldName = field.name
 				const recordKey = field.dataType === DataFieldDataType.link ? '_' + field.name : field.name
@@ -181,16 +177,10 @@ async function processDataPost(
 						field.dataTypePreset
 					)
 				}
-				fieldItemsRecord[fieldName] = await getDataItems(query, queryData, field)
 			}
-			dataRows.push(new DataObjRecordRow(dataRowStatus, record, fieldItemsRecord))
+			dataRows.push(new DataObjRecordRow(dataRowStatus, record))
 		}
 	}
-
-	// console.log()
-	// console.log('processDataPost.data.return.record[0]:', {
-	// 	record: dataRows[0].record
-	// })
 	return new DataObjData(dataObj.cardinality, dataRows)
 
 	function formatDataForDisplay(
@@ -250,16 +240,29 @@ function formatDataForDisplayScalar(value: any, codeDataTypeField: DataFieldData
 	}
 }
 
-async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData, field: Field) {
+async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData) {
+	const field: Field = queryData.parms.field
 	if (field.items.length > 0) {
 		return field.items
 	} else if (field.itemsDb) {
 		queryData = TokenApiQueryData.load(queryData)
 		queryData.replaceParms(field.itemsDb.parms)
-		return (await queryMultiple(
+		const resultObj = await queryMultiple(
 			query.getScriptDataItems(field.itemsDb.exprSelect, queryData)
-		)) as Array<FieldItem>
+		)
+		const resultArray = []
+		for (const [key, value] of Object.entries(resultObj)) {
+			resultArray.push(value)
+		}
+		// log('dbEdgeProcess.items:', { fieldName: field.name, resultArray })
+		return resultArray
 	} else {
 		return []
 	}
+}
+
+function log(header: string, data: any) {
+	console.log()
+	console.log(`--- ${header} ---`)
+	console.log(data)
 }

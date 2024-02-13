@@ -90,15 +90,6 @@ export namespace app_cm {
   export interface CmCsfData extends sys_user.Mgmt {
     "csf": CmClientServiceFlow;
   }
-  export interface CmCsfCertification extends CmCsfData {
-    "course": CmCourse;
-    "codeCertification": sys_core.SysCode;
-    "staffAgency": sys_user.SysStaff;
-    "dateExpires"?: edgedb.LocalDate | null;
-    "dateIssued": edgedb.LocalDate;
-    "imageCertification"?: unknown | null;
-    "note"?: string | null;
-  }
   export interface CmCsfCohort extends CmCsfData {
     "cohort": CmCohort;
     "codeStatus": sys_core.SysCode;
@@ -115,10 +106,35 @@ export namespace app_cm {
     "duration": number;
     "note"?: string | null;
   }
+  export interface CmCsfDocument extends CmCsfData {
+    "codeType": sys_core.SysCode;
+    "staffAgency": sys_user.SysStaff;
+    "dateExpires"?: edgedb.LocalDate | null;
+    "dateIssued": edgedb.LocalDate;
+    "file"?: unknown | null;
+    "note"?: string | null;
+    "isShareWithClient"?: boolean | null;
+  }
+  export interface CmCsfJobPlacement extends CmCsfData {
+    "note"?: string | null;
+    "codeJobType": sys_core.SysCode;
+    "codePlacementRelated": sys_core.SysCode;
+    "codeWageType": sys_core.SysCode;
+    "employer": CmEmployer;
+    "staffAgency": sys_user.SysStaff;
+    "dateStart": edgedb.LocalDate;
+    "dateSubmitted": edgedb.LocalDate;
+    "hoursPerWeek": number;
+    "title": string;
+    "wage"?: number | null;
+  }
   export interface CmCsfNote extends CmCsfData {
     "codeType": sys_core.SysCode;
     "date": edgedb.LocalDate;
     "note"?: string | null;
+  }
+  export interface CmEmployer extends sys_core.SysOrg {
+    "contact"?: SysPerson | null;
   }
   export interface CmServiceFlow extends sys_core.SysObj {}
 }
@@ -132,6 +148,13 @@ export namespace sys_core {
   }
   export interface SysEnt extends SysObj {
     "roles": SysCode[];
+  }
+  export interface SysOrg extends SysEnt {
+    "addr1"?: string | null;
+    "addr2"?: string | null;
+    "city"?: string | null;
+    "zip"?: string | null;
+    "codeState"?: SysCode | null;
   }
   export interface SysApp extends SysEnt {}
   export interface SysCode extends SysObj {
@@ -262,13 +285,6 @@ export namespace sys_core {
     "tableName"?: string | null;
     "tableOwner"?: string | null;
   }
-  export interface SysOrg extends SysEnt {
-    "state"?: SysCodeType | null;
-    "addr1"?: string | null;
-    "addr2"?: string | null;
-    "city"?: string | null;
-    "zip"?: string | null;
-  }
   export interface SysOverlayNodeFieldItems extends SysObj {
     "btnLabelComplete": string;
     "columnLabelDisplay": string;
@@ -294,6 +310,8 @@ export interface SysPerson extends std.$Object {
   "note"?: string | null;
   "phoneMobile"?: string | null;
   "zip"?: string | null;
+  "phoneAlt"?: string | null;
+  "title"?: string | null;
 }
 export namespace cfg {
   export interface ConfigObject extends std.BaseObject {}
@@ -644,16 +662,19 @@ export interface types {
     "CmCohort": app_cm.CmCohort;
     "CmCourse": app_cm.CmCourse;
     "CmCsfData": app_cm.CmCsfData;
-    "CmCsfCertification": app_cm.CmCsfCertification;
     "CmCsfCohort": app_cm.CmCsfCohort;
     "CmCsfCohortAttd": app_cm.CmCsfCohortAttd;
+    "CmCsfDocument": app_cm.CmCsfDocument;
+    "CmCsfJobPlacement": app_cm.CmCsfJobPlacement;
     "CmCsfNote": app_cm.CmCsfNote;
+    "CmEmployer": app_cm.CmEmployer;
     "CmServiceFlow": app_cm.CmServiceFlow;
   };
   "sys_core": {
     "ObjRoot": sys_core.ObjRoot;
     "SysObj": sys_core.SysObj;
     "SysEnt": sys_core.SysEnt;
+    "SysOrg": sys_core.SysOrg;
     "SysApp": sys_core.SysApp;
     "SysCode": sys_core.SysCode;
     "SysCodeType": sys_core.SysCodeType;
@@ -667,7 +688,6 @@ export interface types {
     "SysNodeObj": sys_core.SysNodeObj;
     "SysNodeObjFooter": sys_core.SysNodeObjFooter;
     "SysObjConfig": sys_core.SysObjConfig;
-    "SysOrg": sys_core.SysOrg;
     "SysOverlayNodeFieldItems": sys_core.SysOverlayNodeFieldItems;
   };
   "default": {

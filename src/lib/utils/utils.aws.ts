@@ -18,7 +18,7 @@ export async function objDelete(fileStorageKey: string) {
 
 export async function objUpload(fileStorageKey: string, file: File): Promise<ResponseBody> {
 	const fileType = file.type
-	fileStorageKey = 'raw/' + fileStorageKey
+	fileStorageKey = fileStorageKey
 
 	if (!file.name) {
 		return new ResponseBody({
@@ -31,7 +31,6 @@ export async function objUpload(fileStorageKey: string, file: File): Promise<Res
 	return await upload(url, file)
 
 	async function upload(url: string, imgFile: File) {
-		console.log('upload:', { url, imgFile })
 		try {
 			const resp: Response = await fetch(url, {
 				method: 'PUT',

@@ -230,8 +230,6 @@ export class FieldItem {
 	}
 }
 
-export type FieldItemsRecord = Record<string, Array<FieldItem>>
-
 export interface FieldRaw {
 	_codeAccess: string
 	_codeElement: string

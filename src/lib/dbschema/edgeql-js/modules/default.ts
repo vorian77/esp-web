@@ -31,6 +31,8 @@ export type $SysPersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "phoneMobile": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "zip": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "phoneAlt": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "title": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "<person[is sys_user::SysStaff]": $.LinkDesc<_sys_user.$SysStaff, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::UserRoot]": $.LinkDesc<_sys_user.$UserRoot, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::SysUser]": $.LinkDesc<_sys_user.$SysUser, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -38,6 +40,8 @@ export type $SysPersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73
   "<person[is sys_user::SYS_USER_ID]": $.LinkDesc<_sys_user.$SYS_USER_ID, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::currentUser]": $.LinkDesc<_sys_user.$currentUser, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is app_cm::CmClient]": $.LinkDesc<_app_cm.$CmClient, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<contact[is app_cm::CmEmployer]": $.LinkDesc<_app_cm.$CmEmployer, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<contact": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $SysPerson = $.ObjectType<"default::SysPerson", $SysPersonλShape, null, [

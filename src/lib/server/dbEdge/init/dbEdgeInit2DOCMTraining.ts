@@ -1,13 +1,10 @@
-import { addDataObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
-
-const FILE = 'initCMTraining'
+import { sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 export default async function init() {
-	console.log()
-	console.log(`${FILE}.start...`)
+	sectionHeader('DataObject - CM-Training')
 	await initCMTrainingCourse()
 	await initCMTrainingCohort()
-	console.log(`${FILE}.end`)
 }
 
 async function initCMTrainingCourse() {
@@ -99,7 +96,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -119,7 +116,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeTypePayment',
 				dbOrderSelect: 60,
 				indexTable: '0',
-				itemsDb: 'il_sys_codeType_order_name_by_codeTypeParentName',
+				itemsDb: 'il_sys_codeType_order_name_by_codeTypeParent_name',
 				itemsDbParms: { codeTypeParentName: 'ct_cm_payment_type' },
 				link: { table: { module: 'sys_core', name: 'SysCodeType' } }
 			},
@@ -128,7 +125,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeSector',
 				dbOrderSelect: 70,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_course_sector' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -146,7 +143,6 @@ async function initCMTrainingCourse() {
 				dbOrderSelect: 90,
 				indexTable: '0'
 			},
-
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
@@ -173,7 +169,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiRqmts',
 				dbOrderSelect: 120,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_course_rqmt' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -183,7 +179,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiItemsIncluded',
 				dbOrderSelect: 130,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_course_items_included' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -193,7 +189,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiItemsNotIncluded',
 				dbOrderSelect: 140,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_course_items_not_included' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -203,7 +199,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiExams',
 				dbOrderSelect: 150,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_course_exam' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -213,7 +209,7 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiCerts',
 				dbOrderSelect: 160,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_course_cert' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -247,6 +243,24 @@ async function initCMTrainingCourse() {
 				isDisplay: true
 			}
 		]
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_course_list',
+		header: 'Courses',
+		name: 'node_obj_cm_course_list',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_pgm_cm_staff_provider'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_course_detail',
+		header: 'Course',
+		name: 'node_obj_cm_course_detail',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_course_list'
 	})
 }
 
@@ -337,7 +351,7 @@ async function initCMTrainingCohort() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -413,5 +427,23 @@ async function initCMTrainingCohort() {
 				isDisplay: true
 			}
 		]
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_cohort_list',
+		header: 'Cohorts',
+		name: 'node_obj_cm_cohort_list',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_course_detail'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_cohort_detail',
+		header: 'Cohort',
+		name: 'node_obj_cm_cohort_detail',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_cohort_list'
 	})
 }

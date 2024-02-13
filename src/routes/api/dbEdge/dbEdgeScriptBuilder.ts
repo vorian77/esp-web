@@ -45,20 +45,13 @@ export class EdgeQL {
 		this.tables = new DataObjTables(this, obj)
 	}
 
-	private logScript(type: string, script: string) {
-		if (!script) return
-		console.log()
-		console.log(`getScript: ${type}...`)
-		console.log(script)
-	}
-
 	getScriptDataItems(dbSelect: string, data: TokenApiQueryData) {
 		return getValExpr(dbSelect, data)
 	}
 	queryScriptObjectExpr(data: TokenApiQueryData) {
 		if (this.exprObject) {
 			const script = getValExpr(this.exprObject, data)
-			this.logScript('objectExpr', script)
+			logScript('objectExpr', script)
 			return script
 		} else {
 			error(500, {
@@ -136,9 +129,10 @@ class DataObjTables {
 		console.log(script)
 	}
 	queryScriptDelete(data: TokenApiQueryData) {
-		const queryFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).script
-		const script = `DELETE ${this.getDbTableRoot()} ${queryFilter}`
-		this.logScript('delete', script)
+		const rootTable = this.getDbTableRoot()
+		const rootFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).script
+		const script = `DELETE ${rootTable} ${rootFilter}`
+		logScript('delete', script)
 		return script
 	}
 	queryScriptOrder() {
@@ -154,7 +148,7 @@ class DataObjTables {
 		let script = ''
 		const scriptPresetItems = this.getScriptItemsAll(DataObjTableActionType.preset, data)
 		if (scriptPresetItems) script = `SELECT { ${scriptPresetItems} }`
-		this.logScript('preset', script)
+		logScript('preset', script)
 		return script
 	}
 	queryScriptSave(data: TokenApiQueryData, action: DataObjTableActionType) {
@@ -165,29 +159,27 @@ class DataObjTables {
 		let prefix = ''
 		let prevTable: DataObjTable | undefined = undefined
 
-		data.setParmsValue('rootTable', this.getDbTableRoot())
-		data.setParmsValue(
-			'rootFilter',
-			this.getScriptTableRoot(DataObjTableActionType.filter, data).script
-		)
+		this.setDataRoot(data)
 
 		while (tableArray && tableArray.length > 0) {
 			const table = tableArray.pop()
 			if (table) {
 				scriptObj = this.getScriptTable(table, action, data)
-				prefix = scriptObj.concatSpace(prefix, scriptObj.prefix)
+				prefix = scriptObj.concat(prefix, scriptObj.prefix, ',')
+
 				if (tableArray.length === 0 || (prevTable && table.index === prevTable.indexParent)) {
 					if (branch) scriptObj.addItemField(branch)
 					script = scriptObj.getScriptTable()
 					branch = script
 				} else {
-					branch = scriptObj.concatSpace(branch, scriptObj.getScriptTable())
+					branch = scriptObj.concat(branch, scriptObj.getScriptTable())
 				}
 			}
 			prevTable = table
 		}
-		script = scriptObj.concatSpace(prefix, script)
-		this.logScript('save', script)
+
+		script = scriptObj.concat(prefix, script)
+		logScript('save', script)
 		return script
 	}
 
@@ -202,15 +194,8 @@ class DataObjTables {
 		const queryFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).script
 		const queryOrder = this.queryScriptOrder()
 
-		const script =
-			'SELECT ' +
-			this.getDbTableRoot() +
-			' { ' +
-			querySelectItems +
-			' } ' +
-			queryFilter +
-			queryOrder
-		this.logScript('select', script)
+		const script = `SELECT ${this.getDbTableRoot()} {\n${querySelectItems}\n} \n${queryFilter} \n${queryOrder}`
+		logScript('select', script)
 		return script
 	}
 	queryScriptSelectSys(data: TokenApiQueryData) {
@@ -220,6 +205,13 @@ class DataObjTables {
 	queryScriptSelectUser(data: TokenApiQueryData) {
 		const querySelectItems = this.getScriptItemsAll(DataObjTableActionType.selectUser, data)
 		return this.queryScriptSelect(querySelectItems, data)
+	}
+	setDataRoot(data: TokenApiQueryData) {
+		data.setParmsValue('rootTable', this.getDbTableRoot())
+		data.setParmsValue(
+			'rootFilter',
+			this.getScriptTableRoot(DataObjTableActionType.filter, data).script
+		)
 	}
 }
 
@@ -335,22 +327,22 @@ class DataObjTableAction {
 	// 			})
 	// 	}
 	// }
-	getScriptSave(fields: DataFieldData[], data: TokenApiQueryData, isInsert: boolean) {
+
+	getScriptTypeSave(fields: DataFieldData[], data: TokenApiQueryData, isInsert: boolean) {
 		let script = new DataObjTableScript()
 		const isRootTable = !this.table.columnParent
 
 		if (isInsert) {
 			if (isRootTable) {
-				script.setScriptRootInsert(data)
+				script.setScriptInsertRoot(data)
 			} else {
-				script.setScriptSubInsert(this.table.columnParent!, this.table.table.getObject())
+				script.setScriptInsertSub(this.table.columnParent!, this.table.table.getObject())
 			}
 		} else {
 			if (isRootTable) {
-				script.setScriptRootUpdate(data)
+				script.setScriptUpdateRoot(data)
 			} else {
-				script.setPrefixSelect(this.table, data)
-				script.setScriptSubUpdate(this.table.columnParent!, this.table.table.getObject())
+				script.setScriptUpdateSub(this.table, data)
 			}
 		}
 
@@ -407,7 +399,7 @@ class DataObjTableActionFilter extends DataObjTableAction {
 
 		if (exprFilter) {
 			script = getValExpr(exprFilter, data)
-			if (script) script = ' FILTER ' + script
+			if (script) script = 'FILTER ' + script
 		}
 
 		return new DataObjTableScript({ script })
@@ -469,7 +461,7 @@ class DataObjTableActionSaveInsert extends DataObjTableAction {
 		this.fields = this.initList(DataFieldData, obj._fieldsDbSaveInsert)
 	}
 	getScript(data: TokenApiQueryData) {
-		return this.getScriptSave(this.fields, data, true)
+		return this.getScriptTypeSave(this.fields, data, true)
 	}
 }
 class DataObjTableActionSaveUpdate extends DataObjTableAction {
@@ -479,7 +471,7 @@ class DataObjTableActionSaveUpdate extends DataObjTableAction {
 		this.fields = this.initList(DataFieldData, obj._fieldsDbSaveUpdate)
 	}
 	getScript(data: TokenApiQueryData) {
-		return this.getScriptSave(this.fields, data, false)
+		return this.getScriptTypeSave(this.fields, data, false)
 	}
 }
 class DataObjTableActionSelectSys extends DataObjTableAction {
@@ -543,14 +535,17 @@ class DataObjTableScript {
 		}
 		if (!inserted) this.itemsOrder.push(newItem)
 	}
-	concat(val1: string, val2: string, separator: string) {
-		if (val1 && val2) return val1 + separator + val2
+	concat(val1: string, val2: string, separator: string = '') {
+		if (val1 && val2) return val1 + separator + '\n' + val2
 		if (val1) return val1
 		if (val2) return val2
 		return ''
 	}
 	concatComma(val1: string, val2: string) {
-		return this.concat(val1, val2, ', ')
+		return this.concat(val1, val2, ',')
+	}
+	concatExpr(val1: string, val2: string) {
+		return this.concat(val1, val2, ';')
 	}
 	concatItemsField(script: DataObjTableScript) {
 		this.itemsField = this.concatComma(this.itemsField, script.itemsField)
@@ -560,19 +555,23 @@ class DataObjTableScript {
 			this.addItemOrder(item.item, item.direction, item.order)
 		})
 	}
-	concatSpace(val1: string, val2: string) {
-		return this.concat(val1, val2, ' ')
+	getPrefixUpdate(table: DataObjTable, data: TokenApiQueryData, prefixColumn: string) {
+		const rootTable = this.getRootTable(data)
+		const rootFilter = this.getRootFilter(data)
+		const idColumn = table.getFieldNameRoot('.') + '.id'
+		return `WITH ${prefixColumn} := (SELECT ${rootTable} ${rootFilter}).${idColumn}`
 	}
-	copy() {
-		return new DataObjTableScript({
-			itemsField: this.itemsField,
-			prefix: this.prefix,
-			prefixColumn: this.prefixColumn,
-			scipt: this.script
-		})
+	getPrefixColumnUpdate(table: DataObjTable) {
+		return '__' + table.getFieldNameRoot('_')
+	}
+	getRootFilter(data: TokenApiQueryData) {
+		return data.parms.rootFilter
+	}
+	getRootTable(data: TokenApiQueryData) {
+		return data.parms.rootTable
 	}
 	getScript() {
-		return this.concatSpace(this.prefix, this.script)
+		return this.concat(this.prefix, this.script)
 	}
 	getScriptOrder() {
 		if (this.exprOrder) return this.exprOrder
@@ -582,59 +581,35 @@ class DataObjTableScript {
 			if (script) script += ' THEN '
 			script += item.item + ' ' + item.direction
 		})
-		if (script) script = ' ORDER BY ' + script
+		if (script) script = 'ORDER BY ' + script
 		return script
 	}
 	getScriptTable() {
 		this.script = this.script.replace(this.itemsProxy, this.itemsField)
 		return this.script
 	}
-	getRootFilter(data: TokenApiQueryData) {
-		return data.parms.rootFilter
-	}
-	getRootTable(data: TokenApiQueryData) {
-		return data.parms.rootTable
-	}
-
 	setExprOrder(expr: string) {
 		this.exprOrder = expr
 		this.itemsOrder = []
 	}
-	setPrefixInsert(table: DataObjTable, data: TokenApiQueryData) {
-		const rootTable = this.getRootTable(data)
-		this.prefixColumn = '__' + table.getFieldNameRoot('_')
-		this.prefix = `WITH ${this.prefixColumn} := (INSERT ${rootTable})`
-	}
-	setPrefixSelect(table: DataObjTable, data: TokenApiQueryData) {
-		const rootTable = this.getRootTable(data)
-		const rootFilter = this.getRootFilter(data)
-		this.prefixColumn = '__' + table.getFieldNameRoot('_')
-		const idColumn = table.getFieldNameRoot('.') + '.id'
-		this.prefix = `WITH ${this.prefixColumn} := (SELECT ${rootTable} ${rootFilter}).${idColumn}`
-	}
-	setScriptSubDelete(subTable: string) {
-		this.script = `DELETE ${subTable} FILTER .id = ${this.prefixColumn}`
-	}
-	setScriptSubInsert(parentColumn: string, subTable: string) {
-		this.script = `${parentColumn} := (INSERT ${subTable} { ${this.itemsProxy} })`
-	}
-	setScriptSubUpdate(parentColumn: string, subTable: string) {
-		this.script = `${parentColumn} := (UPDATE ${subTable} FILTER .id = ${this.prefixColumn} SET { ${this.itemsProxy} })`
-	}
-
-	setScriptRootDelete(data: TokenApiQueryData) {
-		const rootTable = this.getRootTable(data)
-		const rootFilter = this.getRootFilter(data)
-		this.script = `DELETE ${rootTable} ${rootFilter}`
-	}
-	setScriptRootInsert(data: TokenApiQueryData) {
+	setScriptInsertRoot(data: TokenApiQueryData) {
 		const rootTable = this.getRootTable(data)
 		this.script = `INSERT ${rootTable} { ${this.itemsProxy} }`
 	}
-	setScriptRootUpdate(data: TokenApiQueryData) {
+	setScriptInsertSub(parentColumn: string, subTable: string) {
+		this.script = `${parentColumn} := (INSERT ${subTable} { ${this.itemsProxy} })`
+	}
+	setScriptUpdateRoot(data: TokenApiQueryData) {
 		const rootTable = this.getRootTable(data)
 		const rootFilter = this.getRootFilter(data)
 		this.script = `UPDATE ${rootTable} ${rootFilter} SET { ${this.itemsProxy} }`
+	}
+	setScriptUpdateSub(table: DataObjTable, data: TokenApiQueryData) {
+		const parentColumn = table.columnParent!
+		const subTable = table.table.getObject()
+		const prefixColumn = this.getPrefixColumnUpdate(table)
+		this.prefix = this.concatExpr(this.prefix, this.getPrefixUpdate(table, data, prefixColumn))
+		this.script = `${parentColumn} := (UPDATE ${subTable} FILTER .id = ${prefixColumn} SET { ${this.itemsProxy} })`
 	}
 }
 
@@ -1069,4 +1044,11 @@ export class Table {
 	getObject() {
 		return this.module + '::' + this.name
 	}
+}
+
+function logScript(type: string, script: string) {
+	if (!script) return
+	console.log()
+	console.log(`--- script.type: ${type} ---`)
+	console.log(script)
 }

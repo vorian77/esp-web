@@ -1,75 +1,15 @@
-import {
-	apps,
-	ResetDb,
-	sectionHeader,
-	tableColumns,
-	tables,
-	userTypeResourcesPrograms
-} from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import {
-	addColumn,
-	addDataObj,
-	addDataObjFieldItems,
-	addNodeProgramObj,
-	addOverlayNodeFieldItems
-} from '$server/dbEdge/init/dbEdgeInitUtilities2'
-import initSysAdminReports from '$server/dbEdge/init/dbEdgeInitSysAdminReports'
+import { sectionHeader, userTypeResourcesPrograms } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-const FILENAME = 'initSysAdmin'
-
-export default async function init() {
-	console.log()
-	console.log(`${FILENAME}.start...`)
-	await reset()
-	await initAdmin()
-	await reports()
-	console.log(`${FILENAME}.end`)
-}
-async function initAdmin() {
-	await initCore()
-	await initDataObjFieldItems()
-	await initColumns()
-	await initTableColumns()
-	await initOverlayNodeFieldItems()
-	await initDataObjs()
-	await initResources()
-}
-
-async function reports() {
-	await initSysAdminReports()
-}
-
-async function initCore() {
-	await apps([['app_sys_admin']])
-
-	await tables([
-		['app_sys_admin', 'sys_core', 'SysApp', false],
-		['app_sys_admin', 'sys_db', 'SysColumn', true],
-		['app_sys_admin', 'sys_core', 'SysDataObj', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjAction', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjColumn', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjFieldItems', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjFieldLink', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjFieldLinkJoin', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjTable', true],
-		['app_sys_admin', 'sys_core', 'SysNodeObj', true],
-		['app_sys_admin', 'sys_core', 'SysNodeObjFooter', true],
-		['app_sys_admin', 'sys_core', 'SysObjConfig', true],
-		['app_sys_admin', 'sys_db', 'SysTable', true]
-	])
-}
-
-async function initDataObjs() {
-	sectionHeader('DataObjects')
-
+export default async function initDOSysAdmin() {
+	sectionHeader('DataObject - SysAdmin')
 	await initApp()
 	await initCodeType()
 	await initCode()
-
 	await initDataObj()
-	// await initDataObjTable()
+	await initDataObjTable()
 	// await initDataObjColumn()
-	// await initColumn()
+	await initColumn()
 	await initDataObjAction()
 	await initDataObjNodeObj()
 	await initDataObjNodeObjFooter()
@@ -199,6 +139,8 @@ async function initApp() {
 		owner: 'app_sys_admin',
 		parentNodeName: 'node_obj_sys_admin_app_list'
 	})
+
+	await userTypeResourcesPrograms([['ut_sys_admin', 'node_obj_sys_admin_app_list']])
 }
 
 async function initCodeType() {
@@ -611,6 +553,220 @@ async function initColumn() {
 				indexTable: '0'
 			},
 			{
+				columnName: 'owner',
+				dbOrderSelect: 15,
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: `(SELECT sys_core::SysApp FILTER .id = <uuid,tree,SysApp.id>)`,
+					table: { module: 'sys_core', name: 'SysOrg' }
+				}
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeDataType',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
+				itemsDbParms: { codeTypeName: 'ct_db_col_data_type' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeAlignment',
+				dbOrderSelect: 40,
+				indexTable: '0',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
+				itemsDbParms: { codeTypeName: 'ct_db_col_alignment' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'placeHolder',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'headerSide',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'Database' },
+				dbOrderSelect: 70,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'isExcludeInsert',
+				dbOrderSelect: 80,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'isExcludeSelect',
+				dbOrderSelect: 90,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'isExcludeUpdate',
+				dbOrderSelect: 100,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'isSetBySys',
+				dbOrderSelect: 110,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'isSelfReference',
+				dbOrderSelect: 120,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'File' },
+				dbOrderSelect: 130,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'exprStorageKey',
+				dbOrderSelect: 140,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'Link' },
+				dbOrderSelect: 150,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'Multi-Select' },
+				dbOrderSelect: 170,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'isMultiSelect',
+				dbOrderSelect: 180,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'Numeric' },
+				dbOrderSelect: 190,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'numeric',
+				columnName: 'minValue',
+				dbOrderSelect: 200,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'numeric',
+				columnName: 'maxValue',
+				dbOrderSelect: 210,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'spinStep',
+				dbOrderSelect: 220,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'String' },
+				dbOrderSelect: 230,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'matchColumn',
+				dbOrderSelect: 240,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'numeric',
+				columnName: 'minLength',
+				dbOrderSelect: 250,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'numeric',
+				columnName: 'maxLength',
+				dbOrderSelect: 260,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'pattern',
+				dbOrderSelect: 270,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'patternMsg',
+				dbOrderSelect: 280,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'patternReplacement',
+				dbOrderSelect: 290,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'Toggle' },
+				dbOrderSelect: 300,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'toggleLabelTrue',
+				dbOrderSelect: 310,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'toggleLabelFalse',
+				dbOrderSelect: 320,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'custom',
+				columnName: 'custom_element',
+				customElement: { _type: 'header', label: 'Text Area' },
+				dbOrderSelect: 330,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'classValue',
+				dbOrderSelect: 340,
+				indexTable: '0'
+			},
+			{
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
 				dbOrderSelect: 1000,
@@ -829,40 +985,42 @@ async function initDataObjTable() {
 				indexTable: '0'
 			},
 			{
+				codeElement: 'select',
 				columnName: 'table',
-				dbOrderCrumb: 10,
 				dbOrderSelect: 30,
 				indexTable: '0',
-				link: { columnsDisplay: ['name'] }
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdAt',
-				dbOrderSelect: 1000,
-				indexTable: '0',
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdBy',
-				dbOrderSelect: 1010,
-				indexTable: '0',
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'modifiedAt',
-				dbOrderSelect: 1020,
-				indexTable: '0',
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'modifiedBy',
-				dbOrderSelect: 1030,
-				indexTable: '0',
-				isDisplay: true
+				itemsDb: 'il_sys_table_order_name',
+				link: { table: { module: 'sys_core', name: 'SysTable' } }
 			}
+
+			// {
+			// 	codeAccess: 'readOnly',
+			// 	columnName: 'createdAt',
+			// 	dbOrderSelect: 1000,
+			// 	indexTable: '0',
+			// 	isDisplay: true
+			// },
+			// {
+			// 	codeAccess: 'readOnly',
+			// 	columnName: 'createdBy',
+			// 	dbOrderSelect: 1010,
+			// 	indexTable: '0',
+			// 	isDisplay: true
+			// },
+			// {
+			// 	codeAccess: 'readOnly',
+			// 	columnName: 'modifiedAt',
+			// 	dbOrderSelect: 1020,
+			// 	indexTable: '0',
+			// 	isDisplay: true
+			// },
+			// {
+			// 	codeAccess: 'readOnly',
+			// 	columnName: 'modifiedBy',
+			// 	dbOrderSelect: 1030,
+			// 	indexTable: '0',
+			// 	isDisplay: true
+			// }
 		]
 	})
 
@@ -1207,7 +1365,7 @@ async function initDataObjNodeObj() {
 				columnName: 'codeType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -1243,7 +1401,7 @@ async function initDataObjNodeObj() {
 				columnName: 'codeIcon',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -1380,7 +1538,7 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'codeType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -1416,7 +1574,7 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'codeIcon',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -1627,375 +1785,6 @@ async function initTable() {
 	})
 }
 
-async function initColumns() {
-	sectionHeader('columns')
-
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'All Tabs',
-		name: 'allTabs'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Complete Button Label',
-		name: 'btnLabelComplete'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Icon',
-		name: 'codeIcon'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Data Type',
-		name: 'codeDataType'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Color',
-		name: 'color'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Column',
-		name: 'column'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Columns',
-		isMultiSelect: true,
-		name: 'columns'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Creator',
-		name: 'creator'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Data Object',
-		name: 'dataObj'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'int16',
-		header: 'Order - Select',
-		name: 'dbOrderSelect'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Actions',
-		name: 'detailActions'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Data Object',
-		name: 'detailDataObj'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Header',
-		name: 'detailHeader'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Name',
-		name: 'detailName'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'int16',
-		header: 'Detail-Order',
-		name: 'detailOrder'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Parent Node Name',
-		name: 'detailParentNodeName'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Detail-Sub Header',
-		name: 'detailSubHeader'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Field Name',
-		name: 'fieldName'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'bool',
-		header: 'Has Management Columns',
-		name: 'hasMgmt',
-		toggleLabelFalse: 'No',
-		toggleLabelTrue: 'Yes'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Icon',
-		name: 'icon'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Index',
-		name: 'index'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Parent Index',
-		name: 'indexParent'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Link-Property',
-		name: 'linkProperty'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Link-Table Module',
-		name: 'linkTableModule'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Link-Table Name',
-		name: 'linkTableName'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Actions',
-		name: 'listActions'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Data Object',
-		name: 'listDataObj'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Expression Filter',
-		name: 'listExprFilter'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Header',
-		name: 'listHeader'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Name',
-		name: 'listName'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'int16',
-		header: 'List-Order',
-		name: 'listOrder'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Parent Node Name',
-		name: 'listParentNodeName'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'List-Sub Header',
-		name: 'listSubHeader'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Module',
-		name: 'mod'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Objects Owner',
-		name: 'objsOwner'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'int16',
-		header: 'Order',
-		name: 'order'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output Detail-Columns',
-		name: 'outputDetailColumns'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output Detail-Node',
-		name: 'outputDetailNode'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output Detail-Data Object',
-		name: 'outputDetailDataObj'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output List-Columns',
-		name: 'outputListColumns'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output List-Data Object',
-		name: 'outputListDataObj'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Output List-Node',
-		name: 'outputListNode'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Page',
-		name: 'page'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Parent',
-		isSelfReference: true,
-		name: 'parent'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'link',
-		header: 'Table',
-		name: 'table'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Table-Module',
-		name: 'tableModule'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Table-Name',
-		name: 'tableName'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Table-Owner',
-		name: 'tableOwner'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'float64',
-		header: 'Value-Decimal',
-		name: 'valueDecimal'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'int64',
-		header: 'Value-Integer',
-		name: 'valueInteger'
-	})
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Value-String',
-		name: 'valueString'
-	})
-}
-
-async function initTableColumns() {
-	sectionHeader('TableColumns')
-
-	await tableColumns([
-		['SysCode', 'codeType'],
-		['SysCode', 'createdAt'],
-		['SysCode', 'createdBy'],
-		['SysCode', 'header'],
-		['SysCode', 'id'],
-		['SysCode', 'modifiedAt'],
-		['SysCode', 'modifiedBy'],
-		['SysCode', 'name'],
-		['SysCode', 'order'],
-		['SysCode', 'parent'],
-		['SysCode', 'valueDecimal'],
-		['SysCode', 'valueInteger'],
-		['SysCode', 'valueString']
-	])
-}
-
-async function initResources() {
-	await userTypeResourcesPrograms([['ut_sys_admin', 'node_obj_sys_admin_app_list']])
-}
-
-export async function reset() {
-	const reset = new ResetDb('app_sys_admin')
-
-	reset.addStatement(
-		`UPDATE sys_user::SysUserType FILTER .name = 'ut_sys_amin' SET { resources -= (SELECT sys_core::getNodeObjByName('node_pgm_sys_admin')) }`
-	)
-
-	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { overlayNodeFieldItems := {} }`)
-	reset.addTable('sys_core::SysOverlayNodeFieldItems')
-
-	reset.addTable('sys_core::SysNodeObj')
-	reset.addTable('sys_core::SysDataObj')
-
-	reset.addTable('sys_core::SysDataObjAction')
-	reset.addTable('sys_core::SysDataObjFieldItems')
-
-	reset.addTable('sys_core::SysObjConfig')
-
-	reset.addStatement(`UPDATE sys_db::SysTable SET { columns := {} }`)
-	reset.addTable('sys_db::SysTable')
-	reset.addTable('sys_db::SysColumn')
-
-	reset.addTable('sys_core::SysCode')
-	reset.addTable('sys_core::SysCodeType')
-
-	reset.addStatement('DELETE sys_core::SysApp FILTER .name = "app_sys_admin"')
-
-	await reset.execute()
-}
-
 async function initConfig() {
 	await addDataObj({
 		owner: 'app_sys_admin',
@@ -2175,7 +1964,7 @@ async function initConfig() {
 		name: 'node_obj_sys_admin_data_obj_config_list',
 		order: 10,
 		owner: 'app_sys_admin',
-		parentNodeName: 'node_pgm_sys_admin'
+		parentNodeName: 'node_obj_sys_admin_app_list'
 	})
 	await addNodeProgramObj({
 		codeIcon: 'application',
@@ -2185,48 +1974,5 @@ async function initConfig() {
 		order: 10,
 		owner: 'app_sys_admin',
 		parentNodeName: 'node_obj_sys_admin_data_obj_config_list'
-	})
-}
-
-async function initOverlayNodeFieldItems() {
-	sectionHeader('OverlayNodeFieldItems')
-
-	await addOverlayNodeFieldItems({
-		btnLabelComplete: 'Select Columns',
-		columnLabelDisplay: 'Column',
-		header: 'Select Columns',
-		headerSub: 'Columns associated with the selected table.',
-		isMultiSelect: true,
-		name: 'overlay_node_field_items_sys_column',
-		owner: 'app_sys_admin'
-	})
-}
-
-async function initDataObjFieldItems() {
-	await addDataObjFieldItems({
-		exprSelect:
-			'SELECT sys_core::SysCode {data := .id, display := .name} FILTER .codeType.id = <uuid,tree,SysCodeType.id> ORDER BY .name',
-		name: 'il_sys_code_order_name_by_codeType_id',
-		owner: 'app_sys_admin'
-	})
-	await addDataObjFieldItems({
-		exprSelect: 'SELECT sys_core::SysCodeType {data := .id, display := .name} ORDER BY .name',
-		name: 'il_sys_codeType_order_name',
-		owner: 'app_sys_admin'
-	})
-	await addDataObjFieldItems({
-		exprSelect: 'SELECT sys_core::SysDataObj {data := .id, display := .name} ORDER BY .name',
-		name: 'il_sys_data_obj_order_name',
-		owner: 'app_sys_admin'
-	})
-	await addDataObjFieldItems({
-		exprSelect: 'SELECT sys_core::SysNodeObj {data := .id, display := .name} ORDER BY .name',
-		name: 'il_sys_node_obj_order_name',
-		owner: 'app_sys_admin'
-	})
-	await addDataObjFieldItems({
-		exprSelect: 'SELECT sys_db::SysColumn {data := .id, display := .name} ORDER BY .name',
-		name: 'il_sys_table_column_order_name',
-		owner: 'app_sys_admin'
 	})
 }

@@ -83,10 +83,10 @@ export async function POST({ request }) {
 
 		default:
 			error(500, {
-            				file: FILENAME,
-            				function: 'POST',
-            				message: `No case defined for action: ${action}`
-            			});
+				file: FILENAME,
+				function: 'POST',
+				message: `No case defined for action: ${action}`
+			})
 	}
 
 	async function getURL(command: any) {
@@ -104,10 +104,10 @@ export async function POST({ request }) {
 			return val
 		} else {
 			error(500, {
-            				file: FILENAME + ` (${functionName})`,
-            				function: 'POST',
-            				message: `Invalid request parm: ${parmName}`
-            			});
+				file: FILENAME + ` (${functionName})`,
+				function: 'POST',
+				message: `Invalid request parm: ${parmName}`
+			})
 		}
 	}
 }

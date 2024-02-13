@@ -31,11 +31,11 @@ export async function query(
 	queryType: TokenApiQueryType,
 	app: App | undefined = undefined
 ) {
+	// console.log('types.appQuery.query', { tabData: tab.data, queryType })
 	const dataPre = { ...tab.data?.getData() }
 	let dataTree = queryDataPre(queryType, app)
+	const queryData = new TokenApiQueryData({ tree: dataTree })
 	let table = tab.getTable() // table will be undefined prior to retrieve
-
-	// console.log('query.0:', { table, dataPre })
 
 	dataTree = await queryExecuteActions(
 		state,
@@ -46,30 +46,29 @@ export async function query(
 		dataTree
 	)
 
-	const result = await queryExecute(tab, queryType, new TokenApiQueryData({ tree: dataTree }))
+	const result = await queryExecute(
+		{ dataObjId: tab.dataObjId, dataObjRaw: tab.dataObjRaw },
+		queryType,
+		queryData
+	)
 	if (!result.success) return false
 
 	// successful
-	const queryData = DataObjData.loadData(result.data.dataObjData)
-	tab.dataObj = await DataObj.loadActions(result.data.dataObjRaw)
+	const resultData = DataObjData.loadData(result.data.dataObjData)
+	tab.dataObj = await DataObj.loadExtras(result.data.dataObjRaw, queryData)
 	tab.dataObjRaw = result.data.dataObjRaw
 	tab.isRetrieved = true
 
 	if (tab.dataObj) {
 		if (tab.dataObj.cardinality === DataObjCardinality.list) {
-			tab.data = queryData
-			// console.log('query.list.data:', {
-			// 	raw: result.data.dataObjData,
-			// 	tabData: tab.data,
-			// 	length: tab.data?.dataObjRowList.length
-			// })
+			tab.data = resultData
 			return true
 		}
 
 		table = tab.getTable()
-		const queryDataRecord = queryData.getData()
+		const queryDataRecord = resultData.getData()
 		let dataAction = queryDataPost(queryType, dataPre, queryDataRecord)
-		tab.data = queryData
+		tab.data = resultData
 
 		dataTree.upsertData(table, dataAction)
 		await queryExecuteActions(
@@ -152,18 +151,14 @@ function queryDataPost(queryType: TokenApiQueryType, dataPre: any, dataQuery: an
 	}
 }
 
-async function queryExecute(
-	tab: AppLevelTab,
+export async function queryExecute(
+	dataObjSource: any,
 	queryType: TokenApiQueryType,
 	queryData: TokenApiQueryData
 ) {
 	const result: ResponseBody = await apiFetch(
 		ApiFunction.dbEdgeProcessQuery,
-		new TokenApiQuery(
-			queryType,
-			new TokenApiDbDataObj({ dataObjId: tab.dataObjId, dataObjRaw: tab.dataObjRaw }),
-			queryData
-		)
+		new TokenApiQuery(queryType, new TokenApiDbDataObj(dataObjSource), queryData)
 	)
 
 	if (!result.success) {
@@ -212,7 +207,7 @@ export class ActionsQuery {
 	private constructor(actions: Array<ActionQueryFunction>) {
 		this.actions = actions
 	}
-	static async load(actions: Array<ActionQuery>) {
+	static async load(actions: Array<ActionQuery> = []) {
 		let actionsFunction: Array<ActionQueryFunction> = []
 		if (actions) {
 			for (let i = 0; i < actions.length; i++) {

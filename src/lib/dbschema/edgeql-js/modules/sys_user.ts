@@ -69,8 +69,6 @@ export type $UserRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f738
   "<createdBy[is app_cm::CmClientServiceFlow]": $.LinkDesc<_app_cm.$CmClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm::CmCsfData]": $.LinkDesc<_app_cm.$CmCsfData, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm::CmCsfData]": $.LinkDesc<_app_cm.$CmCsfData, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is app_cm::CmCsfCertification]": $.LinkDesc<_app_cm.$CmCsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is app_cm::CmCsfCertification]": $.LinkDesc<_app_cm.$CmCsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm::CmCsfCohort]": $.LinkDesc<_app_cm.$CmCsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -89,6 +87,12 @@ export type $UserRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f738
   "<createdBy[is sys_core::SysOverlayNodeFieldItems]": $.LinkDesc<_sys_core.$SysOverlayNodeFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::SysDataObjFieldItems]": $.LinkDesc<_sys_core.$SysDataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_core::SysDataObjFieldItems]": $.LinkDesc<_sys_core.$SysDataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm::CmCsfJobPlacement]": $.LinkDesc<_app_cm.$CmCsfJobPlacement, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm::CmCsfJobPlacement]": $.LinkDesc<_app_cm.$CmCsfJobPlacement, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm::CmEmployer]": $.LinkDesc<_app_cm.$CmEmployer, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm::CmEmployer]": $.LinkDesc<_app_cm.$CmEmployer, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm::CmCsfDocument]": $.LinkDesc<_app_cm.$CmCsfDocument, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm::CmCsfDocument]": $.LinkDesc<_app_cm.$CmCsfDocument, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
@@ -135,12 +139,13 @@ export type $SysStaffλShape = $.typeutil.flatten<$MgmtλShape & {
   "person": $.LinkDesc<_default.$SysPerson, $.Cardinality.One, {}, false, false,  false, false>;
   "roles": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.Many, {}, false, false,  false, false>;
   "owner": $.LinkDesc<_sys_core.$SysOrg, $.Cardinality.One, {}, false, false,  false, false>;
-  "<staffAgency[is app_cm::CmCsfCertification]": $.LinkDesc<_app_cm.$CmCsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffAdmin[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffAgency[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffInstructor[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffAdmin[is app_cm::CmCourse]": $.LinkDesc<_app_cm.$CmCourse, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffAgency[is app_cm::CmCourse]": $.LinkDesc<_app_cm.$CmCourse, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffAgency[is app_cm::CmCsfJobPlacement]": $.LinkDesc<_app_cm.$CmCsfJobPlacement, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<staffAgency[is app_cm::CmCsfDocument]": $.LinkDesc<_app_cm.$CmCsfDocument, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffAdmin": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffAgency": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<staffInstructor": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

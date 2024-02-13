@@ -19,7 +19,7 @@ export enum ApiFunction {
 	dbEdgeGetTableColumns = 'dbEdgeGetTableColumns',
 	dbEdgeGetUser = 'dbEdgeGetUser',
 	dbEdgeGetUserId = 'dbEdgeGetUserId',
-	dbEdgeInitAdmin = 'dbEdgeInitAdmin',
+	dbEdgeInit = 'dbEdgeInit',
 	sendText = 'sendText'
 }
 
@@ -82,17 +82,34 @@ export class TokenApi extends Token {
 export class TokenApiFileUpload extends TokenApi {
 	file: File | undefined
 	fileAction: TokenApiFileUploadAction
+	fileName: string | undefined
+	fileType: string | undefined
 	storageKey: string | undefined
 	constructor(
 		fileAction: TokenApiFileUploadAction,
-		storageKey: string | undefined = undefined,
+		storageKey: string | undefined,
 		file: File | undefined = undefined
 	) {
 		const clazz = 'TokenApiFileUpload'
 		super()
 		this.file = file
 		this.fileAction = fileAction
+		this.fileName = file ? file.name : undefined
+		this.fileType = file ? file.type : undefined
 		this.storageKey = storageKey
+	}
+}
+
+export class TokenApiFileUploadData {
+	fileName: string
+	fileType: string
+	isImage: boolean
+	storageKey: string
+	constructor(storageKey: string, fileName: string, fileType: string) {
+		this.fileName = fileName
+		this.storageKey = storageKey
+		this.fileType = fileType
+		this.isImage = fileType ? fileType.includes('image') : false
 	}
 }
 
@@ -244,8 +261,10 @@ export class TokenApiDbTableColumns {
 }
 
 export enum TokenApiQueryType {
+	dataObj = 'dataObj',
 	delete = 'delete',
 	expression = 'expression',
+	fieldItems = 'fieldItems',
 	new = 'new',
 	none = 'none',
 	retrieve = 'retrieve',

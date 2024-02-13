@@ -28,10 +28,7 @@
 		// <temp> - 240125
 		const state: State = $drawerStore.meta.state
 		const userId = state.user!.id
-		const result: ResponseBody = await apiFetch(
-			ApiFunction.dbEdgeInitAdmin,
-			new TokenApiUserId(userId)
-		)
+		const result: ResponseBody = await apiFetch(ApiFunction.dbEdgeInit, new TokenApiUserId(userId))
 		if (result.success) {
 			closeDrawer()
 			await state.resetUser(true)

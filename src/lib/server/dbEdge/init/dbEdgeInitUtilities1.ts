@@ -91,6 +91,7 @@ export async function userUserType(params: any) {
 }
 
 export async function codeTypes(params: any) {
+	sectionHeader('Code Types')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -107,6 +108,7 @@ export async function codeTypes(params: any) {
 }
 
 export async function codes(params: any) {
+	sectionHeader('Codes')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -124,6 +126,7 @@ export async function codes(params: any) {
 }
 
 export async function nodeObjHeaders(params: any) {
+	sectionHeader('Node Headers')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -144,6 +147,7 @@ export async function nodeObjHeaders(params: any) {
 }
 
 export async function nodeObjPages(params: any) {
+	sectionHeader('Node Pages')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -165,6 +169,7 @@ export async function nodeObjPages(params: any) {
 }
 
 export async function nodeObjPrograms(params: any) {
+	sectionHeader('Node Programs')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -184,6 +189,7 @@ export async function nodeObjPrograms(params: any) {
 }
 
 export async function widgets(params: any) {
+	sectionHeader('Widgets')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -199,6 +205,7 @@ export async function widgets(params: any) {
 }
 
 export async function userTypeResourcesApps(params: any) {
+	sectionHeader('User Type Resource - Apps')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -214,6 +221,7 @@ export async function userTypeResourcesApps(params: any) {
 }
 
 export async function userTypeResourcesPrograms(params: any) {
+	sectionHeader('User Type Resources - Programs')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -231,6 +239,7 @@ export async function userTypeResourcesPrograms(params: any) {
 }
 
 export async function userTypeResourcesWidgets(params: any) {
+	sectionHeader('User Type Resource - Widgets')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -246,6 +255,7 @@ export async function userTypeResourcesWidgets(params: any) {
 }
 
 export async function tables(data: any) {
+	sectionHeader('Tables')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -263,6 +273,7 @@ export async function tables(data: any) {
 }
 
 export async function tableColumns(data: any) {
+	sectionHeader('Table Columns')
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
 			return e.update(e.sys_db.SysTable, (t) => ({
@@ -277,6 +288,7 @@ export async function tableColumns(data: any) {
 }
 
 export async function addOrgs(params: any) {
+	sectionHeader('Orgs')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -293,6 +305,7 @@ export async function addOrgs(params: any) {
 }
 
 export async function addRoleOrg(params: any) {
+	sectionHeader('Org - Roles')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -308,6 +321,7 @@ export async function addRoleOrg(params: any) {
 }
 
 export async function addStaff(params: any) {
+	sectionHeader('Staff')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -326,6 +340,7 @@ export async function addStaff(params: any) {
 }
 
 export async function addRoleStaff(params: any) {
+	sectionHeader('Staff - Roles')
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params({ data: e.json }, (params) => {
 		return e.for(e.json_array_unpack(params.data), (i) => {
@@ -350,7 +365,6 @@ export class ResetDb {
 	constructor(owner: string = '') {
 		this.owner = owner
 		this.query = ''
-		console.log('ResetDb.constructor...')
 	}
 	addStatement(statement: string) {
 		this.query += statement + ';\n'
@@ -367,10 +381,29 @@ export class ResetDb {
 		const filter = this.owner ? `FILTER .owner.name = '${this.owner}'` : ''
 		this.addStatement(`DELETE ${table} ${filter}`)
 	}
+	delCodeType(codeTypeName: string) {
+		this.addStatement(`DELETE sys_core::SysCode FILTER .codeType.name = '${codeTypeName}'`)
+		this.addStatement(`DELETE sys_core::SysCodeType FILTER .name = '${codeTypeName}'`)
+	}
+	delColumn(name: string) {
+		this.addStatement(`DELETE sys_db::SysColumn FILTER .name = '${name}'`)
+	}
+	delDataObj(name: string) {
+		this.addStatement(`DELETE sys_core::SysDataObj FILTER .name = '${name}'`)
+	}
+	delFieldItems(name: string) {
+		this.addStatement(`DELETE sys_core::SysDataObjFieldItems FILTER .name = '${name}'`)
+	}
+	delNodeObj(name: string) {
+		this.addStatement(`DELETE sys_core::SysNodeObj FILTER .name = '${name}'`)
+	}
+	delTable(name: string) {
+		this.addStatement(`DELETE sys_db::SysTable FILTER .name = '${name}'`)
+	}
 	async execute() {
-		sectionHeader('Reset DB')
+		sectionHeader('Execute DB Transaction')
 		console.log(this.query)
-		await execute(this.query)
+		if (this.query) await execute(this.query)
 		this.query = ''
 	}
 }

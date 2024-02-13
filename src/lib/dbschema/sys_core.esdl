@@ -21,7 +21,7 @@ module sys_core {
     addr1: str;
     addr2: str;
     city: str;
-    state: sys_core::SysCodeType;
+    codeState: sys_core::SysCode;
     zip: str;
   }
 

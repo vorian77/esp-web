@@ -1,17 +1,13 @@
-import { addDataObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-const FILE = 'initCMStudent'
-
-export default async function init() {
-	console.log()
-	console.log(`${FILE}.start...`)
+export default async function initDOCMStudent() {
+	sectionHeader('DataObject - CM-Student')
 	await initCMStudent()
 	await initStudentCsf()
 	await initStudentCsfCohort()
 	await initStudentCsfCohortAttd()
-	await initStudentCsfCertification()
 	await initStudentCsfNote()
-	console.log(`${FILE}.end`)
 }
 
 async function initCMStudent() {
@@ -122,9 +118,9 @@ async function initCMStudent() {
 				columnName: 'codeGender',
 				dbOrderSelect: 60,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_person_gender' },
-				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
@@ -132,9 +128,9 @@ async function initCMStudent() {
 				columnName: 'codeRace',
 				dbOrderSelect: 70,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_person_race' },
-				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
@@ -142,9 +138,9 @@ async function initCMStudent() {
 				columnName: 'codeEthnicity',
 				dbOrderSelect: 80,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_person_ethnicity' },
-				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeElement: 'custom',
@@ -158,6 +154,13 @@ async function initCMStudent() {
 				codeElement: 'tel',
 				columnName: 'phoneMobile',
 				dbOrderSelect: 120,
+				indexTable: '1'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'tel',
+				columnName: 'phoneAlt',
+				dbOrderSelect: 125,
 				indexTable: '1'
 			},
 			{
@@ -191,9 +194,9 @@ async function initCMStudent() {
 				columnName: 'codeState',
 				dbOrderSelect: 170,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_sys_state' },
-				link: { columnsDisplay: ['header'], table: { module: 'sys_core', name: 'SysCode' } }
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeAccess: 'optional',
@@ -255,6 +258,24 @@ async function initCMStudent() {
 				isDisplay: true
 			}
 		]
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_student_list',
+		header: 'Students',
+		name: 'node_obj_cm_student_list',
+		order: 20,
+		owner: 'app_cm',
+		parentNodeName: 'node_pgm_cm_staff_provider'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_student_detail',
+		header: 'Student',
+		name: 'node_obj_cm_student_detail',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_student_list'
 	})
 }
 
@@ -397,7 +418,7 @@ async function initStudentCsf() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_service_flow_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -474,6 +495,24 @@ async function initStudentCsf() {
 				isDisplay: true
 			}
 		]
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_client_service_flow_list',
+		header: 'Service Flows',
+		name: 'node_obj_cm_service_flow_list',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_student_detail'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_client_service_flow_detail',
+		header: 'Service Flow',
+		name: 'node_obj_cm_service_flow_detail',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_service_flow_list'
 	})
 }
 
@@ -594,7 +633,7 @@ async function initStudentCsfCohort() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_index_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_index_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_service_flow_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -670,6 +709,24 @@ async function initStudentCsfCohort() {
 				isDisplay: true
 			}
 		]
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_csf_cohort_list',
+		header: 'Cohorts',
+		name: 'node_obj_cm_csf_cohort_list',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_service_flow_detail'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_csf_cohort_detail',
+		header: 'Cohort',
+		name: 'node_obj_cm_csf_cohort_detail',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_csf_cohort_list'
 	})
 }
 
@@ -796,195 +853,23 @@ async function initStudentCsfCohortAttd() {
 			}
 		]
 	})
-}
-
-async function initStudentCsfCertification() {
-	await addDataObj({
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_csf_cohort_attd_list',
+		header: 'Attendances',
+		name: 'node_obj_cm_csf_cohort_attd_list',
+		order: 10,
 		owner: 'app_cm',
-		codeComponent: 'FormList',
-		codeCardinality: 'list',
-		name: 'data_obj_cm_csf_certification_list',
-		header: 'Certifications',
-		tables: [{ index: '0', table: 'CmCsfCertification' }],
-		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
-		actionsField: ['noa_list_new'],
-		fields: [
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 10,
-				indexTable: '0',
-				isDisplay: false
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'csf',
-				dbOrderSelect: 20,
-				indexTable: '0',
-				isDisplay: false,
-				link: { columnsDisplay: ['id'] }
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'course',
-				dbOrderSelect: 30,
-				indexTable: '0',
-				link: { columnsDisplay: ['name'] }
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'codeCertification',
-				dbOrderSelect: 40,
-				indexTable: '0',
-				link: { columnsDisplay: ['name'] }
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'dateIssued',
-				dbOrderSelect: 50,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'dateExpires',
-				dbOrderSelect: 60,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'note',
-				dbOrderSelect: 60,
-				indexTable: '0',
-				isDisplay: false
-			}
-		]
+		parentNodeName: 'node_obj_cm_csf_cohort_detail'
 	})
-
-	await addDataObj({
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_csf_cohort_attd_detail',
+		header: 'Attendance',
+		name: 'node_obj_cm_csf_cohort_attd_detail',
+		order: 10,
 		owner: 'app_cm',
-		codeComponent: 'FormDetail',
-		codeCardinality: 'detail',
-		name: 'data_obj_cm_csf_certification_detail',
-		header: 'Certification',
-		tables: [{ index: '0', table: 'CmCsfCertification' }],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
-		actionsQuery: [
-			{
-				name: 'qa_file_storage',
-				parms: { imageField: 'imageCertification' },
-				triggers: [
-					{ type: 'retrieve', timing: 'post' },
-					{ type: 'saveInsert', timing: 'pre' },
-					{ type: 'saveUpdate', timing: 'pre' },
-					{ type: 'saveInsert', timing: 'post' },
-					{ type: 'saveUpdate', timing: 'post' }
-				]
-			}
-		],
-		fields: [
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 10,
-				indexTable: '0',
-				isDisplay: false
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'csf',
-				dbOrderSelect: 20,
-				indexTable: '0',
-				isDisplay: false,
-				link: {
-					exprSave:
-						'(SELECT app_cm::CmClientServiceFlow filter.id = (<uuid,tree,CmClientServiceFlow.id>))',
-					table: { module: 'app_cm', name: 'CmClientServiceFlow' }
-				}
-			},
-			{
-				codeElement: 'select',
-				columnName: 'course',
-				dbOrderSelect: 30,
-				indexTable: '0',
-				itemsDb: 'il_cm_course_by_csfId_status',
-				itemsDbParms: { status: 'Completed' },
-				link: { table: { module: 'app_cm', name: 'CmCourse' } }
-			},
-			{
-				codeElement: 'select',
-				columnName: 'codeCertification',
-				dbOrderSelect: 40,
-				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
-				itemsDbParms: { codeTypeName: 'ct_cm_course_cert' },
-				link: { table: { module: 'sys_core', name: 'SysCode' } }
-			},
-			{
-				codeElement: 'date',
-				columnName: 'dateIssued',
-				dbOrderSelect: 50,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'date',
-				columnName: 'dateExpires',
-				dbOrderSelect: 60,
-				indexTable: '0'
-			},
-			{
-				codeElement: 'select',
-				columnName: 'staffAgency',
-				dbOrderSelect: 70,
-				indexTable: '0',
-				itemsDb: 'il_sys_role_staff_by_codeName',
-				itemsDbParms: { codeName: 'cm_training_role_staff_agency' },
-				link: { table: { module: 'sys_user', name: 'SysStaff' } }
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'file',
-				columnName: 'imageCertification',
-				dbOrderSelect: 80,
-				indexTable: '0',
-				width: 300
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'textArea',
-				columnName: 'note',
-				dbOrderSelect: 90,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdAt',
-				dbOrderSelect: 200,
-				indexTable: '0',
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'createdBy',
-				dbOrderSelect: 210,
-				indexTable: '0',
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'modifiedAt',
-				dbOrderSelect: 220,
-				indexTable: '0',
-				isDisplay: true
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'modifiedBy',
-				dbOrderSelect: 230,
-				indexTable: '0',
-				isDisplay: true
-			}
-		]
+		parentNodeName: 'node_obj_cm_csf_cohort_attd_list'
 	})
 }
 
@@ -1073,7 +958,7 @@ async function initStudentCsfNote() {
 				columnName: 'codeType',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeTypeName',
+				itemsDb: 'il_sys_code_order_name_by_codeType_name',
 				itemsDbParms: { codeTypeName: 'ct_cm_case_note_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
@@ -1113,5 +998,23 @@ async function initStudentCsfNote() {
 				isDisplay: true
 			}
 		]
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_csf_note_list',
+		header: 'Case Notes',
+		name: 'node_obj_cm_csf_note_list',
+		order: 5,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_service_flow_detail'
+	})
+	await addNodeProgramObj({
+		codeIcon: 'application',
+		dataObj: 'data_obj_cm_csf_note_detail',
+		header: 'Case Note',
+		name: 'node_obj_cm_csf_note_detail',
+		order: 10,
+		owner: 'app_cm',
+		parentNodeName: 'node_obj_cm_csf_note_list'
 	})
 }

@@ -728,7 +728,6 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is app_cm::CmServiceFlow]": $.LinkDesc<_app_cm.$CmServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmClientServiceFlow]": $.LinkDesc<_app_cm.$CmClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCsfData]": $.LinkDesc<_app_cm.$CmCsfData, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is app_cm::CmCsfCertification]": $.LinkDesc<_app_cm.$CmCsfCertification, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCsfCohort]": $.LinkDesc<_app_cm.$CmCsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCsfNote]": $.LinkDesc<_app_cm.$CmCsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -744,6 +743,9 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is sys_core::SysDataObjColumn]": $.LinkDesc<_sys_core.$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysOverlayNodeFieldItems]": $.LinkDesc<_sys_core.$SysOverlayNodeFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysDataObjFieldItems]": $.LinkDesc<_sys_core.$SysDataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCsfJobPlacement]": $.LinkDesc<_app_cm.$CmCsfJobPlacement, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmEmployer]": $.LinkDesc<_app_cm.$CmEmployer, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is app_cm::CmCsfDocument]": $.LinkDesc<_app_cm.$CmCsfDocument, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<intersection_of": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<subject": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

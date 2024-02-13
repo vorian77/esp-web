@@ -1,8 +1,10 @@
 <script lang="ts">
 	import type { FieldFile } from '$comps/form/fieldFile'
 	import { getToastStore } from '@skeletonlabs/skeleton'
-	import { TokenApiFileUpload, TokenApiFileUploadAction } from '$lib/api'
-	import { getURLDownload, objDelete, objExists, objUpload } from '$utils/utils.aws'
+	import { TokenApiFileUpload, TokenApiFileUploadAction, TokenApiFileUploadData } from '$lib/api'
+	import { getURLDownload } from '$utils/utils.aws'
+	import DataViewer from '$comps/DataViewer.svelte'
+	import { size } from '@floating-ui/dom'
 
 	const FILENAME = '$comps/form/FormElFile.svelte'
 
@@ -21,8 +23,8 @@
 	let elInput: any
 	let mode: Mode = Mode.unchanged
 	let storageAction: TokenApiFileUploadAction
+	let storageData: TokenApiFileUploadData | undefined
 	let storageKeyAction = 'none'
-	let storageKeyField: string | undefined
 	let imgFileName: string
 
 	let labelSelect: string
@@ -33,24 +35,24 @@
 	$: labelSelect = imgFileName ? 'Choose New ' + field.label : 'Choose ' + field.label
 
 	$: {
-		setState(field.valueCurrent)
+		initState(field.valueCurrent)
 
 		// set mode
-		if (!equals(storageKeyField, storageKeyAction) && mode !== Mode.changing) {
+		if (!equals(storageData?.storageKey, storageKeyAction) && mode !== Mode.changing) {
 			mode = Mode.unchanged
-		} else if (equals(storageKeyField, storageKeyAction) && mode === Mode.changing) {
+		} else if (equals(storageData?.storageKey, storageKeyAction) && mode === Mode.changing) {
 			mode = Mode.changed
 		}
 
 		// render image based on mode
 		if (mode === Mode.unchanged) {
 			;(async () => {
-				imgFileName = storageKeyField ? await getURLDownload(storageKeyField) : ''
+				imgFileName = storageData?.storageKey ? await getURLDownload(storageData.storageKey) : ''
 			})()
 		} else {
 			imgFileName = files && files[0] ? URL.createObjectURL(files[0]) : ''
 			// this comment required to prevent bug - always shows downloaded image
-			console.log('ElFile.source.input:', imgFileName)
+			console.log('FormElFile.source.input:', imgFileName)
 		}
 	}
 
@@ -60,39 +62,59 @@
 		mode = Mode.changing
 		storageKeyAction = 'delete'
 		elInput.value = ''
-		onChange(field.name, new TokenApiFileUpload(TokenApiFileUploadAction.delete, storageKeyField))
+		onChange(
+			field.name,
+			new TokenApiFileUpload(TokenApiFileUploadAction.delete, storageData?.storageKey)
+		)
 	}
 
 	function onNew(event: Event) {
 		mode = Mode.changing
-		storageKeyAction = storageKeyField ? storageKeyField : field.getKey()
+		storageKeyAction = storageData?.storageKey ? storageData.storageKey : field.getKey()
 		onChange(
 			field.name,
 			new TokenApiFileUpload(TokenApiFileUploadAction.upload, storageKeyAction, files[0])
 		)
 	}
 
-	function setState(valueField: TokenApiFileUpload | undefined) {
-		storageAction = TokenApiFileUploadAction.none
-		storageKeyField = valueField ? valueField.storageKey : undefined
-	}
-
 	function equals(val1: any, val2: any) {
 		return JSON.stringify(val1) === JSON.stringify(val2)
 	}
+
+	function initState(valueField: TokenApiFileUploadData | undefined) {
+		storageAction = TokenApiFileUploadAction.none
+		storageData = valueField
+			? new TokenApiFileUploadData(valueField.storageKey, valueField.fileName, valueField.fileType)
+			: undefined
+	}
+
+	function isImage(fileType: string) {
+		return fileType.includes('image')
+	}
 </script>
+
+{#if field.valueCurrent}
+	<DataViewer header="imgFileName" data={imgFileName} />
+	<DataViewer header="storageData" data={storageData} />
+{/if}
 
 <fieldset>
 	<legend>{field.label}</legend>
 
 	<div>
-		<img
-			class="mx-auto p-2"
-			src={imgFileName}
-			alt={field.label}
-			width={field.width}
-			hidden={!showImg}
-		/>
+		{#if imgFileName && storageData && storageData.isImage}
+			<img
+				class="mx-auto p-2"
+				src={imgFileName}
+				alt={field.label}
+				width={field.width}
+				hidden={!showImg}
+			/>
+		{:else}
+			<div class="flex justify-center">
+				<iframe src={imgFileName} style="width:800px; height:800px;" frameborder="0"></iframe>
+			</div>
+		{/if}
 
 		<div class="flex">
 			<label class="btn variant-filled-primary mt-2 {chooseBtnWidth}" for={field.name}>
@@ -110,11 +132,14 @@
 			type="file"
 			id={field.name}
 			name={field.name}
-			accept="image/*"
+			accept="image/*,application/pdf"
 			hidden={true}
 			bind:files
 			bind:this={elInput}
 			on:change={onNew}
 		/>
 	</div>
+	{#if storageData?.fileName && storageData?.fileType}
+		Name: ({storageData.fileName}) Type: ({storageData.fileType})
+	{/if}
 </fieldset>

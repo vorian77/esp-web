@@ -9,7 +9,7 @@ import {
 	processQuery
 } from '$routes/api/dbEdge/types.dbEdge'
 import { getDataObjId } from '$routes/api/dbEdge/dbEdgeUtilities'
-import initSysAdmin from '$server/dbEdge/init/dbEdgeInitSysAdmin'
+import { dbEdgeInit } from '$server/dbEdge/init/dbEdgeInit'
 import { sendText } from '$routes/api/apiTwilio'
 import { error, type Cookies } from '@sveltejs/kit'
 
@@ -38,8 +38,8 @@ export async function POST({ request, cookies }) {
 		case ApiFunction.dbEdgeGetUserId:
 			return getServerResponse({ userId: await getUserIdByUserName(token) })
 
-		case ApiFunction.dbEdgeInitAdmin:
-			await initSysAdmin()
+		case ApiFunction.dbEdgeInit:
+			await dbEdgeInit()
 			return getServerResponse({})
 
 		case ApiFunction.dbEdgeProcessQuery:

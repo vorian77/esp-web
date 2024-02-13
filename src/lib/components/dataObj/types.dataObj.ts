@@ -14,15 +14,10 @@ import {
 	Validity,
 	ValidityError,
 	ValidityErrorLevel,
-	ValidityField
+	ValidityField,
+	EdgeQL
 } from '$comps/types'
-import {
-	type Field,
-	FieldAccess,
-	FieldElement,
-	type FieldItemsRecord,
-	type FieldRaw
-} from '$comps/form/field'
+import { type Field, FieldAccess, FieldElement, type FieldRaw } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 import { FieldChips } from '$comps/form/fieldChips'
 import {
@@ -39,7 +34,8 @@ import { FieldRadio } from '$comps/form/fieldRadio'
 import { FieldSelect } from '$comps/form/fieldSelect'
 import { FieldTextarea } from '$comps/form/fieldTextarea'
 import { FieldToggle } from '$comps/form/fieldToggle'
-import { ActionsQuery, ActionQuery } from '$comps/nav/types.appQuery'
+import { ActionsQuery, ActionQuery, queryExecute } from '$comps/nav/types.appQuery'
+import { TokenApiQueryData, TokenApiQueryType } from '$lib/api'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/dataObj/types.dataObj.ts'
@@ -105,19 +101,33 @@ export class DataObj {
 		})
 		return newActions
 	}
-	static async loadActions(dataObjRaw: DataObjRaw) {
+	static async loadExtras(dataObjRaw: DataObjRaw, queryData: TokenApiQueryData) {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField()
 		await loadActionsQuery()
+		await loadFieldItems(dataObj.fields)
 		return dataObj
 
 		async function loadActionsField() {
-			dataObj.fields.forEach(async (f) => {
+			for (const f of dataObj.fields) {
 				if (f instanceof FieldCustomAction) await f.initAction()
-			})
+			}
 		}
 		async function loadActionsQuery() {
 			dataObj.actionsQuery = await ActionsQuery.load(dataObjRaw.actionsQuery)
+		}
+		async function loadFieldItems(fields: Array<Field>) {
+			for (const field of fields) {
+				if (field.itemsDb) {
+					queryData.replaceParms({ ...field.itemsDb.parms, field })
+					const result = await queryExecute(
+						{ dataObjName: dataObj.name },
+						TokenApiQueryType.fieldItems,
+						queryData
+					)
+					field.items = result.data
+				}
+			}
 		}
 	}
 
@@ -138,6 +148,7 @@ export class DataObj {
 						record[f.name] = f.valueCurrent
 					}
 				})
+				// console.log('types.dataObj.getObjData', { record })
 				data = new DataObjRecordRow(this.data.getRowStatus(), record)
 				break
 
@@ -183,9 +194,6 @@ export class DataObj {
 					} else if (status === DataObjRecordStatus.updated) {
 						// console.log('update - copying: ', f.name)
 						f.valueInitial = f.copyValue(f.valueCurrent)
-					}
-					if (dataRow.items && Object.hasOwn(dataRow.items, f.name)) {
-						f.items = dataRow.items[f.name]
 					}
 				})
 				// console.log('dataObj.objData.fields:', this.fields)
@@ -401,14 +409,14 @@ export class DataObjData {
 		const clazz = 'DataObjData'
 		this.cardinality = cardinality
 		if (data === undefined) {
-			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {}, {})
+			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {})
 			this.dataObjRowList = []
 		} else if (cardinality === DataObjCardinality.detail) {
 			this.dataObjRow = Array.isArray(data) ? data[0] : data
 			this.dataObjRowList = []
 		} else {
 			this.dataObjRowList = data
-			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {}, {})
+			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {})
 		}
 	}
 	getData() {
@@ -504,11 +512,9 @@ export interface DataObjRaw {
 export type DataObjRecord = Record<string, any>
 
 export class DataObjRecordRow {
-	items: FieldItemsRecord = {}
 	record: DataObjRecord = {}
 	status: DataObjRecordStatus
-	constructor(status: DataObjRecordStatus, record: DataObjRecord, items: FieldItemsRecord = {}) {
-		this.items = items
+	constructor(status: DataObjRecordStatus, record: DataObjRecord) {
 		this.record = record
 		this.status = status
 	}
