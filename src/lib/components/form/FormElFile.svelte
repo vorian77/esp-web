@@ -93,10 +93,10 @@
 	}
 </script>
 
-{#if field.valueCurrent}
+<!-- {#if field.valueCurrent}
 	<DataViewer header="imgFileName" data={imgFileName} />
 	<DataViewer header="storageData" data={storageData} />
-{/if}
+{/if} -->
 
 <fieldset>
 	<legend>{field.label}</legend>
