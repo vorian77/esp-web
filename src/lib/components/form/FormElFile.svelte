@@ -93,18 +93,13 @@
 	}
 </script>
 
-<!-- {#if field.valueCurrent}
-	<DataViewer header="imgFileName" data={imgFileName} />
-	<DataViewer header="storageData" data={storageData} />
-{/if} -->
-
 <fieldset>
 	<legend>{field.label}</legend>
 
 	<div>
 		{#if imgFileName && storageData && storageData.isImage}
 			<img class="mx-auto p-2" src={imgFileName} alt={field.label} width="80%" hidden={!showImg} />
-		{:else}
+		{:else if imgFileName && storageData && storageData.isPDF}
 			<div class="flex justify-center">
 				<iframe src={imgFileName} width="80%" height="600px" title={field.label} frameborder="0" />
 			</div>

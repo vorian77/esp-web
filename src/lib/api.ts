@@ -104,12 +104,15 @@ export class TokenApiFileUploadData {
 	fileName: string
 	fileType: string
 	isImage: boolean
+	isPDF: boolean
 	storageKey: string
 	constructor(storageKey: string, fileName: string, fileType: string) {
 		this.fileName = fileName
 		this.storageKey = storageKey
 		this.fileType = fileType
 		this.isImage = fileType ? fileType.includes('image') : false
+		this.isPDF = fileType ? fileType.includes('pdf') : false
+		console.log('TokenApiFileUploadData', this)
 	}
 }
 
