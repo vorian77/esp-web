@@ -141,8 +141,12 @@
 		drawerStore.open(settings)
 	}
 	function goHome() {
-		console.log('goHome...')
-		goto('/home')
+		// console.log('goHome...')
+		// goto('/home')
+		// packet = new StatePacket({
+		//             component: StatePacketComponent.navTree,
+		//             token: new TokenAppTreeReset()
+		//         })
 	}
 	async function askB4Transition(obj: any, confirm: TokenAppDoDetailConfirm) {
 		console.log('askB4Transition:', { obj, confirm })
