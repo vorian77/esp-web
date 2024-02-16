@@ -57,13 +57,13 @@
 			})
 			const response: ResponseBody = await responsePromise.json()
 
-			if (!response.data.url) {
-				error(500, {
-					file: FILENAME,
-					function: 'getURL',
-					message: `Unable to retrieve URL for ${action} - storage key: ${imgStorageKey}`
-				})
-			}
+			// if (!response.data.url) {
+			// 	error(500, {
+			// 		file: FILENAME,
+			// 		function: 'getURL',
+			// 		message: `Unable to retrieve URL for ${action} - storage key: ${imgStorageKey}`
+			// 	})
+			// }
 			return response.data.url
 		}
 

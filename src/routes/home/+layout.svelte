@@ -141,6 +141,7 @@
 		drawerStore.open(settings)
 	}
 	function goHome() {
+		console.log('goHome...')
 		goto('/home')
 	}
 	async function askB4Transition(obj: any, confirm: TokenAppDoDetailConfirm) {
