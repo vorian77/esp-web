@@ -207,15 +207,6 @@
 	</svelte:fragment>
 
 	<div class="mx-3 mt-2">
-		<!-- <DataViewer
-			header="state"
-			data={{
-				page: state?.page,
-				nodeType: state?.nodeType,
-				hasChanged: state?.objHasChanged,
-				validToSave: state?.objValidToSave
-			}}
-		/> -->
 		{#if $page.route.id === '/home'}
 			{#if state?.nodeType === NodeType.home}
 				<NavHome />
@@ -227,7 +218,6 @@
 		{/if}
 	</div>
 
-	<!-- <DataViewer header="nodeType" data={state.nodeType} /> -->
 	<svelte:fragment slot="footer">
 		<div style="border-top: 1px solid #f5f5f5;">
 			<NavFooter {state} />

@@ -2,19 +2,20 @@ import { addUser, addUserOrg } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import {
 	addRoleOrg,
 	addRoleStaff,
-	addStaff, nodeObjPrograms,
+	addStaff,
+	nodeObjPrograms,
 	userType,
-	userTypeResourcesApps, userTypeResourcesPrograms, userTypeResourcesWidgets,
+	userTypeResourcesApps,
+	userTypeResourcesPrograms,
+	userTypeResourcesWidgets,
 	userUserType,
 	widgets
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
-
 
 await initUserResources()
 await initUsers()
 
 async function initUserResources() {
-
 	await nodeObjPrograms([
 		['app_cm', 'node_pgm_cm_staff_adm', 'AI-Role: Admin', 50, 'application'],
 		['app_cm', 'node_pgm_cm_staff_provider', 'AI-Role: Provider', 60, 'application'],
@@ -78,35 +79,29 @@ async function initUserResources() {
 	])
 }
 
-
-
 async function initUsers() {
 	await addUser({
 		firstName: 'Anise',
 		lastName: 'Hayes',
 		owner: 'Atlantic Impact',
-		password: 'Atlantic99!',
 		userName: '2482317505'
 	})
 	await addUser({
 		firstName: 'Matthew',
 		lastName: 'Clayton',
 		owner: 'Atlantic Impact',
-		password: 'Atlantic99!',
 		userName: '3136276210'
 	})
 	await addUser({
 		firstName: 'Erica',
 		lastName: 'Hicks',
 		owner: 'Atlantic Impact',
-		password: 'Atlantic99!',
 		userName: '3136272756'
 	})
 	await addUser({
 		firstName: 'Phyllip',
 		lastName: 'Hall',
 		owner: 'Atlantic Impact',
-		password: 'JakeDog#1',
 		userName: '2487985578'
 	})
 

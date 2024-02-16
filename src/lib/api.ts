@@ -1,4 +1,5 @@
 import { Token } from '$comps/types.master'
+import { TokenAppDoList } from '$comps/nav/types.appState'
 import {
 	type DataObjData,
 	type DataObjRecord,
@@ -174,13 +175,14 @@ export class TokenApiQueryDataTree {
 	constructor(levels: Array<TokenApiQueryDataTreeLevel> = []) {
 		this.levels = levels
 	}
-	upsertData(table: string | undefined, data: any) {
+	upsertData(table: string | undefined, data: any, listFilterIds: Array<string> = []) {
 		if (table) {
 			const idx = this.levels.findIndex((t) => t.table === table)
 			if (idx >= 0) {
 				this.levels[idx].data = data
+				if (listFilterIds) this.levels[idx].listFilterIds = listFilterIds
 			} else {
-				this.levels.push(new TokenApiQueryDataTreeLevel(table, data))
+				this.levels.push(new TokenApiQueryDataTreeLevel(table, data, listFilterIds))
 			}
 		}
 	}
@@ -207,6 +209,12 @@ export class TokenApiQueryDataTree {
 		}
 	}
 
+	getListFilterIds(table: string | undefined) {
+		if (!table) return []
+		const level = this.levels.find((l) => l.table === table)
+		return level ? level.listFilterIds : []
+	}
+
 	setFieldData(table: string | undefined, fieldName: string, value: any) {
 		const record = this.getRecord(table)
 		if (fieldName && record && Object.hasOwn(record, fieldName)) {
@@ -224,10 +232,12 @@ export class TokenApiQueryDataTree {
 }
 
 export class TokenApiQueryDataTreeLevel {
-	table: string
 	data: DataObjRecord
-	constructor(table: string, data: DataObjRecord) {
+	listFilterIds: Array<string> = []
+	table: string
+	constructor(table: string, data: DataObjRecord, listFilterIds: Array<string> = []) {
 		this.data = data
+		this.listFilterIds = listFilterIds
 		this.table = table
 	}
 }

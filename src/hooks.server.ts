@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit'
 
 const FILENAME = 'hooks.server'
 
-const routesUnprotected = ['/about', '/auth', '/legalDisclosure']
+const routesUnprotected = ['/about', '/auth', '/legalDisclosure', '/test']
 
 // <temp> - 240206 - possible way to control user reload of a page
 // function beforeNavigate(

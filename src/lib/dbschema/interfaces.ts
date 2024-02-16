@@ -70,6 +70,8 @@ export namespace app_cm {
     "isCohortRequired"?: string | null;
     "note"?: string | null;
     "schedule"?: string | null;
+    "dateEnd"?: edgedb.LocalDate | null;
+    "dateStart"?: edgedb.LocalDate | null;
   }
   export interface CmCourse extends sys_core.SysObj {
     "cost"?: number | null;

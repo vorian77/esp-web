@@ -115,7 +115,7 @@ function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undef
 			if (dataObj) {
 				if (dataObj.cardinality === DataObjCardinality.list) {
 					if (currTab.currRow !== undefined && currTab.currRow > -1) {
-						dataTree.upsertData(dataObj.table?.name, currTab.getDataList())
+						dataTree.upsertData(dataObj.table?.name, currTab.getDataList(), currTab.listFilterIds)
 					}
 				} else {
 					if (currTab.data) dataTree.upsertData(dataObj.table?.name, currTab.getDataDetail())
@@ -207,7 +207,7 @@ export class ActionsQuery {
 	private constructor(actions: Array<ActionQueryFunction>) {
 		this.actions = actions
 	}
-	static async load(actions: Array<ActionQuery> = []) {
+	static async load(actions: Array<ActionQuery> | null | undefined) {
 		let actionsFunction: Array<ActionQueryFunction> = []
 		if (actions) {
 			for (let i = 0; i < actions.length; i++) {

@@ -21,6 +21,8 @@ module app_cm {
       capacity: int16;
       codeStatus: sys_core::SysCode;
       required course: app_cm::CmCourse;
+      dateEnd: cal::local_date;
+      dateStart: cal::local_date;
       isCohortRequired: str;
       note: str;
       schedule: str;
@@ -29,7 +31,6 @@ module app_cm {
       staffInstructor: sys_user::SysStaff;
       venue: sys_core::SysOrg;
     }
-
 
   # Service Flow
   type CmServiceFlow extending sys_core::SysObj {}

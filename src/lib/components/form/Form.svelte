@@ -115,7 +115,7 @@
 							break
 
 						case TokenAppDoAction.detailNew:
-							app.getCurrLevel().getCurrTab().setCurrRowByNum('')
+							app.getCurrLevel().getCurrTab().setCurrRowById('')
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
@@ -143,7 +143,7 @@
 
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
-								app.getCurrLevel().getCurrTab().setCurrRowByNum(token.recordId)
+								app.getCurrLevel().getCurrTab().initList(token)
 								await app.addLevel(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
@@ -263,6 +263,7 @@
 	<AppShell slotSidebarLeft="w-0 md:w-52">
 		<svelte:fragment slot="header">
 			{@const hidden = crumbsList.length < 2 ? 'hidden' : ''}
+
 			<AppBar background="bg-neutral-200 {hidden}" padding="p-3">
 				<svelte:fragment slot="lead">
 					<div class="flex">

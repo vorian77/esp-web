@@ -148,9 +148,16 @@ export class TokenAppDoDetailConfirm {
 }
 
 export class TokenAppDoList extends TokenAppDo {
+	filterIDs: Array<string>
 	recordId: string
-	constructor(action: TokenAppDoAction, dataObj: DataObj, recordId: string) {
+	constructor(
+		action: TokenAppDoAction,
+		dataObj: DataObj,
+		recordId: string,
+		filterIDs: Array<string>
+	) {
 		super(action, dataObj)
+		this.filterIDs = filterIDs
 		this.recordId = recordId
 	}
 }

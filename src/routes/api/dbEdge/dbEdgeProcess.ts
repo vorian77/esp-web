@@ -51,7 +51,6 @@ export async function processQuery(token: TokenApiQuery) {
 		case TokenApiQueryType.delete:
 			dataRowStatus = DataObjRecordStatus.deleted
 			script = query.tables.queryScriptDelete(queryData)
-			// dataRowRaw = await querySingle(script)
 			rawDataList = await queryMultiple(script)
 			break
 
@@ -127,7 +126,7 @@ function checkResult(script: string, result: Record<string, any>) {
 	})
 }
 
-async function getDataObjRaw(dataObj: TokenApiDbDataObj) {
+async function getDataObjRaw(dataObj: TokenApiDbDataObj): Promise<DataObjRaw> {
 	if (dataObj.dataObjRaw) {
 		return dataObj.dataObjRaw
 	} else if (dataObj.dataObjId) {

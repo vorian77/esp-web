@@ -12,6 +12,7 @@ import { apiFetch, ApiFunction, TokenApiQueryType, TokenApiQuery } from '$lib/ap
 import { query } from '$comps/nav/types.appQuery'
 import {
 	State,
+	TokenAppDoList,
 	TokenAppTreeNodeId,
 	TokenAppCrumbs,
 	TokenAppDoDetail
@@ -206,6 +207,7 @@ export class AppLevelTab {
 	isRetrieved: boolean = false
 	label: string
 	levelIdx: number
+	listFilterIds: Array<string> = []
 	nodeId: string
 	private constructor(
 		levelIdx: number,
@@ -234,6 +236,15 @@ export class AppLevelTab {
 	}
 	static initNode(levelIdx: number, idx: number, node: NodeApp) {
 		return new AppLevelTab(levelIdx, idx, node.dataObjId, node.label, node.id)
+	}
+
+	filterList() {
+		if (this.listFilterIds.length > 0 && this.data?.dataObjRowList) {
+			const newList = this.data?.dataObjRowList.filter((row) => {
+				return this.listFilterIds.includes(row.record.id)
+			})
+			this.data.dataObjRowList = newList
+		}
 	}
 
 	getCrumbLabelId() {
@@ -268,6 +279,12 @@ export class AppLevelTab {
 	getTable() {
 		return this.dataObj?.table?.name
 	}
+	initList(token: TokenAppDoList) {
+		this.listFilterIds = token.filterIDs
+		console.log('initList.ids', this.listFilterIds)
+		this.filterList()
+		this.setCurrRowById(token.recordId)
+	}
 	reset() {
 		this.isRetrieved = false
 	}
@@ -301,7 +318,7 @@ export class AppLevelTab {
 		}
 		this.currRow = newRow
 	}
-	setCurrRowByNum(recordId: string) {
+	setCurrRowById(recordId: string) {
 		if (this.data) {
 			this.currRow = this.data.dataObjRowList.findIndex((row) => {
 				return row.record.id === recordId
@@ -314,15 +331,16 @@ export class AppLevelTab {
 	async updateParentList(state: State, currTab: AppLevelTab, app: App) {
 		this.reset()
 		await query(state, this, TokenApiQueryType.retrieve, app)
-		// set parent list curr row
-		let rowIdx = -1
-		if (
-			this.data &&
-			currTab.data?.dataObjRow &&
-			Object.hasOwn(currTab.data.dataObjRow, 'record') &&
-			currTab.data.hasRecord()
-		) {
-			this.setCurrRowByNum(currTab.data.getRecordValue('id'))
+
+		if (currTab.data) {
+			// filter data list
+			const id = currTab.data.getRecordValue('id')
+			if (this.listFilterIds.length > 0 && !this.listFilterIds.includes(id))
+				this.listFilterIds.push(id)
+			this.filterList()
+
+			// set parent list curr row
+			this.setCurrRowById(id)
 		}
 	}
 }

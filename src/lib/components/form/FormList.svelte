@@ -20,13 +20,17 @@
 	let scrollToTop = () => {}
 
 	const ROW_PER_PAGE = 20
+	const DATA_FIELD = 'data'
 
+	// const handler = new DataHandler([])
 	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
+
 	const rows = handler.getRows()
+	let sort = handler.getSort()
 	const selected = handler.getSelected()
 	const isAllSelected = handler.isAllSelected()
 	const isSelect = state.overlayNodeFieldItems !== undefined
-	const fieldItemsDataField = 'data'
+	let rowsCount = 0
 
 	if (isSelect && state.overlayNodeFieldItems) {
 		state.overlayNodeFieldItems.itemsSelected.forEach((i) => handler.select(i))
@@ -36,6 +40,8 @@
 
 	$: {
 		dataObj.objData = dataObjData
+		rowsCount = dataObj?.dataListRecord.length || 0
+		console.log('FormList.reactive.rowsCount:', rowsCount)
 		handler.setRows(dataObj.dataListRecord)
 		handler.setPage(1)
 		handler.clearFilters()
@@ -55,11 +61,18 @@
 	}
 
 	async function onClick(record: any) {
+		console.log('formList.onClick', {
+			rowsCount,
+			rowsLength: $rows.length,
+			dataListRecLen: dataObj.dataListRecord.length
+		})
+		// const listFilterIDs = rowsCount === $rows.length ? [] : $rows.map((r) => r['id'])
+		const listFilterIDs: Array<string> = []
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: false,
 				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, record.id)
+				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, record.id, listFilterIDs)
 			})
 		})
 	}
@@ -67,69 +80,71 @@
 
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
-<Datatable {handler}>
-	<table>
-		<thead>
-			<tr>
-				{#if isSelect}
-					<th class="selection">
-						<input
-							type="checkbox"
-							on:click={() => handler.selectAll({ selectBy: fieldItemsDataField })}
-							checked={$isAllSelected}
-						/>
-					</th>
-				{/if}
-				{#if dataObj.fields}
-					{#each dataObj.fields as field}
-						{#if field.isDisplayable && field.isDisplay}
-							<Th {handler} orderBy={field.name}>{field.label}</Th>
-						{/if}
-					{/each}
-				{/if}
-			</tr>
-			<tr>
-				{#if isSelect}
-					<th class="selection" />
-				{/if}
-				{#if dataObj.fields}
-					{#each dataObj.fields as field}
-						{#if field.isDisplayable && field.isDisplay}
-							<ThFilter {handler} filterBy={field.name} />
-						{/if}
-					{/each}
-				{/if}
-			</tr>
-		</thead>
-		<tbody>
-			{#if dataObjData}
-				{#each $rows as row, i}
-					<tr
-						class:active={$selected.includes(row[fieldItemsDataField])}
-						on:click={() => onClick(row)}
-						on:keyup={async () => await onClick(row)}
-					>
-						{#if isSelect}
-							<td class="selection">
-								<input
-									type="checkbox"
-									on:click={() => handler.select(row[fieldItemsDataField])}
-									checked={$selected.includes(row[fieldItemsDataField])}
-								/>
-							</td>
-						{/if}
+<article>
+	<Datatable {handler}>
+		<table>
+			<thead>
+				<tr>
+					{#if isSelect}
+						<th class="selection">
+							<input
+								type="checkbox"
+								on:click={() => handler.selectAll({ selectBy: DATA_FIELD })}
+								checked={$isAllSelected}
+							/>
+						</th>
+					{/if}
+					{#if dataObj.fields}
 						{#each dataObj.fields as field}
 							{#if field.isDisplayable && field.isDisplay}
-								{@const value = row[field.name]}
-								<td>{value}</td>
+								<Th {handler} orderBy={field.name}>{field.label}</Th>
 							{/if}
 						{/each}
-					</tr>
-				{/each}
-			{/if}
-		</tbody>
-	</table>
-</Datatable>
+					{/if}
+				</tr>
+				<tr>
+					{#if isSelect}
+						<th class="selection" />
+					{/if}
+					{#if dataObj.fields}
+						{#each dataObj.fields as field}
+							{#if field.isDisplayable && field.isDisplay}
+								<ThFilter {handler} filterBy={field.name} />
+							{/if}
+						{/each}
+					{/if}
+				</tr>
+			</thead>
+			<tbody>
+				{#if dataObjData}
+					{#each $rows as row, i}
+						<tr
+							class:active={$selected.includes(row[DATA_FIELD])}
+							on:click={async () => await onClick(row)}
+							on:keyup={async () => await onClick(row)}
+						>
+							{#if isSelect}
+								<td class="selection">
+									<input
+										type="checkbox"
+										on:click={() => handler.select(row[DATA_FIELD])}
+										checked={$selected.includes(row[DATA_FIELD])}
+									/>
+								</td>
+							{/if}
+							{#each dataObj.fields as field}
+								{#if field.isDisplayable && field.isDisplay}
+									{@const value = row[field.name]}
+									<td>{value}</td>
+								{/if}
+							{/each}
+						</tr>
+					{/each}
+				{/if}
+			</tbody>
+		</table>
+	</Datatable>
+</article>
 
 <!-- <DataViewer header="sort" data={sort} /> -->
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->

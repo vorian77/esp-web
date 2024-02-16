@@ -3,7 +3,6 @@ import {
 	getArray,
 	memberOfEnum,
 	memberOfEnumOrDefault,
-	required,
 	strOptional,
 	strRequired,
 	Table,
@@ -14,8 +13,7 @@ import {
 	Validity,
 	ValidityError,
 	ValidityErrorLevel,
-	ValidityField,
-	EdgeQL
+	ValidityField
 } from '$comps/types'
 import { type Field, FieldAccess, FieldElement, type FieldRaw } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
@@ -497,14 +495,13 @@ export interface DataObjRaw {
 	_fieldsDbSelectUser?: any
 	_tables?: any
 	_updateTables?: Array<any>
-	actionsQuery?: Array<ActionQuery>
+	actionsQuery?: Array<any> | null
 	description?: string | null
 	exprFilter?: string | null
 	exprObject?: string | null
 	header: string | null
 	id?: string
 	isPopup: boolean | null
-	link?: any
 	name: string
 	subHeader?: string | null
 }

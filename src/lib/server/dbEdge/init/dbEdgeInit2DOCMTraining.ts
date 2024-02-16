@@ -300,8 +300,20 @@ async function initCMTrainingCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'note',
+				columnName: 'dateStart',
 				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateEnd',
+				dbOrderSelect: 50,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'note',
+				dbOrderSelect: 60,
 				indexTable: '0'
 			}
 		]
@@ -359,6 +371,18 @@ async function initCMTrainingCohort() {
 				columnName: 'name',
 				dbOrderSelect: 50,
 				headerAlt: 'Cohort ID',
+				indexTable: '0'
+			},
+			{
+				codeElement: 'date',
+				columnName: 'dateStart',
+				dbOrderSelect: 52,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'date',
+				columnName: 'dateEnd',
+				dbOrderSelect: 54,
 				indexTable: '0'
 			},
 			{

@@ -192,6 +192,7 @@ class DataObjTables {
 
 	queryScriptSelect(querySelectItems: string, data: TokenApiQueryData) {
 		const queryFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).script
+		console.log('queryFilter:', queryFilter)
 		const queryOrder = this.queryScriptOrder()
 
 		const script = `SELECT ${this.getDbTableRoot()} {\n${querySelectItems}\n} \n${queryFilter} \n${queryOrder}`

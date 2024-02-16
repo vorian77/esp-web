@@ -34,12 +34,6 @@ async function initCMStudent() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'agencyId',
-				dbOrderSelect: 20,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
 				columnName: 'firstName',
 				dbOrderCrumb: 10,
 				dbOrderList: 20,
@@ -59,6 +53,13 @@ async function initCMStudent() {
 				columnName: 'email',
 				dbOrderSelect: 50,
 				indexTable: '1'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'agencyId',
+				dbOrderSelect: 55,
+				headerAlt: 'Group',
+				indexTable: '0'
 			}
 		]
 	})
@@ -92,11 +93,6 @@ async function initCMStudent() {
 				indexTable: '0'
 			},
 			{
-				columnName: 'agencyId',
-				dbOrderSelect: 25,
-				indexTable: '0'
-			},
-			{
 				columnName: 'firstName',
 				dbOrderSelect: 30,
 				indexTable: '1'
@@ -111,6 +107,12 @@ async function initCMStudent() {
 				columnName: 'birthDate',
 				dbOrderSelect: 50,
 				indexTable: '1'
+			},
+			{
+				columnName: 'agencyId',
+				dbOrderSelect: 55,
+				headerAlt: 'Group',
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
@@ -551,7 +553,9 @@ async function initStudentCsfCohort() {
 				dbOrderCrumb: 10,
 				dbOrderSelect: 30,
 				indexTable: '0',
-				link: { exprSelect: `(.cohort.course.name ++ ' (' ++ .cohort.name ++ ')')` }
+				link: {
+					exprSelect: `(.cohort.course.name ++ ' (' ++ .cohort.name ++ ')' ++ ' (' ++ std::to_str(<cal::local_date>.cohort.dateStart) ++ ')')`
+				}
 			},
 			{
 				codeAccess: 'readOnly',
@@ -562,17 +566,9 @@ async function initStudentCsfCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
-				codeDbListDir: 'desc',
-				codeElement: 'date',
-				columnName: 'dateReferral',
+				columnName: 'dateStart',
 				dbOrderCrumb: 20,
 				dbOrderList: 10,
-				dbOrderSelect: 50,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'dateStart',
 				dbOrderSelect: 60,
 				indexTable: '0'
 			},
@@ -639,31 +635,8 @@ async function initStudentCsfCohort() {
 			},
 			{
 				codeElement: 'date',
-				columnName: 'dateReferral',
-				dbOrderCrumb: 20,
-				dbOrderList: 10,
-				dbOrderSelect: 50,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'date',
-				columnName: 'dateStartEst',
-				dbOrderSelect: 60,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'date',
 				columnName: 'dateStart',
 				dbOrderSelect: 70,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'date',
-				columnName: 'dateEndEst',
-				dbOrderSelect: 80,
 				indexTable: '0'
 			},
 			{

@@ -256,12 +256,7 @@ export async function getDataObjById(dataObjId: string) {
 
 export async function getDataObjByName(dataObjName: string) {
 	const result = await getDataObjId(dataObjName)
-	const id = result?.id
-	if (id) {
-		return await getDataObjById(id)
-	} else {
-		return undefined
-	}
+	return result?.id ? await getDataObjById(result.id) : undefined
 }
 
 export async function getNodesBranch(token: TokenAppTreeNodeId) {
