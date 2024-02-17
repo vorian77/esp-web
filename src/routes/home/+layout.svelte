@@ -141,8 +141,8 @@
 		drawerStore.open(settings)
 	}
 	function goHome() {
-		// console.log('goHome...')
-		// goto('/home')
+		console.log('goHome...')
+		goto('/home')
 		// packet = new StatePacket({
 		//             component: StatePacketComponent.navTree,
 		//             token: new TokenAppTreeReset()
