@@ -1,6 +1,5 @@
 import {
 	booleanOrFalse,
-	getArray,
 	memberOfEnum,
 	memberOfEnumOrDefault,
 	required,
@@ -11,7 +10,6 @@ import {
 import {
 	DataFieldDataType,
 	DataFieldMask,
-	type DataObjListRecord,
 	Validation,
 	ValidationType,
 	ValidationStatus,

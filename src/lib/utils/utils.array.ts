@@ -12,7 +12,7 @@ export function getArray(obj: any) {
 	return arr
 }
 
-export function getArrayOfModels(clazz, objs) {
+export function getArrayOfModels(clazz: any, objs: any) {
 	objs = getArray(objs)
 	const arr = []
 	for (const obj of objs) {

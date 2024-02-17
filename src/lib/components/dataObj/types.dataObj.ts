@@ -108,7 +108,7 @@ export class DataObj {
 
 		async function loadActionsField() {
 			for (const f of dataObj.fields) {
-				if (f instanceof FieldCustomAction) await f.initAction()
+				// if (f instanceof FieldCustomAction) await f.initAction()
 			}
 		}
 		async function loadActionsQuery() {
@@ -224,88 +224,88 @@ export class DataObj {
 	initFields(fields: Array<FieldRaw>) {
 		fields = valueOrDefault(fields, [])
 		let list: Array<Field> = []
-		fields.forEach((field: any, index: number) => {
-			let newField: Field
+		// fields.forEach((field: any, index: number) => {
+		// 	let newField: Field
 
-			const element = memberOfEnumOrDefault(
-				field._codeElement,
-				'DataObj',
-				'element',
-				'FieldElement',
-				FieldElement,
-				FieldElement.text
-			)
+		// 	const element = memberOfEnumOrDefault(
+		// 		field._codeElement,
+		// 		'DataObj',
+		// 		'element',
+		// 		'FieldElement',
+		// 		FieldElement,
+		// 		FieldElement.text
+		// 	)
 
-			switch (element) {
-				// input
-				case FieldElement.date:
-				case FieldElement.email:
-				case FieldElement.number:
-				case FieldElement.password:
-				case FieldElement.tel:
-				case FieldElement.text:
-					newField = new FieldInput(field, index, list)
-					break
+		// 	switch (element) {
+		// 		// input
+		// 		case FieldElement.date:
+		// 		case FieldElement.email:
+		// 		case FieldElement.number:
+		// 		case FieldElement.password:
+		// 		case FieldElement.tel:
+		// 		case FieldElement.text:
+		// 			newField = new FieldInput(field, index, list)
+		// 			break
 
-				case FieldElement.checkbox:
-					newField = new FieldCheckbox(field, index)
-					break
+		// 		case FieldElement.checkbox:
+		// 			newField = new FieldCheckbox(field, index)
+		// 			break
 
-				case FieldElement.chips:
-					newField = new FieldChips(field, index)
-					break
+		// 		case FieldElement.chips:
+		// 			newField = new FieldChips(field, index)
+		// 			break
 
-				case FieldElement.custom:
-					const customType = field.customElement._type
-					switch (customType) {
-						case FieldCustomType.button:
-							newField = new FieldCustomActionButton(field, index)
-							break
-						case FieldCustomType.header:
-							newField = new FieldCustomHeader(field, index)
-							break
-						case FieldCustomType.link:
-							newField = new FieldCustomActionLink(field, index)
-							break
-						case FieldCustomType.text:
-							newField = new FieldCustomText(field, index)
-							break
-						default:
-							error(500, {
-								file: FILENAME,
-								function: 'POST',
-								message: `No case defined for custom field type: ${customType}`
-							})
-					}
-					break
+		// 		case FieldElement.custom:
+		// 			const customType = field.customElement._type
+		// 			switch (customType) {
+		// 				case FieldCustomType.button:
+		// 					newField = new FieldCustomActionButton(field, index)
+		// 					break
+		// 				case FieldCustomType.header:
+		// 					newField = new FieldCustomHeader(field, index)
+		// 					break
+		// 				case FieldCustomType.link:
+		// 					newField = new FieldCustomActionLink(field, index)
+		// 					break
+		// 				case FieldCustomType.text:
+		// 					newField = new FieldCustomText(field, index)
+		// 					break
+		// 				default:
+		// 					error(500, {
+		// 						file: FILENAME,
+		// 						function: 'POST',
+		// 						message: `No case defined for custom field type: ${customType}`
+		// 					})
+		// 			}
+		// 			break
 
-				case FieldElement.file:
-					newField = new FieldFile(field, index)
-					break
+		// 		case FieldElement.file:
+		// 			newField = new FieldFile(field, index)
+		// 			break
 
-				case FieldElement.radio:
-					newField = new FieldRadio(field, index)
-					break
+		// 		case FieldElement.radio:
+		// 			newField = new FieldRadio(field, index)
+		// 			break
 
-				case FieldElement.select:
-					newField = new FieldSelect(field, index)
-					break
+		// 		case FieldElement.select:
+		// 			newField = new FieldSelect(field, index)
+		// 			break
 
-				case FieldElement.textArea:
-					newField = new FieldTextarea(field, index)
-					break
-				case FieldElement.toggle:
-					newField = new FieldToggle(field, index)
-					break
-				default:
-					error(500, {
-						file: FILENAME,
-						function: 'initFields',
-						message: `No case defined for field element: ${element} in form: ${this.name}`
-					})
-			}
-			list.push(newField)
-		})
+		// 		case FieldElement.textArea:
+		// 			newField = new FieldTextarea(field, index)
+		// 			break
+		// 		case FieldElement.toggle:
+		// 			newField = new FieldToggle(field, index)
+		// 			break
+		// 		default:
+		// 			error(500, {
+		// 				file: FILENAME,
+		// 				function: 'initFields',
+		// 				message: `No case defined for field element: ${element} in form: ${this.name}`
+		// 			})
+		// 	}
+		// 	list.push(newField)
+		// })
 		return list
 	}
 

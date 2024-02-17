@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	// import { Form as FormClass } from '$comps/dataObj/dataObjOld'
 	import Form from '$comps/form/FormDetail.svelte'
@@ -91,7 +91,7 @@
 	function onformCancelled() {
 		modalStore.close()
 	}
-</script>
+</script> -->
 
 <div class="esp-card-space-y">
 	<!-- <Form

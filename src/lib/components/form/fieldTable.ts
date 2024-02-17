@@ -3,8 +3,8 @@ import { Validation, ValidationStatus } from '$comps/form/types.validation'
 import { DataObj } from '$comps/types'
 
 export class FieldTable extends Field {
-	dataObjList: DataObj
-	dataObjDetail: DataObj
+	// dataObjList: DataObj
+	// dataObjDetail: DataObj
 	constructor(obj: FieldRaw, index: number) {
 		super(obj, index)
 		// this.access = FieldAccess.optional

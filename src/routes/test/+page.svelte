@@ -1,4 +1,4 @@
-<h2 class="h2 ml-6 mb-8">Sticky Table Header & Footer</h2>
+<!-- <h2 class="h2 ml-6 mb-8">Sticky Table Header & Footer</h2>
 
 <article>
 	<table>
@@ -24,9 +24,9 @@
 			<th>Last name</th>
 		</tfoot>
 	</table>
-</article>
+</article> -->
 
-<style>
+<!-- <style>
 	article {
 		color: #212121;
 		background: #fff;
@@ -59,4 +59,4 @@
 		border-bottom: 1px solid #e0e0e0;
 		border-top: 1px solid #e0e0e0;
 	}
-</style>
+</style> -->
