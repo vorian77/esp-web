@@ -1,7 +1,7 @@
 <!-- <script lang="ts">
 	import { getModalStore, getToastStore, type ToastSettings } from '@skeletonlabs/skeleton'
 	// import { Form as FormClass } from '$comps/dataObj/dataObjOld'
-	import Form from '$comps/form/FormDetail.svelte'
+	// import Form from '$comps/form/FormDetail.svelte'
 	import type { ResponseBody } from '$comps/types.js'
 	import { asDelete, asGet } from '$utils/utils'
 
@@ -10,10 +10,10 @@
 
 	const FILENAME = '/routes/home/cm/docs/ElgDocRec.svelte'
 
-	export let formDefn: any
+	// export let formDefn: any
 
 	// let formObj = new FormClass(formDefn)
-	let formElement: Form
+	// let formElement: Form
 	const modalStore = getModalStore()
 	const toastStore = getToastStore()
 
