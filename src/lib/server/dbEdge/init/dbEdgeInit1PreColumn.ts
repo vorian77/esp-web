@@ -218,6 +218,7 @@ export async function initPreColumn() {
 		owner: 'app_sys',
 		codeDataType: 'datetime',
 		header: 'Created At',
+		isExcludeInsert: true,
 		isExcludeUpdate: true,
 		isSetBySys: true,
 		name: 'createdAt'
@@ -460,6 +461,8 @@ export async function initPreColumn() {
 		owner: 'app_sys',
 		codeDataType: 'uuid',
 		header: 'System ID',
+		isExcludeInsert: true,
+		isExcludeUpdate: true,
 		isSetBySys: true,
 		name: 'id'
 	})
@@ -635,6 +638,8 @@ export async function initPreColumn() {
 		owner: 'app_sys',
 		codeDataType: 'datetime',
 		header: 'Modified At',
+		isExcludeInsert: true,
+		isExcludeUpdate: true,
 		isSetBySys: true,
 		name: 'modifiedAt'
 	})

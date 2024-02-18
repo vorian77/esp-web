@@ -10,16 +10,15 @@ import {
 	valueOrDefault,
 	type DataObjRecord
 } from '$comps/types'
+import { apiFetch, ApiFunction } from '$lib/api'
 import {
-	apiFetch,
-	ApiFunction,
 	TokenApiDbDataObj,
 	TokenApiQueryType,
 	TokenApiQuery,
 	TokenApiQueryData,
 	TokenApiQueryDataTree
-} from '$lib/api'
-import { Token } from '$comps/types.master'
+} from '$comps/types.token'
+import { Token } from '$comps/types.token'
 import { getEnhancement } from '$enhance/crud/_crud'
 import { error } from '@sveltejs/kit'
 
@@ -55,8 +54,8 @@ export async function query(
 
 	// successful
 	const resultData = DataObjData.loadData(result.data.dataObjData)
-	tab.dataObj = await DataObj.loadExtras(result.data.dataObjRaw, queryData)
 	tab.dataObjRaw = result.data.dataObjRaw
+	tab.dataObj = await DataObj.loadExtras(result.data.dataObjRaw, queryData)
 	tab.isRetrieved = true
 
 	if (tab.dataObj) {

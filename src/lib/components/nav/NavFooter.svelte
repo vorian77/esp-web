@@ -1,11 +1,6 @@
 <script lang="ts">
-	import {
-		State,
-		StatePacket,
-		StatePacketComponent,
-		TokenAppTreeNode,
-		TokenAppTreeReset
-	} from '$comps/nav/types.appState'
+	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { TokenAppTreeNode, TokenAppTreeReset } from '$comps/types.token'
 	import { appStoreUser, Node, NodeType, RawNode, User } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import DataViewer from '$comps/DataViewer.svelte'

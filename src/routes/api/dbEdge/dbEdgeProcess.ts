@@ -1,11 +1,10 @@
+import { ApiResultData, ApiResultDoSuccess } from '$lib/api'
 import {
-	ApiResultData,
-	ApiResultDoSuccess,
 	TokenApiQuery,
 	TokenApiQueryData,
 	TokenApiDbDataObj,
 	TokenApiQueryType
-} from '$lib/api'
+} from '$comps/types.token'
 import {
 	DataFieldDataType,
 	DataObj,

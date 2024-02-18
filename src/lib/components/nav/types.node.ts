@@ -1,5 +1,4 @@
 import { memberOfEnum, strRequired, valueOrDefault } from '$utils/utils'
-
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/lib/components/nav/types.node.ts'

@@ -6,7 +6,6 @@ const COMPONENT = '/$comps/form/fieldList.ts/'
 export class FieldList extends Field {
 	constructor(obj: FieldRaw, index: number) {
 		super(obj, index)
-
 		obj = valueOrDefault(obj, {})
 	}
 }

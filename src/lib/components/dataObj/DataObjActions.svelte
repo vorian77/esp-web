@@ -1,13 +1,7 @@
 <script lang="ts">
 	import { DataObj, DataObjAction, DataObjRecordStatus } from '$comps/types'
-	import {
-		State,
-		StatePacket,
-		StatePacketComponent,
-		TokenAppDoDetail,
-		TokenAppDoDetailConfirm,
-		TokenAppDoAction
-	} from '$comps/nav/types.appState'
+	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { TokenAppDoDetail, TokenAppDoDetailConfirm, TokenAppDoAction } from '$comps/types.token'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 

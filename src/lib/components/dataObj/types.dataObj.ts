@@ -33,7 +33,7 @@ import { FieldSelect } from '$comps/form/fieldSelect'
 import { FieldTextarea } from '$comps/form/fieldTextarea'
 import { FieldToggle } from '$comps/form/fieldToggle'
 import { ActionsQuery, ActionQuery, queryExecute } from '$comps/nav/types.appQuery'
-import { TokenApiQueryData, TokenApiQueryType } from '$lib/api'
+import { TokenApiQueryData, TokenApiQueryType } from '$comps/types.token'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/dataObj/types.dataObj.ts'
@@ -49,7 +49,7 @@ export class DataObj {
 	data: DataObjData
 	description: string
 	exprObject?: string
-	fields: Array<Field>
+	fields: Array<Field> = []
 	header: string
 	isPopup: boolean
 	name: string
@@ -101,14 +101,17 @@ export class DataObj {
 	}
 	static async loadExtras(dataObjRaw: DataObjRaw, queryData: TokenApiQueryData) {
 		const dataObj = new DataObj(dataObjRaw)
-		await loadActionsField()
+		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
 		await loadFieldItems(dataObj.fields)
 		return dataObj
 
-		async function loadActionsField() {
-			for (const f of dataObj.fields) {
-				// if (f instanceof FieldCustomAction) await f.initAction()
+		async function loadActionsField(fields: Array<Field>) {
+			for (const field of fields) {
+				if (field instanceof FieldCustomAction) {
+					console.log('loadActionsField.field:', field)
+					await field.initAction()
+				}
 			}
 		}
 		async function loadActionsQuery() {
@@ -221,91 +224,93 @@ export class DataObj {
 		return list
 	}
 
-	initFields(fields: Array<FieldRaw>) {
-		fields = valueOrDefault(fields, [])
+	initFields(fieldsRaw: Array<FieldRaw>) {
 		let list: Array<Field> = []
-		// fields.forEach((field: any, index: number) => {
-		// 	let newField: Field
+		fieldsRaw = valueOrDefault(fieldsRaw, [])
+		fieldsRaw.forEach((fieldRaw: any, index: number) => {
+			let newField: Field
 
-		// 	const element = memberOfEnumOrDefault(
-		// 		field._codeElement,
-		// 		'DataObj',
-		// 		'element',
-		// 		'FieldElement',
-		// 		FieldElement,
-		// 		FieldElement.text
-		// 	)
+			const element = memberOfEnumOrDefault(
+				fieldRaw._codeElement,
+				'DataObj',
+				'element',
+				'FieldElement',
+				FieldElement,
+				FieldElement.text
+			)
 
-		// 	switch (element) {
-		// 		// input
-		// 		case FieldElement.date:
-		// 		case FieldElement.email:
-		// 		case FieldElement.number:
-		// 		case FieldElement.password:
-		// 		case FieldElement.tel:
-		// 		case FieldElement.text:
-		// 			newField = new FieldInput(field, index, list)
-		// 			break
+			switch (element) {
+				// input
+				case FieldElement.date:
+				case FieldElement.email:
+				case FieldElement.number:
+				case FieldElement.password:
+				case FieldElement.tel:
+				case FieldElement.text:
+					newField = new FieldInput(fieldRaw, index, list)
+					break
 
-		// 		case FieldElement.checkbox:
-		// 			newField = new FieldCheckbox(field, index)
-		// 			break
+				case FieldElement.checkbox:
+					newField = new FieldCheckbox(fieldRaw, index)
+					break
 
-		// 		case FieldElement.chips:
-		// 			newField = new FieldChips(field, index)
-		// 			break
+				case FieldElement.chips:
+					newField = new FieldChips(fieldRaw, index)
+					break
 
-		// 		case FieldElement.custom:
-		// 			const customType = field.customElement._type
-		// 			switch (customType) {
-		// 				case FieldCustomType.button:
-		// 					newField = new FieldCustomActionButton(field, index)
-		// 					break
-		// 				case FieldCustomType.header:
-		// 					newField = new FieldCustomHeader(field, index)
-		// 					break
-		// 				case FieldCustomType.link:
-		// 					newField = new FieldCustomActionLink(field, index)
-		// 					break
-		// 				case FieldCustomType.text:
-		// 					newField = new FieldCustomText(field, index)
-		// 					break
-		// 				default:
-		// 					error(500, {
-		// 						file: FILENAME,
-		// 						function: 'POST',
-		// 						message: `No case defined for custom field type: ${customType}`
-		// 					})
-		// 			}
-		// 			break
+				case FieldElement.custom:
+					const customType = fieldRaw.customElement._type
+					switch (customType) {
+						case FieldCustomType.button:
+							newField = new FieldCustomActionButton(fieldRaw, index)
+							break
+						case FieldCustomType.header:
+							newField = new FieldCustomHeader(fieldRaw, index)
+							break
+						case FieldCustomType.link:
+							newField = new FieldCustomActionLink(fieldRaw, index)
+							break
+						case FieldCustomType.text:
+							newField = new FieldCustomText(fieldRaw, index)
+							break
+						default:
+							error(500, {
+								file: FILENAME,
+								function: 'POST',
+								message: `No case defined for custom field type: ${customType}`
+							})
+					}
+					break
 
-		// 		case FieldElement.file:
-		// 			newField = new FieldFile(field, index)
-		// 			break
+				case FieldElement.file:
+					newField = new FieldFile(fieldRaw, index)
+					break
 
-		// 		case FieldElement.radio:
-		// 			newField = new FieldRadio(field, index)
-		// 			break
+				case FieldElement.radio:
+					newField = new FieldRadio(fieldRaw, index)
+					break
 
-		// 		case FieldElement.select:
-		// 			newField = new FieldSelect(field, index)
-		// 			break
+				case FieldElement.select:
+					newField = new FieldSelect(fieldRaw, index)
+					break
 
-		// 		case FieldElement.textArea:
-		// 			newField = new FieldTextarea(field, index)
-		// 			break
-		// 		case FieldElement.toggle:
-		// 			newField = new FieldToggle(field, index)
-		// 			break
-		// 		default:
-		// 			error(500, {
-		// 				file: FILENAME,
-		// 				function: 'initFields',
-		// 				message: `No case defined for field element: ${element} in form: ${this.name}`
-		// 			})
-		// 	}
-		// 	list.push(newField)
-		// })
+				case FieldElement.textArea:
+					newField = new FieldTextarea(fieldRaw, index)
+					break
+
+				case FieldElement.toggle:
+					newField = new FieldToggle(fieldRaw, index)
+					break
+
+				default:
+					error(500, {
+						file: FILENAME,
+						function: 'initFields',
+						message: `No case defined for field element: ${element} in form: ${this.name}`
+					})
+			}
+			list.push(newField)
+		})
 		return list
 	}
 

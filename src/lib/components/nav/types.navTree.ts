@@ -1,14 +1,10 @@
 import { apiFetch, ApiFunction } from '$lib/api'
-import { NodeNav, NodeType, ResponseBody } from '$comps/types'
+import { ResponseBody } from '$comps/types'
+import { NodeNav, NodeType } from '$comps/nav/types.node'
 import type { DbNode, RawNode, User } from '$comps/types'
 import { ActionsQuery } from '$comps/nav/types.appQuery'
-import {
-	State,
-	StatePacket,
-	StatePacketComponent,
-	TokenAppTreeNode,
-	TokenAppTreeNodeId
-} from '$comps/nav/types.appState'
+import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+import { TokenAppTreeNode, TokenAppTreeNodeId } from '$comps/types.token'
 import { localStorageStore } from '@skeletonlabs/skeleton'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'
@@ -76,12 +72,12 @@ export class NavTree {
 		return listTree
 	}
 
-	async changeNode(node: NodeNav, state: State, dispatch: Function) {
-		if (this.isCurrentNode(node)) return
+	async changeNode(nodeNav: NodeNav, state: State, dispatch: Function) {
+		if (this.isCurrentNode(nodeNav)) return
 
-		await this.setCurrentNode(node)
+		await this.setCurrentNode(nodeNav)
 
-		switch (node.type) {
+		switch (nodeNav.type) {
 			case NodeType.header:
 			case NodeType.program:
 				state.update({ page: '/home', nodeType: NodeType.home })
@@ -91,18 +87,18 @@ export class NavTree {
 			case NodeType.programObject:
 				state.update({
 					page: '/home',
-					nodeType: node.type,
+					nodeType: nodeNav.type,
 					packet: new StatePacket({
 						component: StatePacketComponent.navApp,
-						token: new TokenAppTreeNode(node)
+						token: new TokenAppTreeNode(nodeNav)
 						// callbacks: [() => dispatch('treeChanged')]
 					})
 				})
 				break
 
 			case NodeType.page:
-				if (Object.hasOwn(node, 'page')) {
-					state.update({ page: node.page })
+				if (Object.hasOwn(nodeNav, 'page')) {
+					state.update({ page: nodeNav.page })
 					dispatch('treeChanged')
 				}
 				break
@@ -114,7 +110,7 @@ export class NavTree {
 				error(500, {
 					file: FILENAME,
 					function: 'NavTree.changeNode',
-					message: `No case defined for NodeType: ${node.type}`
+					message: `No case defined for NodeType: ${nodeNav.type}`
 				})
 		}
 		setAppStoreNavTree(this)

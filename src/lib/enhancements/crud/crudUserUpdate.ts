@@ -1,7 +1,6 @@
-import { TokenApiQueryDataTree } from '$lib/api'
+import { TokenApiQueryDataTree, TokenApiQueryType } from '$comps/types.token'
 import { type ActionQueryParms, ActionQueryTriggerTiming } from '$comps/nav/types.appQuery'
 import { State } from '$comps/nav/types.appState'
-import { TokenApiQueryType } from '$lib/api'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$enhance/crud/crudUserUpdate.ts'

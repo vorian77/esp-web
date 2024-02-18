@@ -1,6 +1,6 @@
 import pkg from 'twilio'
 const { Twilio } = pkg
-import type { TokenApiSendText } from '$lib/api'
+import type { TokenApiSendText } from '$comps/types.token'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '$server/twilio.ts'
@@ -28,16 +28,16 @@ export async function sendText(token: TokenApiSendText) {
 		return new Response(JSON.stringify({ success: true, data: { sid: message.sid, parms } }))
 	} catch (err) {
 		error(500, {
-        			file: FILENAME,
-        			function: 'sendText',
-        			message:
-        				`Attempt to send text failed...` +
-        				'\n' +
-        				'Error: ' +
-        				JSON.stringify(err) +
-        				'\n' +
-        				'Parms: ' +
-        				JSON.stringify(parms)
-        		});
+			file: FILENAME,
+			function: 'sendText',
+			message:
+				`Attempt to send text failed...` +
+				'\n' +
+				'Error: ' +
+				JSON.stringify(err) +
+				'\n' +
+				'Parms: ' +
+				JSON.stringify(parms)
+		})
 	}
 }

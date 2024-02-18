@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte'
 	import OverlayObjForm from '$comps/Overlay/OverlayObjForm.svelte'
-	import type { OverlayNodeRecord } from '$comps/form/field'
+	import type { OverlayNodeRecord } from '$comps/types.overlay'
 	import { getModalStore } from '@skeletonlabs/skeleton'
 
 	const modalStore = getModalStore()

@@ -4,7 +4,7 @@ import { Validation, ValidationStatus } from '$comps/types'
 export class FieldToggle extends Field {
 	labelFalse?: string
 	labelTrue?: string
-	constructor(obj: FieldRaw, index: number) {
+	constructor(obj: any, index: number) {
 		super(obj, index)
 		this.access = FieldAccess.optional
 		this.labelFalse = obj._column.toggleLabelFalse

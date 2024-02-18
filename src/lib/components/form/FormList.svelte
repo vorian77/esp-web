@@ -1,11 +1,6 @@
 <script lang="ts">
-	import {
-		State,
-		StatePacket,
-		StatePacketComponent,
-		TokenAppDoAction,
-		TokenAppDoList
-	} from '$comps/nav/types.appState'
+	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { TokenAppDoAction, TokenAppDoList } from '$comps/types.token'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'

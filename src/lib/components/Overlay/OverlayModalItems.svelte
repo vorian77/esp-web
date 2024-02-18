@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte'
-	import type { FieldChips } from '$comps/form/fieldChips'
 	import FormList from '$comps/form/FormList.svelte'
 	import OverlayObjForm from '$comps/Overlay/OverlayObjForm.svelte'
 	import {
@@ -12,7 +11,7 @@
 		NodeType
 	} from '$comps/types'
 	import { SurfaceType } from '$comps/types.master'
-	import { OverlayNodeFieldItems, type Field } from '$comps/form/field'
+	import { OverlayNodeFieldItems } from '$comps/types.overlay'
 	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import { getDrawerStore, getModalStore, getToastStore } from '@skeletonlabs/skeleton'
 

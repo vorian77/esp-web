@@ -9,7 +9,7 @@ import {
 	TokenApiFileUploadAction,
 	TokenApiQueryDataTree,
 	TokenApiQueryType
-} from '$lib/api'
+} from '$comps/types.token'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$enhance/crud/crudFileUpload.ts'

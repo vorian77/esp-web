@@ -2,7 +2,8 @@
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
 	import NavTree from '$comps/nav/NavTree.svelte'
 	import OverlayObjForm from '$comps/Overlay/OverlayObjForm.svelte'
-	import { apiFetch, ApiFunction, TokenApiUserId } from '$lib/api'
+	import { apiFetch, ApiFunction } from '$lib/api'
+	import { TokenApiUserId } from '$comps/types.token'
 	import { ResponseBody } from '$comps/types'
 	import { State } from '$comps/nav/types.appState'
 

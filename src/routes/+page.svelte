@@ -3,8 +3,9 @@
 	import logo from '$assets/clientLogo-AtlanticImpact.png'
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { userInit } from '$comps/types'
-	import { apiFetch, ApiFunction, TokenApiUserName } from '$lib/api'
-	import { OverlayNodeRecord } from '$comps/form/field'
+	import { apiFetch, ApiFunction } from '$lib/api'
+	import { TokenApiUserName } from '$comps/types.token'
+	import { OverlayNodeRecord } from '$comps/types.overlay'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'

@@ -7,10 +7,10 @@
 		AppLevelTab
 	} from '$comps/nav/types.app'
 	import { query } from '$comps/nav/types.appQuery'
+	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import {
-		State,
-		StatePacket,
-		StatePacketComponent,
+		TokenApiQuery,
+		TokenApiQueryType,
 		TokenAppCrumbs,
 		TokenAppDo,
 		TokenAppDoAction,
@@ -20,10 +20,9 @@
 		TokenAppTab,
 		TokenAppTreeNode,
 		TokenAppTreeSetParent
-	} from '$comps/nav/types.appState'
+	} from '$comps/types.token'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { NodeType } from '$comps/types'
-	import { TokenApiQuery, TokenApiQueryType } from '$lib/api'
 	import { AppBar, AppShell } from '@skeletonlabs/skeleton'
 	import { TabGroup, Tab } from '@skeletonlabs/skeleton'
 	import FormListApp from '$comps/form/FormListApp.svelte'

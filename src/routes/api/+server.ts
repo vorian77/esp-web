@@ -1,4 +1,5 @@
-import { ApiFunction, TokenApiUserId } from '$lib/api'
+import { ApiFunction } from '$lib/api'
+import { TokenApiUserId } from '$comps/types.token'
 import { getServerResponse } from '$comps/types'
 import {
 	getNodesBranch,

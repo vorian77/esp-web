@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { appStoreNavTree, NavTree, NodeNav } from '$comps/types'
 	import type { State } from '$comps/nav/types.appState'
-	import {
-		StatePacketComponent,
-		TokenAppTreeReset,
-		TokenAppTreeSetParent
-	} from '$comps/nav/types.appState'
+	import { StatePacketComponent } from '$comps/nav/types.appState'
+	import { TokenAppTreeReset, TokenAppTreeSetParent } from '$comps/types.token'
 	import { createEventDispatcher } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -33,8 +30,8 @@
 		}
 	}
 
-	async function changeNode(node: NodeNav) {
-		await navTree.changeNode(node, state, dispatch)
+	async function changeNode(nodeNav: NodeNav) {
+		await navTree.changeNode(nodeNav, state, dispatch)
 	}
 </script>
 
@@ -42,19 +39,19 @@
 	<div class="bg-slate-200 rounded-lg p-1 mb-1">Features:</div>
 	<div>
 		{#if navTree && navTree.listTree && navTree.listTree.length > 0}
-			{#each navTree.listTree as node, i}
-				{#if i > 0 && node.isOpen}
+			{#each navTree.listTree as nodeNav, i}
+				{#if i > 0 && nodeNav.isOpen}
 					<div
-						class="p-1 mb-.5 hover:bg-blue-100 rounded-lg {node.isCurrent
+						class="p-1 mb-.5 hover:bg-blue-100 rounded-lg {nodeNav.isCurrent
 							? 'bg-blue-300 text-white'
 							: ''}"
 						role="button"
 						tabindex="0"
-						on:click={async () => await changeNode(node)}
-						on:keyup={async () => await changeNode(node)}
+						on:click={async () => await changeNode(nodeNav)}
+						on:keyup={async () => await changeNode(nodeNav)}
 					>
-						{@html '&nbsp;'.repeat(node.indent * 3)}
-						{node.header}
+						{@html '&nbsp;'.repeat(nodeNav.indent * 3)}
+						{nodeNav.header}
 					</div>
 				{/if}
 			{/each}

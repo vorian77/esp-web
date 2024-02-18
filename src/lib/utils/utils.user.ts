@@ -1,7 +1,8 @@
 import { get } from 'svelte/store'
 import { localStorageStore } from '@skeletonlabs/skeleton'
 import { User } from '$comps/types'
-import { apiFetch, ApiFunction, TokenApiUserId } from '$lib/api'
+import { apiFetch, ApiFunction } from '$lib/api'
+import { TokenApiUserId } from '$comps/types.token'
 import { error } from '@sveltejs/kit'
 
 export let appStoreUser = localStorageStore('appStoreUser', {})

@@ -1,7 +1,7 @@
 import { Field, type FieldRaw } from '$comps/form/field'
 import { strRequired, valueOrDefault } from '$utils/utils'
 import { getValExpr, Validation, ValidationStatus } from '$comps/types'
-import { TokenApiQueryData } from '$lib/api'
+import { TokenApiQueryData } from '$comps/types.token'
 import { get } from 'svelte/store'
 
 const FILENAME = '$comps/Form/fieldFile.ts'

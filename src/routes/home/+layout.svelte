@@ -7,12 +7,8 @@
 		valueOrDefault
 	} from '$comps/types'
 	import { User } from '$comps/types'
-	import {
-		State,
-		StatePacket,
-		TokenAppDoDetail,
-		TokenAppDoDetailConfirm
-	} from '$comps/nav/types.appState'
+	import { State, StatePacket } from '$comps/nav/types.appState'
+	import { TokenAppDoDetail, TokenAppDoDetailConfirm } from '$comps/types.token'
 	import {
 		AppBar,
 		AppShell,

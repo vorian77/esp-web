@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { FieldFile } from '$comps/form/fieldFile'
 	import { getToastStore } from '@skeletonlabs/skeleton'
-	import { TokenApiFileUpload, TokenApiFileUploadAction, TokenApiFileUploadData } from '$lib/api'
+	import {
+		TokenApiFileUpload,
+		TokenApiFileUploadAction,
+		TokenApiFileUploadData
+	} from '$comps/types.token'
 	import { getURLDownload } from '$utils/utils.aws'
 	import DataViewer from '$comps/DataViewer.svelte'
 	import { size } from '@floating-ui/dom'

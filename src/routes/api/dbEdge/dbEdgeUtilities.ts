@@ -1,8 +1,8 @@
 import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
-import type { TokenAppTreeNodeId } from '$comps/nav/types.appState'
-import { TokenApiDbTableColumns, TokenApiUserId, TokenApiUserName } from '$lib/api'
+import type { TokenAppTreeNodeId } from '$comps/types.token'
+import { TokenApiDbTableColumns, TokenApiUserId, TokenApiUserName } from '$comps/types.token'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
@@ -190,11 +190,7 @@ export async function getDataObjById(dataObjId: string) {
 				),
 				indexTable: true,
 				link: true,
-				filter: e.op(
-					e.op('not', e.op('exists', f.column.isExcludeInsert)),
-					'and',
-					e.op('not', e.op('exists', f.column.isSetBySys))
-				)
+				filter: e.op('not', e.op('exists', f.column.isExcludeInsert))
 			})),
 
 			_fieldsDbSaveUpdate: e.select(do1.columns, (f) => ({
@@ -211,11 +207,7 @@ export async function getDataObjById(dataObjId: string) {
 				),
 				indexTable: true,
 				link: true,
-				filter: e.op(
-					e.op('not', e.op('exists', f.column.isExcludeUpdate)),
-					'and',
-					e.op('not', e.op('exists', f.column.isSetBySys))
-				)
+				filter: e.op('not', e.op('exists', f.column.isExcludeUpdate))
 			})),
 
 			_fieldsDbSelectSys: e.select(do1.columns, (f) => ({

@@ -1,4 +1,5 @@
-import { Field, FieldAccess, type FieldRaw, OverlayNodeFieldItems } from '$comps/form/field'
+import { Field, FieldAccess, type FieldRaw } from '$comps/form/field'
+import { OverlayNodeFieldItems } from '$comps/types.overlay'
 import { Validation, ValidationStatus } from '$comps/form/types.validation'
 import { DataObj } from '$comps/types'
 

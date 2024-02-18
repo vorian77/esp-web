@@ -10,7 +10,7 @@ import {
 } from '$lib/utils/utils'
 import { DataObjCardinality } from '$comps/types'
 import type { DataObjRaw, DataObjRecord } from '$comps/types'
-import { TokenApiQueryData, type TokenApiQueryDataValue, TokenApiQueryType } from '$lib/api'
+import { TokenApiQueryData, type TokenApiQueryDataValue } from '$comps/types.token'
 import { Tree } from '$utils/utils.tree'
 import { error } from '@sveltejs/kit'
 
@@ -272,11 +272,9 @@ class DataObjTableAction {
 	getScriptItemsSelect(fields: DataFieldSelect[], data: TokenApiQueryData) {
 		let script = new DataObjTableScript()
 		let item = ''
-		let customFieldIndex = 0
 
 		fields.forEach((f) => {
 			const prefix = this.table.getFieldNameRoot()
-			let column
 
 			if (f.nameCustom && f.exprCustom) {
 				item = f.nameCustom + ' := ' + getValExpr(f.exprCustom, data)

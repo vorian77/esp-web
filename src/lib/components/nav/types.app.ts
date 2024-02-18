@@ -8,15 +8,17 @@ import {
 	ResponseBody
 } from '$comps/types'
 import type { DataObjRaw, DataObjRecord, DbNode } from '$comps/types'
-import { apiFetch, ApiFunction, TokenApiQueryType, TokenApiQuery } from '$lib/api'
-import { query } from '$comps/nav/types.appQuery'
+import { apiFetch, ApiFunction } from '$lib/api'
 import {
-	State,
+	TokenApiQueryType,
+	TokenApiQuery,
 	TokenAppDoList,
 	TokenAppTreeNodeId,
 	TokenAppCrumbs,
 	TokenAppDoDetail
-} from '$comps/nav/types.appState'
+} from '$comps/types.token'
+import { query } from '$comps/nav/types.appQuery'
+import { State } from '$comps/nav/types.appState'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/nav/types.app.ts'
