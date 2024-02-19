@@ -5,6 +5,7 @@ import { error } from '@sveltejs/kit'
 const FILENAME = '$utils/utils.user.ts'
 
 export class User {
+	avatar: any
 	user: any
 	firstName: string
 	fullName: string = ''
@@ -26,6 +27,7 @@ export class User {
 
 	constructor(obj: any) {
 		this.user = valueOrDefault(obj, {})
+		this.avatar = this.initAvatar(obj.avatar)
 		this.firstName = strRequired(obj.firstName, 'User', 'firstName')
 		this.fullName = strRequired(obj.fullName, 'User', 'fullName')
 		this.id = strRequired(obj.id, 'User', 'id')
@@ -53,7 +55,11 @@ export class User {
 		}
 		return undefined !== this.user.resource_widgets.find((r: any) => r.name === resource)
 	}
-
+	initAvatar(avatar: any) {
+		avatar = valueOrDefault(avatar, {})
+		if (Object.hasOwn(avatar, 'storageKey')) return avatar
+		return Object.keys(avatar).length > 0 ? JSON.parse(avatar) : {}
+	}
 	setName() {
 		this.fullName = `${this.firstName} ${this.lastName}`
 	}

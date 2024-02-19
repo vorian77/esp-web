@@ -30,12 +30,6 @@ export async function qaExecuteFileStorage(
 ): Promise<TokenApiQueryDataTree> {
 	const fieldData: TokenApiFileUpload = data.getFieldData(table, parms.imageField)
 
-	console.log('qaExecuteFileStorage.fieldData', {
-		queryType,
-		queryTiming,
-		fileAction,
-		fieldData
-	})
 	if (
 		![
 			TokenApiQueryType.delete,

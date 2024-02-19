@@ -316,6 +316,7 @@ export async function getTableColumns(token: TokenApiDbTableColumns) {
 
 export async function getUserByUserId(token: TokenApiUserId) {
 	const query = e.select(e.sys_user.SysUser, (u) => ({
+		avatar: u.person.avatar,
 		firstName: u.person.firstName,
 		fullName: u.person.fullName,
 		id: true,

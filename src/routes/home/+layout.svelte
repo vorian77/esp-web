@@ -19,6 +19,7 @@
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
 	import Icon from '$comps/Icon.svelte'
+	import { getURLDownload } from '$utils/utils.aws'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
 	import type { ToastType } from '$comps/types'
@@ -38,18 +39,25 @@
 	let state: State
 	let statePackets: Array<StatePacket> = []
 	let user: User | undefined
+	let userAvatarSrc = ''
 
 	$: {
 		const rawUser = $appStoreUser
 		user = rawUser && Object.keys(rawUser).length > 0 ? new User(rawUser) : undefined
 	}
-
 	$: if (launchApp && user) {
 		;(async () => {
 			await initNavTree(user)
 		})()
 		state = new State(stateUpdate, drawerStore, modalStore, toastStore, user)
 		launchApp = false
+	}
+	$: {
+		if (user && user.avatar && user.avatar.storageKey) {
+			;(async () => {
+				userAvatarSrc = await getURLDownload(user.avatar.storageKey)
+			})()
+		}
 	}
 
 	async function stateUpdate(obj: any) {
@@ -185,10 +193,14 @@
 				<div role="button" tabindex="0" class="mr-2" on:click={navRight} on:keyup={navRight}>
 					<!-- <div role="button" tabindex="0" class="mr-2" use:popup={popupClick}> -->
 					<!-- <button class="btn variant-filled" use:popup={popupClick}>Click</button> -->
+					<!-- src={avatarSrc} -->
+					<!-- src="https://images.unsplash.com/photo-1617296538902-887900d9b592?ixid=M3w0Njc5ODF8MHwxfGFsbHx8fHx8fHx8fDE2ODc5NzExMDB8&ixlib=rb-4.0.3&w=128&h=128&auto=format&fit=crop" -->
 					<Avatar
 						initials={user ? user.initials : undefined}
-						width="w-9"
 						background="bg-primary-400"
+						rounded="rounded-full"
+						src={userAvatarSrc}
+						width="w-9"
 					/>
 				</div>
 			</svelte:fragment>

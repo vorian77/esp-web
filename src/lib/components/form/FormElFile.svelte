@@ -8,7 +8,6 @@
 	} from '$comps/types.token'
 	import { getURLDownload } from '$utils/utils.aws'
 	import DataViewer from '$comps/DataViewer.svelte'
-	import { size } from '@floating-ui/dom'
 
 	const FILENAME = '$comps/form/FormElFile.svelte'
 
