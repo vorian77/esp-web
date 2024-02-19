@@ -1,14 +1,8 @@
 <script lang="ts">
-	import {
-		appStoreUser,
-		initNavTree,
-		NavTree as NavTreeType,
-		NodeType,
-		valueOrDefault
-	} from '$comps/types'
+	import { appStoreUser, initNavTree, NodeType, valueOrDefault } from '$comps/types'
 	import { User } from '$comps/types'
-	import { State, StatePacket } from '$comps/nav/types.appState'
-	import { TokenAppDoDetail, TokenAppDoDetailConfirm } from '$comps/types.token'
+	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { TokenAppDoDetail, TokenAppDoDetailConfirm, TokenAppTreeReset } from '$comps/types.token'
 	import {
 		AppBar,
 		AppShell,
@@ -137,12 +131,14 @@
 		drawerStore.open(settings)
 	}
 	function goHome() {
-		console.log('goHome...')
-		goto('/home')
-		// packet = new StatePacket({
-		//             component: StatePacketComponent.navTree,
-		//             token: new TokenAppTreeReset()
-		//         })
+		stateUpdate({
+			page: '/home',
+			nodeType: NodeType.home,
+			packet: new StatePacket({
+				component: StatePacketComponent.navTree,
+				token: new TokenAppTreeReset()
+			})
+		})
 	}
 	async function askB4Transition(obj: any, confirm: TokenAppDoDetailConfirm) {
 		console.log('askB4Transition:', { obj, confirm })
