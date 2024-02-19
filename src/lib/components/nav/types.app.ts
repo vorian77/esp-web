@@ -275,15 +275,15 @@ export class AppLevelTab {
 	}
 	getRowStatus() {
 		const currLength = this.data?.dataObjRowList.length
-		if (currLength !== undefined && this.currRow !== undefined && this.currRow > -1)
+		if (currLength !== undefined && this.currRow !== undefined && this.currRow > -1) {
 			return new AppLevelRowStatus(currLength, this.currRow)
+		}
 	}
 	getTable() {
 		return this.dataObj?.table?.name
 	}
 	initList(token: TokenAppDoList) {
 		this.listFilterIds = token.filterIDs
-		console.log('initList.ids', this.listFilterIds)
 		this.filterList()
 		this.setCurrRowById(token.recordId)
 	}
@@ -318,14 +318,16 @@ export class AppLevelTab {
 					message: `No case defined for AppRowActionType: ${rowAction}`
 				})
 		}
+		console.log('setCurrRowByAction', { currRow: this.currRow, newRow })
 		this.currRow = newRow
 	}
 	setCurrRowById(recordId: string) {
-		if (this.data) {
-			this.currRow = this.data.dataObjRowList.findIndex((row) => {
-				return row.record.id === recordId
-			})
-		}
+		this.currRow =
+			!recordId || !this.data
+				? -1
+				: this.data.dataObjRowList.findIndex((row) => {
+						return row.record.id === recordId
+					})
 	}
 	setDataDetail(data: DataObjRecord) {
 		if (this.data) this.data.setRecord(data)
