@@ -99,7 +99,7 @@ export class DataObj {
 		})
 		return newActions
 	}
-	static async loadExtras(dataObjRaw: DataObjRaw, queryData: TokenApiQueryData) {
+	static async init(dataObjRaw: DataObjRaw, queryData: TokenApiQueryData) {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
@@ -109,13 +109,12 @@ export class DataObj {
 		async function loadActionsField(fields: Array<Field>) {
 			for (const field of fields) {
 				if (field instanceof FieldCustomAction) {
-					console.log('loadActionsField.field:', field)
-					await field.initAction()
+					await field.initEnhancement()
 				}
 			}
 		}
 		async function loadActionsQuery() {
-			dataObj.actionsQuery = await ActionsQuery.load(dataObjRaw.actionsQuery)
+			dataObj.actionsQuery = await ActionsQuery.initEnhancement(dataObjRaw.actionsQuery)
 		}
 		async function loadFieldItems(fields: Array<Field>) {
 			for (const field of fields) {

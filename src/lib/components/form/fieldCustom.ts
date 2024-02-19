@@ -32,7 +32,7 @@ export class FieldCustomAction extends FieldCustom {
 		this.type = strRequired(el.action.type, clazz, 'type').toLowerCase()
 		this.value = valueOrDefault(el.action.value, '').toLowerCase()
 	}
-	async initAction() {
+	async initEnhancement() {
 		this.enhancement = await getEnhancement(this.method)
 	}
 }

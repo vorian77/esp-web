@@ -55,7 +55,7 @@ export async function query(
 	// successful
 	const resultData = DataObjData.loadData(result.data.dataObjData)
 	tab.dataObjRaw = result.data.dataObjRaw
-	tab.dataObj = await DataObj.loadExtras(result.data.dataObjRaw, queryData)
+	tab.dataObj = await DataObj.init(result.data.dataObjRaw, queryData)
 	tab.isRetrieved = true
 
 	if (tab.dataObj) {
@@ -206,7 +206,7 @@ export class ActionsQuery {
 	private constructor(actions: Array<ActionQueryFunction>) {
 		this.actions = actions
 	}
-	static async load(actions: Array<ActionQuery> | null | undefined) {
+	static async initEnhancement(actions: Array<ActionQuery> | null | undefined) {
 		let actionsFunction: Array<ActionQueryFunction> = []
 		if (actions) {
 			for (let i = 0; i < actions.length; i++) {

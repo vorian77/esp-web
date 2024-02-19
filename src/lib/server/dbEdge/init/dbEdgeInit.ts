@@ -9,7 +9,7 @@ import { initFeatDocument } from '$server/dbEdge/init/dbEdgeInit0FeatDocument'
 
 export async function dbEdgeInit() {
 	sectionHeader('Init Start')
-	await initSys()
+	// await initSys()
 	// await initFeatDocument()
 	// await initFeatEmploy()
 	sectionHeader('Init Complete')
