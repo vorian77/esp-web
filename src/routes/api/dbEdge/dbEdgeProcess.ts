@@ -42,6 +42,7 @@ export async function processQuery(token: TokenApiQuery) {
 	let script = ''
 
 	log('processQuery.queryType:', token.queryType)
+	log('processQuery.dataObjRaw:', dataObjRaw)
 
 	switch (token.queryType) {
 		case TokenApiQueryType.dataObj:

@@ -602,11 +602,6 @@ export namespace sys_db {
     "classValue"?: string | null;
     "exprStorageKey"?: string | null;
     "headerSide"?: string | null;
-    "isExcludeInsert"?: boolean | null;
-    "isExcludeSelect"?: boolean | null;
-    "isExcludeUpdate"?: boolean | null;
-    "isMultiSelect"?: boolean | null;
-    "isSetBySys"?: boolean | null;
     "link"?: unknown | null;
     "matchColumn"?: string | null;
     "maxLength"?: number | null;
@@ -618,9 +613,14 @@ export namespace sys_db {
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
     "spinStep"?: string | null;
-    "isSelfReference"?: boolean | null;
     "toggleLabelFalse"?: string | null;
     "toggleLabelTrue"?: string | null;
+    "isExcludeInsert": boolean;
+    "isExcludeSelect": boolean;
+    "isExcludeUpdate": boolean;
+    "isMultiSelect": boolean;
+    "isSelfReference": boolean;
+    "isSetBySys": boolean;
   }
   export interface SysTable extends sys_core.SysObj {
     "columns": SysColumn[];

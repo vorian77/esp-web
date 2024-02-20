@@ -5,12 +5,12 @@ module sys_db{
     required codeDataType: sys_core::SysCode;
     exprStorageKey: str;
     headerSide: str;
-    isExcludeInsert: bool;
-    isExcludeSelect: bool;
-    isExcludeUpdate: bool;
-    isMultiSelect: bool;
-    isSelfReference: bool;
-    isSetBySys: bool;
+    required isExcludeInsert: bool;
+    required isExcludeSelect: bool;
+    required isExcludeUpdate: bool;
+    required isMultiSelect: bool;
+    required isSelfReference: bool;
+    required isSetBySys: bool;
     link: json;
     matchColumn: str;
     maxLength: default::nonNegative;

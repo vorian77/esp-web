@@ -190,7 +190,7 @@ export async function getDataObjById(dataObjId: string) {
 				),
 				indexTable: true,
 				link: true,
-				filter: e.op('not', e.op('exists', f.column.isExcludeInsert))
+				filter: e.op(f.column.isExcludeInsert, '=', e.bool(false))
 			})),
 
 			_fieldsDbSaveUpdate: e.select(do1.columns, (f) => ({
@@ -207,7 +207,7 @@ export async function getDataObjById(dataObjId: string) {
 				),
 				indexTable: true,
 				link: true,
-				filter: e.op('not', e.op('exists', f.column.isExcludeUpdate))
+				filter: e.op(f.column.isExcludeUpdate, '=', e.bool(false))
 			})),
 
 			_fieldsDbSelectSys: e.select(do1.columns, (f) => ({
@@ -237,7 +237,7 @@ export async function getDataObjById(dataObjId: string) {
 				indexTable: true,
 				link: true,
 				nameCustom: true,
-				filter: e.op('not', e.op('exists', f.column.isExcludeSelect))
+				filter: e.op(f.column.isExcludeSelect, '=', e.bool(false))
 			})),
 
 			filter_single: e.op(do1.id, '=', e.cast(e.uuid, dataObjId))
