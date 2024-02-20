@@ -17,8 +17,8 @@
 	const ROW_PER_PAGE = 20
 	const DATA_FIELD = 'data'
 
-	// const handler = new DataHandler([])
-	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
+	const handler = new DataHandler([])
+	// const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
 
 	const rows = handler.getRows()
 	let sort = handler.getSort()
@@ -75,7 +75,7 @@
 
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
-<article>
+<div id="content">
 	<Datatable {handler}>
 		<table>
 			<thead>
@@ -139,7 +139,10 @@
 			</tbody>
 		</table>
 	</Datatable>
-</article>
+</div>
+
+<!-- overflow-x: hidden; -->
+<!-- text-align: justify; -->
 
 <!-- <DataViewer header="sort" data={sort} /> -->
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->
@@ -179,5 +182,9 @@
 	}
 	tr:nth-child(even) {
 		background-color: #97ed9e;
+	}
+	#content {
+		height: 74vh;
+		overflow-y: auto;
 	}
 </style>

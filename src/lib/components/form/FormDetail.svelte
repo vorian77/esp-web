@@ -90,7 +90,7 @@
 
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
-<div class="mx-2 mb-6">
+<div id="content" class="px-2">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
 		{#each dataObj.fields as field, idx (field.name)}
 			{#if field.isDisplayable && field.isDisplay}
@@ -141,3 +141,10 @@
 <!-- <DataViewer header="dataObjList" data={dataObjList} /> -->
 <!-- <DataViewer header="dataSource" data={dataSource} /> -->
 <!-- <DataViewer header="defn" data={formObj.defn} /> -->
+
+<style>
+	#content {
+		height: 74vh;
+		overflow-y: auto;
+	}
+</style>
