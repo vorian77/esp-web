@@ -395,11 +395,9 @@ class DataObjTableActionFilter extends DataObjTableAction {
 		} else if (this.query.exprFilter?.toLowerCase() !== 'none') {
 			exprFilter = this.query.exprFilter
 		}
+		if (exprFilter) script = getValExpr(exprFilter, data)
 
-		if (exprFilter) {
-			script = getValExpr(exprFilter, data)
-			if (script) script = 'FILTER ' + script
-		}
+		if (script) script = 'FILTER ' + script
 
 		return new DataObjTableScript({ script })
 	}

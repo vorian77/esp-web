@@ -115,7 +115,7 @@
 
 						case TokenAppDoAction.detailNew:
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
-							app.getCurrTabParent().setCurrRowById('')
+							app.getCurrTabParent().listSetId('')
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
 
@@ -142,7 +142,7 @@
 
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
-								app.getCurrLevel().getCurrTab().initList(token)
+								app.getCurrTab().listSetId(token.recordId)
 								await app.addLevel(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
@@ -150,7 +150,7 @@
 
 						case TokenAppDoAction.listNew:
 							await app.addLevel(state, TokenApiQueryType.new)
-							app.getCurrTabParent().setCurrRowById('')
+							app.getCurrTabParent().listSetId('')
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break
 

@@ -61,6 +61,7 @@ export async function query(
 	if (tab.dataObj) {
 		if (tab.dataObj.cardinality === DataObjCardinality.list) {
 			tab.data = resultData
+			tab.dataObj.dataListEditFilter()
 			return true
 		}
 
@@ -113,11 +114,11 @@ function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undef
 			const dataObj = currTab.dataObj
 			if (dataObj) {
 				if (dataObj.cardinality === DataObjCardinality.list) {
-					if (currTab.currRow !== undefined && currTab.currRow > -1) {
-						dataTree.upsertData(dataObj.table?.name, currTab.getDataList(), currTab.listFilterIds)
+					if (currTab.listIDCurrent) {
+						dataTree.upsertData(dataObj.table?.name, currTab.listGetData())
 					}
 				} else {
-					if (currTab.data) dataTree.upsertData(dataObj.table?.name, currTab.getDataDetail())
+					if (currTab.data) dataTree.upsertData(dataObj.table?.name, currTab.detailGetData())
 				}
 			}
 		}

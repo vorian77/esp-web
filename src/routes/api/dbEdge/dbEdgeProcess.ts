@@ -42,7 +42,7 @@ export async function processQuery(token: TokenApiQuery) {
 	let script = ''
 
 	log('processQuery.queryType:', token.queryType)
-	log('processQuery.dataObjRaw:', dataObjRaw)
+	// log('processQuery.dataObjRaw:', dataObjRaw)
 
 	switch (token.queryType) {
 		case TokenApiQueryType.dataObj:
@@ -111,6 +111,7 @@ export async function processQuery(token: TokenApiQuery) {
 	)
 
 	if (dataResult.dataObjRowList.length > 0) {
+		// log('processQuery.3:', { dataResult: dataResult.dataObjRowList })
 		log('processQuery.3:', { dataResult: dataResult.dataObjRowList[0] })
 	}
 	return new ApiResultDoSuccess(dataObjRaw, dataResult)

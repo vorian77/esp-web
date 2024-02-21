@@ -17,8 +17,7 @@
 	const ROW_PER_PAGE = 20
 	const DATA_FIELD = 'data'
 
-	const handler = new DataHandler([])
-	// const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
+	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
 
 	const rows = handler.getRows()
 	let sort = handler.getSort()
@@ -35,11 +34,11 @@
 
 	$: {
 		dataObj.objData = dataObjData
-		rowsCount = dataObj?.dataListRecord.length || 0
-		console.log('FormList.reactive.rowsCount:', rowsCount)
+		// console.log('FormList.count:', dataObj.dataListRecord.length)
+		handler.clearSearch()
+		handler.clearFilters()
 		handler.setRows(dataObj.dataListRecord)
 		handler.setPage(1)
-		handler.clearFilters()
 		sortList()
 	}
 	$: if (state.overlayNodeFieldItems) state.overlayNodeFieldItems.setSelected($selected)
@@ -56,18 +55,12 @@
 	}
 
 	async function onClick(record: any) {
-		console.log('formList.onClick', {
-			rowsCount,
-			rowsLength: $rows.length,
-			dataListRecLen: dataObj.dataListRecord.length
-		})
-		// const listFilterIDs = rowsCount === $rows.length ? [] : $rows.map((r) => r['id'])
-		const listFilterIDs: Array<string> = []
+		dataObj.dataListEditInit($rows)
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: false,
 				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, record.id, listFilterIDs)
+				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, record.id)
 			})
 		})
 	}
@@ -140,9 +133,6 @@
 		</table>
 	</Datatable>
 </div>
-
-<!-- overflow-x: hidden; -->
-<!-- text-align: justify; -->
 
 <!-- <DataViewer header="sort" data={sort} /> -->
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->

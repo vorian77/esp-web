@@ -118,24 +118,6 @@ export class TokenApiQueryDataTree {
 	constructor(levels: Array<TokenApiQueryDataTreeLevel> = []) {
 		this.levels = levels
 	}
-	upsertData(table: string | undefined, data: any, listFilterIds: Array<string> = []) {
-		if (table) {
-			const idx = this.levels.findIndex((t) => t.table === table)
-			if (idx >= 0) {
-				this.levels[idx].data = data
-				if (listFilterIds) this.levels[idx].listFilterIds = listFilterIds
-			} else {
-				this.levels.push(new TokenApiQueryDataTreeLevel(table, data, listFilterIds))
-			}
-		}
-	}
-	getRecord(table: string | undefined = undefined) {
-		if (table) {
-			return this.levels.find((l) => l.table === table)?.data
-		} else {
-			return this.levels[this.levels.length - 1]?.data
-		}
-	}
 
 	getFieldData(table: string | undefined, fieldName: string) {
 		const record = this.getRecord(table)
@@ -152,10 +134,12 @@ export class TokenApiQueryDataTree {
 		}
 	}
 
-	getListFilterIds(table: string | undefined) {
-		if (!table) return []
-		const level = this.levels.find((l) => l.table === table)
-		return level ? level.listFilterIds : []
+	getRecord(table: string | undefined = undefined) {
+		if (table) {
+			return this.levels.find((l) => l.table === table)?.data
+		} else {
+			return this.levels[this.levels.length - 1]?.data
+		}
 	}
 
 	setFieldData(table: string | undefined, fieldName: string, value: any) {
@@ -172,15 +156,24 @@ export class TokenApiQueryDataTree {
 			})
 		}
 	}
+
+	upsertData(table: string | undefined, data: any) {
+		if (table) {
+			const idx = this.levels.findIndex((t) => t.table === table)
+			if (idx >= 0) {
+				this.levels[idx].data = data
+			} else {
+				this.levels.push(new TokenApiQueryDataTreeLevel(table, data))
+			}
+		}
+	}
 }
 
 export class TokenApiQueryDataTreeLevel {
 	data: DataObjRecord
-	listFilterIds: Array<string> = []
 	table: string
-	constructor(table: string, data: DataObjRecord, listFilterIds: Array<string> = []) {
+	constructor(table: string, data: DataObjRecord) {
 		this.data = data
-		this.listFilterIds = listFilterIds
 		this.table = table
 	}
 }
@@ -308,16 +301,9 @@ export class TokenAppDoDetailConfirm {
 }
 
 export class TokenAppDoList extends TokenAppDo {
-	filterIDs: Array<string>
 	recordId: string
-	constructor(
-		action: TokenAppDoAction,
-		dataObj: DataObj,
-		recordId: string,
-		filterIDs: Array<string>
-	) {
+	constructor(action: TokenAppDoAction, dataObj: DataObj, recordId: string) {
 		super(action, dataObj)
-		this.filterIDs = filterIDs
 		this.recordId = recordId
 	}
 }

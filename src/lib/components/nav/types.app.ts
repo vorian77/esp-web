@@ -7,7 +7,7 @@ import {
 	RawNode,
 	ResponseBody
 } from '$comps/types'
-import type { DataObjRaw, DataObjRecord, DbNode } from '$comps/types'
+import type { DataObjListRecord, DataObjRaw, DataObjRecord, DbNode } from '$comps/types'
 import { apiFetch, ApiFunction } from '$lib/api'
 import {
 	TokenApiQueryType,
@@ -83,7 +83,7 @@ export class App {
 	}
 	getRowStatus() {
 		const parentLevel = this.levels.length - 2
-		if (parentLevel > -1) return this.levels[parentLevel].getCurrTab().getRowStatus()
+		if (parentLevel > -1) return this.levels[parentLevel].getCurrTab().listRowStatus()
 	}
 	popLevel() {
 		this.levels.pop()
@@ -91,12 +91,12 @@ export class App {
 	async setRowAction(state: State, rowAction: AppRowActionType) {
 		if (this.levels.length > 1) {
 			const tabParent = this.getCurrTabParent()
-			tabParent.setCurrRowByAction(rowAction)
+			tabParent.listSetIdByAction(rowAction)
 
 			this.getCurrLevel().resetTabs()
 
 			const tabCurrent = this.getCurrTab()
-			tabCurrent.setDataDetail(tabParent.getDataList())
+			tabCurrent.detaiSetData(tabParent.listGetData())
 
 			await query(state, tabCurrent, TokenApiQueryType.retrieve, this)
 		}
@@ -114,7 +114,7 @@ export class App {
 		currTab.data = token.dataObj.objData
 		if (!(await query(state, currTab, queryType, this))) return false
 
-		if (this.levels.length > 1) await this.getCurrTabParent().updateParentList(state, currTab, this)
+		if (this.levels.length > 1) await this.getCurrTabParent().listUpdate(state, currTab, this)
 		return true
 	}
 }
@@ -158,7 +158,7 @@ export class AppLevel {
 	}
 	getCrumbLabel(tabIdx: number, parentLevel: AppLevel | undefined = undefined) {
 		const label = this.tabs[tabIdx].label
-		const labelId = parentLevel ? parentLevel.getCurrTab().getCrumbLabelId() : ''
+		const labelId = parentLevel ? parentLevel.getCurrTab().listCrumbLabelId() : ''
 		return label + labelId
 	}
 	getCurrTab() {
@@ -189,18 +189,17 @@ export class AppLevelRowStatus {
 	rowCurrentDisplay: number
 	show: boolean = false
 	status: string = ''
-	constructor(rowCount: number, rowCurrent: number) {
+	constructor(rowCount: number, rowIdx: number) {
 		this.rowCount = rowCount
-		this.rowCurrentDisplay = rowCurrent + 1
-		if (rowCount > 1 && rowCurrent > -1) {
-			this.status = '[' + this.rowCurrentDisplay + ' of ' + rowCount + ']'
+		this.rowCurrentDisplay = rowIdx + 1
+		if (this.rowCount > 1 && this.rowCurrentDisplay > 0) {
+			this.status = '[' + this.rowCurrentDisplay + ' of ' + this.rowCount + ']'
 			this.show = true
 		}
 	}
 }
 
 export class AppLevelTab {
-	currRow?: number
 	data?: DataObjData
 	dataObj?: DataObj
 	dataObjId: string
@@ -209,7 +208,7 @@ export class AppLevelTab {
 	isRetrieved: boolean = false
 	label: string
 	levelIdx: number
-	listFilterIds: Array<string> = []
+	listIDCurrent?: string
 	nodeId: string
 	private constructor(
 		levelIdx: number,
@@ -240,20 +239,22 @@ export class AppLevelTab {
 		return new AppLevelTab(levelIdx, idx, node.dataObjId, node.label, node.id)
 	}
 
-	filterList() {
-		if (this.listFilterIds.length > 0 && this.data?.dataObjRowList) {
-			const newList = this.data?.dataObjRowList.filter((row) => {
-				return this.listFilterIds.includes(row.record.id)
-			})
-			this.data.dataObjRowList = newList
-		}
+	detailGetData() {
+		return this.data ? this.data.getData() : {}
+	}
+	detaiSetData(data: DataObjRecord) {
+		if (this.data) this.data.setRecord(data)
 	}
 
-	getCrumbLabelId() {
+	getTable() {
+		return this.dataObj?.table?.name
+	}
+
+	listCrumbLabelId() {
 		let id = ''
 		const crumbFieldNames: Array<string> = this.dataObj?.crumbs ? this.dataObj.crumbs : []
-		if (crumbFieldNames.length > 0 && this.currRow !== undefined && this.currRow > -1) {
-			const dataRow = this.getDataList() || {}
+		if (crumbFieldNames.length > 0 && this.listIDCurrent) {
+			const dataRow = this.listGetData()
 			crumbFieldNames.forEach((f) => {
 				if (Object.hasOwn(dataRow, f)) {
 					if (id) id += ' '
@@ -263,89 +264,76 @@ export class AppLevelTab {
 		}
 		return id ? ` [${id}]` : ''
 	}
-
-	getDataDetail() {
-		return this.data ? this.data.getData() : {}
-	}
-
-	getDataList() {
-		return this.currRow !== undefined && this.currRow > -1 && this.data
-			? this.data.dataObjRowList[this.currRow].record
-			: {}
-	}
-	getRowStatus() {
-		const currLength = this.data?.dataObjRowList.length
-		if (currLength !== undefined && this.currRow !== undefined && this.currRow > -1) {
-			return new AppLevelRowStatus(currLength, this.currRow)
+	listGetData() {
+		const row = this.listGetRow()
+		if (row > -1) {
+			return this.dataObj?.dataListEdit[row] || {}
+		} else {
+			return {}
 		}
 	}
-	getTable() {
-		return this.dataObj?.table?.name
+	listGetRow() {
+		return this.listIDCurrent && this.dataObj?.dataListEdit
+			? this.dataObj?.dataListEdit.findIndex((row) => {
+					return row.id === this.listIDCurrent
+				})
+			: -1
 	}
-	initList(token: TokenAppDoList) {
-		this.listFilterIds = token.filterIDs
-		this.filterList()
-		this.setCurrRowById(token.recordId)
+	listRowStatus() {
+		if (this.dataObj?.dataListEdit && this.listIDCurrent) {
+			const rowIdx = this.dataObj?.dataListEdit.findIndex((row) => {
+				return row.id === this.listIDCurrent
+			})
+			if (rowIdx > -1) return new AppLevelRowStatus(this.dataObj?.dataListEdit.length, rowIdx)
+		}
 	}
-	reset() {
-		this.isRetrieved = false
+	listSetId(recordId: string) {
+		this.listIDCurrent = recordId
 	}
-	setCurrRowByAction(rowAction: AppRowActionType) {
-		const rowCount = this.data?.dataObjRowList.length
-		if (this.currRow === undefined || rowCount === undefined) return
-		let newRow: number
+
+	listSetIdByAction(rowAction: AppRowActionType) {
+		const rowCount = this.dataObj?.dataListEdit.length || 0
+		let row = this.listGetRow()
+		if (!rowCount || row < 0) return
+
 		switch (rowAction) {
 			case AppRowActionType.first:
-				newRow = 0
+				row = 0
 				break
 
 			case AppRowActionType.left:
-				newRow = this.currRow - 1
+				row--
 				break
 
 			case AppRowActionType.right:
-				newRow = this.currRow + 1
+				row++
 				break
 
 			case AppRowActionType.last:
-				newRow = rowCount - 1
+				row = rowCount - 1
 				break
 
 			default:
 				error(500, {
 					file: FILENAME,
-					function: 'AppLevelTab.setCurrRowByAction',
+					function: 'AppLevelTab.listSetIdByAction',
 					message: `No case defined for AppRowActionType: ${rowAction}`
 				})
 		}
-		console.log('setCurrRowByAction', { currRow: this.currRow, newRow })
-		this.currRow = newRow
+		this.listIDCurrent = this.dataObj?.dataListEdit[row].id
 	}
-	setCurrRowById(recordId: string) {
-		this.currRow =
-			!recordId || !this.data
-				? -1
-				: this.data.dataObjRowList.findIndex((row) => {
-						return row.record.id === recordId
-					})
-	}
-	setDataDetail(data: DataObjRecord) {
-		if (this.data) this.data.setRecord(data)
-	}
-	async updateParentList(state: State, currTab: AppLevelTab, app: App) {
+	async listUpdate(state: State, currTab: AppLevelTab, app: App) {
 		this.reset()
 		await query(state, this, TokenApiQueryType.retrieve, app)
-
 		if (currTab.data) {
-			// filter data list
 			const id = currTab.data.getRecordValue('id')
-			if (this.listFilterIds.length > 0 && !this.listFilterIds.includes(id))
-				this.listFilterIds.push(id)
-			this.filterList()
-
-			// set parent list curr row
-			this.setCurrRowById(id)
+			this.dataObj?.dataListEditAppend(id)
+			this.listSetId(id)
 		}
+	}
+
+	reset() {
+		this.isRetrieved = false
 	}
 }
 
