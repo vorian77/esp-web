@@ -6,16 +6,18 @@ import { initDO } from '$server/dbEdge/init/dbEdgeInit2DO'
 // features
 import { initFeatEmploy } from '$server/dbEdge/init/dbEdgeInit0FeatEmployment'
 import { initFeatDocument } from '$server/dbEdge/init/dbEdgeInit0FeatDocument'
+import { initTraining } from '$server/dbEdge/init/dbEdgeInit2DOCMTraining'
 
 export async function dbEdgeInit() {
 	sectionHeader('Init Start')
 	// await initSys()
 	// await initFeatDocument()
 	// await initFeatEmploy()
+	await initTraining()
 	sectionHeader('Init Complete')
 }
 export async function initSys() {
-	await initReset()
-	await initPre()
-	await initDO()
+	// await initReset()
+	// await initPre()
+	// await initDO()
 }

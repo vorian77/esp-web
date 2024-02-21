@@ -1,10 +1,30 @@
-import { sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-export default async function init() {
+export async function initTraining() {
 	sectionHeader('DataObject - CM-Training')
+	await reset()
 	await initCMTrainingCourse()
 	await initCMTrainingCohort()
+}
+
+async function reset() {
+	sectionHeader('Local-Reset')
+	const reset = new ResetDb()
+
+	reset.delNodeObj('node_obj_cm_cohort_detail')
+	reset.delNodeObj('node_obj_cm_cohort_list')
+
+	reset.delNodeObj('node_obj_cm_course_detail')
+	reset.delNodeObj('node_obj_cm_course_list')
+
+	reset.delDataObj('data_obj_cm_course_detail')
+	reset.delDataObj('data_obj_cm_course_list')
+
+	reset.delDataObj('data_obj_cm_cohort_detail')
+	reset.delDataObj('data_obj_cm_cohort_list')
+
+	await reset.execute()
 }
 
 async function initCMTrainingCourse() {
@@ -59,6 +79,18 @@ async function initCMTrainingCourse() {
 				dbOrderSelect: 60,
 				indexTable: '0',
 				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				codeAlignment: 'right',
+				codeElement: 'number',
+				columnName: 'custom_select_int',
+				dbOrderSelect: 70,
+				exprCustom: `(SELECT count((SELECT app_cm::CmCsfCohort FILTER .cohort.course.id = app_cm::CmCourse.id)))`,
+				headerAlt: 'Enrollments',
+				indexTable: '0',
+				nameCustom: 'customCohortsCount',
+				pattern: '[-+]?[0-9]*[.,]?[0-9]+'
 			}
 		]
 	})
@@ -315,6 +347,18 @@ async function initCMTrainingCohort() {
 				columnName: 'note',
 				dbOrderSelect: 60,
 				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				codeAlignment: 'right',
+				codeElement: 'number',
+				columnName: 'custom_select_int',
+				dbOrderSelect: 70,
+				exprCustom: `(SELECT count((SELECT app_cm::CmCsfCohort FILTER .cohort.id = app_cm::CmCohort.id)))`,
+				headerAlt: 'Enrollments',
+				indexTable: '0',
+				nameCustom: 'customCohortsCount',
+				pattern: '[-+]?[0-9]*[.,]?[0-9]+'
 			}
 		]
 	})
