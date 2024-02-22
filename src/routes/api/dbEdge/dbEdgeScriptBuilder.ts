@@ -756,7 +756,7 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 				break
 
 			case DataFieldDataType.str:
-				val = getValQuote(val)
+				val = `"${val}"`
 				break
 
 			case DataFieldDataType.uuid:
