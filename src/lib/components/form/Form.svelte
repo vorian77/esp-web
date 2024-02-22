@@ -142,7 +142,7 @@
 
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
-								app.getCurrTab().listSetId(token.recordId)
+								app.getCurrTab().listInit(token)
 								await app.addLevel(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}

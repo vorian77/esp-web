@@ -45,10 +45,8 @@ export class DataObj {
 	cardinality: DataObjCardinality
 	component: DataObjComponent
 	crumbs: Array<any> = []
-	dataListRecord: DataObjListRecord = []
-	dataListEdit: DataObjListRecord = []
-	dataListFilterIds: Array<string> = []
 	data: DataObjData
+	dataListRecord: DataObjListRecord = []
 	description: string
 	exprObject?: string
 	fields: Array<Field> = []
@@ -201,20 +199,6 @@ export class DataObj {
 				// console.log('dataObj.objData.fields:', this.fields)
 				break
 		}
-	}
-
-	dataListEditAppend(id: string) {
-		if (!this.dataListFilterIds.includes(id)) this.dataListFilterIds.push(id)
-		this.dataListEditFilter()
-	}
-	dataListEditFilter() {
-		this.dataListEdit = this.dataListRecord.filter((row) => {
-			return this.dataListFilterIds.includes(row['id'])
-		})
-	}
-	dataListEditInit(listRows: Array<{ id: string }>) {
-		this.dataListFilterIds = listRows.map((r) => r['id'])
-		this.dataListEditFilter()
 	}
 
 	getFieldIdx(fieldName: string) {

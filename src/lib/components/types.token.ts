@@ -301,10 +301,17 @@ export class TokenAppDoDetailConfirm {
 }
 
 export class TokenAppDoList extends TokenAppDo {
-	recordId: string
-	constructor(action: TokenAppDoAction, dataObj: DataObj, recordId: string) {
+	listFilterIds: Array<string>
+	listRowId: string
+	constructor(
+		action: TokenAppDoAction,
+		dataObj: DataObj,
+		listFilterIds: Array<string>,
+		listRowId: string
+	) {
 		super(action, dataObj)
-		this.recordId = recordId
+		this.listFilterIds = listFilterIds
+		this.listRowId = listRowId
 	}
 }
 

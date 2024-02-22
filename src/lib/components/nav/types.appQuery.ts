@@ -61,7 +61,7 @@ export async function query(
 	if (tab.dataObj) {
 		if (tab.dataObj.cardinality === DataObjCardinality.list) {
 			tab.data = resultData
-			tab.dataObj.dataListEditFilter()
+			tab.listFilter()
 			return true
 		}
 

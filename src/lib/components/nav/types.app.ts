@@ -208,7 +208,10 @@ export class AppLevelTab {
 	isRetrieved: boolean = false
 	label: string
 	levelIdx: number
+	listEdit: DataObjListRecord = []
 	listIDCurrent?: string
+	listFilterIds: Array<string> = []
+
 	nodeId: string
 	private constructor(
 		levelIdx: number,
@@ -264,35 +267,51 @@ export class AppLevelTab {
 		}
 		return id ? ` [${id}]` : ''
 	}
+	listFilter() {
+		this.listEdit =
+			this.data?.dataObjRowList
+				.filter((row) => {
+					return this.listFilterIds.includes(row.record['id'])
+				})
+				.map((row) => row.record) || []
+	}
+	listFilterAppend(id: string) {
+		if (!this.listFilterIds.includes(id)) this.listFilterIds.push(id)
+		this.listFilter()
+	}
 	listGetData() {
 		const row = this.listGetRow()
 		if (row > -1) {
-			return this.dataObj?.dataListEdit[row] || {}
+			return this.listEdit[row] || {}
 		} else {
 			return {}
 		}
 	}
 	listGetRow() {
-		return this.listIDCurrent && this.dataObj?.dataListEdit
-			? this.dataObj?.dataListEdit.findIndex((row) => {
+		return this.listIDCurrent && this.listEdit
+			? this.listEdit.findIndex((row) => {
 					return row.id === this.listIDCurrent
 				})
 			: -1
 	}
+	listInit(token: TokenAppDoList) {
+		this.listSetId(token.listRowId)
+		this.listFilterIds = token.listFilterIds
+		this.listFilter()
+	}
 	listRowStatus() {
-		if (this.dataObj?.dataListEdit && this.listIDCurrent) {
-			const rowIdx = this.dataObj?.dataListEdit.findIndex((row) => {
+		if (this.listEdit && this.listIDCurrent) {
+			const rowIdx = this.listEdit.findIndex((row) => {
 				return row.id === this.listIDCurrent
 			})
-			if (rowIdx > -1) return new AppLevelRowStatus(this.dataObj?.dataListEdit.length, rowIdx)
+			if (rowIdx > -1) return new AppLevelRowStatus(this.listEdit.length, rowIdx)
 		}
 	}
 	listSetId(recordId: string) {
 		this.listIDCurrent = recordId
 	}
-
 	listSetIdByAction(rowAction: AppRowActionType) {
-		const rowCount = this.dataObj?.dataListEdit.length || 0
+		const rowCount = this.listEdit.length || 0
 		let row = this.listGetRow()
 		if (!rowCount || row < 0) return
 
@@ -320,15 +339,15 @@ export class AppLevelTab {
 					message: `No case defined for AppRowActionType: ${rowAction}`
 				})
 		}
-		this.listIDCurrent = this.dataObj?.dataListEdit[row].id
+		this.listIDCurrent = this.listEdit[row].id
 	}
 	async listUpdate(state: State, currTab: AppLevelTab, app: App) {
 		this.reset()
 		await query(state, this, TokenApiQueryType.retrieve, app)
 		if (currTab.data) {
 			const id = currTab.data.getRecordValue('id')
-			this.dataObj?.dataListEditAppend(id)
 			this.listSetId(id)
+			this.listFilterAppend(id)
 		}
 	}
 

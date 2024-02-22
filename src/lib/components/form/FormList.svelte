@@ -55,12 +55,16 @@
 	}
 
 	async function onClick(record: any) {
-		dataObj.dataListEditInit($rows)
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: false,
 				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoList(TokenAppDoAction.listEdit, dataObj, record.id)
+				token: new TokenAppDoList(
+					TokenAppDoAction.listEdit,
+					dataObj,
+					$rows.map((r: any) => r.id),
+					record.id
+				)
 			})
 		})
 	}
