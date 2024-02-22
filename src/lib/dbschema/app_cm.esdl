@@ -9,7 +9,6 @@ module app_cm {
       codeSector: sys_core::SysCode;
       codeStatus: sys_core::SysCode;
       codeTypePayment: sys_core::SysCodeType;
-      cost: float32;
       description: str;
       provider: sys_core::SysOrg;
       schedule: str;
@@ -20,6 +19,7 @@ module app_cm {
     type CmCohort extending sys_core::SysObj {
       capacity: int16;
       codeStatus: sys_core::SysCode;
+      cost: float32;
       required course: app_cm::CmCourse;
       dateEnd: cal::local_date;
       dateStart: cal::local_date;

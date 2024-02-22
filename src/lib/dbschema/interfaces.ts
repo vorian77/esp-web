@@ -72,9 +72,9 @@ export namespace app_cm {
     "schedule"?: string | null;
     "dateEnd"?: edgedb.LocalDate | null;
     "dateStart"?: edgedb.LocalDate | null;
+    "cost"?: number | null;
   }
   export interface CmCourse extends sys_core.SysObj {
-    "cost"?: number | null;
     "description"?: string | null;
     "schedule"?: string | null;
     "codeMultiCerts": sys_core.SysCode[];
