@@ -1,6 +1,7 @@
 import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
+import { booleanOrFalse } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
@@ -125,12 +126,12 @@ export async function addColumn(data: any) {
 				exprStorageKey: p.exprStorageKey,
 				header: p.header,
 				headerSide: p.headerSide,
-				isExcludeInsert: p.isExcludeInsert,
-				isExcludeSelect: p.isExcludeSelect,
-				isExcludeUpdate: p.isExcludeUpdate,
-				isMultiSelect: p.isMultiSelect,
-				isSelfReference: p.isSelfReference,
-				isSetBySys: p.isSetBySys,
+				isExcludeInsert: booleanOrFalse(p.isExcludeInsert),
+				isExcludeSelect: booleanOrFalse(p.isExcludeSelect),
+				isExcludeUpdate: booleanOrFalse(p.isExcludeUpdate),
+				isMultiSelect: booleanOrFalse(p.isMultiSelect),
+				isSelfReference: booleanOrFalse(p.isSelfReference),
+				isSetBySys: booleanOrFalse(p.isSetBySys),
 				link: p.link,
 				matchColumn: p.matchColumn,
 				maxLength: p.maxLength,

@@ -1,9 +1,10 @@
-import { ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { codeTypes, codes, ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 export async function initTraining() {
 	sectionHeader('DataObject - CM-Training')
 	await reset()
+	// await initCodes()
 	await initCMTrainingCourse()
 	await initCMTrainingCohort()
 }
@@ -24,7 +25,20 @@ async function reset() {
 	reset.delDataObj('data_obj_cm_cohort_detail')
 	reset.delDataObj('data_obj_cm_cohort_list')
 
+	// reset.delCodeType('ct_cm_course_cert')
+
 	await reset.execute()
+}
+
+async function initCodes() {
+	await codeTypes([['app_cm', 0, 'ct_cm_course_cert']])
+
+	await codes([
+		['ct_cm_course_cert', 'app_cm', 'Asbestos Abatement', 0],
+		['ct_cm_course_cert', 'app_cm', 'Completion', 1],
+		['ct_cm_course_cert', 'app_cm', 'Lead Abatement', 2],
+		['ct_cm_course_cert', 'app_cm', 'OSHA 1', 3]
+	])
 }
 
 async function initCMTrainingCourse() {
@@ -60,19 +74,13 @@ async function initCMTrainingCourse() {
 				dbOrderSelect: 30,
 				indexTable: '0'
 			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'cost',
-				dbOrderSelect: 40,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'codeTypePayment',
-				dbOrderSelect: 50,
-				indexTable: '0',
-				link: { columnsDisplay: ['header'] }
-			},
+			// {
+			// 	codeAccess: 'readOnly',
+			// 	columnName: 'codeTypePayment',
+			// 	dbOrderSelect: 50,
+			// 	indexTable: '0',
+			// 	link: { columnsDisplay: ['header'] }
+			// },
 			{
 				codeAccess: 'readOnly',
 				columnName: 'codeSector',
@@ -137,21 +145,16 @@ async function initCMTrainingCourse() {
 				dbOrderSelect: 40,
 				indexTable: '0'
 			},
-			{
-				codeElement: 'number',
-				columnName: 'cost',
-				dbOrderSelect: 50,
-				indexTable: '0'
-			},
-			{
-				codeElement: 'select',
-				columnName: 'codeTypePayment',
-				dbOrderSelect: 60,
-				indexTable: '0',
-				itemsDb: 'il_sys_codeType_order_name_by_codeTypeParent_name',
-				itemsDbParms: { codeTypeParentName: 'ct_cm_payment_type' },
-				link: { table: { module: 'sys_core', name: 'SysCodeType' } }
-			},
+
+			// {
+			// 	codeElement: 'select',
+			// 	columnName: 'codeTypePayment',
+			// 	dbOrderSelect: 60,
+			// 	indexTable: '0',
+			// 	itemsDb: 'il_sys_codeType_order_name_by_codeTypeParent_name',
+			// 	itemsDbParms: { codeTypeParentName: 'ct_cm_payment_type' },
+			// 	link: { table: { module: 'sys_core', name: 'SysCodeType' } }
+			// },
 			{
 				codeElement: 'select',
 				columnName: 'codeSector',
@@ -317,7 +320,7 @@ async function initCMTrainingCohort() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'codeStatus',
-				dbOrderSelect: 40,
+				dbOrderSelect: 20,
 				indexTable: '0',
 				link: { columnsDisplay: ['name'], table: { module: 'sys_core', name: 'SysOrg' } }
 			},
@@ -328,6 +331,12 @@ async function initCMTrainingCohort() {
 				dbOrderList: 10,
 				dbOrderSelect: 30,
 				headerAlt: 'Cohort ID',
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'cost',
+				dbOrderSelect: 35,
 				indexTable: '0'
 			},
 			{
@@ -418,22 +427,28 @@ async function initCMTrainingCohort() {
 				indexTable: '0'
 			},
 			{
+				codeElement: 'number',
+				columnName: 'cost',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			},
+			{
 				codeElement: 'date',
 				columnName: 'dateStart',
-				dbOrderSelect: 52,
+				dbOrderSelect: 70,
 				indexTable: '0'
 			},
 			{
 				codeElement: 'date',
 				columnName: 'dateEnd',
-				dbOrderSelect: 54,
+				dbOrderSelect: 80,
 				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'staffAdmin',
-				dbOrderSelect: 60,
+				dbOrderSelect: 90,
 				indexTable: '0',
 				itemsDb: 'il_sys_role_staff_by_codeName',
 				itemsDbParms: { codeName: 'cm_training_role_staff_admin' },
@@ -443,7 +458,7 @@ async function initCMTrainingCohort() {
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'staffAgency',
-				dbOrderSelect: 70,
+				dbOrderSelect: 100,
 				indexTable: '0',
 				itemsDb: 'il_sys_role_staff_by_codeName',
 				itemsDbParms: { codeName: 'cm_training_role_staff_agency' },
@@ -453,7 +468,7 @@ async function initCMTrainingCohort() {
 				codeAccess: 'optional',
 				codeElement: 'select',
 				columnName: 'staffInstructor',
-				dbOrderSelect: 80,
+				dbOrderSelect: 110,
 				indexTable: '0',
 				itemsDb: 'il_sys_role_staff_by_codeName',
 				itemsDbParms: { codeName: 'cm_training_role_staff_instructor' },
@@ -463,7 +478,7 @@ async function initCMTrainingCohort() {
 				codeAccess: 'optional',
 				codeElement: 'textArea',
 				columnName: 'note',
-				dbOrderSelect: 90,
+				dbOrderSelect: 120,
 				indexTable: '0'
 			},
 			{

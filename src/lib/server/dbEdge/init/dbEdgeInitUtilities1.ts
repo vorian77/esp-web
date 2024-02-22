@@ -8,6 +8,10 @@ const client = createClient({
 	secretKey: EDGEDB_SECRET_KEY
 })
 
+export function booleanOrFalse(val: any) {
+	return e.op(val, 'if', e.op('exists', val), 'else', false)
+}
+
 const rootUserName = '*ROOTUSER*'
 
 export async function rootObj() {

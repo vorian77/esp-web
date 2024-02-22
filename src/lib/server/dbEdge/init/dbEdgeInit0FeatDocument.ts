@@ -27,14 +27,14 @@ async function reset() {
 	reset.delDataObj('data_obj_cm_csf_document_detail')
 	reset.delDataObj('data_obj_cm_csf_document_list')
 
-	// reset.delColumn('dateExpires')
-	// reset.delColumn('dateIssued')
-	// reset.delColumn('file')
-	// reset.delColumn('isShareWithClient')
+	reset.delColumn('dateExpires')
+	reset.delColumn('dateIssued')
+	reset.delColumn('file')
+	reset.delColumn('isShareWithClient')
 
 	// reset.delCodeType('ct_cm_doc_type')
 
-	// reset.delTable('CmCsfDocument')
+	reset.delTable('CmCsfDocument')
 
 	await reset.execute()
 }
@@ -56,35 +56,35 @@ async function config() {
 	// 	['ct_cm_doc_type', 'app_cm', 'Evaluation form', 0]
 	// ])
 
-	// sectionHeader('Columns')
+	sectionHeader('Columns')
 
-	// await addColumn({
-	// 	owner: 'app_sys',
-	// 	codeDataType: 'date',
-	// 	header: 'Expiration Date',
-	// 	name: 'dateExpires'
-	// })
-	// await addColumn({
-	// 	owner: 'app_sys',
-	// 	codeDataType: 'date',
-	// 	header: 'Issued Date',
-	// 	name: 'dateIssued'
-	// })
-	// await addColumn({
-	// 	owner: 'app_sys',
-	// 	codeDataType: 'json',
-	// 	exprStorageKey: 'file_<int64,calc,random10>',
-	// 	header: 'File',
-	// 	name: 'file'
-	// })
-	// await addColumn({
-	// 	owner: 'app_sys',
-	// 	codeDataType: 'bool',
-	// 	header: 'Share With Student',
-	// 	name: 'isShareWithClient'
-	// })
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Expiration Date',
+		name: 'dateExpires'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Issued Date',
+		name: 'dateIssued'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'json',
+		exprStorageKey: 'file_<int64,calc,random10>',
+		header: 'File',
+		name: 'file'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'bool',
+		header: 'Share With Student',
+		name: 'isShareWithClient'
+	})
 
-	// await tables([['app_cm', 'app_cm', 'CmCsfDocument', true]])
+	await tables([['app_cm', 'app_cm', 'CmCsfDocument', true]])
 
 	sectionHeader('Data Objects')
 
@@ -285,7 +285,7 @@ async function config() {
 		dataObj: 'data_obj_cm_csf_document_list',
 		header: 'Documents',
 		name: 'node_obj_cm_csf_document_list',
-		order: 20,
+		order: 40,
 		owner: 'app_cm',
 		parentNodeName: 'node_obj_cm_service_flow_detail'
 	})

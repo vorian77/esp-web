@@ -1,13 +1,59 @@
-import { sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-export default async function initDOCMStudent() {
+export async function initDOCMStudent() {
 	sectionHeader('DataObject - CM-Student')
+	await reset()
 	await initCMStudent()
 	await initStudentCsf()
 	await initStudentCsfCohort()
 	await initStudentCsfCohortAttd()
 	await initStudentCsfNote()
+}
+
+async function reset() {
+	sectionHeader('Local-Reset')
+	const reset = new ResetDb()
+
+	// node objects
+	reset.delNodeObj('node_obj_cm_csf_note_detail')
+	reset.delNodeObj('node_obj_cm_csf_note_list')
+
+	reset.delNodeObj('node_obj_cm_csf_cohort_attd_detail')
+	reset.delNodeObj('node_obj_cm_csf_cohort_attd_list')
+
+	reset.delNodeObj('node_obj_cm_csf_cohort_detail')
+	reset.delNodeObj('node_obj_cm_csf_cohort_list')
+
+	reset.delNodeObj('node_obj_cm_csf_job_placement_detail')
+	reset.delNodeObj('node_obj_cm_csf_job_placement_list')
+
+	reset.delNodeObj('node_obj_cm_csf_document_detail')
+	reset.delNodeObj('node_obj_cm_csf_document_list')
+
+	reset.delNodeObj('node_obj_cm_service_flow_detail')
+	reset.delNodeObj('node_obj_cm_service_flow_list')
+
+	reset.delNodeObj('node_obj_cm_student_detail')
+	reset.delNodeObj('node_obj_cm_student_list')
+
+	// data objects
+	reset.delDataObj('data_obj_cm_student_detail')
+	reset.delDataObj('data_obj_cm_student_list')
+
+	reset.delDataObj('data_obj_cm_client_service_flow_detail')
+	reset.delDataObj('data_obj_cm_client_service_flow_list')
+
+	reset.delDataObj('data_obj_cm_csf_cohort_attd_detail')
+	reset.delDataObj('data_obj_cm_csf_cohort_attd_list')
+
+	reset.delDataObj('data_obj_cm_csf_cohort_detail')
+	reset.delDataObj('data_obj_cm_csf_cohort_list')
+
+	reset.delDataObj('data_obj_cm_csf_note_detail')
+	reset.delDataObj('data_obj_cm_csf_note_list')
+
+	await reset.execute()
 }
 
 async function initCMStudent() {
@@ -977,7 +1023,7 @@ async function initStudentCsfNote() {
 		dataObj: 'data_obj_cm_csf_note_list',
 		header: 'Case Notes',
 		name: 'node_obj_cm_csf_note_list',
-		order: 5,
+		order: 20,
 		owner: 'app_cm',
 		parentNodeName: 'node_obj_cm_service_flow_detail'
 	})

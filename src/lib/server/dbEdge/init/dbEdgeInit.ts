@@ -7,13 +7,15 @@ import { initDO } from '$server/dbEdge/init/dbEdgeInit2DO'
 import { initFeatEmploy } from '$server/dbEdge/init/dbEdgeInit0FeatEmployment'
 import { initFeatDocument } from '$server/dbEdge/init/dbEdgeInit0FeatDocument'
 import { initTraining } from '$server/dbEdge/init/dbEdgeInit2DOCMTraining'
+import { initDOCMStudent } from '$server/dbEdge/init/dbEdgeInit2DOCMStudent'
 
 export async function dbEdgeInit() {
 	sectionHeader('Init Start')
 	// await initSys()
+	// await initDOCMStudent()
 	// await initFeatDocument()
 	// await initFeatEmploy()
-	await initTraining()
+	// await initTraining()
 	sectionHeader('Init Complete')
 }
 export async function initSys() {
