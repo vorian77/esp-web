@@ -33,6 +33,7 @@ export type $SysPersonλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73
   "zip": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "phoneAlt": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "title": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "middleName": $.PropertyDesc<$Name, $.Cardinality.AtMostOne, false, false, false, false>;
   "<person[is sys_user::SysStaff]": $.LinkDesc<_sys_user.$SysStaff, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::UserRoot]": $.LinkDesc<_sys_user.$UserRoot, $.Cardinality.Many, {}, false, false,  false, false>;
   "<person[is sys_user::SysUser]": $.LinkDesc<_sys_user.$SysUser, $.Cardinality.Many, {}, false, false,  false, false>;

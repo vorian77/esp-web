@@ -1,7 +1,7 @@
 import { ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-export async function initDOCMStudent() {
+export async function initFeatCMStudent() {
 	sectionHeader('DataObject - CM-Student')
 	await reset()
 	await initCMStudent()
@@ -15,43 +15,14 @@ async function reset() {
 	sectionHeader('Local-Reset')
 	const reset = new ResetDb()
 
-	// node objects
-	reset.delNodeObj('node_obj_cm_csf_note_detail')
-	reset.delNodeObj('node_obj_cm_csf_note_list')
-
-	reset.delNodeObj('node_obj_cm_csf_cohort_attd_detail')
-	reset.delNodeObj('node_obj_cm_csf_cohort_attd_list')
-
-	reset.delNodeObj('node_obj_cm_csf_cohort_detail')
-	reset.delNodeObj('node_obj_cm_csf_cohort_list')
-
-	reset.delNodeObj('node_obj_cm_csf_job_placement_detail')
-	reset.delNodeObj('node_obj_cm_csf_job_placement_list')
-
-	reset.delNodeObj('node_obj_cm_csf_document_detail')
-	reset.delNodeObj('node_obj_cm_csf_document_list')
-
-	reset.delNodeObj('node_obj_cm_service_flow_detail')
-	reset.delNodeObj('node_obj_cm_service_flow_list')
-
-	reset.delNodeObj('node_obj_cm_student_detail')
-	reset.delNodeObj('node_obj_cm_student_list')
-
-	// data objects
-	reset.delDataObj('data_obj_cm_student_detail')
-	reset.delDataObj('data_obj_cm_student_list')
-
-	reset.delDataObj('data_obj_cm_client_service_flow_detail')
-	reset.delDataObj('data_obj_cm_client_service_flow_list')
-
-	reset.delDataObj('data_obj_cm_csf_cohort_attd_detail')
-	reset.delDataObj('data_obj_cm_csf_cohort_attd_list')
-
-	reset.delDataObj('data_obj_cm_csf_cohort_detail')
-	reset.delDataObj('data_obj_cm_csf_cohort_list')
-
-	reset.delDataObj('data_obj_cm_csf_note_detail')
-	reset.delDataObj('data_obj_cm_csf_note_list')
+	reset.delFeature('cm_csf_note')
+	reset.delFeature('cm_csf_cohort_attd')
+	reset.delFeature('cm_csf_cohort')
+	reset.delFeature('cm_csf_job_placement')
+	reset.delFeature('cm_csf_document')
+	reset.delFeature('cm_service_flow')
+	reset.delFeature('cm_client_service_flow')
+	reset.delFeature('cm_student')
 
 	await reset.execute()
 }
@@ -84,6 +55,12 @@ async function initCMStudent() {
 				dbOrderCrumb: 10,
 				dbOrderList: 20,
 				dbOrderSelect: 30,
+				indexTable: '1'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'middleName',
+				dbOrderSelect: 35,
 				indexTable: '1'
 			},
 			{
@@ -144,6 +121,12 @@ async function initCMStudent() {
 				indexTable: '1'
 			},
 			{
+				codeAccess: 'optional',
+				columnName: 'middleName',
+				dbOrderSelect: 35,
+				indexTable: '1'
+			},
+			{
 				columnName: 'lastName',
 				dbOrderSelect: 40,
 				indexTable: '1'
@@ -158,6 +141,12 @@ async function initCMStudent() {
 				columnName: 'agencyId',
 				dbOrderSelect: 55,
 				headerAlt: 'Group',
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'school',
+				dbOrderSelect: 57,
 				indexTable: '0'
 			},
 			{

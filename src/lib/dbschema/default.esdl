@@ -16,6 +16,7 @@ module default {
     required firstName: Name;
     property fullName := .firstName ++ ' ' ++ .lastName;
     required lastName: Name;
+    middleName: Name;
     note: str;
     phoneAlt: str;
     phoneMobile: str;

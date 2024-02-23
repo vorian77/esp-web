@@ -9,7 +9,7 @@ import {
 	addNodeProgramObj
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-export async function initDOSysAdmin() {
+export async function initFeatSysAdmin() {
 	sectionHeader('DataObject - SysAdmin')
 	await reset()
 
@@ -577,6 +577,12 @@ async function initColumn() {
 				dbOrderList: 10,
 				dbOrderSelect: 20,
 				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'header',
+				dbOrderSelect: 30,
+				indexTable: '0'
 			}
 		]
 	})
@@ -600,6 +606,11 @@ async function initColumn() {
 				columnName: 'name',
 				dbOrderCrumb: 10,
 				dbOrderSelect: 20,
+				indexTable: '0'
+			},
+			{
+				columnName: 'header',
+				dbOrderSelect: 25,
 				indexTable: '0'
 			},
 			{

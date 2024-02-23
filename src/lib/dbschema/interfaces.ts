@@ -47,6 +47,7 @@ export namespace app_cm {
     "owner": sys_core.SysOrg;
     "person": SysPerson;
     "agencyId"?: string | null;
+    "school"?: string | null;
   }
   export interface CmClientServiceFlow extends sys_user.Mgmt {
     "client": CmClient;
@@ -314,6 +315,7 @@ export interface SysPerson extends std.$Object {
   "zip"?: string | null;
   "phoneAlt"?: string | null;
   "title"?: string | null;
+  "middleName"?: string | null;
 }
 export namespace cfg {
   export interface ConfigObject extends std.BaseObject {}

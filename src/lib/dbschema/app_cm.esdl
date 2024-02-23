@@ -43,6 +43,7 @@ module app_cm {
       on source delete delete target if orphan;
     };
     agencyId: str;
+    school: str;
   }
 
   type CmClientServiceFlow extending sys_user::Mgmt {
