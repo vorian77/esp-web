@@ -15,7 +15,7 @@ export async function initPreTable() {
 		['app_sys_admin', 'sys_core', 'SysDataObj', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjAction', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjColumn', true],
-		['app_sys_admin', 'sys_core', 'SysDataObjFieldItems', true],
+		['app_sys_admin', 'sys_core', 'SysDataObjFieldListItems', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjFieldLink', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjFieldLinkJoin', true],
 		['app_sys_admin', 'sys_core', 'SysDataObjTable', true],

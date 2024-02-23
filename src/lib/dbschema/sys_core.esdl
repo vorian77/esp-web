@@ -106,9 +106,9 @@ module sys_core {
     customElement: json;
     dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
-    fieldChips: sys_core::SysDataObjFieldChips;
-    fieldItems: sys_core::SysDataObjFieldItems;
-    fieldItemsParms: json;
+    fieldListChips: sys_core::SysDataObjFieldListChips;
+    fieldListItems: sys_core::SysDataObjFieldListItems;
+    fieldListItemsParms: json;
     headerAlt: str;
     height: int16;
     isDisplay: bool;
@@ -117,7 +117,7 @@ module sys_core {
     width: int16;
   }
 
-  type SysDataObjFieldChips extending sys_core::SysObj {
+  type SysDataObjFieldListChips extending sys_core::SysObj {
     required btnLabelComplete: str;
     required columnLabelDisplay: str;
     headerSub: str;
@@ -125,7 +125,7 @@ module sys_core {
     constraint exclusive on (.name);
  }
 
- type SysDataObjFieldItems extending sys_core::SysObj {
+ type SysDataObjFieldListItems extending sys_core::SysObj {
     codeDataTypeDisplay: sys_core::SysCode;
     codeMask: sys_core::SysCode;
     required exprSelect: str;
@@ -215,11 +215,11 @@ module sys_core {
   function getDataObjAction(dataObjActionName: str) -> optional sys_core::SysDataObjAction
     using (select sys_core::SysDataObjAction filter .name = dataObjActionName);        
     
-  function getDataObjFieldChips(name: str) -> optional sys_core::SysDataObjFieldChips
-    using (select sys_core::SysDataObjFieldChips filter .name = name);
+  function getDataObjFieldListChips(name: str) -> optional sys_core::SysDataObjFieldListChips
+    using (select sys_core::SysDataObjFieldListChips filter .name = name);
   
-  function getDataObjFieldItems(name: str) -> optional sys_core::SysDataObjFieldItems
-    using (select sys_core::SysDataObjFieldItems filter .name = name);  
+  function getDataObjFieldListItems(name: str) -> optional sys_core::SysDataObjFieldListItems
+    using (select sys_core::SysDataObjFieldListItems filter .name = name);  
     
   function getNodeObjByName(nodeObjName: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .name = nodeObjName);

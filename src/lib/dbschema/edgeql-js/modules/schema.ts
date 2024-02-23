@@ -741,11 +741,11 @@ export type $ObjectTypeλShape = $.typeutil.flatten<$SourceλShape & Omit<$Consi
   "<__type__[is sys_core::SysDataObjTable]": $.LinkDesc<_sys_core.$SysDataObjTable, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysObjConfig]": $.LinkDesc<_sys_core.$SysObjConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is sys_core::SysDataObjColumn]": $.LinkDesc<_sys_core.$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::SysDataObjFieldItems]": $.LinkDesc<_sys_core.$SysDataObjFieldItems, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldListItems]": $.LinkDesc<_sys_core.$SysDataObjFieldListItems, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCsfJobPlacement]": $.LinkDesc<_app_cm.$CmCsfJobPlacement, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmEmployer]": $.LinkDesc<_app_cm.$CmEmployer, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__[is app_cm::CmCsfDocument]": $.LinkDesc<_app_cm.$CmCsfDocument, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<__type__[is sys_core::SysDataObjFieldChips]": $.LinkDesc<_sys_core.$SysDataObjFieldChips, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<__type__[is sys_core::SysDataObjFieldListChips]": $.LinkDesc<_sys_core.$SysDataObjFieldListChips, $.Cardinality.Many, {}, false, false,  false, false>;
   "<__type__": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<intersection_of": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<subject": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;

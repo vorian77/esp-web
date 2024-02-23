@@ -100,7 +100,7 @@ export async function getDataObjById(dataObjId: string) {
 				})),
 				_codeAccess: f.codeAccess.name,
 				_codeElement: f.codeElement.name,
-				_fieldChips: e.select(f.fieldChips, (i) => ({
+				_fieldListChips: e.select(f.fieldListChips, (i) => ({
 					btnLabelComplete: true,
 					columnLabelDisplay: true,
 					header: true,
@@ -108,14 +108,14 @@ export async function getDataObjById(dataObjId: string) {
 					isMultiSelect: true,
 					name: true
 				})),
-				_fieldItems: e.select(f.fieldItems, (idb) => ({
+				_fieldListItems: e.select(f.fieldListItems, (idb) => ({
 					_codeDataTypeDisplay: idb.codeDataTypeDisplay.name,
 					_codeMask: idb.codeMask.name,
 					exprSelect: true,
 					name: true
 				})),
 				customElement: true,
-				fieldItemsParms: true,
+				fieldListItemsParms: true,
 				headerAlt: true,
 				height: true,
 				isDisplay: true,
@@ -159,7 +159,7 @@ export async function getDataObjById(dataObjId: string) {
 				hasItems: e.op(
 					'exists',
 					e.select(do1.columns, (c) => ({
-						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldItems))
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldListItems))
 					}))
 				),
 				indexTable: true,
@@ -185,7 +185,7 @@ export async function getDataObjById(dataObjId: string) {
 				hasItems: e.op(
 					'exists',
 					e.select(do1.columns, (c) => ({
-						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldItems))
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldListItems))
 					}))
 				),
 				indexTable: true,
@@ -202,7 +202,7 @@ export async function getDataObjById(dataObjId: string) {
 				hasItems: e.op(
 					'exists',
 					e.select(do1.columns, (c) => ({
-						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldItems))
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldListItems))
 					}))
 				),
 				indexTable: true,
@@ -216,7 +216,7 @@ export async function getDataObjById(dataObjId: string) {
 				hasItems: e.op(
 					'exists',
 					e.select(do1.columns, (c) => ({
-						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldItems))
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldListItems))
 					}))
 				),
 				indexTable: true,
@@ -231,7 +231,7 @@ export async function getDataObjById(dataObjId: string) {
 				hasItems: e.op(
 					'exists',
 					e.select(do1.columns, (c) => ({
-						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldItems))
+						filter: e.op(e.op(c.column, '=', f.column), 'and', e.op('exists', c.fieldListItems))
 					}))
 				),
 				indexTable: true,

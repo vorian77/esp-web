@@ -12,9 +12,9 @@ import { initTraining } from '$server/dbEdge/init/dbEdgeInit2DOCMTraining'
 
 export async function dbEdgeInit() {
 	sectionHeader('Init Start')
-	// await initFeatSysAdmin()
+	await initFeatSysAdmin()
 	// await initSys()
-	await initFeatCMStudent()
+	// await initFeatCMStudent()
 	// await initFeatDocument()
 	// await initFeatEmploy()
 	// await initTraining()

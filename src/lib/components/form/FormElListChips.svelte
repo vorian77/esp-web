@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FieldChips } from '$comps/form/fieldChips'
+	import type { FieldListChips } from '$comps/form/fieldListChips'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
 	import { createEventDispatcher } from 'svelte'
 
@@ -7,7 +7,7 @@
 
 	const modalStore = getModalStore()
 
-	export let field: FieldChips
+	export let field: FieldListChips
 
 	$: {
 		field.overlayFieldChips.itemsSelected = field.valueCurrent
@@ -18,7 +18,7 @@
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalItems',
+				component: 'overlayModalList',
 				meta: { overlayNodeFieldItems: field.overlayFieldChips },
 				response: (r: any) => {
 					resolve(r)

@@ -2,12 +2,12 @@ import { Field, FieldAccess, type FieldRaw } from '$comps/form/field'
 import { OverlayFieldChips } from '$comps/Overlay/types.overlay'
 import { Validation, ValidationStatus } from '$comps/types'
 
-export class FieldChips extends Field {
+export class FieldListChips extends Field {
 	overlayFieldChips: OverlayFieldChips
 	constructor(obj: FieldRaw, index: number) {
 		super(obj, index)
 		this.access = FieldAccess.optional
-		this.overlayFieldChips = new OverlayFieldChips(obj._fieldChips)
+		this.overlayFieldChips = new OverlayFieldChips(obj._fieldListChips)
 	}
 	validate(dataValue: any): Validation {
 		const v = super.validate(dataValue)

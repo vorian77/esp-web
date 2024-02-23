@@ -136,8 +136,8 @@ async function initCMTrainingCourse() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_status' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -151,8 +151,8 @@ async function initCMTrainingCourse() {
 			// 	columnName: 'codeTypePayment',
 			// 	dbOrderSelect: 60,
 			// 	indexTable: '0',
-			// 	fieldItems: 'il_sys_codeType_order_name_by_codeTypeParent_name',
-			// 	fieldItemsParms: { codeTypeParentName: 'ct_cm_payment_type' },
+			// 	fieldListItems: 'il_sys_codeType_order_name_by_codeTypeParent_name',
+			// 	fieldIListtemsParms: { codeTypeParentName: 'ct_cm_payment_type' },
 			// 	link: { table: { module: 'sys_core', name: 'SysCodeType' } }
 			// },
 			{
@@ -160,8 +160,8 @@ async function initCMTrainingCourse() {
 				columnName: 'codeSector',
 				dbOrderSelect: 70,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_course_sector' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_course_sector' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -184,8 +184,8 @@ async function initCMTrainingCourse() {
 				columnName: 'staffAdmin',
 				dbOrderSelect: 100,
 				indexTable: '0',
-				fieldItems: 'il_sys_role_staff_by_codeName',
-				fieldItemsParms: { codeName: 'cm_training_role_staff_admin' },
+				fieldListItems: 'il_sys_role_staff_by_codeName',
+				fieldIListtemsParms: { codeName: 'cm_training_role_staff_admin' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{
@@ -194,8 +194,8 @@ async function initCMTrainingCourse() {
 				columnName: 'staffAgency',
 				dbOrderSelect: 110,
 				indexTable: '0',
-				fieldItems: 'il_sys_role_staff_by_codeName',
-				fieldItemsParms: { codeName: 'cm_training_role_staff_agency' },
+				fieldListItems: 'il_sys_role_staff_by_codeName',
+				fieldIListtemsParms: { codeName: 'cm_training_role_staff_agency' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{
@@ -204,8 +204,8 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiRqmts',
 				dbOrderSelect: 120,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_course_rqmt' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_course_rqmt' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -214,8 +214,8 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiItemsIncluded',
 				dbOrderSelect: 130,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_course_items_included' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_course_items_included' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -224,8 +224,8 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiItemsNotIncluded',
 				dbOrderSelect: 140,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_course_items_not_included' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_course_items_not_included' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -234,8 +234,8 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiExams',
 				dbOrderSelect: 150,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_course_exam' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_course_exam' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -244,8 +244,8 @@ async function initCMTrainingCourse() {
 				columnName: 'codeMultiCerts',
 				dbOrderSelect: 160,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_course_cert' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_course_cert' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 
@@ -416,8 +416,8 @@ async function initCMTrainingCohort() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_status' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -450,8 +450,8 @@ async function initCMTrainingCohort() {
 				columnName: 'staffAdmin',
 				dbOrderSelect: 90,
 				indexTable: '0',
-				fieldItems: 'il_sys_role_staff_by_codeName',
-				fieldItemsParms: { codeName: 'cm_training_role_staff_admin' },
+				fieldListItems: 'il_sys_role_staff_by_codeName',
+				fieldIListtemsParms: { codeName: 'cm_training_role_staff_admin' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{
@@ -460,8 +460,8 @@ async function initCMTrainingCohort() {
 				columnName: 'staffAgency',
 				dbOrderSelect: 100,
 				indexTable: '0',
-				fieldItems: 'il_sys_role_staff_by_codeName',
-				fieldItemsParms: { codeName: 'cm_training_role_staff_agency' },
+				fieldListItems: 'il_sys_role_staff_by_codeName',
+				fieldIListtemsParms: { codeName: 'cm_training_role_staff_agency' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{
@@ -470,8 +470,8 @@ async function initCMTrainingCohort() {
 				columnName: 'staffInstructor',
 				dbOrderSelect: 110,
 				indexTable: '0',
-				fieldItems: 'il_sys_role_staff_by_codeName',
-				fieldItemsParms: { codeName: 'cm_training_role_staff_instructor' },
+				fieldListItems: 'il_sys_role_staff_by_codeName',
+				fieldIListtemsParms: { codeName: 'cm_training_role_staff_instructor' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{

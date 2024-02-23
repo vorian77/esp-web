@@ -216,20 +216,9 @@ export namespace sys_core {
     "width"?: number | null;
     "exprCustom"?: string | null;
     "nameCustom"?: string | null;
-    "fieldChips"?: SysDataObjFieldChips | null;
-    "fieldItems"?: SysDataObjFieldItems | null;
-    "fieldItemsParms"?: unknown | null;
-  }
-  export interface SysDataObjFieldChips extends SysObj {
-    "btnLabelComplete": string;
-    "columnLabelDisplay": string;
-    "headerSub"?: string | null;
-    "isMultiSelect": boolean;
-  }
-  export interface SysDataObjFieldItems extends SysObj {
-    "codeDataTypeDisplay"?: SysCode | null;
-    "codeMask"?: SysCode | null;
-    "exprSelect": string;
+    "fieldListChips"?: SysDataObjFieldListChips | null;
+    "fieldListItems"?: SysDataObjFieldListItems | null;
+    "fieldListItemsParms"?: unknown | null;
   }
   export interface SysDataObjFieldLink extends std.$Object {
     "exprSelect"?: string | null;
@@ -244,6 +233,17 @@ export namespace sys_core {
     "column": sys_db.SysColumn;
     "order": number;
     "table": sys_db.SysTable;
+  }
+  export interface SysDataObjFieldListChips extends SysObj {
+    "btnLabelComplete": string;
+    "columnLabelDisplay": string;
+    "headerSub"?: string | null;
+    "isMultiSelect": boolean;
+  }
+  export interface SysDataObjFieldListItems extends SysObj {
+    "codeDataTypeDisplay"?: SysCode | null;
+    "codeMask"?: SysCode | null;
+    "exprSelect": string;
   }
   export interface SysDataObjTable extends std.$Object {
     "table": sys_db.SysTable;
@@ -685,10 +685,10 @@ export interface types {
     "SysDataObj": sys_core.SysDataObj;
     "SysDataObjAction": sys_core.SysDataObjAction;
     "SysDataObjColumn": sys_core.SysDataObjColumn;
-    "SysDataObjFieldChips": sys_core.SysDataObjFieldChips;
-    "SysDataObjFieldItems": sys_core.SysDataObjFieldItems;
     "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;
     "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;
+    "SysDataObjFieldListChips": sys_core.SysDataObjFieldListChips;
+    "SysDataObjFieldListItems": sys_core.SysDataObjFieldListItems;
     "SysDataObjTable": sys_core.SysDataObjTable;
     "SysNodeObj": sys_core.SysNodeObj;
     "SysNodeObjFooter": sys_core.SysNodeObjFooter;

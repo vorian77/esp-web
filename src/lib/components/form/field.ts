@@ -77,8 +77,8 @@ export class Field {
 		this.isDisplayable = valueOrDefault(obj.isDisplayable, true)
 		this.isMultiSelect = valueOrDefault(obj._column.isMultiSelect, false)
 		this.items = valueOrDefault(obj.items, [])
-		this.fieldItems = obj._fieldItems
-			? new FieldItems(obj._fieldItems, obj.fieldItemsParms)
+		this.fieldItems = obj._fieldListItems
+			? new FieldItems(obj._fieldListItems, obj.fieldListItemsParms)
 			: undefined
 		this.label = strRequired(obj.headerAlt || obj._column.header, 'Field', 'label')
 		this.labelSide = valueOrDefault(obj._column.headerSide, this.label)
@@ -269,7 +269,7 @@ export interface FieldRaw {
 		toggleLabelFalse: string
 		toggleLabelTrue: string
 	}
-	_fieldChips: {
+	_fieldListChips: {
 		btnLabelComplete: string
 		columnLabelDisplay: string
 		header: string
@@ -277,14 +277,14 @@ export interface FieldRaw {
 		isMultiSelect: boolean
 		name: string
 	}
-	_fieldItems: {
+	_fieldListItems: {
 		_codeDataTypeDisplay: string
 		_codeMask: string
 		exprSelect: string
 		name: string
 	}
 	customElement: FieldCustomRaw
-	fieldItemsParms: any
+	fieldListItemsParms: any
 	headerAlt: string
 	height: number
 	isDisplay: boolean

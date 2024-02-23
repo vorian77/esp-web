@@ -13,18 +13,14 @@
 	export let dataObjData: DataObjData
 
 	let scrollToTop = () => {}
-	let rowsCount = 0
 
 	const DATA_FIELD = 'data'
 
-	const isSelect = state.overlayFieldChips !== undefined
-	const handler = isSelect ? new DataHandler([]) : new DataHandler([], { rowsPerPage: 20 })
-	const showRowsPerPage = !isSelect
-
+	const handler = new DataHandler([])
 	const rows = handler.getRows()
-	let sort = handler.getSort()
 	const selected = handler.getSelected()
 	const isAllSelected = handler.isAllSelected()
+	const isSelect = state.overlayFieldChips !== undefined
 
 	if (isSelect && state.overlayFieldChips) {
 		state.overlayFieldChips.itemsSelected.forEach((i) => handler.select(i))
@@ -73,7 +69,7 @@
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
 <div id="content">
-	<Datatable {handler} rowsPerPage={showRowsPerPage}>
+	<Datatable {handler} pagination={false} rowsPerPage={false}>
 		<table>
 			<thead>
 				<tr>

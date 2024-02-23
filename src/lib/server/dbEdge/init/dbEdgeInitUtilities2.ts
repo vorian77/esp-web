@@ -247,15 +247,15 @@ export async function addDataObj(data: any) {
 
 						dbOrderSelect: e.cast(e.int16, e.json_get(f, 'dbOrderSelect')),
 
-						fieldChips: e.select(
-							e.sys_core.getDataObjFieldChips(e.cast(e.str, e.json_get(f, 'fieldChips')))
+						fieldListChips: e.select(
+							e.sys_core.getDataObjFieldListChips(e.cast(e.str, e.json_get(f, 'fieldListChips')))
 						),
 
-						fieldItems: e.select(
-							e.sys_core.getDataObjFieldItems(e.cast(e.str, e.json_get(f, 'fieldItems')))
+						fieldListItems: e.select(
+							e.sys_core.getDataObjFieldListItems(e.cast(e.str, e.json_get(f, 'fieldListItems')))
 						),
 
-						fieldItemsParms: e.cast(e.json, e.json_get(f, 'fieldItemsParms')),
+						fieldListItemsParms: e.cast(e.json, e.json_get(f, 'fieldListItemsParms')),
 
 						headerAlt: e.cast(e.str, e.json_get(f, 'headerAlt')),
 
@@ -337,7 +337,7 @@ export async function addDataObjFieldItems(data: any) {
 			owner: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.SysDataObjFieldItems, {
+			return e.insert(e.sys_core.SysDataObjFieldListItems, {
 				codeDataTypeDisplay: e.sys_core.getCode('ct_db_col_data_type', p.codeDataTypeDisplay),
 				codeMask: e.sys_core.getCode('ct_db_col_mask', p.codeMask),
 				createdBy: e.select(e.sys_user.getRootUser()),
@@ -442,7 +442,7 @@ export async function addDataObjFieldChips(data: any) {
 			owner: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.SysDataObjFieldChips, {
+			return e.insert(e.sys_core.SysDataObjFieldListChips, {
 				btnLabelComplete: p.btnLabelComplete,
 				columnLabelDisplay: p.columnLabelDisplay,
 				createdBy: e.select(e.sys_user.getRootUser()),

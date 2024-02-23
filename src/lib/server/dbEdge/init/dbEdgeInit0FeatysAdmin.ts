@@ -272,7 +272,7 @@ async function initCodeType() {
 				columnName: 'parent',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_codeType_order_name',
+				fieldListItems: 'il_sys_codeType_order_name',
 				link: { table: { module: 'sys_core', name: 'SysCodeType' } }
 			},
 			{
@@ -459,7 +459,7 @@ async function initCode() {
 				columnName: 'parent',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_id',
+				fieldListItems: 'il_sys_code_order_name_by_codeType_id',
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -628,8 +628,8 @@ async function initColumn() {
 				columnName: 'codeDataType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_db_col_data_type' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_db_col_data_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -637,8 +637,8 @@ async function initColumn() {
 				columnName: 'codeAlignment',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_db_col_alignment' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_db_col_alignment' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1050,7 +1050,7 @@ async function initDataObjTable() {
 				columnName: 'table',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_table_order_name',
+				fieldListItems: 'il_sys_table_order_name',
 				link: { table: { module: 'sys_core', name: 'SysTable' } }
 			}
 
@@ -1426,8 +1426,8 @@ async function initDataObjNodeObj() {
 				columnName: 'codeType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1436,7 +1436,7 @@ async function initDataObjNodeObj() {
 				columnName: 'parent',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				fieldItems: 'il_sys_node_obj_order_name',
+				fieldListItems: 'il_sys_node_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysNodeObj' } }
 			},
 			{
@@ -1462,8 +1462,8 @@ async function initDataObjNodeObj() {
 				columnName: 'codeIcon',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1472,7 +1472,7 @@ async function initDataObjNodeObj() {
 				columnName: 'dataObj',
 				dbOrderSelect: 90,
 				indexTable: '0',
-				fieldItems: 'il_sys_data_obj_order_name',
+				fieldListItems: 'il_sys_data_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysDataObj' } }
 			},
 			{
@@ -1599,8 +1599,8 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'codeType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1609,7 +1609,7 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'parent',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				fieldItems: 'il_sys_node_obj_order_name',
+				fieldListItems: 'il_sys_node_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysNodeObj' } }
 			},
 			{
@@ -1635,8 +1635,8 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'codeIcon',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1645,7 +1645,7 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'dataObj',
 				dbOrderSelect: 90,
 				indexTable: '0',
-				fieldItems: 'il_sys_data_obj_order_name',
+				fieldListItems: 'il_sys_data_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysDataObj' } }
 			},
 			{
@@ -1782,9 +1782,9 @@ async function initTable() {
 				codeElement: 'chips',
 				columnName: 'columns',
 				dbOrderSelect: 30,
-				fieldChips: 'data_obj_field_chips_sys_column',
+				fieldListChips: 'data_obj_field_chips_sys_column',
 				indexTable: '0',
-				fieldItems: 'il_sys_table_column_order_name',
+				fieldListItems: 'il_sys_table_column_order_name',
 				link: { table: { module: 'sys_db', name: 'SysColumn' } }
 			},
 			{

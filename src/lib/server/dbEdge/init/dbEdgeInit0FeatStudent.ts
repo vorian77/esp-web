@@ -59,12 +59,6 @@ async function initCMStudent() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'middleName',
-				dbOrderSelect: 35,
-				indexTable: '1'
-			},
-			{
-				codeAccess: 'readOnly',
 				columnName: 'lastName',
 				dbOrderCrumb: 20,
 				dbOrderList: 10,
@@ -155,8 +149,8 @@ async function initCMStudent() {
 				columnName: 'codeGender',
 				dbOrderSelect: 60,
 				indexTable: '1',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_person_gender' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_person_gender' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -165,8 +159,8 @@ async function initCMStudent() {
 				columnName: 'codeRace',
 				dbOrderSelect: 70,
 				indexTable: '1',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_person_race' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_person_race' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -175,8 +169,8 @@ async function initCMStudent() {
 				columnName: 'codeEthnicity',
 				dbOrderSelect: 80,
 				indexTable: '1',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_person_ethnicity' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_person_ethnicity' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -231,8 +225,8 @@ async function initCMStudent() {
 				columnName: 'codeState',
 				dbOrderSelect: 170,
 				indexTable: '1',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_sys_state' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_sys_state' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -441,7 +435,7 @@ async function initStudentCsf() {
 				columnName: 'serviceFlow',
 				dbOrderSelect: 20,
 				indexTable: '0',
-				fieldItems: 'il_cm_service_flow',
+				fieldListItems: 'il_cm_service_flow',
 				link: { table: { module: 'app_cm', name: 'CmServiceFlow' } }
 			},
 			{
@@ -455,8 +449,8 @@ async function initStudentCsf() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -656,7 +650,7 @@ async function initStudentCsfCohort() {
 				dbOrderCrumb: 10,
 				dbOrderSelect: 30,
 				indexTable: '0',
-				fieldItems: 'il_cm_cohort_by_userName',
+				fieldListItems: 'il_cm_cohort_by_userName',
 				link: { table: { module: 'app_cm', name: 'CmCohort' } }
 			},
 			{
@@ -664,8 +658,8 @@ async function initStudentCsfCohort() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -966,8 +960,8 @@ async function initStudentCsfNote() {
 				columnName: 'codeType',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				fieldItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldItemsParms: { codeTypeName: 'ct_cm_case_note_type' },
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldIListtemsParms: { codeTypeName: 'ct_cm_case_note_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{

@@ -16,8 +16,8 @@ export async function initReset() {
 	reset.addTable('sys_core::SysDataObjTable')
 
 	reset.addTable('sys_core::SysDataObjAction')
-	reset.addTable('sys_core::SysDataObjFieldChips')
-	reset.addTable('sys_core::SysDataObjFieldItems')
+	reset.addTable('sys_core::SysDataObjFieldListChips')
+	reset.addTable('sys_core::SysDataObjFieldListItems')
 
 	reset.addTable('sys_core::SysObjConfig')
 

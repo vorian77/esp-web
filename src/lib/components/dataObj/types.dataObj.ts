@@ -17,7 +17,7 @@ import {
 } from '$comps/types'
 import { type Field, FieldAccess, FieldElement, type FieldRaw } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
-import { FieldChips } from '$comps/form/fieldChips'
+import { FieldListChips } from '$comps/form/fieldListChips'
 import {
 	FieldCustomAction,
 	FieldCustomActionButton,
@@ -254,7 +254,7 @@ export class DataObj {
 					break
 
 				case FieldElement.chips:
-					newField = new FieldChips(fieldRaw, index)
+					newField = new FieldListChips(fieldRaw, index)
 					break
 
 				case FieldElement.custom:

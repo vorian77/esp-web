@@ -65,7 +65,7 @@
 			header: overlayFieldChips.header,
 			_fieldsDbOrder: [{ _codeDbListDir: 'asc', _name: 'display' }],
 			isPopup: true,
-			name: 'OverlayModalItems',
+			name: 'OverlayModalList',
 			subHeader: overlayFieldChips.headerSub
 		})
 
