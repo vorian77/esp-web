@@ -11,7 +11,7 @@
 		NodeType
 	} from '$comps/types'
 	import { SurfaceType } from '$comps/types.master'
-	import { OverlayNodeFieldItems } from '$comps/types.overlay'
+	import { OverlayFieldChips } from '$comps/Overlay/types.overlay'
 	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import { getDrawerStore, getModalStore, getToastStore } from '@skeletonlabs/skeleton'
 
@@ -23,18 +23,17 @@
 
 	export let parent: SvelteComponent
 
-	let overlayNodeFieldItems: OverlayNodeFieldItems
+	let overlayFieldChips: OverlayFieldChips
 	let dataObj: DataObj
 	let dataObjData: DataObjData
 
-	let btnLabelComplete = 'Complete'
-
-	overlayNodeFieldItems = $modalStore[0].meta.overlayNodeFieldItems
+	overlayFieldChips = $modalStore[0].meta.overlayNodeFieldItems
+	let btnLabelComplete = overlayFieldChips.btnLabelComplete || 'Complete'
 
 	dataObj = getDataObj()
 	dataObjData = new DataObjData(
 		DataObjCardinality.list,
-		overlayNodeFieldItems.itemsList.map(
+		overlayFieldChips.itemsList.map(
 			(record) => new DataObjRecordRow(DataObjRecordStatus.unknown, record)
 		)
 	)
@@ -46,11 +45,11 @@
 		toastStore
 	)
 	state.nodeType = NodeType.object
-	state.overlayNodeFieldItems = overlayNodeFieldItems
+	state.overlayFieldChips = overlayFieldChips
 	state.surface = SurfaceType.overlay
 
 	function onFormSubmit(): void {
-		if ($modalStore[0].response) $modalStore[0].response(state.overlayNodeFieldItems?.itemsSelected)
+		if ($modalStore[0].response) $modalStore[0].response(state.overlayFieldChips?.itemsSelected)
 		modalStore.close()
 	}
 
@@ -63,11 +62,11 @@
 			_codeCardinality: 'list',
 			_codeComponent: 'FormList',
 			_fieldsEl: fields,
-			header: overlayNodeFieldItems.header,
+			header: overlayFieldChips.header,
 			_fieldsDbOrder: [{ _codeDbListDir: 'asc', _name: 'display' }],
 			isPopup: true,
 			name: 'OverlayModalItems',
-			subHeader: overlayNodeFieldItems.headerSub
+			subHeader: overlayFieldChips.headerSub
 		})
 
 		function addField(name: string, header: string, dataType: string, isDisplayable: boolean) {

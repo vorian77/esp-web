@@ -1,4 +1,4 @@
-import { OverlayNodeFieldItems, OverlayNodeRecord } from '$comps/types.overlay'
+import { OverlayFieldChips, OverlayRecord } from '$comps/Overlay/types.overlay'
 import { DataObj, initNavTree, Node, NodeType, User, userInit, valueOrDefault } from '$comps/types'
 import { SurfaceType } from '$comps/types.master'
 import { Token } from '$comps/types.token'
@@ -13,8 +13,8 @@ export class State {
 	nodeType: NodeType = NodeType.home
 	objHasChanged: boolean = false
 	objValidToSave: boolean = true
-	overlayNodeFieldItems?: OverlayNodeFieldItems
-	overlayNodeRecord?: OverlayNodeRecord
+	overlayFieldChips?: OverlayFieldChips
+	overlayRecord?: OverlayRecord
 	packet: StatePacket | undefined
 	page: string = '/home'
 	surface: SurfaceType = SurfaceType.default

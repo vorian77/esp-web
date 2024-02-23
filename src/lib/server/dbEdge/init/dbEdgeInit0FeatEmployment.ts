@@ -304,8 +304,8 @@ export async function config() {
 				columnName: 'codeState',
 				dbOrderSelect: 120,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_state' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_state' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -455,7 +455,7 @@ export async function config() {
 				columnName: 'employer',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_cm_employer_by_userName',
+				fieldItems: 'il_cm_employer_by_userName',
 				link: { table: { module: 'app_cm', name: 'CmEmployer' } }
 			},
 			{
@@ -474,8 +474,8 @@ export async function config() {
 				columnName: 'codeWageType',
 				dbOrderSelect: 70,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_cm_job_wage_type' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_cm_job_wage_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -489,8 +489,8 @@ export async function config() {
 				columnName: 'codeJobType',
 				dbOrderSelect: 70,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_cm_job_type' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_cm_job_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -498,8 +498,8 @@ export async function config() {
 				columnName: 'codePlacementRelated',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_cm_job_training_related' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_cm_job_training_related' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -521,8 +521,8 @@ export async function config() {
 				columnName: 'staffAgency',
 				dbOrderSelect: 110,
 				indexTable: '0',
-				itemsDb: 'il_sys_role_staff_by_codeName',
-				itemsDbParms: { codeName: 'cm_training_role_staff_agency' },
+				fieldItems: 'il_sys_role_staff_by_codeName',
+				fieldItemsParms: { codeName: 'cm_training_role_staff_agency' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{

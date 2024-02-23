@@ -196,7 +196,6 @@ export namespace sys_core {
     "codeDbListDir"?: SysCode | null;
     "codeElement"?: SysCode | null;
     "column": sys_db.SysColumn;
-    "itemsDb"?: SysDataObjFieldItems | null;
     "customElement"?: unknown | null;
     "dbDataSourceKey"?: string | null;
     "dbOrderCrumb"?: number | null;
@@ -212,12 +211,19 @@ export namespace sys_core {
     "isDisplay"?: boolean | null;
     "isDisplayable"?: boolean | null;
     "items"?: unknown[] | null;
-    "itemsDbParms"?: unknown | null;
     "link"?: unknown | null;
     "width"?: number | null;
     "exprCustom"?: string | null;
     "nameCustom"?: string | null;
-    "overlayNodeFieldItems"?: SysOverlayNodeFieldItems | null;
+    "fieldChips"?: SysDataObjFieldChips | null;
+    "fieldItems"?: SysDataObjFieldItems | null;
+    "fieldItemsParms"?: unknown | null;
+  }
+  export interface SysDataObjFieldChips extends SysObj {
+    "btnLabelComplete": string;
+    "columnLabelDisplay": string;
+    "headerSub"?: string | null;
+    "isMultiSelect": boolean;
   }
   export interface SysDataObjFieldItems extends SysObj {
     "codeDataTypeDisplay"?: SysCode | null;
@@ -286,12 +292,6 @@ export namespace sys_core {
     "tableModule"?: string | null;
     "tableName"?: string | null;
     "tableOwner"?: string | null;
-  }
-  export interface SysOverlayNodeFieldItems extends SysObj {
-    "btnLabelComplete": string;
-    "columnLabelDisplay": string;
-    "headerSub"?: string | null;
-    "isMultiSelect": boolean;
   }
 }
 export interface SysPerson extends std.$Object {
@@ -683,6 +683,7 @@ export interface types {
     "SysDataObj": sys_core.SysDataObj;
     "SysDataObjAction": sys_core.SysDataObjAction;
     "SysDataObjColumn": sys_core.SysDataObjColumn;
+    "SysDataObjFieldChips": sys_core.SysDataObjFieldChips;
     "SysDataObjFieldItems": sys_core.SysDataObjFieldItems;
     "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;
     "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;
@@ -690,7 +691,6 @@ export interface types {
     "SysNodeObj": sys_core.SysNodeObj;
     "SysNodeObjFooter": sys_core.SysNodeObjFooter;
     "SysObjConfig": sys_core.SysObjConfig;
-    "SysOverlayNodeFieldItems": sys_core.SysOverlayNodeFieldItems;
   };
   "default": {
     "SysPerson": SysPerson;

@@ -9,7 +9,7 @@
 	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import Form from '$comps/form/Form.svelte'
 	import { SurfaceType } from '$comps/types.master'
-	import { OverlayNodeRecord } from '$comps/types.overlay'
+	import { OverlayRecord } from '$comps/Overlay/types.overlay'
 	import { getDrawerStore, getModalStore, getToastStore } from '@skeletonlabs/skeleton'
 	import { error } from '@sveltejs/kit'
 
@@ -19,7 +19,7 @@
 	const modalStore = getModalStore()
 	const toastStore = getToastStore()
 
-	export let overlayNodeRecord: OverlayNodeRecord
+	export let overlayRecord: OverlayRecord
 
 	let state = new State(
 		(obj: any) => (state = state.updateProperties(obj)),
@@ -28,19 +28,19 @@
 		toastStore
 	)
 
-	$: if (overlayNodeRecord) {
+	$: if (overlayRecord) {
 		state.nodeType = NodeType.object
 		state.packet = new StatePacket({
 			component: StatePacketComponent.navApp,
 			token: new TokenApiQuery(
 				TokenApiQueryType.new,
-				new TokenApiDbDataObj({ dataObjName: overlayNodeRecord.dataObjName }),
+				new TokenApiDbDataObj({ dataObjName: overlayRecord.dataObjName }),
 				new TokenApiQueryData({})
 			)
 		})
 		state.page = '/'
 		state.surface = SurfaceType.overlay
-		state.overlayNodeRecord = overlayNodeRecord
+		state.overlayRecord = overlayRecord
 	}
 </script>
 

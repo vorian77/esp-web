@@ -247,6 +247,16 @@ export async function addDataObj(data: any) {
 
 						dbOrderSelect: e.cast(e.int16, e.json_get(f, 'dbOrderSelect')),
 
+						fieldChips: e.select(
+							e.sys_core.getDataObjFieldChips(e.cast(e.str, e.json_get(f, 'fieldChips')))
+						),
+
+						fieldItems: e.select(
+							e.sys_core.getDataObjFieldItems(e.cast(e.str, e.json_get(f, 'fieldItems')))
+						),
+
+						fieldItemsParms: e.cast(e.json, e.json_get(f, 'fieldItemsParms')),
+
 						headerAlt: e.cast(e.str, e.json_get(f, 'headerAlt')),
 
 						height: e.cast(e.int16, e.json_get(f, 'height')),
@@ -257,19 +267,7 @@ export async function addDataObj(data: any) {
 
 						items: e.cast(e.array(e.json), e.json_get(f, 'items')),
 
-						itemsDb: e.select(
-							e.sys_core.getDataObjFieldItems(e.cast(e.str, e.json_get(f, 'itemsDb')))
-						),
-
-						itemsDbParms: e.cast(e.json, e.json_get(f, 'itemsDbParms')),
-
 						nameCustom: e.cast(e.str, e.json_get(f, 'nameCustom')),
-
-						overlayNodeFieldItems: e.select(
-							e.sys_core.getOverlayNodeFieldItems(
-								e.cast(e.str, e.json_get(f, 'overlayNodeFieldItems'))
-							)
-						),
 
 						width: e.cast(e.int16, e.json_get(f, 'width'))
 					})
@@ -432,7 +430,7 @@ export async function addOrg(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addOverlayNodeFieldItems(data: any) {
+export async function addDataObjFieldChips(data: any) {
 	const query = e.params(
 		{
 			btnLabelComplete: e.str,
@@ -444,7 +442,7 @@ export async function addOverlayNodeFieldItems(data: any) {
 			owner: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.SysOverlayNodeFieldItems, {
+			return e.insert(e.sys_core.SysDataObjFieldChips, {
 				btnLabelComplete: p.btnLabelComplete,
 				columnLabelDisplay: p.columnLabelDisplay,
 				createdBy: e.select(e.sys_user.getRootUser()),

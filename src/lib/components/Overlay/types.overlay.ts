@@ -1,16 +1,16 @@
-import { FieldItem } from './form/field'
-import { valueOrDefault, strOptional, strRequired, booleanOrFalse } from './types'
+import { FieldItem } from '../form/field'
+import { valueOrDefault, strOptional, strRequired, booleanOrFalse } from '../types'
 
-export class OverlayNode {
+export class Overlay {
 	btnLabelComplete?: string
 	constructor(obj: any) {
-		const clazz = 'OverlayNode'
+		const clazz = 'OverlayField'
 		obj = valueOrDefault(obj, {})
 		this.btnLabelComplete = strOptional(obj.btnLabelComplete, clazz, 'btnLabelComplete')
 	}
 }
 
-export class OverlayNodeFieldItems extends OverlayNode {
+export class OverlayFieldChips extends Overlay {
 	columnLabelDisplay: string
 	header: string
 	headerSub?: string
@@ -18,7 +18,7 @@ export class OverlayNodeFieldItems extends OverlayNode {
 	itemsList: Array<FieldItem> = []
 	itemsSelected: string[] = []
 	constructor(obj: any) {
-		const clazz = 'OverlayNodeFieldItems'
+		const clazz = 'OverlayFieldChips'
 		super(obj)
 		this.columnLabelDisplay = strRequired(obj.columnLabelDisplay, clazz, 'columnLabelDisplay')
 		this.header = strRequired(obj.header, clazz, 'header')
@@ -29,6 +29,7 @@ export class OverlayNodeFieldItems extends OverlayNode {
 		this.itemsSelected = selected
 	}
 	getItemsDisplay() {
+		console.log('getItemsDisplay:', { itemsSelected: this.itemsSelected })
 		let items: Array<FieldItem> = []
 		this.itemsList.forEach((item) => {
 			if (this.itemsSelected.includes(item.data)) items.push(item)
@@ -37,11 +38,11 @@ export class OverlayNodeFieldItems extends OverlayNode {
 	}
 }
 
-export class OverlayNodeRecord extends OverlayNode {
+export class OverlayRecord extends Overlay {
 	dataObjName: string
 	recordSubmitted: Record<string, any> = {}
 	constructor(obj: any) {
-		const clazz = 'OverlayNodeRecord'
+		const clazz = 'OverlayRecord'
 		super(obj)
 		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
 	}

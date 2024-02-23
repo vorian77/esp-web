@@ -106,16 +106,24 @@ module sys_core {
     customElement: json;
     dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
+    fieldChips: sys_core::SysDataObjFieldChips;
+    fieldItems: sys_core::SysDataObjFieldItems;
+    fieldItemsParms: json;
     headerAlt: str;
     height: int16;
     isDisplay: bool;
     isDisplayable: bool;
     items: array<json>;
-    itemsDb: sys_core::SysDataObjFieldItems;
-    itemsDbParms: json;
-    overlayNodeFieldItems: sys_core::SysOverlayNodeFieldItems;
     width: int16;
   }
+
+  type SysDataObjFieldChips extending sys_core::SysObj {
+    required btnLabelComplete: str;
+    required columnLabelDisplay: str;
+    headerSub: str;
+    required isMultiSelect: bool;
+    constraint exclusive on (.name);
+ }
 
  type SysDataObjFieldItems extending sys_core::SysObj {
     codeDataTypeDisplay: sys_core::SysCode;
@@ -183,14 +191,6 @@ module sys_core {
     constraint exclusive on (.name);
   }
 
-  type SysOverlayNodeFieldItems extending sys_core::SysObj {
-    required btnLabelComplete: str;
-    required columnLabelDisplay: str;
-    headerSub: str;
-    required isMultiSelect: bool;
-    constraint exclusive on (.name);
- }
-
   # FUNCTIONS
   function getRootObj() -> optional sys_core::ObjRoot
     using (select assert_single((select sys_core::ObjRoot filter .name = '*ROOTOBJ*')));
@@ -215,6 +215,9 @@ module sys_core {
   function getDataObjAction(dataObjActionName: str) -> optional sys_core::SysDataObjAction
     using (select sys_core::SysDataObjAction filter .name = dataObjActionName);        
     
+  function getDataObjFieldChips(name: str) -> optional sys_core::SysDataObjFieldChips
+    using (select sys_core::SysDataObjFieldChips filter .name = name);
+  
   function getDataObjFieldItems(name: str) -> optional sys_core::SysDataObjFieldItems
     using (select sys_core::SysDataObjFieldItems filter .name = name);  
     
@@ -223,9 +226,6 @@ module sys_core {
 
   function getNodeObjById(nodeObjId: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .id = <uuid>nodeObjId);     
-
-   function getOverlayNodeFieldItems(name: str) -> optional sys_core::SysOverlayNodeFieldItems
-    using (select sys_core::SysOverlayNodeFieldItems filter .name = name);
     
   function isObjectLink(objName: str, linkName: str) -> optional bool
     using (select count(schema::ObjectType filter .name = objName and .links.name = linkName) > 0);     

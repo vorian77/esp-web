@@ -13,21 +13,21 @@
 	export let dataObjData: DataObjData
 
 	let scrollToTop = () => {}
+	let rowsCount = 0
 
-	const ROW_PER_PAGE = 20
 	const DATA_FIELD = 'data'
 
-	const handler = new DataHandler([], { rowsPerPage: ROW_PER_PAGE })
+	const isSelect = state.overlayFieldChips !== undefined
+	const handler = isSelect ? new DataHandler([]) : new DataHandler([], { rowsPerPage: 20 })
+	const showRowsPerPage = !isSelect
 
 	const rows = handler.getRows()
 	let sort = handler.getSort()
 	const selected = handler.getSelected()
 	const isAllSelected = handler.isAllSelected()
-	const isSelect = state.overlayNodeFieldItems !== undefined
-	let rowsCount = 0
 
-	if (isSelect && state.overlayNodeFieldItems) {
-		state.overlayNodeFieldItems.itemsSelected.forEach((i) => handler.select(i))
+	if (isSelect && state.overlayFieldChips) {
+		state.overlayFieldChips.itemsSelected.forEach((i) => handler.select(i))
 	}
 
 	type DataRow = Record<string, any>
@@ -41,7 +41,7 @@
 		handler.setPage(1)
 		sortList()
 	}
-	$: if (state.overlayNodeFieldItems) state.overlayNodeFieldItems.setSelected($selected)
+	$: if (state.overlayFieldChips) state.overlayFieldChips.setSelected($selected)
 
 	function sortList() {
 		// apply sort items backwards
@@ -73,7 +73,7 @@
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
 <div id="content">
-	<Datatable {handler}>
+	<Datatable {handler} rowsPerPage={showRowsPerPage}>
 		<table>
 			<thead>
 				<tr>

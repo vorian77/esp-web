@@ -395,6 +395,17 @@ export class ResetDb {
 	delDataObj(name: string) {
 		this.addStatement(`DELETE sys_core::SysDataObj FILTER .name = '${name}'`)
 	}
+
+	delFeature(name: string) {
+		this.delNodeObj(`node_obj_${name}_detail`)
+		this.delNodeObj(`node_obj_${name}_list`)
+		this.delDataObj(`data_obj_${name}_detail`)
+		this.delDataObj(`data_obj_${name}_list`)
+	}
+
+	delFieldChips(name: string) {
+		this.addStatement(`DELETE sys_core::SysDataObjFieldChips FILTER .name = '${name}'`)
+	}
 	delFieldItems(name: string) {
 		this.addStatement(`DELETE sys_core::SysDataObjFieldItems FILTER .name = '${name}'`)
 	}

@@ -5,7 +5,7 @@
 	import { userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiUserName } from '$comps/types.token'
-	import { OverlayNodeRecord } from '$comps/types.overlay'
+	import { OverlayRecord } from '$comps/Overlay/types.overlay.js'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -32,7 +32,7 @@
 			id: 'auth',
 			position: 'bottom',
 			height: 'h-[50%]',
-			meta: { overlayNodeRecord: new OverlayNodeRecord({ dataObjName }) }
+			meta: { OverlayRecord: new OverlayRecord({ dataObjName }) }
 		}
 		drawerStore.open(settings)
 	}

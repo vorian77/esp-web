@@ -166,8 +166,8 @@ async function initCMStudent() {
 				columnName: 'codeGender',
 				dbOrderSelect: 60,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_index_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_person_gender' },
+				fieldItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_person_gender' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -176,8 +176,8 @@ async function initCMStudent() {
 				columnName: 'codeRace',
 				dbOrderSelect: 70,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_index_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_person_race' },
+				fieldItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_person_race' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -186,8 +186,8 @@ async function initCMStudent() {
 				columnName: 'codeEthnicity',
 				dbOrderSelect: 80,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_index_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_person_ethnicity' },
+				fieldItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_person_ethnicity' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -242,8 +242,8 @@ async function initCMStudent() {
 				columnName: 'codeState',
 				dbOrderSelect: 170,
 				indexTable: '1',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_state' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_state' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -452,7 +452,7 @@ async function initStudentCsf() {
 				columnName: 'serviceFlow',
 				dbOrderSelect: 20,
 				indexTable: '0',
-				itemsDb: 'il_cm_service_flow',
+				fieldItems: 'il_cm_service_flow',
 				link: { table: { module: 'app_cm', name: 'CmServiceFlow' } }
 			},
 			{
@@ -466,8 +466,8 @@ async function initStudentCsf() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_index_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_cm_service_flow_status' },
+				fieldItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -667,7 +667,7 @@ async function initStudentCsfCohort() {
 				dbOrderCrumb: 10,
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_cm_cohort_by_userName',
+				fieldItems: 'il_cm_cohort_by_userName',
 				link: { table: { module: 'app_cm', name: 'CmCohort' } }
 			},
 			{
@@ -675,8 +675,8 @@ async function initStudentCsfCohort() {
 				columnName: 'codeStatus',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_index_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_cm_service_flow_status' },
+				fieldItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -977,8 +977,8 @@ async function initStudentCsfNote() {
 				columnName: 'codeType',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_cm_case_note_type' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_cm_case_note_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{

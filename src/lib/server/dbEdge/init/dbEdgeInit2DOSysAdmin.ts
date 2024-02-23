@@ -1,20 +1,70 @@
-import { sectionHeader, userTypeResourcesPrograms } from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import {
+	ResetDb,
+	sectionHeader,
+	userTypeResourcesPrograms
+} from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import {
+	addDataObj,
+	addDataObjFieldChips,
+	addNodeProgramObj
+} from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-export default async function initDOSysAdmin() {
+export async function initDOSysAdmin() {
 	sectionHeader('DataObject - SysAdmin')
+	await reset()
+
+	await initDataObjFieldChips()
+
 	await initApp()
 	await initCodeType()
 	await initCode()
 	await initDataObj()
 	await initDataObjTable()
-	// await initDataObjColumn()
+	// await initDataObjColumn() - do not implemented
 	await initColumn()
 	await initDataObjAction()
 	await initDataObjNodeObj()
 	await initDataObjNodeObjFooter()
 	await initTable()
-	// await initConfig()
+	// await initConfig() - do not implement
+}
+
+async function reset() {
+	sectionHeader('Reset')
+	const reset = new ResetDb()
+
+	reset.addStatement(
+		`UPDATE sys_user::SysUserType FILTER .name = 'ut_sys_amin' SET { resources -= (SELECT sys_core::getNodeObjByName('node_obj_sys_admin_app_list')) }`
+	)
+	reset.delFeature('sys_admin_data_obj_config')
+	reset.delFeature('sys_admin_table')
+	reset.delFeature('sys_admin_node_obj_footer')
+	reset.delFeature('sys_admin_node_obj')
+	reset.delFeature('sys_admin_data_obj_action')
+	reset.delFeature('sys_admin_data_obj_column')
+	reset.delFeature('sys_admin_data_obj_table')
+	reset.delFeature('sys_admin_data_obj')
+	reset.delFeature('sys_admin_column')
+	reset.delFeature('sys_admin_code')
+	reset.delFeature('sys_admin_code_type')
+	reset.delFeature('sys_admin_app')
+
+	reset.delFieldChips('data_obj_field_chips_sys_column')
+	await reset.execute()
+}
+
+async function initDataObjFieldChips() {
+	sectionHeader('DataObjFieldChips')
+
+	await addDataObjFieldChips({
+		btnLabelComplete: 'Select Columns',
+		columnLabelDisplay: 'Column',
+		header: 'Select Columns',
+		headerSub: 'Columns associated with the selected table.',
+		isMultiSelect: true,
+		name: 'data_obj_field_chips_sys_column',
+		owner: 'app_sys_admin'
+	})
 }
 
 async function initApp() {
@@ -222,7 +272,7 @@ async function initCodeType() {
 				columnName: 'parent',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_codeType_order_name',
+				fieldItems: 'il_sys_codeType_order_name',
 				link: { table: { module: 'sys_core', name: 'SysCodeType' } }
 			},
 			{
@@ -409,7 +459,7 @@ async function initCode() {
 				columnName: 'parent',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_id',
+				fieldItems: 'il_sys_code_order_name_by_codeType_id',
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -567,8 +617,8 @@ async function initColumn() {
 				columnName: 'codeDataType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_db_col_data_type' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_db_col_data_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -576,8 +626,8 @@ async function initColumn() {
 				columnName: 'codeAlignment',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_db_col_alignment' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_db_col_alignment' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -989,7 +1039,7 @@ async function initDataObjTable() {
 				columnName: 'table',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_table_order_name',
+				fieldItems: 'il_sys_table_order_name',
 				link: { table: { module: 'sys_core', name: 'SysTable' } }
 			}
 
@@ -1365,8 +1415,8 @@ async function initDataObjNodeObj() {
 				columnName: 'codeType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_type' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1375,7 +1425,7 @@ async function initDataObjNodeObj() {
 				columnName: 'parent',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_node_obj_order_name',
+				fieldItems: 'il_sys_node_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysNodeObj' } }
 			},
 			{
@@ -1401,8 +1451,8 @@ async function initDataObjNodeObj() {
 				columnName: 'codeIcon',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_icon' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1411,7 +1461,7 @@ async function initDataObjNodeObj() {
 				columnName: 'dataObj',
 				dbOrderSelect: 90,
 				indexTable: '0',
-				itemsDb: 'il_sys_data_obj_order_name',
+				fieldItems: 'il_sys_data_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysDataObj' } }
 			},
 			{
@@ -1538,8 +1588,8 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'codeType',
 				dbOrderSelect: 30,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_type' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1548,7 +1598,7 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'parent',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_node_obj_order_name',
+				fieldItems: 'il_sys_node_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysNodeObj' } }
 			},
 			{
@@ -1574,8 +1624,8 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'codeIcon',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_sys_node_obj_icon' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1584,7 +1634,7 @@ async function initDataObjNodeObjFooter() {
 				columnName: 'dataObj',
 				dbOrderSelect: 90,
 				indexTable: '0',
-				itemsDb: 'il_sys_data_obj_order_name',
+				fieldItems: 'il_sys_data_obj_order_name',
 				link: { table: { module: 'sys_core', name: 'SysDataObj' } }
 			},
 			{
@@ -1721,10 +1771,10 @@ async function initTable() {
 				codeElement: 'chips',
 				columnName: 'columns',
 				dbOrderSelect: 30,
+				fieldChips: 'data_obj_field_chips_sys_column',
 				indexTable: '0',
-				itemsDb: 'il_sys_table_column_order_name',
-				link: { table: { module: 'sys_db', name: 'SysColumn' } },
-				overlayNodeFieldItems: 'overlay_node_field_items_sys_column'
+				fieldItems: 'il_sys_table_column_order_name',
+				link: { table: { module: 'sys_db', name: 'SysColumn' } }
 			},
 			{
 				codeElement: 'toggle',

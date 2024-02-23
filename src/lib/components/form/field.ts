@@ -26,13 +26,13 @@ export class Field {
 	dataType: DataFieldDataType
 	dataTypePreset: DataFieldDataType | undefined
 	element: FieldElement
+	fieldItems: FieldItems | undefined
 	hasChanged: boolean
 	isDisplay: boolean
 	isDisplayable: boolean
 	isMultiSelect: boolean
 	index: number
 	items: Array<FieldItem> = []
-	itemsDb: FieldItemsDb | undefined
 	label: string
 	labelSide: string
 	name: string
@@ -77,13 +77,20 @@ export class Field {
 		this.isDisplayable = valueOrDefault(obj.isDisplayable, true)
 		this.isMultiSelect = valueOrDefault(obj._column.isMultiSelect, false)
 		this.items = valueOrDefault(obj.items, [])
-		this.itemsDb = obj._itemsDb ? new FieldItemsDb(obj._itemsDb, obj.itemsDbParms) : undefined
+		this.fieldItems = obj._fieldItems
+			? new FieldItems(obj._fieldItems, obj.fieldItemsParms)
+			: undefined
 		this.label = strRequired(obj.headerAlt || obj._column.header, 'Field', 'label')
 		this.labelSide = valueOrDefault(obj._column.headerSide, this.label)
 		this.name = strRequired(obj.nameCustom || obj._column.name, 'Field', 'name')
 		this.validity = new Validity()
 		this.valueInitial = null
 		this.valueCurrent = null
+
+		console.log('Field.constructor:', {
+			fieldLabel: this.label,
+			obj
+		})
 	}
 
 	copyValue(value: any) {
@@ -188,15 +195,21 @@ export enum FieldElement {
 	toggle = 'toggle'
 }
 
-export class FieldItemsDb {
+export class FieldItems {
 	codeDataTypeDisplay: DataFieldDataType | undefined
 	codeMask: DataFieldMask | undefined
 	exprSelect: string
 	name: string
 	parms: any
 	constructor(obj: any, parms: any) {
-		const clazz = 'FieldItemsDb'
+		const clazz = 'FieldItems'
 		obj = valueOrDefault(obj, {})
+
+		console.log('FieldItems.constructor:', {
+			obj,
+			parms
+		})
+
 		this.codeDataTypeDisplay = obj._codeDataTypeDisplay
 			? memberOfEnum(
 					obj._codeDataTypeDisplay,
@@ -256,13 +269,7 @@ export interface FieldRaw {
 		toggleLabelFalse: string
 		toggleLabelTrue: string
 	}
-	_itemsDb: {
-		_codeDataTypeDisplay: string
-		_codeMask: string
-		exprSelect: string
-		name: string
-	}
-	_overlayNodeFieldItems: {
+	_fieldChips: {
 		btnLabelComplete: string
 		columnLabelDisplay: string
 		header: string
@@ -270,13 +277,19 @@ export interface FieldRaw {
 		isMultiSelect: boolean
 		name: string
 	}
+	_fieldItems: {
+		_codeDataTypeDisplay: string
+		_codeMask: string
+		exprSelect: string
+		name: string
+	}
 	customElement: FieldCustomRaw
+	fieldItemsParms: any
 	headerAlt: string
 	height: number
 	isDisplay: boolean
 	isDisplayable: boolean
 	items: Array<FieldItem>
-	itemsDbParms: any
 	nameCustom: string
 	width: number
 }

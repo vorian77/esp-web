@@ -209,8 +209,8 @@ async function config() {
 				columnName: 'codeType',
 				dbOrderSelect: 40,
 				indexTable: '0',
-				itemsDb: 'il_sys_code_order_name_by_codeType_name',
-				itemsDbParms: { codeTypeName: 'ct_cm_doc_type' },
+				fieldItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldItemsParms: { codeTypeName: 'ct_cm_doc_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -239,8 +239,8 @@ async function config() {
 				columnName: 'staffAgency',
 				dbOrderSelect: 80,
 				indexTable: '0',
-				itemsDb: 'il_sys_role_staff_by_codeName',
-				itemsDbParms: { codeName: 'cm_training_role_staff_agency' },
+				fieldItems: 'il_sys_role_staff_by_codeName',
+				fieldItemsParms: { codeName: 'cm_training_role_staff_agency' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{

@@ -11,7 +11,7 @@ import {
 	TokenApiQueryType,
 	TokenApiSendText
 } from '$comps/types.token'
-import { OverlayNodeRecord } from '$comps/types.overlay'
+import { OverlayRecord } from '$comps/Overlay/types.overlay'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'
 
@@ -115,7 +115,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 			id: 'auth',
 			position: 'bottom',
 			height: 'h-[50%]',
-			meta: { overlayNodeRecord: new OverlayNodeRecord({ dataObjName }) }
+			meta: { OverlayRecord: new OverlayRecord({ dataObjName }) }
 		}
 		state.messageDrawer.open(settings)
 	}

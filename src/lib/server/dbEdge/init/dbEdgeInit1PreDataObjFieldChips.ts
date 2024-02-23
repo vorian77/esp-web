@@ -1,16 +1,16 @@
 import { sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import { addOverlayNodeFieldItems } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { addDataObjFieldChips } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
-export async function initPreOverlayNodeFieldItem() {
-	sectionHeader('OverlayNodeFieldItem')
+export async function initDataObjFieldChips() {
+	sectionHeader('DataObjFieldChips')
 
-	await addOverlayNodeFieldItems({
+	await addDataObjFieldChips({
 		btnLabelComplete: 'Select Columns',
 		columnLabelDisplay: 'Column',
 		header: 'Select Columns',
 		headerSub: 'Columns associated with the selected table.',
 		isMultiSelect: true,
-		name: 'overlay_node_field_items_sys_column',
+		name: 'data_obj_field_chips_sys_column',
 		owner: 'app_sys_admin'
 	})
 }

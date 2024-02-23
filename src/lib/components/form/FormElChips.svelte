@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { State } from '$comps/nav/types.appState'
 	import type { FieldChips } from '$comps/form/fieldChips'
-	import { ValidityErrorLevel } from '$comps/types'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
 	import { createEventDispatcher } from 'svelte'
 
@@ -12,8 +10,8 @@
 	export let field: FieldChips
 
 	$: {
-		field.overlayNodeFieldItems.itemsSelected = field.valueCurrent
-		field.overlayNodeFieldItems.itemsList = field.items
+		field.overlayFieldChips.itemsSelected = field.valueCurrent
+		field.overlayFieldChips.itemsList = field.items
 	}
 
 	function add() {
@@ -21,23 +19,25 @@
 			const modal: ModalSettings = {
 				type: 'component',
 				component: 'overlayModalItems',
-				meta: { overlayNodeFieldItems: field.overlayNodeFieldItems },
+				meta: { overlayNodeFieldItems: field.overlayFieldChips },
 				response: (r: any) => {
 					resolve(r)
 				}
 			}
 			modalStore.trigger(modal)
 		}).then((response) => {
-			field.overlayNodeFieldItems.itemsSelected = response
-			setValue(field.overlayNodeFieldItems.itemsSelected)
+			if (response !== false) {
+				field.overlayFieldChips.itemsSelected = response
+				setValue(field.overlayFieldChips.itemsSelected)
+			}
 		})
 	}
 
 	function remove(dataValue: string) {
-		const idx = field.overlayNodeFieldItems.itemsSelected.findIndex((item) => item === dataValue)
+		const idx = field.overlayFieldChips.itemsSelected.findIndex((item) => item === dataValue)
 		if (idx > -1) {
-			field.overlayNodeFieldItems.itemsSelected.splice(idx, 1)
-			setValue(field.overlayNodeFieldItems.itemsSelected)
+			field.overlayFieldChips.itemsSelected.splice(idx, 1)
+			setValue(field.overlayFieldChips.itemsSelected)
 		}
 	}
 
@@ -57,7 +57,7 @@
 
 <div class="border-2 border-solid rounded-lg mt-2 p-2 min-h-11">
 	<div class="flex flex-wrap items-center gap-2">
-		{#each field.overlayNodeFieldItems.getItemsDisplay() as item}
+		{#each field.overlayFieldChips.getItemsDisplay() as item}
 			<button class="chip variant-filled-primary text-base" on:click={() => remove(item.data)}>
 				<span>{item.display}</span>
 				<span>x</span>

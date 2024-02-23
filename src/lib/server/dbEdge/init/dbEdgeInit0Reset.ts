@@ -11,13 +11,13 @@ export async function initReset() {
 	reset.addStatement(`DELETE sys_core::SysNodeObj FILTER .codeType.name != 'program'`)
 	reset.addTable('sys_core::SysNodeObjFooter')
 
-	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { overlayNodeFieldItems := {} }`)
+	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldChips := {} }`)
 	reset.addTable('sys_core::SysDataObj')
 	reset.addTable('sys_core::SysDataObjTable')
 
 	reset.addTable('sys_core::SysDataObjAction')
+	reset.addTable('sys_core::SysDataObjFieldChips')
 	reset.addTable('sys_core::SysDataObjFieldItems')
-	reset.addTable('sys_core::SysOverlayNodeFieldItems')
 
 	reset.addTable('sys_core::SysObjConfig')
 

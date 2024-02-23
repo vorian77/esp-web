@@ -118,8 +118,8 @@ export class DataObj {
 		}
 		async function loadFieldItems(fields: Array<Field>) {
 			for (const field of fields) {
-				if (field.itemsDb) {
-					queryData.replaceParms({ ...field.itemsDb.parms, field })
+				if (field.fieldItems) {
+					queryData.replaceParms({ ...field.fieldItems.parms, field })
 					const result = await queryExecute(
 						{ dataObjName: dataObj.name },
 						TokenApiQueryType.fieldItems,
