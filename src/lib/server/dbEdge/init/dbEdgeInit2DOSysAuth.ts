@@ -76,7 +76,7 @@ async function initDataObjAccount() {
 			// 	columnName: 'codeRace',
 			// 	dbOrderSelect: 42,
 			// 	fieldListItems: 'il_sys_code_order_index_by_codeType_name',
-			// 	fieldIListtemsParms: { codeTypeName: 'ct_sys_person_race' },
+			// 	fieldListItemsParms: { codeTypeName: 'ct_sys_person_race' },
 			// 	link: {
 			// 		columnsDisplay: ['name'],
 			// 		table: { module: 'sys_core', name: 'SysCode' }

@@ -26,7 +26,7 @@ export class Field {
 	dataType: DataFieldDataType
 	dataTypePreset: DataFieldDataType | undefined
 	element: FieldElement
-	fieldItems: FieldItems | undefined
+	fieldListItems: FieldItems | undefined
 	hasChanged: boolean
 	isDisplay: boolean
 	isDisplayable: boolean
@@ -77,7 +77,7 @@ export class Field {
 		this.isDisplayable = valueOrDefault(obj.isDisplayable, true)
 		this.isMultiSelect = valueOrDefault(obj._column.isMultiSelect, false)
 		this.items = valueOrDefault(obj.items, [])
-		this.fieldItems = obj._fieldListItems
+		this.fieldListItems = obj._fieldListItems
 			? new FieldItems(obj._fieldListItems, obj.fieldListItemsParms)
 			: undefined
 		this.label = strRequired(obj.headerAlt || obj._column.header, 'Field', 'label')
@@ -86,11 +86,6 @@ export class Field {
 		this.validity = new Validity()
 		this.valueInitial = null
 		this.valueCurrent = null
-
-		console.log('Field.constructor:', {
-			fieldLabel: this.label,
-			obj
-		})
 	}
 
 	copyValue(value: any) {
@@ -204,12 +199,6 @@ export class FieldItems {
 	constructor(obj: any, parms: any) {
 		const clazz = 'FieldItems'
 		obj = valueOrDefault(obj, {})
-
-		console.log('FieldItems.constructor:', {
-			obj,
-			parms
-		})
-
 		this.codeDataTypeDisplay = obj._codeDataTypeDisplay
 			? memberOfEnum(
 					obj._codeDataTypeDisplay,
@@ -272,6 +261,7 @@ export interface FieldRaw {
 	_fieldListChips: {
 		btnLabelComplete: string
 		columnLabelDisplay: string
+		_dataObjName: string
 		header: string
 		headerSub: string
 		isMultiSelect: boolean

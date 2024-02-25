@@ -103,6 +103,7 @@ export async function getDataObjById(dataObjId: string) {
 				_fieldListChips: e.select(f.fieldListChips, (i) => ({
 					btnLabelComplete: true,
 					columnLabelDisplay: true,
+					_dataObjName: i.dataObj.name,
 					header: true,
 					headerSub: true,
 					isMultiSelect: true,

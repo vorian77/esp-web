@@ -431,10 +431,12 @@ export async function addOrg(data: any) {
 }
 
 export async function addDataObjFieldChips(data: any) {
+	console.log('addDataObjFieldChips.name:', data.name)
 	const query = e.params(
 		{
 			btnLabelComplete: e.str,
 			columnLabelDisplay: e.str,
+			dataObj: e.str,
 			header: e.str,
 			headerSub: e.optional(e.str),
 			isMultiSelect: e.bool,
@@ -446,6 +448,7 @@ export async function addDataObjFieldChips(data: any) {
 				btnLabelComplete: p.btnLabelComplete,
 				columnLabelDisplay: p.columnLabelDisplay,
 				createdBy: e.select(e.sys_user.getRootUser()),
+				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
 				header: p.header,
 				headerSub: p.headerSub,
 				isMultiSelect: p.isMultiSelect,

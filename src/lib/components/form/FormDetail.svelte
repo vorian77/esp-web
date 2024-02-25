@@ -44,11 +44,10 @@
 
 	function loadData(data: DataObjData) {
 		dataObj.objData = data
-		state.update({ objValidToSave: dataObj.preValidate() })
+		state.objValidToSave = dataObj.preValidate()
 	}
 
 	function onChangeFile(fieldName: string, value: any) {
-		console.log('FormDetail.onChangeFile:', value)
 		setFieldVal(fieldName, value)
 	}
 
@@ -67,8 +66,7 @@
 		if (idx >= 0) {
 			dataObj.fields[idx].valueCurrent = value
 			validateField(idx, value)
-			// console.log('FormDetail.setFieldVal:', { fieldName, value })
-			state.update({ objHasChanged: dataObj.getStatusChanged() })
+			state.objHasChanged = dataObj.getStatusChanged()
 		}
 		return idx
 	}
@@ -82,15 +80,15 @@
 		newValidities.forEach(({ index, validity }) => {
 			dataObj.fields[index].validity = validity
 		})
-		state.update({
-			objValidToSave: dataObj.fields.every(({ validity }) => validity.error == ValidityError.none)
-		})
+		state.objValidToSave = dataObj.fields.every(
+			({ validity }) => validity.error == ValidityError.none
+		)
 	}
 </script>
 
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
-<div id="content" class="px-2">
+<div id={state.surface} class="px-2">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
 		{#each dataObj.fields as field, idx (field.name)}
 			{#if field.isDisplayable && field.isDisplay}
@@ -143,7 +141,7 @@
 <!-- <DataViewer header="defn" data={formObj.defn} /> -->
 
 <style>
-	#content {
+	#page {
 		height: 74vh;
 		overflow-y: auto;
 	}

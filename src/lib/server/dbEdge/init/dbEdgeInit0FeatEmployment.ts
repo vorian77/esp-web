@@ -305,7 +305,7 @@ export async function config() {
 				dbOrderSelect: 120,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_sys_state' },
+				fieldListItemsParms: { codeTypeName: 'ct_sys_state' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -475,7 +475,7 @@ export async function config() {
 				dbOrderSelect: 70,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_cm_job_wage_type' },
+				fieldListItemsParms: { codeTypeName: 'ct_cm_job_wage_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -490,7 +490,7 @@ export async function config() {
 				dbOrderSelect: 70,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_cm_job_type' },
+				fieldListItemsParms: { codeTypeName: 'ct_cm_job_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -499,7 +499,7 @@ export async function config() {
 				dbOrderSelect: 80,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_cm_job_training_related' },
+				fieldListItemsParms: { codeTypeName: 'ct_cm_job_training_related' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -522,7 +522,7 @@ export async function config() {
 				dbOrderSelect: 110,
 				indexTable: '0',
 				fieldListItems: 'il_sys_role_staff_by_codeName',
-				fieldIListtemsParms: { codeName: 'cm_training_role_staff_agency' },
+				fieldListItemsParms: { codeName: 'cm_training_role_staff_agency' },
 				link: { table: { module: 'sys_user', name: 'SysStaff' } }
 			},
 			{

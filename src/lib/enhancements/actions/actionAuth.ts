@@ -1,4 +1,4 @@
-import { State } from '$comps/nav/types.appState'
+import { State, StateOverlay } from '$comps/nav/types.appState'
 import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
@@ -11,7 +11,6 @@ import {
 	TokenApiQueryType,
 	TokenApiSendText
 } from '$comps/types.token'
-import { OverlayRecord } from '$comps/Overlay/types.overlay'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'
 
@@ -28,7 +27,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 
 	switch (type) {
 		case 'page':
-			openDrawer(value)
+			openDrawer(value, state.messageDrawer, state.messageToast)
 			break
 
 		case 'resend_code':
@@ -56,7 +55,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 					verifyFrom = value
 					verifyData = data
 					await sendCode(data['userName'])
-					openDrawer('data_obj_auth_verify_phone_mobile')
+					openDrawer('data_obj_auth_verify_phone_mobile', state.messageDrawer, state.messageToast)
 					break
 
 				default:
@@ -101,6 +100,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 		}
 
 		const userId = result.data['userId']
+		console.log('process.credential.userId', userId)
 		const user = await userInit(userId)
 		if (user && Object.hasOwn(user, 'id')) {
 			state.messageDrawer.close()
@@ -110,12 +110,19 @@ export default async function action(state: State, field: FieldCustomAction, dat
 		}
 	}
 
-	function openDrawer(dataObjName: string) {
+	function openDrawer(dataObjName: string, messageDrawer: any, messageToast: any) {
+		const state = State.initOverlay(
+			messageDrawer,
+			undefined,
+			messageToast,
+			new StateOverlay({ data: {}, dataObjName, queryType: TokenApiQueryType.new })
+		)
+
 		const settings: DrawerSettings = {
 			id: 'auth',
 			position: 'bottom',
 			height: 'h-[50%]',
-			meta: { OverlayRecord: new OverlayRecord({ dataObjName }) }
+			meta: { state }
 		}
 		state.messageDrawer.open(settings)
 	}
@@ -126,7 +133,6 @@ async function sendCode(phoneMobile: string) {
 	const max = 999999
 	authSecurityCode = Math.floor(Math.random() * (max - min + 1)) + min
 	authSecurityCodePhone = phoneMobile
-	console.log('authSecurityCode:', authSecurityCode)
 	await apiFetch(
 		ApiFunction.sendText,
 		new TokenApiSendText(phoneMobile, `Mobile phone number verification code: ${authSecurityCode}`)

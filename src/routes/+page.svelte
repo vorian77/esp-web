@@ -4,8 +4,8 @@
 	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
 	import { userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
-	import { TokenApiUserName } from '$comps/types.token'
-	import { OverlayRecord } from '$comps/Overlay/types.overlay.js'
+	import { TokenApiQueryType, TokenApiUserName } from '$comps/types.token'
+	import { State, StateOverlay } from '$comps/nav/types.appState'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -28,11 +28,17 @@
 	}
 
 	function openDrawer(dataObjName: string) {
+		const state = State.initOverlay(
+			drawerStore,
+			undefined,
+			undefined,
+			new StateOverlay({ data: {}, dataObjName, queryType: TokenApiQueryType.new })
+		)
 		const settings: DrawerSettings = {
 			id: 'auth',
 			position: 'bottom',
 			height: 'h-[50%]',
-			meta: { OverlayRecord: new OverlayRecord({ dataObjName }) }
+			meta: { state }
 		}
 		drawerStore.open(settings)
 	}

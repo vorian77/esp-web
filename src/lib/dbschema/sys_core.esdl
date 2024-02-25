@@ -106,7 +106,9 @@ module sys_core {
     customElement: json;
     dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
-    fieldListChips: sys_core::SysDataObjFieldListChips;
+    fieldListChips: sys_core::SysDataObjFieldListChips{
+      on source delete delete target;
+    };
     fieldListItems: sys_core::SysDataObjFieldListItems;
     fieldListItemsParms: json;
     headerAlt: str;
@@ -120,6 +122,9 @@ module sys_core {
   type SysDataObjFieldListChips extending sys_core::SysObj {
     required btnLabelComplete: str;
     required columnLabelDisplay: str;
+    required dataObj: sys_core::SysDataObj {
+      on source delete delete target;
+    };
     headerSub: str;
     required isMultiSelect: bool;
     constraint exclusive on (.name);

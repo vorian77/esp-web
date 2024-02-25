@@ -103,7 +103,7 @@ export class DataObj {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
-		await loadFieldItems(dataObj.fields)
+		await loadFieldListItems(dataObj.fields)
 		return dataObj
 
 		async function loadActionsField(fields: Array<Field>) {
@@ -116,10 +116,22 @@ export class DataObj {
 		async function loadActionsQuery() {
 			dataObj.actionsQuery = await ActionsQuery.initEnhancement(dataObjRaw.actionsQuery)
 		}
-		async function loadFieldItems(fields: Array<Field>) {
+		async function loadFieldListChips(fields: Array<Field>) {
 			for (const field of fields) {
-				if (field.fieldItems) {
-					queryData.replaceParms({ ...field.fieldItems.parms, field })
+				if (field instanceof FieldListChips) {
+					const result = await queryExecute(
+						{ dataObjName: field.dataObjName },
+						TokenApiQueryType.dataObj,
+						queryData
+					)
+					// field.dataObj = result.data
+				}
+			}
+		}
+		async function loadFieldListItems(fields: Array<Field>) {
+			for (const field of fields) {
+				if (field.fieldListItems) {
+					queryData.replaceParms({ ...field.fieldListItems.parms, field })
 					const result = await queryExecute(
 						{ dataObjName: dataObj.name },
 						TokenApiQueryType.fieldItems,

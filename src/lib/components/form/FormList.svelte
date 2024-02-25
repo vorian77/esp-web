@@ -20,10 +20,10 @@
 	const rows = handler.getRows()
 	const selected = handler.getSelected()
 	const isAllSelected = handler.isAllSelected()
-	const isSelect = state.overlayFieldChips !== undefined
+	const isSelect = state.fieldListChips !== undefined
 
-	if (isSelect && state.overlayFieldChips) {
-		state.overlayFieldChips.itemsSelected.forEach((i) => handler.select(i))
+	if (isSelect && state.fieldListChips) {
+		state.fieldListChips.itemsSelected.forEach((i) => handler.select(i))
 	}
 
 	type DataRow = Record<string, any>
@@ -37,7 +37,7 @@
 		handler.setPage(1)
 		sortList()
 	}
-	$: if (state.overlayFieldChips) state.overlayFieldChips.setSelected($selected)
+	$: if (state.fieldListChips) state.fieldListChips.setSelected($selected)
 
 	function sortList() {
 		// apply sort items backwards

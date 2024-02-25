@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { Modal, getModalStore } from '@skeletonlabs/skeleton'
 	import type { ModalComponent } from '@skeletonlabs/skeleton'
-	import OverlayModalDetail from '$comps/Overlay/OverlayModalDetail.svelte'
-	import OverlayModalList from '$comps/Overlay/OverlayModalList.svelte'
+	import OverlayModalForm from '$comps/Overlay/OverlayModalForm.svelte'
 
 	const modalStore = getModalStore()
 
 	const modalRegistry: Record<string, ModalComponent> = {
-		overlayModalDetail: { ref: OverlayModalDetail },
-		overlayModalList: { ref: OverlayModalList }
+		overlayModalForm: { ref: OverlayModalForm }
 	}
 </script>
 

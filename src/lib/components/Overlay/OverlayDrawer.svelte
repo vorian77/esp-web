@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
 	import NavTree from '$comps/nav/NavTree.svelte'
-	import OverlayObjForm from '$comps/Overlay/OverlayObjForm.svelte'
+	import FormEmbedded from '$comps/form/FormEmbedded.svelte'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiUserId } from '$comps/types.token'
 	import { ResponseBody } from '$comps/types'
@@ -12,8 +12,9 @@
 	const FILENAME = 'OverlayDrawer.svelte'
 
 	function closeDrawer() {
-		if ($drawerStore.meta && Object.hasOwn($drawerStore.meta, 'onCloseDrawer'))
+		if ($drawerStore.meta && Object.hasOwn($drawerStore.meta, 'onCloseDrawer')) {
 			$drawerStore.meta.onCloseDrawer()
+		}
 		drawerStore.close()
 		$drawerStore.id = undefined
 	}
@@ -39,11 +40,13 @@
 
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'auth'}
+		<FormEmbedded state={$drawerStore.meta.state} on:formCancelled={onformCancelled} />
+	{/if}
+	{#if $drawerStore.id === 'auth'}
 		<div>
-			<OverlayObjForm
-				bind:overlayRecord={$drawerStore.meta.OverlayRecord}
-				on:formCancelled={onformCancelled}
-			/>
+			{#if $drawerStore.meta.state}
+				<FormEmbedded state={$drawerStore.meta.state} on:formCancelled={onformCancelled} />
+			{/if}
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}
 		<div class="p-2">

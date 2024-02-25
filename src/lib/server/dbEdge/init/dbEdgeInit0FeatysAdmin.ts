@@ -13,8 +13,6 @@ export async function initFeatSysAdmin() {
 	sectionHeader('DataObject - SysAdmin')
 	await reset()
 
-	await initDataObjFieldChips()
-
 	await initApp()
 	await initCodeType()
 	await initCode()
@@ -36,8 +34,10 @@ async function reset() {
 	reset.addStatement(
 		`UPDATE sys_user::SysUserType FILTER .name = 'ut_sys_amin' SET { resources -= (SELECT sys_core::getNodeObjByName('node_obj_sys_admin_app_list')) }`
 	)
+
 	reset.delFeature('sys_admin_data_obj_config')
 	reset.delFeature('sys_admin_table')
+	reset.delDataObj('data_obj_field_list_sys_admin_column_select')
 	reset.delFeature('sys_admin_node_obj_footer')
 	reset.delFeature('sys_admin_node_obj')
 	reset.delFeature('sys_admin_data_obj_action')
@@ -49,22 +49,7 @@ async function reset() {
 	reset.delFeature('sys_admin_code_type')
 	reset.delFeature('sys_admin_app')
 
-	reset.delFieldChips('data_obj_field_chips_sys_column')
 	await reset.execute()
-}
-
-async function initDataObjFieldChips() {
-	sectionHeader('DataObjFieldChips')
-
-	await addDataObjFieldChips({
-		btnLabelComplete: 'Select Columns',
-		columnLabelDisplay: 'Column',
-		header: 'Select Columns',
-		headerSub: 'Columns associated with the selected table.',
-		isMultiSelect: true,
-		name: 'data_obj_field_chips_sys_column',
-		owner: 'app_sys_admin'
-	})
 }
 
 async function initApp() {
@@ -629,7 +614,7 @@ async function initColumn() {
 				dbOrderSelect: 30,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_db_col_data_type' },
+				fieldListItemsParms: { codeTypeName: 'ct_db_col_data_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -638,7 +623,7 @@ async function initColumn() {
 				dbOrderSelect: 40,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_db_col_alignment' },
+				fieldListItemsParms: { codeTypeName: 'ct_db_col_alignment' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1427,7 +1412,7 @@ async function initDataObjNodeObj() {
 				dbOrderSelect: 30,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
+				fieldListItemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1463,7 +1448,7 @@ async function initDataObjNodeObj() {
 				dbOrderSelect: 80,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
+				fieldListItemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1600,7 +1585,7 @@ async function initDataObjNodeObjFooter() {
 				dbOrderSelect: 30,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
+				fieldListItemsParms: { codeTypeName: 'ct_sys_node_obj_type' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1636,7 +1621,7 @@ async function initDataObjNodeObjFooter() {
 				dbOrderSelect: 80,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
-				fieldIListtemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
+				fieldListItemsParms: { codeTypeName: 'ct_sys_node_obj_icon' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
@@ -1707,6 +1692,47 @@ async function initDataObjNodeObjFooter() {
 }
 
 async function initTable() {
+	// field chips - columns
+	await addDataObj({
+		actionsField: ['noa_list_new'],
+		codeCardinality: 'list',
+		codeComponent: 'FormList',
+		exprFilter: 'none',
+		header: 'Columns',
+		name: 'data_obj_field_list_sys_admin_column_select',
+		owner: 'app_sys_admin',
+		tables: [{ index: '0', table: 'SysColumn' }],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'name',
+				dbOrderCrumb: 10,
+				dbOrderList: 10,
+				dbOrderSelect: 20,
+				indexTable: '0'
+			}
+		]
+	})
+
+	await addDataObjFieldChips({
+		btnLabelComplete: 'Select Columns',
+		columnLabelDisplay: 'Column',
+		dataObj: 'data_obj_field_list_sys_admin_column_select',
+		header: 'Select Columns',
+		headerSub: 'Columns associated with the selected table.',
+		isMultiSelect: true,
+		name: 'data_obj_field_chips_sys_column',
+		owner: 'app_sys_admin'
+	})
+
+	// data objects
 	await addDataObj({
 		actionsField: ['noa_list_new'],
 		codeCardinality: 'list',
@@ -1784,7 +1810,6 @@ async function initTable() {
 				dbOrderSelect: 30,
 				fieldListChips: 'data_obj_field_chips_sys_column',
 				indexTable: '0',
-				fieldListItems: 'il_sys_table_column_order_name',
 				link: { table: { module: 'sys_db', name: 'SysColumn' } }
 			},
 			{

@@ -216,9 +216,9 @@ export namespace sys_core {
     "width"?: number | null;
     "exprCustom"?: string | null;
     "nameCustom"?: string | null;
-    "fieldListChips"?: SysDataObjFieldListChips | null;
     "fieldListItems"?: SysDataObjFieldListItems | null;
     "fieldListItemsParms"?: unknown | null;
+    "fieldListChips"?: SysDataObjFieldListChips | null;
   }
   export interface SysDataObjFieldLink extends std.$Object {
     "exprSelect"?: string | null;
@@ -239,6 +239,7 @@ export namespace sys_core {
     "columnLabelDisplay": string;
     "headerSub"?: string | null;
     "isMultiSelect": boolean;
+    "dataObj": SysDataObj;
   }
   export interface SysDataObjFieldListItems extends SysObj {
     "codeDataTypeDisplay"?: SysCode | null;
