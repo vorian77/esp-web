@@ -19,6 +19,7 @@
 
 	async function action() {
 		if (field instanceof FieldCustomAction && field.enhancement) {
+			console.log('FormElCustom.action: action:', state)
 			await field.enhancement(state, field, data)
 		}
 	}

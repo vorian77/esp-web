@@ -5,25 +5,33 @@ import {
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import {
 	addDataObj,
-	addDataObjFieldChips,
+	addDataObjFieldListChips,
+	addDataObjFieldListSelect,
 	addNodeProgramObj
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import init from './dbEdgeInit2DOSysAuth'
 
 export async function initFeatSysAdmin() {
 	sectionHeader('DataObject - SysAdmin')
 	await reset()
+	await initFeatures()
+}
 
+async function initFeatures() {
 	await initApp()
 	await initCodeType()
 	await initCode()
 	await initDataObj()
 	await initDataObjTable()
+
 	// await initDataObjColumn() - do not implemented
+
 	await initColumn()
 	await initDataObjAction()
 	await initDataObjNodeObj()
 	await initDataObjNodeObjFooter()
 	await initTable()
+
 	// await initConfig() - do not implement
 }
 
@@ -37,7 +45,6 @@ async function reset() {
 
 	reset.delFeature('sys_admin_data_obj_config')
 	reset.delFeature('sys_admin_table')
-	reset.delDataObj('data_obj_field_list_sys_admin_column_select')
 	reset.delFeature('sys_admin_node_obj_footer')
 	reset.delFeature('sys_admin_node_obj')
 	reset.delFeature('sys_admin_data_obj_action')
@@ -48,6 +55,9 @@ async function reset() {
 	reset.delFeature('sys_admin_code')
 	reset.delFeature('sys_admin_code_type')
 	reset.delFeature('sys_admin_app')
+
+	reset.delFieldChips('field_list_chips_sys_column')
+	reset.delFieldSelect('field_list_select_sys_column')
 
 	await reset.execute()
 }
@@ -1692,14 +1702,15 @@ async function initDataObjNodeObjFooter() {
 }
 
 async function initTable() {
-	// field chips - columns
+	// field list - chips
 	await addDataObj({
 		actionsField: ['noa_list_new'],
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: 'none',
 		header: 'Columns',
-		name: 'data_obj_field_list_sys_admin_column_select',
+		subHeader: 'Columns associated with the selected table.',
+		name: 'data_obj_field_list_chips_sys_column',
 		owner: 'app_sys_admin',
 		tables: [{ index: '0', table: 'SysColumn' }],
 		fields: [
@@ -1721,14 +1732,50 @@ async function initTable() {
 		]
 	})
 
-	await addDataObjFieldChips({
+	await addDataObjFieldListChips({
 		btnLabelComplete: 'Select Columns',
-		columnLabelDisplay: 'Column',
-		dataObj: 'data_obj_field_list_sys_admin_column_select',
-		header: 'Select Columns',
-		headerSub: 'Columns associated with the selected table.',
+		columnLabelDisplay: 'name',
+		dataObj: 'data_obj_field_list_chips_sys_column',
 		isMultiSelect: true,
-		name: 'data_obj_field_chips_sys_column',
+		name: 'field_list_chips_sys_column',
+		owner: 'app_sys_admin'
+	})
+
+	// field list - select
+	await addDataObj({
+		actionsField: ['noa_list_new'],
+		codeCardinality: 'list',
+		codeComponent: 'FormList',
+		exprFilter: 'none',
+		header: 'Columns',
+		subHeader: 'Columns associated with the selected table.',
+		name: 'data_obj_field_list_select_sys_column',
+		owner: 'app_sys_admin',
+		tables: [{ index: '0', table: 'SysColumn' }],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'name',
+				dbOrderCrumb: 10,
+				dbOrderList: 10,
+				dbOrderSelect: 20,
+				indexTable: '0'
+			}
+		]
+	})
+
+	await addDataObjFieldListSelect({
+		btnLabelComplete: 'Select Columns',
+		dataObj: 'data_obj_field_list_select_sys_column',
+		isMultiSelect: true,
+		name: 'field_list_select_sys_column',
 		owner: 'app_sys_admin'
 	})
 
@@ -1805,10 +1852,10 @@ async function initTable() {
 				indexTable: '0'
 			},
 			{
-				codeElement: 'chips',
+				codeElement: 'listChips',
 				columnName: 'columns',
 				dbOrderSelect: 30,
-				fieldListChips: 'data_obj_field_chips_sys_column',
+				fieldListChips: 'field_list_chips_sys_column',
 				indexTable: '0',
 				link: { table: { module: 'sys_db', name: 'SysColumn' } }
 			},

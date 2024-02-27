@@ -1,24 +1,22 @@
 <script lang="ts">
-	import type { FieldListChips, FieldListChipValues } from '$comps/form/fieldListChips'
+	import type { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
 	import { StateOverlayModal } from '$comps/nav/types.appState'
 	import { TokenApiQueryType } from '$comps/types.token'
+	import Form from '$comps/form/Form.svelte'
 	import { createEventDispatcher } from 'svelte'
 
 	const dispatch = createEventDispatcher()
 
 	const modalStore = getModalStore()
 
-	export let field: FieldListChips
+	export let field: FieldListSelect
 
 	let selectedIds: string[] = []
-	let selectedValues: FieldListChipValues = []
+	// let selectedValues: FieldListChipValues = []
 
 	$: {
 		selectedIds = field.valueCurrent
-		selectedValues = field.valuesRaw
-			.filter((item) => selectedIds.includes(item.id))
-			.map((item) => ({ id: item.id, value: item[field.columnLabelDisplay] }))
 	}
 
 	function add() {
@@ -70,14 +68,6 @@
 		on:click={() => add()}>+</button
 	>
 </div>
-
-<div class="border-2 border-solid rounded-lg mt-2 p-2 min-h-11">
-	<div class="flex flex-wrap items-center gap-2">
-		{#each selectedValues as item}
-			<button class="chip variant-filled-primary text-base" on:click={() => remove(item.id)}>
-				<span>{item.value}</span>
-				<span>x</span>
-			</button>
-		{/each}
-	</div>
+<div>
+	<!-- <Form {state} /> -->
 </div>

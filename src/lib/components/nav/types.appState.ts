@@ -1,4 +1,4 @@
-import { required, strOptional, strRequired, valueOrDefault } from '$utils/utils'
+import { booleanOrFalse, required, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 import { initNavTree, NodeType, User, userInit } from '$comps/types'
 import { SurfaceType } from '$comps/types.master'
 import {
@@ -13,49 +13,24 @@ import { error } from '@sveltejs/kit'
 const FILENAME = '/$comps/nav/types.appState.ts'
 
 export class State {
-	messageDrawer: any
-	messageModal: any
-	messageToast: any
+	drawerStore: any
+	modalStore: any
 	nodeType: NodeType = NodeType.home
 	objHasChanged: boolean = false
 	objValidToSave: boolean = true
-	overlay?: StateOverlay
 	packet: StatePacket | undefined
 	page: string = '/home'
 	surface: SurfaceType = SurfaceType.default
-	updateFunction: Function | undefined
+	toastStore: any
+	updateFunction?: Function
 	user: User | undefined = undefined
-	constructor(
-		updateFunction: Function | undefined,
-		drawer: any,
-		modal: any,
-		toast: any,
-		user: User | undefined = undefined
-	) {
-		this.updateFunction = updateFunction
-		this.messageDrawer = drawer
-		this.messageModal = modal
-		this.messageToast = toast
-		this.user = user
-	}
 
-	static initOverlay(drawer: any, modal: any, toast: any, overlay: StateOverlay) {
-		let state: State = new State(undefined, drawer, modal, toast)
-
-		state.nodeType = NodeType.object
-		state.overlay = overlay
-		state.packet = new StatePacket({
-			component: StatePacketComponent.navApp,
-			token: new TokenApiQuery(
-				overlay.queryType,
-				new TokenApiDbDataObj({ dataObjName: overlay.dataObjName }),
-				new TokenApiQueryData(overlay.data)
-			)
-		})
-		state.page = '/'
-		state.surface = SurfaceType.overlay
-
-		return state
+	constructor(obj: any) {
+		if (Object.hasOwn(obj, 'updateFunction')) this.updateFunction = obj.updateFunction
+		if (Object.hasOwn(obj, 'drawerStore')) this.drawerStore = obj.drawerStore
+		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
+		if (Object.hasOwn(obj, 'toastStore')) this.toastStore = obj.toastStore
+		if (Object.hasOwn(obj, 'user')) this.user = obj.user
 	}
 
 	consume(components: StatePacketComponent | Array<StatePacketComponent>) {
@@ -98,25 +73,46 @@ export class State {
 	}
 }
 
-export class StateOverlay {
+export class StateOverlay extends State {
 	data: TokenApiDbDataObj
 	dataObjName: string
 	queryType: TokenApiQueryType
 	constructor(obj: any) {
 		const clazz = 'StateOverlay'
-		this.data = new TokenApiDbDataObj(required(obj.data, clazz, 'data'))
+		super(obj)
+		this.data = new TokenApiDbDataObj(valueOrDefault(obj.data, {}))
 		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
+
+		this.nodeType = NodeType.object
+		this.packet = new StatePacket({
+			component: StatePacketComponent.navApp,
+			token: new TokenApiQuery(
+				this.queryType,
+				new TokenApiDbDataObj({ dataObjName: this.dataObjName }),
+				new TokenApiQueryData(this.data)
+			)
+		})
+		this.page = '/'
+		this.surface = SurfaceType.overlay
 	}
 }
 
 export class StateOverlayModal extends StateOverlay {
 	btnLabelComplete?: string
+	isMultiSelect: boolean = false
 	recordSubmitted: Record<string, any> = {}
+	selectedIds: Array<string> = []
+	selectedRows: Array<Record<string, any>> = []
 	constructor(obj: any) {
 		const clazz = 'StateOverlayModal'
 		super(obj)
 		this.btnLabelComplete = strOptional(obj.btnLabelComplete, clazz, 'btnLabelComplete')
+		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
+		this.selectedIds = valueOrDefault(obj.selectedIds, [])
+	}
+	setSelected(selectedRows: Array<Record<string, any>>) {
+		this.selectedRows = selectedRows
 	}
 }
 

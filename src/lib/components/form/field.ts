@@ -175,11 +175,12 @@ export interface FieldCustomRaw {
 
 export enum FieldElement {
 	checkbox = 'checkbox',
-	chips = 'chips',
 	custom = 'custom',
 	date = 'date',
 	email = 'email',
 	file = 'file',
+	listChips = 'listChips',
+	listSelect = 'listSelect',
 	number = 'number',
 	password = 'password',
 	radio = 'radio',
@@ -263,7 +264,6 @@ export interface FieldRaw {
 		columnLabelDisplay: string
 		_dataObjName: string
 		header: string
-		headerSub: string
 		isMultiSelect: boolean
 		name: string
 	}

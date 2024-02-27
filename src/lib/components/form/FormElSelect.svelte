@@ -34,6 +34,7 @@
 		class="select rounded-lg {field.colorBackground}"
 		name={field.name}
 		id={fieldId}
+		disabled={field.access == FieldAccess.readonly}
 		bind:value={field.valueCurrent}
 		on:change={onChange}
 	>

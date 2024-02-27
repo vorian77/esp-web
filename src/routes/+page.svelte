@@ -1,15 +1,16 @@
 <script lang="ts">
 	// import logo from '$assets/YO-Baltimore-logo.png'
 	import logo from '$assets/clientLogo-AtlanticImpact.png'
-	import { getDrawerStore, type DrawerSettings } from '@skeletonlabs/skeleton'
+	import { getDrawerStore, type DrawerSettings, getToastStore } from '@skeletonlabs/skeleton'
 	import { userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiQueryType, TokenApiUserName } from '$comps/types.token'
-	import { State, StateOverlay } from '$comps/nav/types.appState'
+	import { StateOverlay } from '$comps/nav/types.appState'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
 	const drawerStore = getDrawerStore()
+	const toastStore = getToastStore()
 
 	export let data
 
@@ -28,17 +29,18 @@
 	}
 
 	function openDrawer(dataObjName: string) {
-		const state = State.initOverlay(
-			drawerStore,
-			undefined,
-			undefined,
-			new StateOverlay({ data: {}, dataObjName, queryType: TokenApiQueryType.new })
-		)
 		const settings: DrawerSettings = {
 			id: 'auth',
 			position: 'bottom',
 			height: 'h-[50%]',
-			meta: { state }
+			meta: {
+				state: new StateOverlay({
+					dataObjName,
+					drawerStore,
+					queryType: TokenApiQueryType.new,
+					toastStore
+				})
+			}
 		}
 		drawerStore.open(settings)
 	}

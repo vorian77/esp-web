@@ -106,11 +106,14 @@ module sys_core {
     customElement: json;
     dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
-    fieldListChips: sys_core::SysDataObjFieldListChips{
+    fieldListChips: sys_core::SysDataObjFieldListChips {
       on source delete delete target;
     };
     fieldListItems: sys_core::SysDataObjFieldListItems;
     fieldListItemsParms: json;
+    fieldListSelect: sys_core::SysDataObjFieldListSelect {
+      on source delete delete target;
+    };
     headerAlt: str;
     height: int16;
     isDisplay: bool;
@@ -118,24 +121,6 @@ module sys_core {
     items: array<json>;
     width: int16;
   }
-
-  type SysDataObjFieldListChips extending sys_core::SysObj {
-    required btnLabelComplete: str;
-    required columnLabelDisplay: str;
-    required dataObj: sys_core::SysDataObj {
-      on source delete delete target;
-    };
-    headerSub: str;
-    required isMultiSelect: bool;
-    constraint exclusive on (.name);
- }
-
- type SysDataObjFieldListItems extending sys_core::SysObj {
-    codeDataTypeDisplay: sys_core::SysCode;
-    codeMask: sys_core::SysCode;
-    required exprSelect: str;
-    constraint exclusive on (.name);
- }
 
  type SysDataObjFieldLink {
     codeDisplayDataType: sys_core::SysCode;
@@ -153,6 +138,32 @@ module sys_core {
     required order: default::nonNegative;
   }
 
+  type SysDataObjFieldListChips extending sys_core::SysObj {
+    required btnLabelComplete: str;
+    required columnLabelDisplay: str;
+    required dataObj: sys_core::SysDataObj {
+      on source delete delete target if orphan;
+    };
+    required isMultiSelect: bool;
+    constraint exclusive on (.name);
+ }
+
+ type SysDataObjFieldListItems extending sys_core::SysObj {
+    codeDataTypeDisplay: sys_core::SysCode;
+    codeMask: sys_core::SysCode;
+    required exprSelect: str;
+    constraint exclusive on (.name);
+ }
+
+  type SysDataObjFieldListSelect extending sys_core::SysObj {
+    required btnLabelComplete: str;
+    required dataObj: sys_core::SysDataObj {
+      on source delete delete target if orphan;
+    };
+    required isMultiSelect: bool;
+    constraint exclusive on (.name);
+  }
+ 
   type SysDataObjTable {
     columnParent: sys_db::SysColumn;   
     required index: str;

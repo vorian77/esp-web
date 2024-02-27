@@ -40,9 +40,6 @@
 
 <Drawer on:backdrop={closeDrawer}>
 	{#if $drawerStore.id === 'auth'}
-		<FormEmbedded state={$drawerStore.meta.state} on:formCancelled={onformCancelled} />
-	{/if}
-	{#if $drawerStore.id === 'auth'}
 		<div>
 			{#if $drawerStore.meta.state}
 				<FormEmbedded state={$drawerStore.meta.state} on:formCancelled={onformCancelled} />

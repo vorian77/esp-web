@@ -109,7 +109,7 @@ const fileDelete = async function (state: State, storageKey: string) {
 		background: 'variant-filled-secondary',
 		message: 'Avatar deleted successfully!'
 	}
-	state.messageToast.trigger(toastSettings)
+	state.toastStore.trigger(toastSettings)
 }
 
 const fileUpload = async function (state: State, uploadData: TokenApiFileUploadData, file: File) {
@@ -123,5 +123,5 @@ const fileUpload = async function (state: State, uploadData: TokenApiFileUploadD
 		background: 'variant-filled-secondary',
 		message: 'Avatar uploaded successfully!'
 	}
-	state.messageToast.trigger(toastSettings)
+	state.toastStore.trigger(toastSettings)
 }

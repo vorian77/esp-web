@@ -29,7 +29,7 @@ import { error } from '@sveltejs/kit'
 const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
 export async function processQuery(token: TokenApiQuery) {
-	log('processQuery.0...')
+	log('processQuery.0')
 
 	const queryData = TokenApiQueryData.load(token.queryData)
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
@@ -132,7 +132,6 @@ async function getDataObjRaw(dataObj: TokenApiDbDataObj): Promise<DataObjRaw> {
 		return dataObj.dataObjRaw
 	} else if (dataObj.dataObjId) {
 		let dataObjRaw = await getDataObjById(dataObj.dataObjId)
-		console.log('getDataObjRaw:', dataObjRaw)
 		if (dataObjRaw) return dataObjRaw
 	} else if (dataObj.dataObjName) {
 		let dataObjRaw = await getDataObjByName(dataObj.dataObjName)

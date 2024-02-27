@@ -59,6 +59,8 @@ export namespace app_cm {
     "dateStart"?: edgedb.LocalDate | null;
     "dateStartEst"?: edgedb.LocalDate | null;
     "note"?: string | null;
+    "codeReferralEndType"?: sys_core.SysCode | null;
+    "codeReferralType"?: sys_core.SysCode | null;
   }
   export interface CmCohort extends sys_core.SysObj {
     "codeStatus"?: sys_core.SysCode | null;
@@ -219,6 +221,7 @@ export namespace sys_core {
     "fieldListItems"?: SysDataObjFieldListItems | null;
     "fieldListItemsParms"?: unknown | null;
     "fieldListChips"?: SysDataObjFieldListChips | null;
+    "fieldListSelect"?: SysDataObjFieldListSelect | null;
   }
   export interface SysDataObjFieldLink extends std.$Object {
     "exprSelect"?: string | null;
@@ -237,7 +240,6 @@ export namespace sys_core {
   export interface SysDataObjFieldListChips extends SysObj {
     "btnLabelComplete": string;
     "columnLabelDisplay": string;
-    "headerSub"?: string | null;
     "isMultiSelect": boolean;
     "dataObj": SysDataObj;
   }
@@ -245,6 +247,11 @@ export namespace sys_core {
     "codeDataTypeDisplay"?: SysCode | null;
     "codeMask"?: SysCode | null;
     "exprSelect": string;
+  }
+  export interface SysDataObjFieldListSelect extends SysObj {
+    "btnLabelComplete": string;
+    "isMultiSelect": boolean;
+    "dataObj": SysDataObj;
   }
   export interface SysDataObjTable extends std.$Object {
     "table": sys_db.SysTable;
@@ -690,6 +697,7 @@ export interface types {
     "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;
     "SysDataObjFieldListChips": sys_core.SysDataObjFieldListChips;
     "SysDataObjFieldListItems": sys_core.SysDataObjFieldListItems;
+    "SysDataObjFieldListSelect": sys_core.SysDataObjFieldListSelect;
     "SysDataObjTable": sys_core.SysDataObjTable;
     "SysNodeObj": sys_core.SysNodeObj;
     "SysNodeObjFooter": sys_core.SysNodeObjFooter;

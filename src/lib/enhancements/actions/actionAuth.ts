@@ -27,7 +27,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 
 	switch (type) {
 		case 'page':
-			openDrawer(value, state.messageDrawer, state.messageToast)
+			openDrawer(value, state.drawerStore, state.toastStore)
 			break
 
 		case 'resend_code':
@@ -46,7 +46,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 						alert('The security code you entered is not correct. Please try again.')
 						return
 					}
-					state.messageToast.trigger({ message: 'Your account has been updated!' })
+					state.toastStore.trigger({ message: 'Your account has been updated!' })
 					await processAuthCredentials(verifyFrom, verifyData)
 					break
 
@@ -55,7 +55,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 					verifyFrom = value
 					verifyData = data
 					await sendCode(data['userName'])
-					openDrawer('data_obj_auth_verify_phone_mobile', state.messageDrawer, state.messageToast)
+					openDrawer('data_obj_auth_verify_phone_mobile', state.drawerStore, state.toastStore)
 					break
 
 				default:
@@ -103,28 +103,28 @@ export default async function action(state: State, field: FieldCustomAction, dat
 		console.log('process.credential.userId', userId)
 		const user = await userInit(userId)
 		if (user && Object.hasOwn(user, 'id')) {
-			state.messageDrawer.close()
+			state.drawerStore.close()
 			if (['data_obj_auth_login', 'data_obj_auth_reset_password_login'].includes(dataObjName)) {
 				goto('/home')
 			}
 		}
 	}
 
-	function openDrawer(dataObjName: string, messageDrawer: any, messageToast: any) {
-		const state = State.initOverlay(
-			messageDrawer,
-			undefined,
-			messageToast,
-			new StateOverlay({ data: {}, dataObjName, queryType: TokenApiQueryType.new })
-		)
-
+	function openDrawer(dataObjName: string, drawerStore: any, toastStore: any) {
 		const settings: DrawerSettings = {
 			id: 'auth',
 			position: 'bottom',
 			height: 'h-[50%]',
-			meta: { state }
+			meta: {
+				state: new StateOverlay({
+					dataObjName,
+					drawerStore,
+					queryType: TokenApiQueryType.new,
+					toastStore
+				})
+			}
 		}
-		state.messageDrawer.open(settings)
+		drawerStore.open(settings)
 	}
 }
 

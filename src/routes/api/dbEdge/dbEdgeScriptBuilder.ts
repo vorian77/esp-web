@@ -347,10 +347,20 @@ class DataObjTableAction {
 
 		// root table and native fields
 		fields.forEach((f) => {
+			if (f.name === 'parent') {
+				console.log('field.parent:', f)
+			}
+			if (f.isSelfReference) {
+				console.log('field.selfReference:', f)
+			}
+
 			const expr = f?.link?.exprSave ? f.link.exprSave : ''
 			let value = expr ? `${getValExpr(expr, data)}` : getValSave(f, data)
-			if (f.isSelfReference) value = 'DETACHED ' + value
+
+			value = (f.isSelfReference && value !== '{}' ? 'DETACHED ' : '') + value
+
 			const item = f.name + ' := ' + value
+
 			script.addItemField(item)
 		})
 		return script

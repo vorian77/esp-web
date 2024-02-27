@@ -50,6 +50,8 @@ module app_cm {
     required client: app_cm::CmClient;
     required serviceFlow: app_cm::CmServiceFlow;
     required codeStatus: sys_core::SysCode;
+    codeReferralType: sys_core::SysCode;
+    codeReferralEndType: sys_core::SysCode;
     required dateReferral: cal::local_date;
     dateStartEst: cal::local_date;
     dateStart: cal::local_date;

@@ -49,7 +49,7 @@
 		;(async () => {
 			await initNavTree(user)
 		})()
-		state = new State(stateUpdate, drawerStore, modalStore, toastStore, user)
+		state = new State({ drawerStore, modalStore, toastStore, updateFunction: stateUpdate, user })
 		launchApp = false
 	}
 	$: {

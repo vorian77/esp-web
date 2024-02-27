@@ -1,7 +1,7 @@
 import { createClient } from 'edgedb'
 import e from '$lib/dbschema/edgeql-js'
 import { EDGEDB_INSTANCE, EDGEDB_SECRET_KEY } from '$env/static/private'
-import { booleanOrFalse } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { booleanOrFalse, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 
 const client = createClient({
 	instanceName: EDGEDB_INSTANCE,
@@ -84,7 +84,7 @@ export async function addCodeType(data: any) {
 }
 
 export async function addColumn(data: any) {
-	console.log('addColumn.name:', data.name)
+	sectionHeader(`addColumn - ${data.name}`)
 	const query = e.params(
 		{
 			classValue: e.optional(e.str),
@@ -154,7 +154,8 @@ export async function addColumn(data: any) {
 }
 
 export async function addDataObj(data: any) {
-	console.log('addDataObj.name:', data.name)
+	sectionHeader(`addDataObj - ${data.name}`)
+
 	let orderTables = 1
 	const actionsQuery = data.actionsQuery && data.actionsQuery.length > 0 ? data.actionsQuery : []
 
@@ -302,6 +303,7 @@ export async function addDataObj(data: any) {
 }
 
 export async function addDataObjAction(data: any) {
+	sectionHeader(`addDataObjAction - ${data.name}`)
 	const query = e.params(
 		{
 			allTabs: e.optional(e.bool),
@@ -328,6 +330,7 @@ export async function addDataObjAction(data: any) {
 }
 
 export async function addDataObjFieldItems(data: any) {
+	sectionHeader(`addDataObjFieldItems - ${data.name}`)
 	const query = e.params(
 		{
 			codeDataTypeDisplay: e.optional(e.str),
@@ -352,6 +355,7 @@ export async function addDataObjFieldItems(data: any) {
 }
 
 export async function addNodeFooter(data: any) {
+	sectionHeader(`addNodeFooter - ${data.name}`)
 	const query = e.params(
 		{
 			codeIcon: e.str,
@@ -382,6 +386,7 @@ export async function addNodeFooter(data: any) {
 }
 
 export async function addNodeProgramObj(data: any) {
+	sectionHeader(`addNodeProgramObj - ${data.name}`)
 	const query = e.params(
 		{
 			codeIcon: e.str,
@@ -430,15 +435,13 @@ export async function addOrg(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addDataObjFieldChips(data: any) {
-	console.log('addDataObjFieldChips.name:', data.name)
+export async function addDataObjFieldListChips(data: any) {
+	sectionHeader(`addDataObjFieldListChips - ${data.name}`)
 	const query = e.params(
 		{
 			btnLabelComplete: e.str,
 			columnLabelDisplay: e.str,
 			dataObj: e.str,
-			header: e.str,
-			headerSub: e.optional(e.str),
 			isMultiSelect: e.bool,
 			name: e.str,
 			owner: e.str
@@ -449,8 +452,32 @@ export async function addDataObjFieldChips(data: any) {
 				columnLabelDisplay: p.columnLabelDisplay,
 				createdBy: e.select(e.sys_user.getRootUser()),
 				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
-				header: p.header,
-				headerSub: p.headerSub,
+				isMultiSelect: p.isMultiSelect,
+				modifiedBy: e.select(e.sys_user.getRootUser()),
+				name: p.name,
+				owner: e.select(e.sys_core.getEnt(p.owner))
+			})
+		}
+	)
+	return await query.run(client, data)
+}
+
+export async function addDataObjFieldListSelect(data: any) {
+	sectionHeader(`addDataObjFieldListSelect - ${data.name}`)
+
+	const query = e.params(
+		{
+			btnLabelComplete: e.str,
+			dataObj: e.str,
+			isMultiSelect: e.bool,
+			name: e.str,
+			owner: e.str
+		},
+		(p) => {
+			return e.insert(e.sys_core.SysDataObjFieldListSelect, {
+				btnLabelComplete: p.btnLabelComplete,
+				createdBy: e.select(e.sys_user.getRootUser()),
+				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
 				isMultiSelect: p.isMultiSelect,
 				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,
@@ -462,6 +489,7 @@ export async function addDataObjFieldChips(data: any) {
 }
 
 export async function addUser(data: any) {
+	sectionHeader(`addUser - ${data.userName}`)
 	const CREATOR = e.select(e.sys_user.getRootUser())
 	const query = e.params(
 		{
@@ -489,6 +517,7 @@ export async function addUser(data: any) {
 }
 
 export async function addUserOrg(data: any) {
+	sectionHeader(`addUser - ${data.userName} - org: ${data.orgName}`)
 	const query = e.params(
 		{
 			orgName: e.str,

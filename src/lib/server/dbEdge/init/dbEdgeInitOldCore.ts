@@ -193,7 +193,9 @@ async function initSysCodes() {
 
 		// data obj field - element
 		['ct_sys_do_field_element', 'app_sys', 'checkbox', 0],
-		['ct_sys_do_field_element', 'app_sys', 'chips', 0],
+		['ct_sys_do_field_element', 'app_sys', 'listChips', 0],
+		['ct_sys_do_field_element', 'app_sys', 'listConfig', 0],
+		['ct_sys_do_field_element', 'app_sys', 'listSelect', 0],
 		['ct_sys_do_field_element', 'app_sys', 'custom', 0],
 		['ct_sys_do_field_element', 'app_sys', 'date', 0],
 		['ct_sys_do_field_element', 'app_sys', 'email', 0],

@@ -21,6 +21,7 @@
 	import FormElToggle from '$comps/form/FormElToggle.svelte'
 	import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 	import { FieldListChips } from '$comps/form/fieldListChips'
+	import { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { FieldCustom } from '$comps/form/fieldCustom'
 	import { FieldFile } from '$comps/form/fieldFile'
 	import { FieldInput } from '$comps/form/fieldInput'
@@ -29,6 +30,7 @@
 	import { FieldTextarea } from '$comps/form/fieldTextarea'
 	import { FieldToggle } from '$comps/form/fieldToggle'
 	import DataViewer from '$comps/DataViewer.svelte'
+	import FormElListSelect from './FormElListSelect.svelte'
 
 	const FILENAME = '$comps/form/FormDetail.svelte'
 	const FORM_NAME = ''
@@ -81,7 +83,7 @@
 			dataObj.fields[index].validity = validity
 		})
 		state.objValidToSave = dataObj.fields.every(
-			({ validity }) => validity.error == ValidityError.none
+			({ validity }) => validity.error === ValidityError.none
 		)
 	}
 </script>
@@ -110,6 +112,8 @@
 						<FormElInpRadio {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldListChips}
 						<FormElListChips {field} on:changeItem={onChangeItem} />
+					{:else if field instanceof FieldListSelect}
+						<FormElListSelect {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldSelect}
 						<FormElSelect {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldTextarea}

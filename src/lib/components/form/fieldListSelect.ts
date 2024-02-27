@@ -2,15 +2,12 @@ import { Field, FieldAccess, FieldItem, type FieldRaw } from '$comps/form/field'
 import { Validation, ValidationStatus } from '$comps/types'
 import { booleanOrFalse, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 
-export class FieldListChips extends Field {
+export class FieldListSelect extends Field {
 	btnLabelComplete?: string
-	columnLabelDisplay: string
 	dataObjName: string
 	isMultiSelect: boolean
-	valuesRaw: FieldListChipValues = []
-	valuesSelected: FieldListChipValues = []
 	constructor(obj: FieldRaw, index: number) {
-		const clazz = 'FieldListChips'
+		const clazz = 'FieldListSelect'
 		super(obj, index)
 		this.access = FieldAccess.optional
 		this.btnLabelComplete = strOptional(
@@ -18,17 +15,8 @@ export class FieldListChips extends Field {
 			clazz,
 			'btnLabelComplete'
 		)
-		this.columnLabelDisplay = strRequired(
-			obj._fieldListChips.columnLabelDisplay,
-			clazz,
-			'columnLabelDisplay'
-		)
 		this.dataObjName = strRequired(obj._fieldListChips._dataObjName, clazz, 'dataObjName')
 		this.isMultiSelect = booleanOrFalse(obj._fieldListChips.isMultiSelect, 'isMultiSelect')
-	}
-	setSelected(rows: Array<Record<string, any>>) {
-		this.valuesSelected = rows.map((row) => ({ id: row.id, value: row[this.columnLabelDisplay] }))
-		this.valueCurrent = rows.map((row) => row.id)
 	}
 	validate(dataValue: any): Validation {
 		const v = super.validate(dataValue)
@@ -38,5 +26,3 @@ export class FieldListChips extends Field {
 		return this.fieldValid(this.index)
 	}
 }
-
-export type FieldListChipValues = Array<{ id: string; value: any }>

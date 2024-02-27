@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import {
+		State,
+		StateOverlayModal,
+		StatePacket,
+		StatePacketComponent
+	} from '$comps/nav/types.appState'
 	import { TokenAppDoAction, TokenAppDoList } from '$comps/types.token'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
@@ -14,33 +19,32 @@
 
 	let scrollToTop = () => {}
 
-	const DATA_FIELD = 'data'
+	const DATA_FIELD = 'id'
 
 	const handler = new DataHandler([])
 	const rows = handler.getRows()
 	const selected = handler.getSelected()
 	const isAllSelected = handler.isAllSelected()
-	const isSelect = state.fieldListChips !== undefined
 
-	if (isSelect && state.fieldListChips) {
-		state.fieldListChips.itemsSelected.forEach((i) => handler.select(i))
+	if (state instanceof StateOverlayModal) {
+		state.selectedIds.forEach((i) => handler.select(i))
 	}
-
-	type DataRow = Record<string, any>
 
 	$: {
 		dataObj.objData = dataObjData
-		// console.log('FormList.count:', dataObj.dataListRecord.length)
 		handler.clearSearch()
 		handler.clearFilters()
 		handler.setRows(dataObj.dataListRecord)
 		handler.setPage(1)
 		sortList()
 	}
-	$: if (state.fieldListChips) state.fieldListChips.setSelected($selected)
+	$: if (state instanceof StateOverlayModal) {
+		state.setSelected($rows.filter((r: any) => $selected.includes(r.id)))
+		console.log('FormList.select:', state.selectedRows)
+	}
 
 	function sortList() {
-		// apply sort items backwards
+		// apply sort items in reverse order
 		handler.clearSort()
 		for (let i = dataObj.orderItems.length - 1; i >= 0; i--) {
 			handler.applySort({
@@ -73,7 +77,7 @@
 		<table>
 			<thead>
 				<tr>
-					{#if isSelect}
+					{#if state instanceof StateOverlayModal}
 						<th class="selection">
 							<input
 								type="checkbox"
@@ -91,7 +95,7 @@
 					{/if}
 				</tr>
 				<tr>
-					{#if isSelect}
+					{#if state instanceof StateOverlayModal}
 						<th class="selection" />
 					{/if}
 					{#if dataObj.fields}
@@ -111,7 +115,7 @@
 							on:click={async () => await onClick(row)}
 							on:keyup={async () => await onClick(row)}
 						>
-							{#if isSelect}
+							{#if state instanceof StateOverlayModal}
 								<td class="selection">
 									<input
 										type="checkbox"
@@ -136,8 +140,8 @@
 
 <!-- <DataViewer header="sort" data={sort} /> -->
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->
-<!-- <DataViewer header="$selected" data={state?.overlayNode?.selected} /> -->
-<!-- <DataViewer header="isSelect" data={isSelect} /> -->
+<!-- <DataViewer header="isSelect" data={state instanceof StateOverlayModal} />
+<DataViewer header="$selected" data={$selected} /> -->
 
 <style>
 	thead {

@@ -1,9 +1,13 @@
-import { ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { codeTypes, codes, ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { addColumn, addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import init from './dbEdgeInit2DOSysAuth'
 
 export async function initFeatCMStudent() {
 	sectionHeader('DataObject - CM-Student')
 	await reset()
+	// await initCodes()
+	// await initColumns()
+
 	await initCMStudent()
 	await initStudentCsf()
 	await initStudentCsfCohort()
@@ -24,7 +28,51 @@ async function reset() {
 	reset.delFeature('cm_client_service_flow')
 	reset.delFeature('cm_student')
 
+	// // columns
+	// reset.delColumn('codeReferralEndType')
+	// reset.delColumn('codeReferralType')
+
+	// // code types/codes
+	// reset.delCodeType('ct_cm_service_flow_type')
+	// reset.delCodeType('ct_cm_service_flow_end_type')
+
 	await reset.execute()
+}
+
+async function initCodes() {
+	await codeTypes([
+		['app_cm', 0, 'ct_cm_service_flow_type'],
+		['app_cm', 0, 'ct_cm_service_flow_end_type']
+	])
+
+	await codes([
+		// ct_cm_service_flow_type
+		['ct_cm_service_flow_type', 'app_cm', 'From Administrator', 0],
+		['ct_cm_service_flow_type', 'app_cm', 'From School', 0],
+		['ct_cm_service_flow_type', 'app_cm', 'Walk-in', 0],
+		['ct_cm_service_flow_type', 'app_cm', 'Our World', 0],
+
+		// ct_cm_service_flow_end_type
+		['ct_cm_service_flow_end_type', 'app_cm', 'Completed', 0],
+		['ct_cm_service_flow_end_type', 'app_cm', 'Dropped Out', 0],
+		['ct_cm_service_flow_end_type', 'app_cm', 'Suspended', 0],
+		['ct_cm_service_flow_end_type', 'app_cm', 'Unappointed', 0]
+	])
+}
+
+async function initColumns() {
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Referral End Type',
+		name: 'codeReferralEndType',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Referral Type',
+		name: 'codeReferralType',
+		owner: 'app_sys'
+	})
 }
 
 async function initCMStudent() {
@@ -421,6 +469,15 @@ async function initStudentCsf() {
 		fields: [
 			{
 				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 5,
+				indexTable: '0',
+				isDbFilter: true,
+				isDisplay: false,
+				isDisplayable: true
+			},
+			{
+				codeAccess: 'readOnly',
 				columnName: 'client',
 				dbOrderSelect: 10,
 				indexTable: '0',
@@ -439,31 +496,34 @@ async function initStudentCsf() {
 				link: { table: { module: 'app_cm', name: 'CmServiceFlow' } }
 			},
 			{
-				codeElement: 'date',
-				columnName: 'dateReferral',
-				dbOrderSelect: 25,
-				indexTable: '0'
-			},
-			{
+				codeAccess: 'readOnly',
 				codeElement: 'select',
 				columnName: 'codeStatus',
-				dbOrderSelect: 30,
+				dbOrderSelect: 25,
 				indexTable: '0',
 				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
 				fieldListItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
 				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
-				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'codeReferralType',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldListItemsParms: { codeTypeName: 'ct_cm_service_flow_type' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
 				codeElement: 'date',
-				columnName: 'dateStartEst',
+				columnName: 'dateReferral',
 				dbOrderSelect: 40,
 				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
-				columnName: 'dateStart',
+				columnName: 'dateStartEst',
 				dbOrderSelect: 50,
 				indexTable: '0'
 			},
@@ -477,51 +537,59 @@ async function initStudentCsf() {
 			{
 				codeAccess: 'optional',
 				codeElement: 'date',
-				columnName: 'dateEnd',
+				columnName: 'dateStart',
 				dbOrderSelect: 70,
 				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
-				codeElement: 'textArea',
-				columnName: 'note',
+				codeElement: 'date',
+				columnName: 'dateEnd',
 				dbOrderSelect: 80,
 				indexTable: '0'
 			},
 			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 180,
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'codeReferralEndType',
+				dbOrderSelect: 90,
 				indexTable: '0',
-				isDbFilter: true,
-				isDisplay: false,
-				isDisplayable: true
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldListItemsParms: { codeTypeName: 'ct_cm_service_flow_end_type' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'note',
+				dbOrderSelect: 100,
+				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdAt',
-				dbOrderSelect: 190,
+				dbOrderSelect: 300,
 				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'createdBy',
-				dbOrderSelect: 200,
+				dbOrderSelect: 310,
 				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedAt',
-				dbOrderSelect: 210,
+				dbOrderSelect: 320,
 				indexTable: '0',
 				isDisplay: true
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'modifiedBy',
-				dbOrderSelect: 220,
+				dbOrderSelect: 330,
 				indexTable: '0',
 				isDisplay: true
 			}
@@ -653,15 +721,15 @@ async function initStudentCsfCohort() {
 				fieldListItems: 'il_cm_cohort_by_userName',
 				link: { table: { module: 'app_cm', name: 'CmCohort' } }
 			},
-			{
-				codeElement: 'select',
-				columnName: 'codeStatus',
-				dbOrderSelect: 40,
-				indexTable: '0',
-				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldListItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
-				link: { table: { module: 'sys_core', name: 'SysCode' } }
-			},
+			// {
+			// 	codeElement: 'select',
+			// 	columnName: 'codeStatus',
+			// 	dbOrderSelect: 40,
+			// 	indexTable: '0',
+			// 	fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+			// 	fieldListItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
+			// 	link: { table: { module: 'sys_core', name: 'SysCode' } }
+			// },
 			{
 				codeElement: 'date',
 				columnName: 'dateStart',

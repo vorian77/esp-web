@@ -18,6 +18,7 @@ import {
 import { type Field, FieldAccess, FieldElement, type FieldRaw } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 import { FieldListChips } from '$comps/form/fieldListChips'
+import { FieldListSelect } from '$comps/form/fieldListSelect'
 import {
 	FieldCustomAction,
 	FieldCustomActionButton,
@@ -103,6 +104,7 @@ export class DataObj {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
+		await loadFieldListChips(dataObj.fields)
 		await loadFieldListItems(dataObj.fields)
 		return dataObj
 
@@ -121,10 +123,12 @@ export class DataObj {
 				if (field instanceof FieldListChips) {
 					const result = await queryExecute(
 						{ dataObjName: field.dataObjName },
-						TokenApiQueryType.dataObj,
+						TokenApiQueryType.retrieve,
 						queryData
 					)
-					// field.dataObj = result.data
+					if (field instanceof FieldListChips) {
+						field.valuesRaw = result.data.dataObjData.dataObjRowList.map((d: any) => d.record)
+					}
 				}
 			}
 		}
@@ -265,8 +269,12 @@ export class DataObj {
 					newField = new FieldCheckbox(fieldRaw, index)
 					break
 
-				case FieldElement.chips:
+				case FieldElement.listChips:
 					newField = new FieldListChips(fieldRaw, index)
+					break
+
+				case FieldElement.listSelect:
+					newField = new FieldListSelect(fieldRaw, index)
 					break
 
 				case FieldElement.custom:
@@ -341,21 +349,23 @@ export class DataObj {
 		this.fields.forEach((f) => {
 			if (f.isDisplayable && f.isDisplay && f.access !== FieldAccess.readonly) {
 				fieldValid = true
-				if (f.valueCurrent) {
-					const v: Validation = f.validate(f.valueCurrent)
-					if (v.status == ValidationStatus.invalid) {
-						formStatus = ValidationStatus.invalid
-						fieldValid = false
-						f.validity = v.validityFields[0].validity
-					}
-				} else {
-					f.setHasChanged(f.valueCurrent)
-					if (f.access === FieldAccess.required) {
-						// required field/no value
-						formStatus = ValidationStatus.invalid
-						fieldValid = false
-						const v = f.fieldMissingData(f.index)
-						f.validity = new Validity(ValidityError.missingData, ValidityErrorLevel.silent)
+				if (f.valueCurrent !== 0) {
+					if (f.valueCurrent) {
+						const v: Validation = f.validate(f.valueCurrent)
+						if (v.status == ValidationStatus.invalid) {
+							formStatus = ValidationStatus.invalid
+							fieldValid = false
+							f.validity = v.validityFields[0].validity
+						}
+					} else {
+						f.setHasChanged(f.valueCurrent)
+						if (f.access === FieldAccess.required) {
+							// required field/no value
+							formStatus = ValidationStatus.invalid
+							fieldValid = false
+							const v = f.fieldMissingData(f.index)
+							f.validity = new Validity(ValidityError.missingData, ValidityErrorLevel.silent)
+						}
 					}
 				}
 				if (fieldValid) f.validity = new Validity()

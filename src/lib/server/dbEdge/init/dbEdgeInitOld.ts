@@ -2,9 +2,9 @@ import { ResetDb } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { review } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 import initCore from '$server/dbEdge/init/dbEdgeInitOldCore'
 import initSysAuth from '$server/dbEdge/init/dbEdgeInit2DOSysAuth'
-import initSysAdmin from '$server/dbEdge/init/dbEdgeInit0FeatysAdmin'
-import initCMStudent from '$server/dbEdge/init/dbEdgeInit0FeatStudent'
-import initCMTraining from '$server/dbEdge/init/dbEdgeInit2DOCMTraining'
+// import initSysAdmin from '$server/dbEdge/init/dbEdgeInit0FeatysAdmin'
+// import initCMStudent from '$server/dbEdge/init/dbEdgeInit0FeatStudent'
+// import initCMTraining from '$server/dbEdge/init/dbEdgeInit2DOCMTraining'
 import initCMDataAI from '$server/dbEdge/init/dbEdgeInitOldCMDataAI'
 import initCMDataMOED from '$server/dbEdge/init/dbEdgeInitOldCMDataMOED'
 import { getDataObjByName, queryMultiple, querySingle } from '$routes/api/dbEdge/types.dbEdge'
@@ -18,8 +18,8 @@ export async function init() {
 		await reset()
 		await initCore()
 		await initSysAuth()
-		await initCMTraining()
-		await initCMStudent()
+		// await initCMTraining()
+		// await initCMStudent()
 		await initCMDataAI()
 		// await initCMDataMOED()
 		// await reviewDO()
