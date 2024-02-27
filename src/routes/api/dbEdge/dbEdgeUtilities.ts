@@ -104,8 +104,6 @@ export async function getDataObjById(dataObjId: string) {
 					btnLabelComplete: true,
 					columnLabelDisplay: true,
 					_dataObjName: i.dataObj.name,
-					header: true,
-					headerSub: true,
 					isMultiSelect: true,
 					name: true
 				})),
@@ -198,6 +196,7 @@ export async function getDataObjById(dataObjId: string) {
 				_codeDataType: f.column.codeDataType.name,
 				_codeDbDataSource: f.codeDbDataSource.name,
 				_isMultiSelect: f.column.isMultiSelect,
+				_isSelfReference: f.column.isSelfReference,
 				_name: f.column.name,
 				dbDataSourceKey: true,
 				hasItems: e.op(
