@@ -496,6 +496,32 @@ export async function addDataObjFieldListConfig(data: any) {
 	return await query.run(client, data)
 }
 
+export async function addDataObjFieldListSelect(data: any) {
+	sectionHeader(`addDataObjFieldListSelect - ${data.name}`)
+
+	const query = e.params(
+		{
+			btnLabelComplete: e.str,
+			dataObj: e.str,
+			isMultiSelect: e.bool,
+			name: e.str,
+			owner: e.str
+		},
+		(p) => {
+			return e.insert(e.sys_core.SysDataObjFieldListSelect, {
+				btnLabelComplete: p.btnLabelComplete,
+				createdBy: e.select(e.sys_user.getRootUser()),
+				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
+				isMultiSelect: p.isMultiSelect,
+				modifiedBy: e.select(e.sys_user.getRootUser()),
+				name: p.name,
+				owner: e.select(e.sys_core.getEnt(p.owner))
+			})
+		}
+	)
+	return await query.run(client, data)
+}
+
 export async function addUser(data: any) {
 	sectionHeader(`addUser - ${data.userName}`)
 	const CREATOR = e.select(e.sys_user.getRootUser())

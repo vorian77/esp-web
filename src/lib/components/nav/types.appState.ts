@@ -1,5 +1,12 @@
 import { booleanOrFalse, required, strOptional, strRequired, valueOrDefault } from '$utils/utils'
-import { DataObjData, initNavTree, NodeType, User, userInit } from '$comps/types'
+import {
+	DataObjCardinality,
+	DataObjData,
+	initNavTree,
+	NodeType,
+	User,
+	userInit
+} from '$comps/types'
 import { SurfaceType } from '$comps/types.master'
 import {
 	Token,
@@ -81,7 +88,7 @@ export class StateObj extends State {
 	constructor(obj: any) {
 		const clazz = 'StateObj'
 		super(obj)
-		this.dataObjData = valueOrDefault(obj.dataObjData, {})
+		this.dataObjData = valueOrDefault(obj.dataObjData, new DataObjData(DataObjCardinality.detail))
 		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
 
