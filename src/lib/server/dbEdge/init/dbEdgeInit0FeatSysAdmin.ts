@@ -4,12 +4,12 @@ import {
 	userTypeResourcesPrograms
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import {
+	addColumn,
 	addDataObj,
 	addDataObjFieldListChips,
 	addDataObjFieldListSelect,
 	addNodeProgramObj
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
-import init from './dbEdgeInit2DOSysAuth'
 
 export async function initFeatSysAdmin() {
 	sectionHeader('DataObject - SysAdmin')
@@ -18,6 +18,7 @@ export async function initFeatSysAdmin() {
 }
 
 async function initFeatures() {
+	await initColumns()
 	await initApp()
 	await initCodeType()
 	await initCode()
@@ -59,7 +60,83 @@ async function reset() {
 	reset.delFieldChips('field_list_chips_sys_column')
 	reset.delFieldSelect('field_list_select_sys_column')
 
+	reset.delColumn('actionsField')
+	reset.delColumn('actionsQuery')
+	reset.delColumn('codeCardinality')
+	reset.delColumn('codeComponent')
+	reset.delColumn('exprFilter')
+	reset.delColumn('exprObject')
+	reset.delColumn('isPopup')
+	reset.delColumn('subHeader')
+	reset.delColumn('tables')
+	reset.delColumn('toggleValueShow')
+
 	await reset.execute()
+}
+
+async function initColumns() {
+	sectionHeader('Columns')
+
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Actions - Field',
+		name: 'actionsField',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Actions - Query',
+		name: 'actionsQuery',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Cardinality',
+		name: 'codeCardinality',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Component',
+		name: 'codeComponent',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'str',
+		header: 'Expression - Filter',
+		name: 'exprFilter',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'str',
+		header: 'Expression - Object',
+		name: 'exprObject',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'bool',
+		header: 'Popup',
+		name: 'isPopup',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'str',
+		header: 'Sub-Header',
+		name: 'subHeader',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Tables',
+		name: 'tables',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'bool',
+		header: 'Toggle Value-Show',
+		name: 'toggleValueShow'
+	})
 }
 
 async function initApp() {
@@ -799,13 +876,13 @@ async function initColumn() {
 			},
 			{
 				codeAccess: 'optional',
-				columnName: 'toggleLabelTrue',
+				columnName: 'toggleValueTrue',
 				dbOrderSelect: 310,
 				indexTable: '0'
 			},
 			{
 				codeAccess: 'optional',
-				columnName: 'toggleLabelFalse',
+				columnName: 'toggleValueFalse',
 				dbOrderSelect: 320,
 				indexTable: '0'
 			},
@@ -922,6 +999,63 @@ async function initDataObj() {
 				columnName: 'name',
 				dbOrderCrumb: 10,
 				dbOrderSelect: 20,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'header',
+				dbOrderSelect: 30,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'subHeader',
+				dbOrderSelect: 35,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'description',
+				dbOrderSelect: 40,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeCardinality',
+				dbOrderSelect: 50,
+				indexTable: '0',
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldListItemsParms: { codeTypeName: 'ct_sys_do_cardinality' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
+				codeElement: 'select',
+				columnName: 'codeComponent',
+				dbOrderSelect: 60,
+				indexTable: '0',
+				fieldListItems: 'il_sys_code_order_name_by_codeType_name',
+				fieldListItemsParms: { codeTypeName: 'ct_sys_do_component' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'exprFilter',
+				dbOrderSelect: 70,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'textArea',
+				columnName: 'exprObject',
+				dbOrderSelect: 80,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'isPopup',
+				dbOrderSelect: 90,
 				indexTable: '0'
 			},
 			{
@@ -1851,11 +1985,19 @@ async function initTable() {
 				dbOrderSelect: 20,
 				indexTable: '0'
 			},
+			// {
+			// 	codeElement: 'listChips',
+			// 	columnName: 'columns',
+			// 	dbOrderSelect: 25,
+			// 	fieldListChips: 'field_list_chips_sys_column',
+			// 	indexTable: '0',
+			// 	link: { table: { module: 'sys_db', name: 'SysColumn' } }
+			// },
 			{
-				codeElement: 'listChips',
+				codeElement: 'listSelect',
 				columnName: 'columns',
 				dbOrderSelect: 30,
-				fieldListChips: 'field_list_chips_sys_column',
+				fieldListSelect: 'field_list_select_sys_column',
 				indexTable: '0',
 				link: { table: { module: 'sys_db', name: 'SysColumn' } }
 			},

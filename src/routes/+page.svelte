@@ -5,7 +5,8 @@
 	import { userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiQueryType, TokenApiUserName } from '$comps/types.token'
-	import { StateOverlay } from '$comps/nav/types.appState'
+	import { StateObj } from '$comps/nav/types.appState'
+	import { SurfaceType } from '$comps/types.master'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -34,10 +35,12 @@
 			position: 'bottom',
 			height: 'h-[50%]',
 			meta: {
-				state: new StateOverlay({
+				state: new StateObj({
 					dataObjName,
 					drawerStore,
+					page: '/',
 					queryType: TokenApiQueryType.new,
+					surface: SurfaceType.overlay,
 					toastStore
 				})
 			}

@@ -1,18 +1,7 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte'
-	import FormList from '$comps/form/FormList.svelte'
 	import Form from '$comps/form/Form.svelte'
-	import { FieldListChips } from '$comps/form/fieldListChips'
-	import {
-		DataObj,
-		DataObjCardinality,
-		DataObjData,
-		DataObjRecordRow,
-		DataObjRecordStatus,
-		NodeType
-	} from '$comps/types'
-	import { SurfaceType } from '$comps/types.master'
-	import { StateOverlayModal, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { StateObjSelect } from '$comps/nav/types.appState'
 	import { getDrawerStore, getModalStore, getToastStore } from '@skeletonlabs/skeleton'
 
 	const FILENAME = '/$comps/overlay/OverlayModalItems.svelte'
@@ -22,7 +11,7 @@
 	const toastStore = getToastStore()
 
 	export let parent: SvelteComponent
-	let state: StateOverlayModal = $modalStore[0].meta.state
+	let state: StateObjSelect = $modalStore[0].meta.state
 
 	let btnLabelComplete = state.btnLabelComplete || 'Complete'
 

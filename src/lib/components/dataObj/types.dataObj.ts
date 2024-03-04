@@ -15,6 +15,7 @@ import {
 	ValidityErrorLevel,
 	ValidityField
 } from '$comps/types'
+import { State } from '$comps/nav/types.appState'
 import { type Field, FieldAccess, FieldElement, type FieldRaw } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 import { FieldListChips } from '$comps/form/fieldListChips'
@@ -34,7 +35,11 @@ import { FieldSelect } from '$comps/form/fieldSelect'
 import { FieldTextarea } from '$comps/form/fieldTextarea'
 import { FieldToggle } from '$comps/form/fieldToggle'
 import { ActionsQuery, ActionQuery, queryExecute } from '$comps/nav/types.appQuery'
-import { TokenApiQueryData, TokenApiQueryType } from '$comps/types.token'
+import {
+	TokenApiQueryData,
+	type TokenApiQueryDataValue,
+	TokenApiQueryType
+} from '$comps/types.token'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/dataObj/types.dataObj.ts'
@@ -100,7 +105,7 @@ export class DataObj {
 		})
 		return newActions
 	}
-	static async init(dataObjRaw: DataObjRaw, queryData: TokenApiQueryData) {
+	static async init(state: State, dataObjRaw: DataObjRaw, queryData: TokenApiQueryData) {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
@@ -135,7 +140,11 @@ export class DataObj {
 		async function loadFieldListItems(fields: Array<Field>) {
 			for (const field of fields) {
 				if (field.fieldListItems) {
-					queryData.replaceParms({ ...field.fieldListItems.parms, field })
+					queryData.parmsUpsert({
+						...field.fieldListItems.parms,
+						field,
+						programId: state.programId
+					})
 					const result = await queryExecute(
 						{ dataObjName: dataObj.name },
 						TokenApiQueryType.fieldItems,
@@ -429,6 +438,7 @@ export class DataObjData {
 	cardinality: DataObjCardinality
 	dataObjRow: DataObjRecordRow
 	dataObjRowList: DataObjRecordRowList = []
+	parms: TokenApiQueryDataValue = {}
 	constructor(cardinality: DataObjCardinality, data: any = undefined) {
 		const clazz = 'DataObjData'
 		this.cardinality = cardinality
@@ -442,6 +452,11 @@ export class DataObjData {
 			this.dataObjRowList = data
 			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {})
 		}
+	}
+	copy() {
+		return this.cardinality === DataObjCardinality.detail
+			? new DataObjData(this.cardinality, this.dataObjRow)
+			: new DataObjData(this.cardinality, this.dataObjRowList)
 	}
 	getData() {
 		return this.cardinality === DataObjCardinality.detail
@@ -464,6 +479,19 @@ export class DataObjData {
 			return new DataObjData(data.cardinality, data.dataObjRowList)
 		}
 	}
+	parmsUpsert(data: any) {
+		if (!data) return
+		Object.entries(data).forEach(([key, value]) => {
+			this.parms[key] = value
+		})
+	}
+	parmsValueGet(key: string) {
+		return Object.hasOwn(this.parms, key) ? this.parms[key] : undefined
+	}
+	parmsValueSet(key: string, value: any) {
+		this.parms[key] = value
+	}
+
 	setRecord(record: DataObjRecord) {
 		this.dataObjRow.record = record
 	}

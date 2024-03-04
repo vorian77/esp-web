@@ -240,15 +240,13 @@ function formatDataForDisplayScalar(value: any, codeDataTypeField: DataFieldData
 	}
 }
 
-async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData) {
-	log('getDataItems:')
-
-	const field: Field = queryData.parms.field
+export async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData) {
+	const field: Field = queryData.parmsValueGet('field')
 	if (field.items.length > 0) {
 		return field.items
 	} else if (field.fieldListItems) {
 		queryData = TokenApiQueryData.load(queryData)
-		queryData.replaceParms(field.fieldListItems.parms)
+		queryData.parmsUpsert(field.fieldListItems.parms)
 		const resultObj = await queryMultiple(
 			query.getScriptDataItems(field.fieldListItems.exprSelect, queryData)
 		)
@@ -256,7 +254,6 @@ async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData) {
 		for (const [key, value] of Object.entries(resultObj)) {
 			resultArray.push(value)
 		}
-
 		return resultArray
 	} else {
 		return []

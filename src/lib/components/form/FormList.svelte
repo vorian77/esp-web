@@ -1,10 +1,12 @@
 <script lang="ts">
 	import {
 		State,
-		StateOverlayModal,
+		StateObj,
+		StateObjSelect,
 		StatePacket,
 		StatePacketComponent
 	} from '$comps/nav/types.appState'
+	import { SurfaceType } from '$comps/types.master'
 	import { TokenAppDoAction, TokenAppDoList } from '$comps/types.token'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
@@ -21,12 +23,18 @@
 
 	const DATA_FIELD = 'id'
 
-	const handler = new DataHandler([])
+	const handler = new DataHandler([], { rowsPerPage: 100 })
 	const rows = handler.getRows()
 	const selected = handler.getSelected()
-	const isAllSelected = handler.isAllSelected()
 
-	if (state instanceof StateOverlayModal) {
+	const isAllSelected = handler.isAllSelected()
+	let isSelect = state instanceof StateObjSelect
+	let isSelectMulti = state instanceof StateObjSelect && state.isMultiSelect
+	let isSurfaceEmbedded = state.surface === SurfaceType.embedded
+	let isSurfaceOverlay = state.surface === SurfaceType.overlay
+	let isSurfacePage = state.surface === SurfaceType.page
+
+	if (state instanceof StateObjSelect) {
 		state.selectedIds.forEach((i) => handler.select(i))
 	}
 
@@ -38,9 +46,8 @@
 		handler.setPage(1)
 		sortList()
 	}
-	$: if (state instanceof StateOverlayModal) {
+	$: if (state instanceof StateObjSelect) {
 		state.setSelected($rows.filter((r: any) => $selected.includes(r.id)))
-		console.log('FormList.select:', state.selectedRows)
 	}
 
 	function sortList() {
@@ -68,24 +75,35 @@
 			})
 		})
 	}
+
+	function onSelect(id: string) {
+		if (isSelectMulti) {
+			handler.select(id)
+		} else {
+			$selected = [id]
+		}
+	}
 </script>
 
 <DataObjActionsHeader {state} {dataObj} on:formCancelled />
 
-<div id="content">
-	<Datatable {handler} pagination={false} rowsPerPage={false}>
+<div id={state.surface}>
+	<Datatable {handler} pagination={false} rowsPerPage={false} search={!isSurfaceEmbedded}>
 		<table>
 			<thead>
 				<tr>
-					{#if state instanceof StateOverlayModal}
+					{#if isSelect}
 						<th class="selection">
-							<input
-								type="checkbox"
-								on:click={() => handler.selectAll({ selectBy: DATA_FIELD })}
-								checked={$isAllSelected}
-							/>
+							{#if isSelectMulti}
+								<input
+									type="checkbox"
+									on:click={() => handler.selectAll({ selectBy: DATA_FIELD })}
+									checked={$isAllSelected}
+								/>
+							{/if}
 						</th>
 					{/if}
+
 					{#if dataObj.fields}
 						{#each dataObj.fields as field}
 							{#if field.isDisplayable && field.isDisplay}
@@ -95,7 +113,7 @@
 					{/if}
 				</tr>
 				<tr>
-					{#if state instanceof StateOverlayModal}
+					{#if isSelect}
 						<th class="selection" />
 					{/if}
 					{#if dataObj.fields}
@@ -115,11 +133,11 @@
 							on:click={async () => await onClick(row)}
 							on:keyup={async () => await onClick(row)}
 						>
-							{#if state instanceof StateOverlayModal}
+							{#if isSelect}
 								<td class="selection">
 									<input
 										type="checkbox"
-										on:click={() => handler.select(row[DATA_FIELD])}
+										on:click={() => onSelect(row[DATA_FIELD])}
 										checked={$selected.includes(row[DATA_FIELD])}
 									/>
 								</td>
@@ -138,10 +156,14 @@
 	</Datatable>
 </div>
 
-<!-- <DataViewer header="sort" data={sort} /> -->
+<!-- <DataViewer
+	header="surfaceType"
+	data={{ isSelectMulti, isSurfaceEmbedded, isSurfaceOverlay, isSurfacePage }}
+/> -->
+
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->
-<!-- <DataViewer header="isSelect" data={state instanceof StateOverlayModal} />
-<DataViewer header="$selected" data={$selected} /> -->
+<!-- <DataViewer header="isSelect" data={state instanceof StateOverlayModal} /> -->
+<!-- <DataViewer header="$selected" data={$selected} /> -->
 
 <style>
 	thead {
@@ -177,8 +199,17 @@
 	tr:nth-child(even) {
 		background-color: #97ed9e;
 	}
-	#content {
+	/* surface type */
+	#embedded {
+		max-height: 200px;
+		overflow: scroll;
+	}
+	#overlay {
 		height: 74vh;
+		overflow-y: auto;
+	}
+	#page {
+		max-height: 72vh;
 		overflow-y: auto;
 	}
 </style>

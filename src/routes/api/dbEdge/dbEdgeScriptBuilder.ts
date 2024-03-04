@@ -130,7 +130,7 @@ class DataObjTables {
 	}
 	queryScriptDelete(data: TokenApiQueryData) {
 		const rootTable = this.getDbTableRoot()
-		const rootFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).script
+		const rootFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
 		const script = `DELETE ${rootTable} ${rootFilter}`
 		logScript('delete', script)
 		return script
@@ -165,20 +165,20 @@ class DataObjTables {
 			const table = tableArray.pop()
 			if (table) {
 				scriptObj = this.getScriptTable(table, action, data)
-				prefix = scriptObj.concat(prefix, scriptObj.prefix, ',')
+				prefix = scriptObj.concatReturn(prefix, scriptObj.prefix, ',')
 
 				if (tableArray.length === 0 || (prevTable && table.index === prevTable.indexParent)) {
 					if (branch) scriptObj.addItemField(branch)
 					script = scriptObj.getScriptTable()
 					branch = script
 				} else {
-					branch = scriptObj.concat(branch, scriptObj.getScriptTable())
+					branch = scriptObj.concatReturn(branch, scriptObj.getScriptTable(), '')
 				}
 			}
 			prevTable = table
 		}
 
-		script = scriptObj.concat(prefix, script)
+		script = scriptObj.getScript()
 		logScript('save', script)
 		return script
 	}
@@ -191,7 +191,7 @@ class DataObjTables {
 	}
 
 	queryScriptSelect(querySelectItems: string, data: TokenApiQueryData) {
-		const queryFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).script
+		const queryFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
 		console.log('queryFilter:', queryFilter)
 		const queryOrder = this.queryScriptOrder()
 
@@ -208,10 +208,10 @@ class DataObjTables {
 		return this.queryScriptSelect(querySelectItems, data)
 	}
 	setDataRoot(data: TokenApiQueryData) {
-		data.setParmsValue('rootTable', this.getDbTableRoot())
-		data.setParmsValue(
+		data.parmsValueSet('rootTable', this.getDbTableRoot())
+		data.parmsValueSet(
 			'rootFilter',
-			this.getScriptTableRoot(DataObjTableActionType.filter, data).script
+			this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
 		)
 	}
 }
@@ -244,7 +244,6 @@ class DataObjTable {
 	}
 	getFieldNameRoot(separator: string = '.') {
 		if (!this.columnParent) return ''
-		// console.log('getFieldNameRoot.ancestors:', this.ancestors)
 		let ancestors = this.ancestors.join('.')
 		return ancestors ? ancestors + '.' + this.columnParent : this.columnParent
 	}
@@ -262,6 +261,12 @@ class DataObjTableAction {
 		const clazz = `DataObjTableAction (${action})`
 		this.query = query
 		this.table = table
+	}
+	getId(id: string) {
+		return `<uuid>'${id}'`
+	}
+	getIdZero() {
+		return this.getId('00000000-0000-0000-0000-000000000000')
 	}
 	getScript(data: TokenApiQueryData): DataObjTableScript {
 		return new DataObjTableScript()
@@ -397,19 +402,34 @@ class DataObjTableActionFilter extends DataObjTableAction {
 		this.fields = this.initList(DataFieldDataFilter, obj._fieldsDbFilter)
 	}
 	getScript(data: TokenApiQueryData) {
-		let script = ''
+		const script = new DataObjTableScript({ prefix: 'FILTER' })
 		let exprFilter = ''
+
+		console.log('DataObjTableActionFilter.getScript.parms:', {
+			programId: data.parmsValueGet('programId'),
+			filterInIds: data.parmsValueGet('filterInIds')
+		})
 
 		if (!this.query.exprFilter) {
 			exprFilter = `.id = <uuid,tree,id>`
 		} else if (this.query.exprFilter?.toLowerCase() !== 'none') {
 			exprFilter = this.query.exprFilter
 		}
-		if (exprFilter) script = getValExpr(exprFilter, data)
+		if (exprFilter) script.concatScript(getValExpr(exprFilter, data))
 
-		if (script) script = 'FILTER ' + script
+		const filterInIds = data.parmsValueGet('filterInIds')
+		if (filterInIds) {
+			const ids =
+				filterInIds.length > 0
+					? filterInIds.map((i: string) => this.getId(i)).toString()
+					: this.getIdZero()
+			script.concatScript(`.id in {${ids}}`)
+		}
 
-		return new DataObjTableScript({ script })
+		// const filterInIds = data.parmsValueGet('filterInIds')
+		// if (filterInIds) script.concatScript(`.id in {${filterInIds.toString()}}`)
+
+		return script
 	}
 }
 class DataObjTableActionOrder extends DataObjTableAction {
@@ -527,7 +547,7 @@ class DataObjTableScript {
 		this.script = Object.hasOwn(obj, 'script') ? obj.script : this.script
 	}
 	addItemField(item: string) {
-		this.itemsField = this.concat(this.itemsField, item, ', ')
+		this.itemsField = this.concatReturn(this.itemsField, item, ',')
 	}
 	addItemOrder(item: string, direction: string, order: number) {
 		if (this.exprOrder) return
@@ -542,25 +562,25 @@ class DataObjTableScript {
 		}
 		if (!inserted) this.itemsOrder.push(newItem)
 	}
-	concat(val1: string, val2: string, separator: string = '') {
-		if (val1 && val2) return val1 + separator + '\n' + val2
+	concat(val1: string, val2: string, separator: string = ' ') {
+		if (val1 && val2) return val1 + separator + val2
 		if (val1) return val1
 		if (val2) return val2
 		return ''
 	}
-	concatComma(val1: string, val2: string) {
-		return this.concat(val1, val2, ',')
-	}
-	concatExpr(val1: string, val2: string) {
-		return this.concat(val1, val2, ';')
-	}
 	concatItemsField(script: DataObjTableScript) {
-		this.itemsField = this.concatComma(this.itemsField, script.itemsField)
+		this.itemsField = this.concatReturn(this.itemsField, script.itemsField, ',')
 	}
 	concatItemsOrder(script: DataObjTableScript) {
 		script.itemsOrder.forEach((item) => {
 			this.addItemOrder(item.item, item.direction, item.order)
 		})
+	}
+	concatReturn(val1: string, val2: string, separator: string) {
+		return this.concat(val1, val2, separator + '\n')
+	}
+	concatScript(val: string) {
+		this.script = this.concatReturn(this.script, val, 'AND')
 	}
 	getPrefixUpdate(table: DataObjTable, data: TokenApiQueryData, prefixColumn: string) {
 		const rootTable = this.getRootTable(data)
@@ -572,13 +592,13 @@ class DataObjTableScript {
 		return '__' + table.getFieldNameRoot('_')
 	}
 	getRootFilter(data: TokenApiQueryData) {
-		return data.parms.rootFilter
+		return data.parmsValueGet('rootFilter')
 	}
 	getRootTable(data: TokenApiQueryData) {
-		return data.parms.rootTable
+		return data.parmsValueGet('rootTable')
 	}
 	getScript() {
-		return this.concat(this.prefix, this.script)
+		return this.script ? this.concat(this.prefix, this.script, ' ') : ''
 	}
 	getScriptOrder() {
 		if (this.exprOrder) return this.exprOrder
@@ -615,7 +635,11 @@ class DataObjTableScript {
 		const parentColumn = table.columnParent!
 		const subTable = table.table.getObject()
 		const prefixColumn = this.getPrefixColumnUpdate(table)
-		this.prefix = this.concatExpr(this.prefix, this.getPrefixUpdate(table, data, prefixColumn))
+		this.prefix = this.concatReturn(
+			this.prefix,
+			this.getPrefixUpdate(table, data, prefixColumn),
+			';'
+		)
 		this.script = `${parentColumn} := (UPDATE ${subTable} FILTER .id = ${prefixColumn} SET { ${this.itemsProxy} })`
 	}
 }

@@ -30,10 +30,9 @@ export async function query(
 	queryType: TokenApiQueryType,
 	app: App | undefined = undefined
 ) {
-	// console.log('types.appQuery.query', { tabData: tab.data, queryType })
 	const dataPre = { ...tab.data?.getData() }
 	let dataTree = queryDataPre(queryType, app)
-	const queryData = new TokenApiQueryData({ tree: dataTree })
+	const queryData = new TokenApiQueryData({ tree: dataTree, parms: tab.data?.parms })
 	let table = tab.getTable() // table will be undefined prior to retrieve
 
 	dataTree = await queryExecuteActions(
@@ -55,7 +54,7 @@ export async function query(
 	// successful
 	const resultData = DataObjData.loadData(result.data.dataObjData)
 	tab.dataObjRaw = result.data.dataObjRaw
-	tab.dataObj = await DataObj.init(result.data.dataObjRaw, queryData)
+	tab.dataObj = await DataObj.init(state, result.data.dataObjRaw, queryData)
 	tab.isRetrieved = true
 
 	if (tab.dataObj) {
@@ -109,6 +108,7 @@ function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undef
 					message: `No case defined for queryType: ${queryType}`
 				})
 		}
+
 		for (let i = 0; i < app.levels.length - offset; i++) {
 			const currTab = app.levels[i].getCurrTab()
 			const dataObj = currTab.dataObj

@@ -1,15 +1,18 @@
 <script lang="ts">
 	import type { FieldListChips, FieldListChipValues } from '$comps/form/fieldListChips'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { StateOverlayModal } from '$comps/nav/types.appState'
-	import { TokenApiQueryType } from '$comps/types.token'
+	import { StateObjSelect } from '$comps/nav/types.appState'
+	import { TokenApiDbDataObj, TokenApiQueryType } from '$comps/types.token'
+	import { type DataObjData } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
+	import { SurfaceType } from '$comps/types.master'
 
 	const dispatch = createEventDispatcher()
 
 	const modalStore = getModalStore()
 
 	export let field: FieldListChips
+	export let dataObjData: DataObjData
 
 	let selectedIds: string[] = []
 	let selectedValues: FieldListChipValues = []
@@ -27,13 +30,16 @@
 				type: 'component',
 				component: 'overlayModalForm',
 				meta: {
-					state: new StateOverlayModal({
+					state: new StateObjSelect({
 						btnLabelComplete: field.btnLabelComplete,
+						dataObjData,
 						dataObjName: field.dataObjName,
 						isMultiSelect: field.isMultiSelect,
 						modalStore,
+						page: '/',
 						queryType: TokenApiQueryType.retrieve,
-						selectedIds
+						selectedIds,
+						surface: SurfaceType.overlay
 					})
 				},
 				response: (r: any) => {

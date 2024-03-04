@@ -1,5 +1,5 @@
 import { booleanOrFalse, required, strOptional, strRequired, valueOrDefault } from '$utils/utils'
-import { initNavTree, NodeType, User, userInit } from '$comps/types'
+import { DataObjData, initNavTree, NodeType, User, userInit } from '$comps/types'
 import { SurfaceType } from '$comps/types.master'
 import {
 	Token,
@@ -20,7 +20,8 @@ export class State {
 	objValidToSave: boolean = true
 	packet: StatePacket | undefined
 	page: string = '/home'
-	surface: SurfaceType = SurfaceType.default
+	programId?: string
+	surface: SurfaceType = SurfaceType.page
 	toastStore: any
 	updateFunction?: Function
 	user: User | undefined = undefined
@@ -73,14 +74,14 @@ export class State {
 	}
 }
 
-export class StateOverlay extends State {
-	data: TokenApiDbDataObj
+export class StateObj extends State {
+	dataObjData: DataObjData
 	dataObjName: string
 	queryType: TokenApiQueryType
 	constructor(obj: any) {
-		const clazz = 'StateOverlay'
+		const clazz = 'StateObj'
 		super(obj)
-		this.data = new TokenApiDbDataObj(valueOrDefault(obj.data, {}))
+		this.dataObjData = valueOrDefault(obj.dataObjData, {})
 		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
 
@@ -90,22 +91,22 @@ export class StateOverlay extends State {
 			token: new TokenApiQuery(
 				this.queryType,
 				new TokenApiDbDataObj({ dataObjName: this.dataObjName }),
-				new TokenApiQueryData(this.data)
+				new TokenApiQueryData({ dataObjData: this.dataObjData })
 			)
 		})
-		this.page = '/'
-		this.surface = SurfaceType.overlay
+		this.page = obj.page ? obj.page : this.page
+		this.surface = obj.surface ? obj.surface : this.surface
 	}
 }
 
-export class StateOverlayModal extends StateOverlay {
+export class StateObjSelect extends StateObj {
 	btnLabelComplete?: string
 	isMultiSelect: boolean = false
 	recordSubmitted: Record<string, any> = {}
 	selectedIds: Array<string> = []
 	selectedRows: Array<Record<string, any>> = []
 	constructor(obj: any) {
-		const clazz = 'StateOverlayModal'
+		const clazz = 'StateObjSelect'
 		super(obj)
 		this.btnLabelComplete = strOptional(obj.btnLabelComplete, clazz, 'btnLabelComplete')
 		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')

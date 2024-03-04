@@ -40,8 +40,6 @@
 	export let dataObj: DataObj
 	export let dataObjData: DataObjData
 
-	let list: string[] = ['id', 'name', 'description', 'status', 'created_at', 'updated_at']
-
 	$: loadData(dataObjData)
 
 	function loadData(data: DataObjData) {
@@ -111,9 +109,9 @@
 					{:else if field instanceof FieldRadio}
 						<FormElInpRadio {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldListChips}
-						<FormElListChips {field} on:changeItem={onChangeItem} />
+						<FormElListChips {field} on:changeItem={onChangeItem} {dataObjData} />
 					{:else if field instanceof FieldListSelect}
-						<FormElListSelect {field} on:changeItem={onChangeItem} />
+						<FormElListSelect {state} {field} on:changeItem={onChangeItem} {dataObjData} />
 					{:else if field instanceof FieldSelect}
 						<FormElSelect {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldTextarea}

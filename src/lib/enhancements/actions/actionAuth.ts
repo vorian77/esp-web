@@ -1,4 +1,5 @@
-import { State, StateOverlay } from '$comps/nav/types.appState'
+import { State, StateObj } from '$comps/nav/types.appState'
+import { SurfaceType } from '$comps/types.master'
 import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
@@ -116,10 +117,12 @@ export default async function action(state: State, field: FieldCustomAction, dat
 			position: 'bottom',
 			height: 'h-[50%]',
 			meta: {
-				state: new StateOverlay({
+				state: new StateObj({
 					dataObjName,
 					drawerStore,
+					page: '/',
 					queryType: TokenApiQueryType.new,
+					surface: SurfaceType.overlay,
 					toastStore
 				})
 			}

@@ -79,7 +79,7 @@ async function config() {
 	})
 	await addColumn({
 		owner: 'app_sys',
-		codeDataType: 'bool',
+		codeDataType: 'str',
 		header: 'Share With Student',
 		name: 'isShareWithClient'
 	})

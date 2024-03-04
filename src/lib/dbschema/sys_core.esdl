@@ -55,13 +55,6 @@ module sys_core {
 
   type SysNodeObjFooter extending sys_core::SysNodeObj {}
 
-  type SysDataObjAction extending sys_core::SysObj {
-    allTabs: bool;
-    color: str;
-    required order: default::nonNegative;
-    constraint exclusive on (.name);
-  }
-
   type SysDataObj extending sys_core::SysObj {
     multi actionsField: sys_core::SysDataObjAction;
     actionsQuery: array<json>;
@@ -80,6 +73,13 @@ module sys_core {
     };
     constraint exclusive on (.name);
   } 
+
+  type SysDataObjAction extending sys_core::SysObj {
+    allTabs: bool;
+    color: str;
+    required order: default::nonNegative;
+    constraint exclusive on (.name);
+  }
   
   type SysDataObjColumn {
     required column: sys_db::SysColumn;
@@ -122,7 +122,7 @@ module sys_core {
     width: int16;
   }
 
- type SysDataObjFieldLink {
+  type SysDataObjFieldLink {
     codeDisplayDataType: sys_core::SysCode;
     codeDisplayMask: sys_core::SysCode;
     multi columnsDisplay: sys_db::SysColumn; 
@@ -147,13 +147,25 @@ module sys_core {
     required isMultiSelect: bool;
     constraint exclusive on (.name);
  }
+ 
+  type SysDataObjFieldListConfig extending sys_core::SysObj {
+    required btnLabelComplete: str;
+    required dataObjConfig: sys_core::SysDataObj {
+      on source delete delete target if orphan;
+    };
+    required dataObjDisplay: sys_core::SysDataObj {
+      on source delete delete target if orphan;
+    };
+    required isMultiSelect: bool;
+    constraint exclusive on (.name);
+  }
 
- type SysDataObjFieldListItems extending sys_core::SysObj {
+  type SysDataObjFieldListItems extending sys_core::SysObj {
     codeDataTypeDisplay: sys_core::SysCode;
     codeMask: sys_core::SysCode;
     required exprSelect: str;
     constraint exclusive on (.name);
- }
+  }
 
   type SysDataObjFieldListSelect extending sys_core::SysObj {
     required btnLabelComplete: str;
@@ -212,18 +224,18 @@ module sys_core {
     using (select assert_single((select sys_core::ObjRoot filter .name = '*ROOTOBJ*')));
 
   function getEnt(entName: str) -> optional sys_core::SysEnt
-      using (select sys_core::SysEnt filter .name = entName);
+    using (select sys_core::SysEnt filter .name = entName);
 
   function getCodeType(codeTypeName: str) -> optional sys_core::SysCodeType
     using (select sys_core::SysCodeType filter .name = codeTypeName);
 
   function getCode(codeTypeName: str,  codeName: str) -> optional sys_core::SysCode
-      using (select assert_single(sys_core::SysCode filter 
-        .codeType.name = codeTypeName and 
-        .name = codeName));
+    using (select assert_single(sys_core::SysCode filter 
+      .codeType.name = codeTypeName and 
+      .name = codeName));
 
   function getOrg(name: str) -> optional sys_core::SysOrg
-      using (select assert_single((select sys_core::SysOrg filter .name = name)));
+    using (select assert_single((select sys_core::SysOrg filter .name = name)));
 
   function getDataObj(dataObjName: str) -> optional sys_core::SysDataObj
     using (select sys_core::SysDataObj filter .name = dataObjName);        
@@ -237,6 +249,9 @@ module sys_core {
   function getDataObjFieldListItems(name: str) -> optional sys_core::SysDataObjFieldListItems
     using (select sys_core::SysDataObjFieldListItems filter .name = name);  
     
+  function getDataObjFieldListSelect(name: str) -> optional sys_core::SysDataObjFieldListSelect
+    using (select sys_core::SysDataObjFieldListSelect filter .name = name);
+  
   function getNodeObjByName(nodeObjName: str) -> optional sys_core::SysNodeObj
     using (select sys_core::SysNodeObj filter .name = nodeObjName);
 
@@ -245,7 +260,6 @@ module sys_core {
     
   function isObjectLink(objName: str, linkName: str) -> optional bool
     using (select count(schema::ObjectType filter .name = objName and .links.name = linkName) > 0);     
-
 
   # <temp> migrate itemsList to functions rather than raw selects
   # have to beable to return an array from a function

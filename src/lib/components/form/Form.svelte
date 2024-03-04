@@ -7,7 +7,7 @@
 		AppLevelTab
 	} from '$comps/nav/types.app'
 	import { query } from '$comps/nav/types.appQuery'
-	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { State, StateObj, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import {
 		TokenApiQuery,
 		TokenApiQueryType,
@@ -35,6 +35,10 @@
 	const FILENAME = '$comps/nav/NavApp.svelte'
 
 	export let state: State
+
+	if (state instanceof StateObj) {
+		console.log('Form.state:', state)
+	}
 
 	const comps: Record<string, any> = {
 		FormList: FormListApp,
@@ -194,7 +198,7 @@
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
 				if (token instanceof TokenAppTreeNode) {
-					app = await App.initNode(state, token.node)
+					app = await App.initNode(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
 				break
@@ -230,6 +234,7 @@
 				if (dataObjUpdate?.updateObj) dataObj = currTab.dataObj
 				if (dataObjUpdate?.updateObjData) {
 					state.statusReset()
+					state.programId = app.getProgramId()
 					dataObjData = currTab.data
 				}
 			}

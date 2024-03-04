@@ -10,7 +10,7 @@
 
 	let hidden = false
 	$: hidden =
-		state.surface === SurfaceType.default
+		state.surface === SurfaceType.page
 			? dataObj.actionsField.length === 0 || !state.objHasChanged
 			: true
 </script>

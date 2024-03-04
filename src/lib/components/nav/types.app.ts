@@ -13,6 +13,7 @@ import {
 	TokenApiQueryType,
 	TokenApiQuery,
 	TokenAppDoList,
+	TokenAppTreeNode,
 	TokenAppTreeNodeId,
 	TokenAppCrumbs,
 	TokenAppDoDetail
@@ -30,10 +31,13 @@ export class App {
 		this.levels.push(newLevel)
 	}
 	static async initDataObj(state: State, token: TokenApiQuery) {
-		return new App(await AppLevel.initDataObj(state, token))
+		const newApp = new App(await AppLevel.initDataObj(state, token))
+		console.log('types.app.initDataObj.newApp:', { newApp })
+		await query(state, newApp.getCurrTab(), token.queryType, newApp)
+		return newApp
 	}
-	static async initNode(state: State, node: Node) {
-		return new App(await AppLevel.initNode(state, new NodeApp(node)))
+	static async initNode(state: State, token: TokenAppTreeNode) {
+		return new App(await AppLevel.initNode(state, token))
 	}
 	async addLevel(state: State, queryType: TokenApiQueryType) {
 		const newLevelIdx = this.levels.length
@@ -81,6 +85,12 @@ export class App {
 	getCurrTabParent() {
 		return this.levels[this.levels.length - 2].getCurrTab()
 	}
+	getProgramId() {
+		for (let i = 0; i < this.levels.length; i++) {
+			if (this.levels[i].programId) return this.levels[i].programId
+		}
+		return undefined
+	}
 	getRowStatus() {
 		const parentLevel = this.levels.length - 2
 		if (parentLevel > -1) return this.levels[parentLevel].getCurrTab().listRowStatus()
@@ -121,19 +131,20 @@ export class App {
 
 export class AppLevel {
 	currTabIdx: number
+	programId?: string
 	tabs: Array<AppLevelTab> = []
 	tabSet: number = 0
-	private constructor(tabs: Array<AppLevelTab>) {
+	private constructor(tabs: Array<AppLevelTab>, programId: string | undefined = undefined) {
 		this.currTabIdx = 0
+		this.programId = programId
 		this.tabs = tabs
 	}
 	static async initDataObj(state: State, token: TokenApiQuery) {
-		const newLevel = new AppLevel([await AppLevelTab.initDataObj(token)])
-		await query(state, newLevel.getCurrTab(), token.queryType)
-		return newLevel
+		return new AppLevel([await AppLevelTab.initDataObj(token)])
 	}
-	static async initNode(state: State, node: NodeApp) {
-		const newLevel = new AppLevel([AppLevelTab.initNode(0, 0, node)])
+	static async initNode(state: State, token: TokenAppTreeNode) {
+		const nodeApp = new NodeApp(token.node)
+		const newLevel = new AppLevel([AppLevelTab.initNode(0, 0, nodeApp)], token.programId)
 		await query(state, newLevel.getCurrTab(), TokenApiQueryType.retrieve)
 		return newLevel
 	}
@@ -217,9 +228,11 @@ export class AppLevelTab {
 		levelIdx: number,
 		idx: number,
 		dataObjId: string,
+		data: DataObjData | undefined = undefined,
 		label: string = '',
 		nodeId: string = ''
 	) {
+		this.data = data
 		this.dataObjId = dataObjId
 		this.idx = idx
 		this.label = label
@@ -229,7 +242,7 @@ export class AppLevelTab {
 	static async initDataObj(token: TokenApiQuery) {
 		const result: ResponseBody = await apiFetch(ApiFunction.dbEdgeGetDataObjId, token)
 		if (result.success) {
-			return new AppLevelTab(0, 0, result.data.id)
+			return new AppLevelTab(0, 0, result.data.id, token.queryData.dataObjData)
 		} else {
 			error(500, {
 				file: FILENAME,
@@ -239,7 +252,7 @@ export class AppLevelTab {
 		}
 	}
 	static initNode(levelIdx: number, idx: number, node: NodeApp) {
-		return new AppLevelTab(levelIdx, idx, node.dataObjId, node.label, node.id)
+		return new AppLevelTab(levelIdx, idx, node.dataObjId, undefined, node.label, node.id)
 	}
 
 	detailGetData() {

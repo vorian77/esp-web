@@ -106,10 +106,17 @@ export class TokenApiQueryData {
 	setData(data: any, key: string, defaultVal: any) {
 		return Object.hasOwn(data, key) && data !== undefined ? data[key] : defaultVal
 	}
-	replaceParms(data: any) {
-		this.parms = data
+	parmsUpsert(data: any) {
+		if (!data) return
+		if (!this.parms) this.parms = {}
+		Object.entries(data).forEach(([key, value]) => {
+			this.parms[key] = value
+		})
 	}
-	setParmsValue(key: string, value: any) {
+	parmsValueGet(key: string) {
+		return Object.hasOwn(this.parms, key) ? this.parms[key] : undefined
+	}
+	parmsValueSet(key: string, value: any) {
 		this.parms[key] = value
 	}
 }
@@ -339,9 +346,11 @@ export class TokenAppTab extends TokenApp {
 }
 export class TokenAppTreeNode extends TokenApp {
 	node: Node
-	constructor(node: Node) {
+	programId: string | undefined
+	constructor(node: Node, programId: string | undefined = undefined) {
 		super()
 		this.node = node
+		this.programId = programId
 	}
 }
 export class TokenAppTreeNodeId extends TokenApp {

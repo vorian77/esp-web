@@ -256,14 +256,14 @@ export interface FieldRaw {
 		patternReplacement: string
 		placeHolder: string
 		spinStep: string
-		toggleLabelFalse: string
-		toggleLabelTrue: string
+		toggleValueFalse: string
+		toggleValueShow: boolean
+		toggleValueTrue: string
 	}
 	_fieldListChips: {
 		btnLabelComplete: string
 		columnLabelDisplay: string
 		_dataObjName: string
-		header: string
 		isMultiSelect: boolean
 		name: string
 	}
@@ -271,6 +271,12 @@ export interface FieldRaw {
 		_codeDataTypeDisplay: string
 		_codeMask: string
 		exprSelect: string
+		name: string
+	}
+	_fieldListSelect: {
+		btnLabelComplete: string
+		_dataObjName: string
+		isMultiSelect: boolean
 		name: string
 	}
 	customElement: FieldCustomRaw

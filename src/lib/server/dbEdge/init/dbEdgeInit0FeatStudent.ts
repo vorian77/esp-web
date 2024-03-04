@@ -411,48 +411,55 @@ async function initStudentCsf() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'dateReferral',
-				dbOrderCrumb: 20,
-				dbOrderSelect: 25,
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'codeStatus',
-				dbOrderSelect: 30,
+				columnName: 'codeReferralType',
+				dbOrderSelect: 40,
 				indexTable: '0',
 				link: { columnsDisplay: ['name'] }
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'dateStartEst',
-				dbOrderSelect: 40,
-				indexTable: '0',
-				isDisplay: false
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'dateStart',
+				columnName: 'dateReferral',
+				dbOrderCrumb: 20,
 				dbOrderSelect: 50,
 				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'dateEndEst',
+				columnName: 'dateStartEst',
 				dbOrderSelect: 60,
 				indexTable: '0',
 				isDisplay: false
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'dateEnd',
+				columnName: 'dateStart',
 				dbOrderSelect: 70,
 				indexTable: '0'
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'note',
+				columnName: 'dateEndEst',
 				dbOrderSelect: 80,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'dateEnd',
+				dbOrderSelect: 90,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'codeReferralEndType',
+				dbOrderSelect: 100,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'note',
+				dbOrderSelect: 110,
 				indexTable: '0'
 			}
 		]
@@ -494,16 +501,6 @@ async function initStudentCsf() {
 				indexTable: '0',
 				fieldListItems: 'il_cm_service_flow',
 				link: { table: { module: 'app_cm', name: 'CmServiceFlow' } }
-			},
-			{
-				codeAccess: 'readOnly',
-				codeElement: 'select',
-				columnName: 'codeStatus',
-				dbOrderSelect: 25,
-				indexTable: '0',
-				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
-				fieldListItemsParms: { codeTypeName: 'ct_cm_service_flow_status' },
-				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
 				codeElement: 'select',

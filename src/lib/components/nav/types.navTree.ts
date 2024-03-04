@@ -90,7 +90,7 @@ export class NavTree {
 					nodeType: nodeNav.type,
 					packet: new StatePacket({
 						component: StatePacketComponent.navApp,
-						token: new TokenAppTreeNode(nodeNav)
+						token: new TokenAppTreeNode(nodeNav, this.getProgramId(nodeNav))
 						// callbacks: [() => dispatch('treeChanged')]
 					})
 				})
@@ -128,6 +128,14 @@ export class NavTree {
 			if (this.listTree[i].id === node.id) return i
 		}
 		return -1
+	}
+	getParentNode(node: NodeNav) {
+		return this.listTree.find((n) => n.id === node.parentId)
+	}
+	getProgramId(node: NodeNav | undefined): string | undefined {
+		if (!node) return undefined
+		if (node.type === NodeType.program) return node.id
+		return this.getProgramId(this.getParentNode(node))
 	}
 	isCurrentNode(node: NodeNav) {
 		return node.id === this.currNode.id

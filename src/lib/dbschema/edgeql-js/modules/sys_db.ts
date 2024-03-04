@@ -22,14 +22,15 @@ export type $SysColumnλShape = $.typeutil.flatten<_sys_core.$SysObjλShape & {
   "patternReplacement": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "placeHolder": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "spinStep": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "toggleLabelFalse": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "toggleLabelTrue": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "isExcludeInsert": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
   "isExcludeSelect": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
   "isExcludeUpdate": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
   "isMultiSelect": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
   "isSelfReference": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
   "isSetBySys": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
+  "toggleValueFalse": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "toggleValueTrue": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "toggleValueShow": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "<columns[is sys_db::SysTable]": $.LinkDesc<$SysTable, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column[is sys_core::SysDataObjFieldLinkJoin]": $.LinkDesc<_sys_core.$SysDataObjFieldLinkJoin, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columnsDisplay[is sys_core::SysDataObjFieldLink]": $.LinkDesc<_sys_core.$SysDataObjFieldLink, $.Cardinality.Many, {}, false, false,  false, false>;

@@ -1,4 +1,5 @@
 export enum SurfaceType {
-	default = 'page',
-	overlay = 'overlay'
+	embedded = 'embedded',
+	overlay = 'overlay',
+	page = 'page'
 }

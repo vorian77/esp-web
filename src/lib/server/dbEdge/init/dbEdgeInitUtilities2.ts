@@ -113,8 +113,9 @@ export async function addColumn(data: any) {
 			patternReplacement: e.optional(e.str),
 			placeHolder: e.optional(e.str),
 			spinStep: e.optional(e.str),
-			toggleLabelFalse: e.optional(e.str),
-			toggleLabelTrue: e.optional(e.str)
+			toggleValueFalse: e.optional(e.str),
+			toggleValueShow: e.optional(e.bool),
+			toggleValueTrue: e.optional(e.str)
 		},
 		(p) => {
 			return e.insert(e.sys_db.SysColumn, {
@@ -145,8 +146,9 @@ export async function addColumn(data: any) {
 				patternReplacement: p.patternReplacement,
 				placeHolder: p.placeHolder,
 				spinStep: p.spinStep,
-				toggleLabelFalse: p.toggleLabelFalse,
-				toggleLabelTrue: p.toggleLabelTrue
+				toggleValueFalse: p.toggleValueFalse,
+				toggleValueShow: p.toggleValueShow,
+				toggleValueTrue: p.toggleValueTrue
 			})
 		}
 	)
@@ -257,6 +259,10 @@ export async function addDataObj(data: any) {
 						),
 
 						fieldListItemsParms: e.cast(e.json, e.json_get(f, 'fieldListItemsParms')),
+
+						fieldListSelect: e.select(
+							e.sys_core.getDataObjFieldListSelect(e.cast(e.str, e.json_get(f, 'fieldListSelect')))
+						),
 
 						headerAlt: e.cast(e.str, e.json_get(f, 'headerAlt')),
 
@@ -462,22 +468,24 @@ export async function addDataObjFieldListChips(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addDataObjFieldListSelect(data: any) {
-	sectionHeader(`addDataObjFieldListSelect - ${data.name}`)
+export async function addDataObjFieldListConfig(data: any) {
+	sectionHeader(`addDataObjFieldListConfig - ${data.name}`)
 
 	const query = e.params(
 		{
 			btnLabelComplete: e.str,
-			dataObj: e.str,
+			dataObjConfig: e.str,
+			dataObjDisplay: e.str,
 			isMultiSelect: e.bool,
 			name: e.str,
 			owner: e.str
 		},
 		(p) => {
-			return e.insert(e.sys_core.SysDataObjFieldListSelect, {
+			return e.insert(e.sys_core.SysDataObjFieldListConfig, {
 				btnLabelComplete: p.btnLabelComplete,
 				createdBy: e.select(e.sys_user.getRootUser()),
-				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
+				dataObjConfig: e.select(e.sys_core.getDataObj(p.dataObjConfig)),
+				dataObjDisplay: e.select(e.sys_core.getDataObj(p.dataObjDisplay)),
 				isMultiSelect: p.isMultiSelect,
 				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,

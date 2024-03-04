@@ -3,6 +3,7 @@
 	import { SlideToggle } from '@skeletonlabs/skeleton'
 	import { DataFieldDataType } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
+	import DataViewer from '$comps/DataViewer.svelte'
 
 	const dispatch = createEventDispatcher()
 	const dispatchType = 'changeItem'
@@ -10,6 +11,9 @@
 	export let field: FieldToggle
 
 	let selections = (function () {
+		if (field.valueFalse && field.valueTrue) {
+			return [field.valueTrue, field.valueFalse]
+		}
 		switch (field.dataType) {
 			case DataFieldDataType.bool:
 				return [true, false]
@@ -26,7 +30,6 @@
 	})()
 
 	let toggleValue: boolean
-	let toggleLabel: string = ''
 	setToggle(field.valueCurrent)
 
 	function onChange(event: Event) {
@@ -40,9 +43,6 @@
 
 	function setToggle(value: any) {
 		toggleValue = value === selections[0]
-		if (field.labelFalse && field.labelTrue) {
-			toggleLabel = toggleValue ? field.labelTrue : field.labelFalse
-		}
 	}
 </script>
 
@@ -53,5 +53,9 @@
 	name={field.name}
 	bind:checked={toggleValue}
 	on:change={onChange}
-	active="bg-primary-500">{toggleLabel}</SlideToggle
+	active="bg-primary-500"
 >
+	{#if field.valueShow}
+		{field.valueCurrent}
+	{/if}
+</SlideToggle>

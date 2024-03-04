@@ -11,12 +11,12 @@ export class FieldListSelect extends Field {
 		super(obj, index)
 		this.access = FieldAccess.optional
 		this.btnLabelComplete = strOptional(
-			obj._fieldListChips.btnLabelComplete,
+			obj._fieldListSelect.btnLabelComplete,
 			clazz,
 			'btnLabelComplete'
 		)
-		this.dataObjName = strRequired(obj._fieldListChips._dataObjName, clazz, 'dataObjName')
-		this.isMultiSelect = booleanOrFalse(obj._fieldListChips.isMultiSelect, 'isMultiSelect')
+		this.dataObjName = strRequired(obj._fieldListSelect._dataObjName, clazz, 'dataObjName')
+		this.isMultiSelect = booleanOrFalse(obj._fieldListSelect.isMultiSelect, 'isMultiSelect')
 	}
 	validate(dataValue: any): Validation {
 		const v = super.validate(dataValue)

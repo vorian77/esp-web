@@ -49,7 +49,6 @@ module app_cm {
   type CmClientServiceFlow extending sys_user::Mgmt {
     required client: app_cm::CmClient;
     required serviceFlow: app_cm::CmServiceFlow;
-    required codeStatus: sys_core::SysCode;
     codeReferralType: sys_core::SysCode;
     codeReferralEndType: sys_core::SysCode;
     required dateReferral: cal::local_date;
@@ -87,7 +86,7 @@ module app_cm {
     dateExpires: cal::local_date;
     required dateIssued: cal::local_date;
     file: json;
-    isShareWithClient: bool;
+    isShareWithClient: str;
     note: str;
     required staffAgency: sys_user::SysStaff;
   }

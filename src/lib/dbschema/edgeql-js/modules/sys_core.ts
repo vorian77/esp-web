@@ -32,6 +32,7 @@ export type $ObjRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f7384
   "<owner[is app_cm::CmEmployer]": $.LinkDesc<_app_cm.$CmEmployer, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_core::SysDataObjFieldListSelect]": $.LinkDesc<$SysDataObjFieldListSelect, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner[is sys_core::SysDataObjFieldListChips]": $.LinkDesc<$SysDataObjFieldListChips, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<owner[is sys_core::SysDataObjFieldListConfig]": $.LinkDesc<$SysDataObjFieldListConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<owner": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $ObjRoot = $.ObjectType<"sys_core::ObjRoot", $ObjRootλShape, null, [
@@ -128,7 +129,6 @@ export type $SysCodeλShape = $.typeutil.flatten<$SysObjλShape & {
   "<codeState[is sys_core::SysOrg]": $.LinkDesc<$SysOrg, $.Cardinality.Many, {}, false, false,  false, false>;
   "<roles[is sys_user::SysStaff]": $.LinkDesc<_sys_user.$SysStaff, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeMultiRqmts[is app_cm::CmCourse]": $.LinkDesc<_app_cm.$CmCourse, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<codeStatus[is app_cm::CmClientServiceFlow]": $.LinkDesc<_app_cm.$CmClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeStatus[is app_cm::CmCohort]": $.LinkDesc<_app_cm.$CmCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeStatus[is app_cm::CmCsfCohort]": $.LinkDesc<_app_cm.$CmCsfCohort, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeType[is app_cm::CmCsfNote]": $.LinkDesc<_app_cm.$CmCsfNote, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -230,7 +230,11 @@ export type $SysDataObjλShape = $.typeutil.flatten<$SysObjλShape & {
   "<dataObj[is sys_core::SysNodeObjFooter]": $.LinkDesc<$SysNodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj[is sys_core::SysDataObjFieldListSelect]": $.LinkDesc<$SysDataObjFieldListSelect, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj[is sys_core::SysDataObjFieldListChips]": $.LinkDesc<$SysDataObjFieldListChips, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<dataObjConfig[is sys_core::SysDataObjFieldListConfig]": $.LinkDesc<$SysDataObjFieldListConfig, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<dataObjDisplay[is sys_core::SysDataObjFieldListConfig]": $.LinkDesc<$SysDataObjFieldListConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<dataObjConfig": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<dataObjDisplay": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $SysDataObj = $.ObjectType<"sys_core::SysDataObj", $SysDataObjλShape, null, [
   ...$SysObj['__exclusives__'],
@@ -337,6 +341,19 @@ type $SysDataObjFieldListChips = $.ObjectType<"sys_core::SysDataObjFieldListChip
 const $SysDataObjFieldListChips = $.makeType<$SysDataObjFieldListChips>(_.spec, "49bcb4a7-d1da-11ee-a3d7-69213e9cb5fa", _.syntax.literal);
 
 const SysDataObjFieldListChips: $.$expr_PathNode<$.TypeSet<$SysDataObjFieldListChips, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysDataObjFieldListChips, $.Cardinality.Many), null);
+
+export type $SysDataObjFieldListConfigλShape = $.typeutil.flatten<$SysObjλShape & {
+  "dataObjConfig": $.LinkDesc<$SysDataObj, $.Cardinality.One, {}, false, false,  false, false>;
+  "dataObjDisplay": $.LinkDesc<$SysDataObj, $.Cardinality.One, {}, false, false,  false, false>;
+  "btnLabelComplete": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
+  "isMultiSelect": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
+}>;
+type $SysDataObjFieldListConfig = $.ObjectType<"sys_core::SysDataObjFieldListConfig", $SysDataObjFieldListConfigλShape, null, [
+  ...$SysObj['__exclusives__'],
+]>;
+const $SysDataObjFieldListConfig = $.makeType<$SysDataObjFieldListConfig>(_.spec, "212efe62-da46-11ee-b035-fd37f7fe64a5", _.syntax.literal);
+
+const SysDataObjFieldListConfig: $.$expr_PathNode<$.TypeSet<$SysDataObjFieldListConfig, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysDataObjFieldListConfig, $.Cardinality.Many), null);
 
 export type $SysDataObjFieldListItemsλShape = $.typeutil.flatten<$SysObjλShape & {
   "codeDataTypeDisplay": $.LinkDesc<$SysCode, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
@@ -713,6 +730,30 @@ function getDataObjFieldListChips(...args: any[]) {
   }) as any;
 };
 
+type getDataObjFieldListSelectλFuncExpr<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+> = $.$expr_Function<
+  $SysDataObjFieldListSelect, $.cardutil.overrideLowerBound<$.cardutil.paramCardinality<P1>, 'Zero'>
+>;
+function getDataObjFieldListSelect<
+  P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
+>(
+  name: P1,
+): getDataObjFieldListSelectλFuncExpr<P1>;
+function getDataObjFieldListSelect(...args: any[]) {
+  const {returnType, cardinality, args: positionalArgs, namedArgs} = _.syntax.$resolveOverload('sys_core::getDataObjFieldListSelect', args, _.spec, [
+    {args: [{typeId: "00000000-0000-0000-0000-000000000101", optional: false, setoftype: false, variadic: false}], returnTypeId: "5821d1df-d4e2-11ee-80e4-b9e048ba3471", returnTypemod: "OptionalType"},
+  ]);
+  return _.syntax.$expressionify({
+    __kind__: $.ExpressionKind.Function,
+    __element__: returnType,
+    __cardinality__: cardinality,
+    __name__: "sys_core::getDataObjFieldListSelect",
+    __args__: positionalArgs,
+    __namedargs__: namedArgs,
+  }) as any;
+};
+
 type getDataObjFieldListItemsλFuncExpr<
   P1 extends _.castMaps.orScalarLiteral<$.TypeSet<_std.$str>>,
 > = $.$expr_Function<
@@ -739,7 +780,7 @@ function getDataObjFieldListItems(...args: any[]) {
 
 
 
-export { $ObjRoot, ObjRoot, $SysObj, SysObj, $SysEnt, SysEnt, $SysOrg, SysOrg, $SysApp, SysApp, $SysCode, SysCode, $SysCodeType, SysCodeType, $SysDataObj, SysDataObj, $SysDataObjAction, SysDataObjAction, $SysDataObjColumn, SysDataObjColumn, $SysDataObjFieldLink, SysDataObjFieldLink, $SysDataObjFieldLinkJoin, SysDataObjFieldLinkJoin, $SysDataObjFieldListChips, SysDataObjFieldListChips, $SysDataObjFieldListItems, SysDataObjFieldListItems, $SysDataObjFieldListSelect, SysDataObjFieldListSelect, $SysDataObjTable, SysDataObjTable, $SysNodeObj, SysNodeObj, $SysNodeObjFooter, SysNodeObjFooter, $SysObjConfig, SysObjConfig };
+export { $ObjRoot, ObjRoot, $SysObj, SysObj, $SysEnt, SysEnt, $SysOrg, SysOrg, $SysApp, SysApp, $SysCode, SysCode, $SysCodeType, SysCodeType, $SysDataObj, SysDataObj, $SysDataObjAction, SysDataObjAction, $SysDataObjColumn, SysDataObjColumn, $SysDataObjFieldLink, SysDataObjFieldLink, $SysDataObjFieldLinkJoin, SysDataObjFieldLinkJoin, $SysDataObjFieldListChips, SysDataObjFieldListChips, $SysDataObjFieldListConfig, SysDataObjFieldListConfig, $SysDataObjFieldListItems, SysDataObjFieldListItems, $SysDataObjFieldListSelect, SysDataObjFieldListSelect, $SysDataObjTable, SysDataObjTable, $SysNodeObj, SysNodeObj, $SysNodeObjFooter, SysNodeObjFooter, $SysObjConfig, SysObjConfig };
 
 type __defaultExports = {
   "ObjRoot": typeof ObjRoot;
@@ -755,6 +796,7 @@ type __defaultExports = {
   "SysDataObjFieldLink": typeof SysDataObjFieldLink;
   "SysDataObjFieldLinkJoin": typeof SysDataObjFieldLinkJoin;
   "SysDataObjFieldListChips": typeof SysDataObjFieldListChips;
+  "SysDataObjFieldListConfig": typeof SysDataObjFieldListConfig;
   "SysDataObjFieldListItems": typeof SysDataObjFieldListItems;
   "SysDataObjFieldListSelect": typeof SysDataObjFieldListSelect;
   "SysDataObjTable": typeof SysDataObjTable;
@@ -772,6 +814,7 @@ type __defaultExports = {
   "getRootObj": typeof getRootObj;
   "isObjectLink": typeof isObjectLink;
   "getDataObjFieldListChips": typeof getDataObjFieldListChips;
+  "getDataObjFieldListSelect": typeof getDataObjFieldListSelect;
   "getDataObjFieldListItems": typeof getDataObjFieldListItems
 };
 const __defaultExports: __defaultExports = {
@@ -788,6 +831,7 @@ const __defaultExports: __defaultExports = {
   "SysDataObjFieldLink": SysDataObjFieldLink,
   "SysDataObjFieldLinkJoin": SysDataObjFieldLinkJoin,
   "SysDataObjFieldListChips": SysDataObjFieldListChips,
+  "SysDataObjFieldListConfig": SysDataObjFieldListConfig,
   "SysDataObjFieldListItems": SysDataObjFieldListItems,
   "SysDataObjFieldListSelect": SysDataObjFieldListSelect,
   "SysDataObjTable": SysDataObjTable,
@@ -805,6 +849,7 @@ const __defaultExports: __defaultExports = {
   "getRootObj": getRootObj,
   "isObjectLink": isObjectLink,
   "getDataObjFieldListChips": getDataObjFieldListChips,
+  "getDataObjFieldListSelect": getDataObjFieldListSelect,
   "getDataObjFieldListItems": getDataObjFieldListItems
 };
 export default __defaultExports;

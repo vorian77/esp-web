@@ -1,23 +1,25 @@
 <script lang="ts">
 	import type { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { StateOverlayModal } from '$comps/nav/types.appState'
+	import { State, StateObj, StateObjSelect } from '$comps/nav/types.appState'
+	import { SurfaceType } from '$comps/types.master'
 	import { TokenApiQueryType } from '$comps/types.token'
 	import Form from '$comps/form/Form.svelte'
+	import { type DataObjData } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
+	import DataViewer from '$comps/DataViewer.svelte'
 
 	const dispatch = createEventDispatcher()
 
 	const modalStore = getModalStore()
 
+	export let state: State
 	export let field: FieldListSelect
+	export let dataObjData: DataObjData
 
-	let selectedIds: string[] = []
-	// let selectedValues: FieldListChipValues = []
+	let stateLocal: State
 
-	$: {
-		selectedIds = field.valueCurrent
-	}
+	$: setFormState(field.valueCurrent)
 
 	function add() {
 		new Promise<any>((resolve) => {
@@ -25,13 +27,16 @@
 				type: 'component',
 				component: 'overlayModalForm',
 				meta: {
-					state: new StateOverlayModal({
+					state: new StateObjSelect({
 						btnLabelComplete: field.btnLabelComplete,
+						dataObjData,
 						dataObjName: field.dataObjName,
 						isMultiSelect: field.isMultiSelect,
 						modalStore,
+						page: '/',
 						queryType: TokenApiQueryType.retrieve,
-						selectedIds
+						selectedIds: field.valueCurrent,
+						surface: SurfaceType.overlay
 					})
 				},
 				response: (r: any) => {
@@ -41,21 +46,30 @@
 			modalStore.trigger(modal)
 		}).then((response) => {
 			if (response !== false) {
-				field.setSelected(response)
+				console.log('FormElListSelect.response:', response)
+				field.valueCurrent = response.map((v: any) => v.id)
 				setValue(field.valueCurrent)
 			}
 		})
 	}
 
-	function remove(dataValue: string) {
-		const idx = field.valueCurrent.findIndex((item: string) => item === dataValue)
-		if (idx > -1) {
-			field.valueCurrent.splice(idx, 1)
-			setValue(field.valueCurrent)
-		}
+	function setFormState(values: string[]) {
+		const data = dataObjData.copy()
+		data.parmsUpsert({
+			programId: state.programId,
+			filterInIds: values
+		})
+		stateLocal = new StateObj({
+			dataObjData: data,
+			dataObjName: field.dataObjName,
+			modalStore,
+			queryType: TokenApiQueryType.retrieve,
+			surface: SurfaceType.embedded
+		})
 	}
 
 	function setValue(value: string[]) {
+		setFormState(value)
 		dispatch('changeItem', { fieldName: field.name, value })
 	}
 </script>
@@ -65,9 +79,15 @@
 	<button
 		type="button"
 		class="btn-icon btn-icon-sm variant-ghost-primary ml-2 -mt-1"
-		on:click={() => add()}>+</button
+		on:click={() => add()}>&#177;</button
 	>
 </div>
-<div>
-	<!-- <Form {state} /> -->
+<div id="form">
+	{#if stateLocal && field.valueCurrent.length > 0}
+		<object title="embedded column" class="mb-10">
+			<Form state={stateLocal} />
+		</object>
+	{/if}
 </div>
+
+<!-- <DataViewer header="state" data={state} /> -->

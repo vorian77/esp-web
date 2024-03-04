@@ -22,8 +22,9 @@ module sys_db{
     patternReplacement: str;
     placeHolder: str;
     spinStep: str;
-    toggleLabelFalse: str;
-    toggleLabelTrue: str;
+    toggleValueFalse: str;
+    toggleValueShow: bool;
+    toggleValueTrue: str;
     constraint exclusive on (.name);
   }
 

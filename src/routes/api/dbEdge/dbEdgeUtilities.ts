@@ -95,8 +95,9 @@ export async function getDataObjById(dataObjId: string) {
 					patternReplacement: true,
 					placeHolder: true,
 					spinStep: true,
-					toggleLabelFalse: true,
-					toggleLabelTrue: true
+					toggleValueFalse: true,
+					toggleValueShow: true,
+					toggleValueTrue: true
 				})),
 				_codeAccess: f.codeAccess.name,
 				_codeElement: f.codeElement.name,
@@ -111,6 +112,12 @@ export async function getDataObjById(dataObjId: string) {
 					_codeDataTypeDisplay: idb.codeDataTypeDisplay.name,
 					_codeMask: idb.codeMask.name,
 					exprSelect: true,
+					name: true
+				})),
+				_fieldListSelect: e.select(f.fieldListSelect, (i) => ({
+					btnLabelComplete: true,
+					_dataObjName: i.dataObj.name,
+					isMultiSelect: true,
 					name: true
 				})),
 				customElement: true,

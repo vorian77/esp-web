@@ -51,7 +51,6 @@ export namespace app_cm {
   }
   export interface CmClientServiceFlow extends sys_user.Mgmt {
     "client": CmClient;
-    "codeStatus": sys_core.SysCode;
     "serviceFlow": CmServiceFlow;
     "dateEnd"?: edgedb.LocalDate | null;
     "dateEndEst"?: edgedb.LocalDate | null;
@@ -118,7 +117,7 @@ export namespace app_cm {
     "dateIssued": edgedb.LocalDate;
     "file"?: unknown | null;
     "note"?: string | null;
-    "isShareWithClient"?: boolean | null;
+    "isShareWithClient"?: string | null;
   }
   export interface CmCsfJobPlacement extends CmCsfData {
     "note"?: string | null;
@@ -242,6 +241,12 @@ export namespace sys_core {
     "columnLabelDisplay": string;
     "isMultiSelect": boolean;
     "dataObj": SysDataObj;
+  }
+  export interface SysDataObjFieldListConfig extends SysObj {
+    "dataObjConfig": SysDataObj;
+    "dataObjDisplay": SysDataObj;
+    "btnLabelComplete": string;
+    "isMultiSelect": boolean;
   }
   export interface SysDataObjFieldListItems extends SysObj {
     "codeDataTypeDisplay"?: SysCode | null;
@@ -623,14 +628,15 @@ export namespace sys_db {
     "patternReplacement"?: string | null;
     "placeHolder"?: string | null;
     "spinStep"?: string | null;
-    "toggleLabelFalse"?: string | null;
-    "toggleLabelTrue"?: string | null;
     "isExcludeInsert": boolean;
     "isExcludeSelect": boolean;
     "isExcludeUpdate": boolean;
     "isMultiSelect": boolean;
     "isSelfReference": boolean;
     "isSetBySys": boolean;
+    "toggleValueFalse"?: string | null;
+    "toggleValueTrue"?: string | null;
+    "toggleValueShow"?: boolean | null;
   }
   export interface SysTable extends sys_core.SysObj {
     "columns": SysColumn[];
@@ -696,6 +702,7 @@ export interface types {
     "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;
     "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;
     "SysDataObjFieldListChips": sys_core.SysDataObjFieldListChips;
+    "SysDataObjFieldListConfig": sys_core.SysDataObjFieldListConfig;
     "SysDataObjFieldListItems": sys_core.SysDataObjFieldListItems;
     "SysDataObjFieldListSelect": sys_core.SysDataObjFieldListSelect;
     "SysDataObjTable": sys_core.SysDataObjTable;

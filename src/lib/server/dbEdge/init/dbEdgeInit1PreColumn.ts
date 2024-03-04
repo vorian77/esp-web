@@ -436,8 +436,8 @@ export async function initPreColumn() {
 		codeDataType: 'bool',
 		header: 'Has Management Columns',
 		name: 'hasMgmt',
-		toggleLabelFalse: 'No',
-		toggleLabelTrue: 'Yes'
+		toggleValueFalse: 'No',
+		toggleValueTrue: 'Yes'
 	})
 	await addColumn({
 		owner: 'app_sys',
@@ -845,14 +845,14 @@ export async function initPreColumn() {
 	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'str',
-		header: 'Toggle Label-False',
-		name: 'toggleLabelFalse'
+		header: 'Toggle Value-False',
+		name: 'toggleValueFalse'
 	})
 	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'str',
-		header: 'Toggle Label-False',
-		name: 'toggleLabelTrue'
+		header: 'Toggle Value-False',
+		name: 'toggleValueTrue'
 	})
 	await addColumn({
 		owner: 'app_sys',
