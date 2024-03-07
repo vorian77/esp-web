@@ -6,7 +6,9 @@ import {
 import {
 	addColumn,
 	addDataObj,
+	addDataObjFieldItems,
 	addDataObjFieldListChips,
+	addDataObjFieldListConfig,
 	addDataObjFieldListSelect,
 	addNodeProgramObj
 } from '$server/dbEdge/init/dbEdgeInitUtilities2'
@@ -17,31 +19,12 @@ export async function initFeatSysAdmin() {
 	await initFeatures()
 }
 
-async function initFeatures() {
-	await initColumns()
-	await initApp()
-	await initCodeType()
-	await initCode()
-	await initDataObj()
-	await initDataObjTable()
-
-	// await initDataObjColumn() - do not implemented
-
-	await initColumn()
-	await initDataObjAction()
-	await initDataObjNodeObj()
-	await initDataObjNodeObjFooter()
-	await initTable()
-
-	// await initConfig() - do not implement
-}
-
 async function reset() {
 	sectionHeader('Reset')
 	const reset = new ResetDb()
 
 	reset.addStatement(
-		`UPDATE sys_user::SysUserType FILTER .name = 'ut_sys_amin' SET { resources -= (SELECT sys_core::getNodeObjByName('node_obj_sys_admin_app_list')) }`
+		`UPDATE sys_user::SysUserType FILTER .name = 'ut_sys_admin' SET { resources -= (SELECT sys_core::getNodeObjByName('node_obj_sys_admin_app_list')) }`
 	)
 
 	reset.delFeature('sys_admin_data_obj_config')
@@ -60,82 +43,150 @@ async function reset() {
 	reset.delFieldChips('field_list_chips_sys_column')
 	reset.delFieldSelect('field_list_select_sys_column')
 
-	reset.delColumn('actionsField')
-	reset.delColumn('actionsQuery')
-	reset.delColumn('codeCardinality')
-	reset.delColumn('codeComponent')
-	reset.delColumn('exprFilter')
-	reset.delColumn('exprObject')
-	reset.delColumn('isPopup')
-	reset.delColumn('subHeader')
-	reset.delColumn('tables')
-	reset.delColumn('toggleValueShow')
+	reset.delFieldConfig('field_list_config_data_obj_tables')
+	reset.delDataObj('data_obj_field_list_config_data_obj_tables_config')
+	reset.delDataObj('data_obj_field_list_config_data_obj_tables_display')
 
 	await reset.execute()
 }
 
-async function initColumns() {
-	sectionHeader('Columns')
+async function initFeatures() {
+	await initFieldListConfigDataObjTables()
+	await initApp()
+	await initCodeType()
+	await initCode()
+	await initDataObj()
+	await initDataObjTable()
 
-	await addColumn({
-		codeDataType: 'link',
-		header: 'Actions - Field',
-		name: 'actionsField',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'link',
-		header: 'Actions - Query',
-		name: 'actionsQuery',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'link',
-		header: 'Cardinality',
-		name: 'codeCardinality',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'link',
-		header: 'Component',
-		name: 'codeComponent',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'str',
-		header: 'Expression - Filter',
-		name: 'exprFilter',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'str',
-		header: 'Expression - Object',
-		name: 'exprObject',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'bool',
-		header: 'Popup',
-		name: 'isPopup',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'str',
-		header: 'Sub-Header',
-		name: 'subHeader',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'link',
-		header: 'Tables',
-		name: 'tables',
-		owner: 'app_sys'
-	})
-	await addColumn({
+	// await initDataObjColumn() - do not implemented
+
+	await initColumn()
+	await initDataObjAction()
+	await initDataObjNodeObj()
+	await initDataObjNodeObjFooter()
+	await initTable()
+
+	// await initConfig() - do not implement
+}
+
+async function initFieldListConfigDataObjTables() {
+	sectionHeader('Field List Config - DataObj.Tables')
+
+	await addDataObj({
+		actionsField: ['noa_detail_delete'],
+		codeCardinality: 'detail',
+		codeComponent: 'FormDetail',
+		exprFilter: `.id = <uuid,parms,filterInIds>`,
+		header: 'Table',
+		name: 'data_obj_field_list_config_data_obj_tables_config',
 		owner: 'app_sys_admin',
-		codeDataType: 'bool',
-		header: 'Toggle Value-Show',
-		name: 'toggleValueShow'
+		tables: [{ index: '0', table: 'SysDataObjTable' }],
+		fields: [
+			{
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				columnName: 'index',
+				dbOrderSelect: 20,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'select',
+				columnName: 'table',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				fieldListItems: 'il_sys_table_order_name',
+				link: { table: { module: 'sys_core', name: 'SysTable' } }
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'indexParent',
+				dbOrderSelect: 40,
+				headerAlt: 'Parent Table Index',
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'columnParent',
+				dbOrderSelect: 50,
+				fieldListItems: 'il_sys_column_order_name',
+				headerAlt: 'Parent Table Column',
+				indexTable: '0',
+				link: { table: { module: 'sys_core', name: 'Sys' } }
+			},
+			{
+				columnAccess: 'optional',
+				columnName: 'order',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			}
+		]
+	})
+
+	await addDataObj({
+		codeCardinality: 'list',
+		codeComponent: 'FormList',
+		exprFilter: 'none',
+		header: 'Table',
+		name: 'data_obj_field_list_config_data_obj_tables_display',
+		owner: 'app_sys_admin',
+		tables: [{ index: '0', table: 'SysDataObjTable' }],
+		fields: [
+			{
+				codeAccess: 'readOnly',
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'index',
+				dbOrderSelect: 20,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'table',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'indexParent',
+				dbOrderSelect: 40,
+				headerAlt: 'Parent Table Index',
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'columnParent',
+				dbOrderSelect: 50,
+				headerAlt: 'Parent Table Column',
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'order',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			}
+		]
+	})
+
+	await addDataObjFieldListConfig({
+		btnLabelComplete: 'Save',
+		dataObjConfig: 'data_obj_field_list_config_data_obj_tables_config',
+		dataObjDisplay: 'data_obj_field_list_config_data_obj_tables_display',
+		name: 'field_list_config_data_obj_tables',
+		isMultiSelect: true,
+		owner: 'app_sys_admin'
 	})
 }
 
@@ -263,6 +314,12 @@ async function initApp() {
 	})
 
 	await userTypeResourcesPrograms([['ut_sys_admin', 'node_obj_sys_admin_app_list']])
+
+	await userTypeResourcesPrograms([
+		['ut_sys_admin', 'node_pgm_cm_staff_adm'],
+		['ut_sys_admin', 'node_pgm_cm_staff_provider'],
+		['ut_sys_admin', 'node_pgm_cm_student']
+	])
 }
 
 async function initCodeType() {
@@ -1057,6 +1114,14 @@ async function initDataObj() {
 				columnName: 'isPopup',
 				dbOrderSelect: 90,
 				indexTable: '0'
+			},
+			{
+				codeElement: 'listConfig',
+				columnName: 'tables',
+				dbOrderSelect: 100,
+				fieldListConfig: 'field_list_config_data_obj_tables',
+				indexTable: '0',
+				link: { table: { module: 'sys_db', name: 'SysDataObjTable' } }
 			},
 			{
 				codeAccess: 'readOnly',

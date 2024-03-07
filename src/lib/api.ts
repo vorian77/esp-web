@@ -1,12 +1,12 @@
 import { Token } from '$comps/types.token'
-import {
-	type DataObjData,
-	type DataObjRecord,
-	required,
-	userGet,
-	valueOrDefault
-} from '$comps/types'
+import { type DataObjData, required } from '$comps/types'
 import type { DataObjRaw } from '$comps/types'
+import {
+	TokenApiDbDataObj,
+	TokenApiQuery,
+	TokenApiQueryData,
+	TokenApiQueryType
+} from '$comps/types.token'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = 'lib/api.ts'
@@ -71,4 +71,15 @@ export class ApiResultDoSuccess extends ApiResultDo {
 		this.dataObjRaw = required(dataObjRaw, clazz, 'dataObjRaw')
 		this.success = true
 	}
+}
+
+export async function apiDbQuery(
+	queryType: TokenApiQueryType,
+	dataObjSource: Record<string, any>,
+	queryData: TokenApiQueryData
+) {
+	return await apiFetch(
+		ApiFunction.dbEdgeProcessQuery,
+		new TokenApiQuery(queryType, new TokenApiDbDataObj(dataObjSource), queryData)
+	)
 }

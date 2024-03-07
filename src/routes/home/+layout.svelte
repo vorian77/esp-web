@@ -14,7 +14,7 @@
 		type ModalSettings,
 		type ToastSettings
 	} from '@skeletonlabs/skeleton'
-	import Form from '$comps/form/Form.svelte'
+	import SurfacePageForm from '$comps/Surface/SurfacePageForm.svelte'
 	import NavHome from '$comps/nav/NavHome.svelte'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
@@ -220,7 +220,7 @@
 			{#if state?.nodeType === NodeType.home}
 				<NavHome />
 			{:else}
-				<Form {state} />
+				<SurfacePageForm {state} />
 			{/if}
 		{:else}
 			<slot />

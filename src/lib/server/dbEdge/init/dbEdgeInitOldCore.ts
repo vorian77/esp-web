@@ -13,7 +13,6 @@ import {
 	addCode,
 	addCodeType,
 	addColumn,
-	addDataObjAction,
 	addDataObjFieldItems,
 	addNodeFooter,
 	addUserOrg

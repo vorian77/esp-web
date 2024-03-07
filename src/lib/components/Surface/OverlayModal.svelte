@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Modal, getModalStore } from '@skeletonlabs/skeleton'
 	import type { ModalComponent } from '@skeletonlabs/skeleton'
-	import OverlayModalForm from '$comps/Overlay/OverlayModalForm.svelte'
+	import OverlayModalForm from '$comps/Surface/OverlayModalForm.svelte'
 
 	const modalStore = getModalStore()
 

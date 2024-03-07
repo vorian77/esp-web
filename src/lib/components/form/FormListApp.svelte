@@ -16,4 +16,4 @@
 
 <!-- <DataViewer header="state" data={state} /> -->
 
-<FormList {state} {dataObj} {dataObjData} on:formCancelled />
+<FormList bind:state {dataObj} {dataObjData} on:formCancelled on:rowClick />

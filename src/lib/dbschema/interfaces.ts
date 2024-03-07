@@ -190,6 +190,8 @@ export namespace sys_core {
     "allTabs"?: boolean | null;
     "color"?: string | null;
     "order": number;
+    "checkObjChanged": boolean;
+    "codeActionType": SysCode;
   }
   export interface SysDataObjColumn extends std.$Object {
     "codeAccess"?: SysCode | null;
@@ -221,6 +223,7 @@ export namespace sys_core {
     "fieldListItemsParms"?: unknown | null;
     "fieldListChips"?: SysDataObjFieldListChips | null;
     "fieldListSelect"?: SysDataObjFieldListSelect | null;
+    "fieldListConfig"?: SysDataObjFieldListConfig | null;
   }
   export interface SysDataObjFieldLink extends std.$Object {
     "exprSelect"?: string | null;

@@ -4,7 +4,7 @@ import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
 import { encrypt, userInit } from '$comps/types'
-import { apiFetch, ApiFunction } from '$lib/api'
+import { apiDbQuery, apiFetch, ApiFunction } from '$lib/api'
 import {
 	TokenApiDbDataObj,
 	TokenApiQuery,
@@ -86,13 +86,10 @@ export default async function action(state: State, field: FieldCustomAction, dat
 		}
 
 		// process
-		let result: ResponseBody = await apiFetch(
-			ApiFunction.dbEdgeProcessQuery,
-			new TokenApiQuery(
-				TokenApiQueryType.expression,
-				new TokenApiDbDataObj({ dataObjName }),
-				new TokenApiQueryData({ parms: data })
-			)
+		let result: ResponseBody = await apiDbQuery(
+			TokenApiQueryType.expression,
+			{ dataObjName },
+			new TokenApiQueryData({ parms: data })
 		)
 
 		if (!result.success || !Object.hasOwn(result.data, 'userId')) {
@@ -101,7 +98,6 @@ export default async function action(state: State, field: FieldCustomAction, dat
 		}
 
 		const userId = result.data['userId']
-		console.log('process.credential.userId', userId)
 		const user = await userInit(userId)
 		if (user && Object.hasOwn(user, 'id')) {
 			state.drawerStore.close()

@@ -5,6 +5,18 @@ export async function initPreColumn() {
 	sectionHeader('Column')
 
 	await addColumn({
+		codeDataType: 'link',
+		header: 'Actions - Field',
+		name: 'actionsField',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Actions - Query',
+		name: 'actionsQuery',
+		owner: 'app_sys'
+	})
+	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Address 1',
@@ -80,7 +92,18 @@ export async function initPreColumn() {
 		header: 'Alignment',
 		name: 'codeAlignment'
 	})
-
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Cardinality',
+		name: 'codeCardinality',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Component',
+		name: 'codeComponent',
+		owner: 'app_sys'
+	})
 	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'link',
@@ -104,6 +127,12 @@ export async function initPreColumn() {
 		codeDataType: 'link',
 		header: 'Icon',
 		name: 'codeIcon'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'link',
+		header: 'Job Type',
+		name: 'codeJobType'
 	})
 	await addColumn({
 		owner: 'app_sys',
@@ -141,9 +170,27 @@ export async function initPreColumn() {
 		name: 'codeMultiRqmts'
 	})
 	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'link',
+		header: 'Placement Related To Training',
+		name: 'codePlacementRelated'
+	})
+	await addColumn({
 		codeDataType: 'link',
 		header: 'Race',
 		name: 'codeRace',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Referral End Type',
+		name: 'codeReferralEndType',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Referral Type',
+		name: 'codeReferralType',
 		owner: 'app_sys'
 	})
 	await addColumn({
@@ -177,6 +224,12 @@ export async function initPreColumn() {
 		owner: 'app_sys'
 	})
 	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'link',
+		header: 'Wage Type',
+		name: 'codeWageType'
+	})
+	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'link',
 		header: 'Cohort',
@@ -195,11 +248,23 @@ export async function initPreColumn() {
 		name: 'column'
 	})
 	await addColumn({
+		codeDataType: 'link',
+		header: 'Parent Column',
+		name: 'columnParent',
+		owner: 'app_sys'
+	})
+	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'link',
 		header: 'Columns',
 		isMultiSelect: true,
 		name: 'columns'
+	})
+	await addColumn({
+		codeDataType: 'link',
+		header: 'Contact',
+		name: 'contact',
+		owner: 'app_sys_admin'
 	})
 	await addColumn({
 		owner: 'app_sys',
@@ -316,6 +381,18 @@ export async function initPreColumn() {
 	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'date',
+		header: 'Expiration Date',
+		name: 'dateExpires'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Issued Date',
+		name: 'dateIssued'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'date',
 		header: 'Referral Date',
 		name: 'dateReferral'
 	})
@@ -330,6 +407,12 @@ export async function initPreColumn() {
 		codeDataType: 'date',
 		header: 'Estimated Start Date',
 		name: 'dateStartEst'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'date',
+		header: 'Date Submitted',
+		name: 'dateSubmitted'
 	})
 	await addColumn({
 		owner: 'app_sys',
@@ -402,6 +485,25 @@ export async function initPreColumn() {
 	})
 	await addColumn({
 		owner: 'app_sys_admin',
+		codeDataType: 'link',
+		header: 'Employer',
+		name: 'employer'
+	})
+
+	await addColumn({
+		codeDataType: 'str',
+		header: 'Expression - Filter',
+		name: 'exprFilter',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		codeDataType: 'str',
+		header: 'Expression - Object',
+		name: 'exprObject',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
 		codeDataType: 'str',
 		header: 'Storage Key Expression',
 		name: 'exprStorageKey'
@@ -418,6 +520,13 @@ export async function initPreColumn() {
 		codeDataType: 'str',
 		header: 'Field Name',
 		name: 'fieldName'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'json',
+		exprStorageKey: 'file_<int64,calc,random10>',
+		header: 'File',
+		name: 'file'
 	})
 	await addColumn({
 		owner: 'app_sys',
@@ -450,6 +559,13 @@ export async function initPreColumn() {
 		codeDataType: 'str',
 		header: 'Header (Side)',
 		name: 'headerSide'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'float64',
+		header: 'Hours Per Week',
+		minValue: 0,
+		name: 'hoursPerWeek'
 	})
 	await addColumn({
 		owner: 'app_sys_admin',
@@ -515,6 +631,12 @@ export async function initPreColumn() {
 		name: 'isMultiSelect'
 	})
 	await addColumn({
+		codeDataType: 'bool',
+		header: 'Popup',
+		name: 'isPopup',
+		owner: 'app_sys'
+	})
+	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'bool',
 		header: 'Self Reference',
@@ -525,6 +647,12 @@ export async function initPreColumn() {
 		codeDataType: 'bool',
 		header: 'Set By System',
 		name: 'isSetBySys'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'str',
+		header: 'Share With Student',
+		name: 'isShareWithClient'
 	})
 	await addColumn({
 		owner: 'app_sys_admin',
@@ -621,6 +749,12 @@ export async function initPreColumn() {
 		codeDataType: 'float64',
 		header: 'Maximum Value',
 		name: 'maxValue'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'str',
+		header: 'Middle Name',
+		name: 'middleName'
 	})
 	await addColumn({
 		owner: 'app_sys_admin',
@@ -789,6 +923,12 @@ export async function initPreColumn() {
 		name: 'schedule'
 	})
 	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'str',
+		header: 'School',
+		name: 'school'
+	})
+	await addColumn({
 		codeDataType: 'link',
 		header: 'Service Flow',
 		name: 'serviceFlow',
@@ -819,6 +959,12 @@ export async function initPreColumn() {
 		name: 'staffInstructor'
 	})
 	await addColumn({
+		codeDataType: 'str',
+		header: 'Sub-Header',
+		name: 'subHeader',
+		owner: 'app_sys'
+	})
+	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'link',
 		header: 'Table',
@@ -843,6 +989,18 @@ export async function initPreColumn() {
 		name: 'tableOwner'
 	})
 	await addColumn({
+		codeDataType: 'link',
+		header: 'Tables',
+		name: 'tables',
+		owner: 'app_sys'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'str',
+		header: 'Title',
+		name: 'title'
+	})
+	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'str',
 		header: 'Toggle Value-False',
@@ -851,8 +1009,14 @@ export async function initPreColumn() {
 	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'str',
-		header: 'Toggle Value-False',
+		header: 'Toggle Value-True',
 		name: 'toggleValueTrue'
+	})
+	await addColumn({
+		codeDataType: 'bool',
+		header: 'Toggle Value-Show',
+		name: 'toggleValueShow',
+		owner: 'app_sys_admin'
 	})
 	await addColumn({
 		owner: 'app_sys',
@@ -877,6 +1041,12 @@ export async function initPreColumn() {
 		codeDataType: 'str',
 		header: 'Value-String',
 		name: 'valueString'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'float64',
+		header: 'Wage',
+		name: 'wage'
 	})
 	await addColumn({
 		owner: 'app_sys',

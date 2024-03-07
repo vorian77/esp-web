@@ -7,7 +7,7 @@
 		ValidityErrorLevel,
 		ValidityError
 	} from '$comps/types'
-	import type { State } from '$comps/nav/types.appState'
+	import { State, StateObjModal } from '$comps/nav/types.appState'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
 	import DataObjActionsFooter from '$comps/dataObj/DataObjActionsFooter.svelte'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
@@ -16,11 +16,14 @@
 	import FormElInpCheckbox from '$comps/form/FormElInpCheckbox.svelte'
 	import FormElInpRadio from '$comps/form/FormElInpRadio.svelte'
 	import FormElListChips from '$comps/form/FormElListChips.svelte'
+	import FormElListConfig from './FormElListConfig.svelte'
+	import FormElListSelect from './FormElListSelect.svelte'
 	import FormElSelect from '$comps/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/form/FormElTextarea.svelte'
 	import FormElToggle from '$comps/form/FormElToggle.svelte'
 	import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 	import { FieldListChips } from '$comps/form/fieldListChips'
+	import { FieldListConfig } from '$comps/form/fieldListConfig'
 	import { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { FieldCustom } from '$comps/form/fieldCustom'
 	import { FieldFile } from '$comps/form/fieldFile'
@@ -30,7 +33,6 @@
 	import { FieldTextarea } from '$comps/form/fieldTextarea'
 	import { FieldToggle } from '$comps/form/fieldToggle'
 	import DataViewer from '$comps/DataViewer.svelte'
-	import FormElListSelect from './FormElListSelect.svelte'
 
 	const FILENAME = '$comps/form/FormDetail.svelte'
 	const FORM_NAME = ''
@@ -41,6 +43,10 @@
 	export let dataObjData: DataObjData
 
 	$: loadData(dataObjData)
+
+	$: if (state instanceof StateObjModal) {
+		state.setRecords([dataObj.objData.getData()])
+	}
 
 	function loadData(data: DataObjData) {
 		dataObj.objData = data
@@ -110,6 +116,8 @@
 						<FormElInpRadio {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldListChips}
 						<FormElListChips {field} on:changeItem={onChangeItem} {dataObjData} />
+					{:else if field instanceof FieldListConfig}
+						<FormElListConfig {state} {field} on:changeItem={onChangeItem} {dataObjData} />
 					{:else if field instanceof FieldListSelect}
 						<FormElListSelect {state} {field} on:changeItem={onChangeItem} {dataObjData} />
 					{:else if field instanceof FieldSelect}

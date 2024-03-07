@@ -1,16 +1,10 @@
 <script lang="ts">
-	import {
-		State,
-		StateObj,
-		StateObjSelect,
-		StatePacket,
-		StatePacketComponent
-	} from '$comps/nav/types.appState'
+	import { State, StateObjModal } from '$comps/nav/types.appState'
 	import { SurfaceType } from '$comps/types.master'
-	import { TokenAppDoAction, TokenAppDoList } from '$comps/types.token'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
+	import { getContext } from 'svelte'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -26,16 +20,17 @@
 	const handler = new DataHandler([], { rowsPerPage: 100 })
 	const rows = handler.getRows()
 	const selected = handler.getSelected()
+	const onRowClick: Function = getContext('onRowClick')
 
 	const isAllSelected = handler.isAllSelected()
-	let isSelect = state instanceof StateObjSelect
-	let isSelectMulti = state instanceof StateObjSelect && state.isMultiSelect
+	let isSelect = state instanceof StateObjModal
+	let isSelectMulti = state instanceof StateObjModal && state.isMultiSelect
 	let isSurfaceEmbedded = state.surface === SurfaceType.embedded
 	let isSurfaceOverlay = state.surface === SurfaceType.overlay
 	let isSurfacePage = state.surface === SurfaceType.page
 
-	if (state instanceof StateObjSelect) {
-		state.selectedIds.forEach((i) => handler.select(i))
+	if (state instanceof StateObjModal) {
+		state.records.forEach((r) => handler.select(r.id))
 	}
 
 	$: {
@@ -46,8 +41,8 @@
 		handler.setPage(1)
 		sortList()
 	}
-	$: if (state instanceof StateObjSelect) {
-		state.setSelected($rows.filter((r: any) => $selected.includes(r.id)))
+	$: if (state instanceof StateObjModal) {
+		state.setRecords($rows.filter((r: any) => $selected.includes(r.id)))
 	}
 
 	function sortList() {
@@ -59,21 +54,6 @@
 				direction: dataObj.orderItems[i].direction
 			})
 		}
-	}
-
-	async function onClick(record: any) {
-		state.update({
-			packet: new StatePacket({
-				checkObjChanged: false,
-				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoList(
-					TokenAppDoAction.listEdit,
-					dataObj,
-					$rows.map((r: any) => r.id),
-					record.id
-				)
-			})
-		})
 	}
 
 	function onSelect(id: string) {
@@ -130,8 +110,8 @@
 					{#each $rows as row, i}
 						<tr
 							class:active={$selected.includes(row[DATA_FIELD])}
-							on:click={async () => await onClick(row)}
-							on:keyup={async () => await onClick(row)}
+							on:click={async () => await onRowClick($rows, row)}
+							on:keyup={async () => await onRowClick($rows, row)}
 						>
 							{#if isSelect}
 								<td class="selection">
@@ -160,7 +140,6 @@
 	header="surfaceType"
 	data={{ isSelectMulti, isSurfaceEmbedded, isSurfaceOverlay, isSurfacePage }}
 /> -->
-
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->
 <!-- <DataViewer header="isSelect" data={state instanceof StateOverlayModal} /> -->
 <!-- <DataViewer header="$selected" data={$selected} /> -->

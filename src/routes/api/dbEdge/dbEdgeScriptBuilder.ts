@@ -405,10 +405,7 @@ class DataObjTableActionFilter extends DataObjTableAction {
 		const script = new DataObjTableScript({ prefix: 'FILTER' })
 		let exprFilter = ''
 
-		console.log('DataObjTableActionFilter.getScript.parms:', {
-			programId: data.parmsValueGet('programId'),
-			filterInIds: data.parmsValueGet('filterInIds')
-		})
+		console.log('DataObjTableActionFilter.getScript.parms:', data.parms)
 
 		if (!this.query.exprFilter) {
 			exprFilter = `.id = <uuid,tree,id>`

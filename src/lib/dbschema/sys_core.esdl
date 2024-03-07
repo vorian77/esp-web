@@ -75,7 +75,9 @@ module sys_core {
   } 
 
   type SysDataObjAction extending sys_core::SysObj {
+    required codeActionType: sys_core::SysCode;
     allTabs: bool;
+    required checkObjChanged: bool;
     color: str;
     required order: default::nonNegative;
     constraint exclusive on (.name);
@@ -107,6 +109,9 @@ module sys_core {
     dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
     fieldListChips: sys_core::SysDataObjFieldListChips {
+      on source delete delete target;
+    };
+    fieldListConfig: sys_core::SysDataObjFieldListConfig {
       on source delete delete target;
     };
     fieldListItems: sys_core::SysDataObjFieldListItems;
@@ -245,6 +250,9 @@ module sys_core {
     
   function getDataObjFieldListChips(name: str) -> optional sys_core::SysDataObjFieldListChips
     using (select sys_core::SysDataObjFieldListChips filter .name = name);
+  
+  function getDataObjFieldListConfig(name: str) -> optional sys_core::SysDataObjFieldListConfig
+    using (select sys_core::SysDataObjFieldListConfig filter .name = name);
   
   function getDataObjFieldListItems(name: str) -> optional sys_core::SysDataObjFieldListItems
     using (select sys_core::SysDataObjFieldListItems filter .name = name);  

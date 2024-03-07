@@ -6,9 +6,10 @@
 
 	export let state: State
 	export let dataObj: DataObj
-	const isHeader = false
 
+	const isHeader = false
 	let hidden = false
+
 	$: hidden =
 		state.surface === SurfaceType.page
 			? dataObj.actionsField.length === 0 || !state.objHasChanged

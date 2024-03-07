@@ -94,7 +94,7 @@ export class StateObj extends State {
 
 		this.nodeType = NodeType.object
 		this.packet = new StatePacket({
-			component: StatePacketComponent.navApp,
+			component: StatePacketComponent.query,
 			token: new TokenApiQuery(
 				this.queryType,
 				new TokenApiDbDataObj({ dataObjName: this.dataObjName }),
@@ -106,23 +106,24 @@ export class StateObj extends State {
 	}
 }
 
-export class StateObjSelect extends StateObj {
+export class StateObjModal extends StateObj {
 	btnLabelComplete?: string
+	isBtnDelete: boolean
 	isMultiSelect: boolean = false
-	recordSubmitted: Record<string, any> = {}
-	selectedIds: Array<string> = []
-	selectedRows: Array<Record<string, any>> = []
+	records: StateObjModalRecords = []
 	constructor(obj: any) {
 		const clazz = 'StateObjSelect'
 		super(obj)
 		this.btnLabelComplete = strOptional(obj.btnLabelComplete, clazz, 'btnLabelComplete')
+		this.isBtnDelete = booleanOrFalse(obj.isBtnDelete, 'isBtnDelete')
 		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
-		this.selectedIds = valueOrDefault(obj.selectedIds, [])
 	}
-	setSelected(selectedRows: Array<Record<string, any>>) {
-		this.selectedRows = selectedRows
+	setRecords(records: Array<Record<string, any>>) {
+		this.records = records
 	}
 }
+
+export type StateObjModalRecords = Array<Record<string, any>>
 
 export class StatePacket {
 	checkObjChanged: boolean = true
@@ -140,6 +141,7 @@ export enum StatePacketComponent {
 	appDataObj = 'appDataObj',
 	appRow = 'appRow',
 	appTab = 'appTab',
+	query = 'query',
 	navApp = 'navApp',
 	navTree = 'navTree'
 }

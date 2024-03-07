@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { FieldListChips, FieldListChipValues } from '$comps/form/fieldListChips'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { StateObjSelect } from '$comps/nav/types.appState'
+	import { StateObjModal } from '$comps/nav/types.appState'
 	import { TokenApiDbDataObj, TokenApiQueryType } from '$comps/types.token'
 	import { type DataObjData } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
@@ -30,7 +30,7 @@
 				type: 'component',
 				component: 'overlayModalForm',
 				meta: {
-					state: new StateObjSelect({
+					state: new StateObjModal({
 						btnLabelComplete: field.btnLabelComplete,
 						dataObjData,
 						dataObjName: field.dataObjName,

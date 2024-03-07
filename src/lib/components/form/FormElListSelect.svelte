@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { State, StateObj, StateObjSelect } from '$comps/nav/types.appState'
+	import { State, StateObj, StateObjModal } from '$comps/nav/types.appState'
 	import { SurfaceType } from '$comps/types.master'
 	import { TokenApiQueryType } from '$comps/types.token'
 	import Form from '$comps/form/Form.svelte'
@@ -10,8 +10,8 @@
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const dispatch = createEventDispatcher()
-
 	const modalStore = getModalStore()
+	const FILENAME = '$comps/form/FormElListSelect.svelte'
 
 	export let state: State
 	export let field: FieldListSelect
@@ -19,7 +19,10 @@
 
 	let stateLocal: State
 
-	$: setFormState(field.valueCurrent)
+	$: {
+		console.log('FormElListSelect.field:', field)
+		setFormState(field.valueCurrent)
+	}
 
 	function add() {
 		new Promise<any>((resolve) => {
@@ -27,7 +30,7 @@
 				type: 'component',
 				component: 'overlayModalForm',
 				meta: {
-					state: new StateObjSelect({
+					state: new StateObjModal({
 						btnLabelComplete: field.btnLabelComplete,
 						dataObjData,
 						dataObjName: field.dataObjName,
@@ -53,12 +56,9 @@
 		})
 	}
 
-	function setFormState(values: string[]) {
+	function setFormState(ids: string[]) {
 		const data = dataObjData.copy()
-		data.parmsUpsert({
-			programId: state.programId,
-			filterInIds: values
-		})
+		data.parmsUpsert({ filterInIds: ids, programId: state.programId })
 		stateLocal = new StateObj({
 			dataObjData: data,
 			dataObjName: field.dataObjName,

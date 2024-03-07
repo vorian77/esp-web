@@ -8,6 +8,7 @@ import {
 } from '$comps/types'
 import type { DataObjRaw } from '$comps/types'
 import { AppRowActionType } from '$comps/nav/types.app'
+import { type StateObjModalRecords } from '$comps/nav/types.appState'
 import { Node } from '$comps/nav/types.node'
 import { error } from '@sveltejs/kit'
 
@@ -328,6 +329,19 @@ export class TokenAppDoName extends TokenApp {
 		super()
 		this.dataObjName = dataObjName
 	}
+}
+export class TokenAppModalReturn extends TokenApp {
+	type: TokenAppModalReturnType
+	records: StateObjModalRecords
+	constructor(type: TokenAppModalReturnType, records: StateObjModalRecords = []) {
+		super()
+		this.type = type
+		this.records = records
+	}
+}
+export enum TokenAppModalReturnType {
+	complete = 'complete',
+	delete = 'delete'
 }
 
 export class TokenAppRow extends TokenApp {

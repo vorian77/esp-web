@@ -1,16 +1,5 @@
-import {
-	codeTypes,
-	codes,
-	ResetDb,
-	sectionHeader,
-	tables
-} from '$server/dbEdge/init/dbEdgeInitUtilities1'
-import {
-	addColumn,
-	addDataObj,
-	addDataObjFieldItems,
-	addNodeProgramObj
-} from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import { ResetDb, sectionHeader, tables } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { addColumn, addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 export async function initFeatDocument() {
 	await reset()
@@ -27,65 +16,10 @@ async function reset() {
 	reset.delDataObj('data_obj_cm_csf_document_detail')
 	reset.delDataObj('data_obj_cm_csf_document_list')
 
-	reset.delColumn('dateExpires')
-	reset.delColumn('dateIssued')
-	reset.delColumn('file')
-	reset.delColumn('isShareWithClient')
-
-	// reset.delCodeType('ct_cm_doc_type')
-
-	reset.delTable('CmCsfDocument')
-
 	await reset.execute()
 }
 
 async function config() {
-	sectionHeader('Local-Config')
-
-	// await codeTypes([['app_cm', 0, 'ct_cm_doc_type']])
-
-	// await codes([
-	// 	// ct_cm_doc_type
-	// 	['ct_cm_doc_type', 'app_cm', 'Certificate - Asbestos Abatement', 0],
-	// 	['ct_cm_doc_type', 'app_cm', 'Certificate - Completion', 0],
-	// 	['ct_cm_doc_type', 'app_cm', 'Certificate - Lead Abatement', 0],
-	// 	['ct_cm_doc_type', 'app_cm', 'Certificate - OSHA 1', 0],
-	// 	['ct_cm_doc_type', 'app_cm', 'Certificate - OSHA 2', 0],
-	// 	['ct_cm_doc_type', 'app_cm', 'Employment notification', 0],
-	// 	['ct_cm_doc_type', 'app_cm', 'Employment verification', 0],
-	// 	['ct_cm_doc_type', 'app_cm', 'Evaluation form', 0]
-	// ])
-
-	sectionHeader('Columns')
-
-	await addColumn({
-		owner: 'app_sys',
-		codeDataType: 'date',
-		header: 'Expiration Date',
-		name: 'dateExpires'
-	})
-	await addColumn({
-		owner: 'app_sys',
-		codeDataType: 'date',
-		header: 'Issued Date',
-		name: 'dateIssued'
-	})
-	await addColumn({
-		owner: 'app_sys',
-		codeDataType: 'json',
-		exprStorageKey: 'file_<int64,calc,random10>',
-		header: 'File',
-		name: 'file'
-	})
-	await addColumn({
-		owner: 'app_sys',
-		codeDataType: 'str',
-		header: 'Share With Student',
-		name: 'isShareWithClient'
-	})
-
-	await tables([['app_cm', 'app_cm', 'CmCsfDocument', true]])
-
 	sectionHeader('Data Objects')
 
 	await addDataObj({

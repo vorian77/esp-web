@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
 	import NavTree from '$comps/nav/NavTree.svelte'
-	import FormEmbedded from '$comps/form/FormEmbedded.svelte'
+	import SurfaceOverlayDrawerForm from '$comps/Surface/SurfaceOverlayDrawerForm.svelte'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiUserId } from '$comps/types.token'
 	import { ResponseBody } from '$comps/types'
@@ -42,7 +42,10 @@
 	{#if $drawerStore.id === 'auth'}
 		<div>
 			{#if $drawerStore.meta.state}
-				<FormEmbedded state={$drawerStore.meta.state} on:formCancelled={onformCancelled} />
+				<SurfaceOverlayDrawerForm
+					state={$drawerStore.meta.state}
+					on:formCancelled={onformCancelled}
+				/>
 			{/if}
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}

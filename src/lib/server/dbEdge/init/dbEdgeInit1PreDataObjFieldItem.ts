@@ -5,6 +5,11 @@ export async function initPreDataObjFieldItem() {
 	sectionHeader('DataObjFieldItem')
 
 	await addDataObjFieldItems({
+		exprSelect: `SELECT app_cm::CmEmployer {data := .id, display := .name} FILTER .owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs ORDER BY .name`,
+		name: 'il_cm_employer_by_userName',
+		owner: 'app_cm'
+	})
+	await addDataObjFieldItems({
 		exprSelect: 'SELECT app_cm::CmServiceFlow {data := .id, display := .header} ORDER BY .header',
 		name: 'il_cm_service_flow',
 		owner: 'app_cm'
@@ -52,6 +57,11 @@ export async function initPreDataObjFieldItem() {
 			'SELECT sys_core::SysCodeType {data := .id, display := .header} FILTER .parent.name = <str,parms,codeTypeParentName> ORDER BY .name',
 		name: 'il_sys_codeType_order_name_by_codeTypeParent_name',
 		owner: 'app_sys'
+	})
+	await addDataObjFieldItems({
+		exprSelect: 'SELECT sys_db::SysColumn {data := .id, display := .name} ORDER BY .name',
+		name: 'il_sys_column_order_name',
+		owner: 'app_sys_admin'
 	})
 	await addDataObjFieldItems({
 		exprSelect: 'SELECT sys_core::SysDataObj {data := .id, display := .name} ORDER BY .name',

@@ -1,4 +1,5 @@
 import {
+	booleanOrFalse,
 	DataFieldDataType,
 	getArray,
 	memberOfEnum,
@@ -19,6 +20,7 @@ import { State } from '$comps/nav/types.appState'
 import { type Field, FieldAccess, FieldElement, type FieldRaw } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
 import { FieldListChips } from '$comps/form/fieldListChips'
+import { FieldListConfig } from '$comps/form/fieldListConfig'
 import { FieldListSelect } from '$comps/form/fieldListSelect'
 import {
 	FieldCustomAction,
@@ -38,7 +40,8 @@ import { ActionsQuery, ActionQuery, queryExecute } from '$comps/nav/types.appQue
 import {
 	TokenApiQueryData,
 	type TokenApiQueryDataValue,
-	TokenApiQueryType
+	TokenApiQueryType,
+	TokenAppDoAction
 } from '$comps/types.token'
 import { error } from '@sveltejs/kit'
 
@@ -204,7 +207,7 @@ export class DataObj {
 				const status = dataRow.status
 				const record = dataRow.record
 				const hasData = Object.keys(record).length > 0
-				// console.log('dataObj.objData.dataRow:', { record, status, hasData })
+				// console.log('types.dataObj.getObjData.dataRow:', { dataSource, record, status, hasData })
 
 				this.fields.forEach((f) => {
 					// console.log('dataObj.objData.field:', f.name)
@@ -233,8 +236,20 @@ export class DataObj {
 	initActions(actions: any) {
 		actions = valueOrDefault(actions, [])
 		let newActions: Array<DataObjAction> = []
-		actions.forEach((a: {}) => {
-			newActions.push(new DataObjAction(a))
+		actions.forEach((a: any) => {
+			switch (a.name) {
+				case 'noa_detail_delete':
+					newActions.push(new DataObjActionDelete(a))
+					break
+
+				case 'noa_detail_save_insert':
+				case 'noa_detail_save_update':
+					newActions.push(new DataObjActionSave(a))
+					break
+
+				default:
+					newActions.push(new DataObjAction(a))
+			}
 		})
 		return newActions
 	}
@@ -280,6 +295,10 @@ export class DataObj {
 
 				case FieldElement.listChips:
 					newField = new FieldListChips(fieldRaw, index)
+					break
+
+				case FieldElement.listConfig:
+					newField = new FieldListConfig(fieldRaw, index)
 					break
 
 				case FieldElement.listSelect:
@@ -412,15 +431,79 @@ export class DataObj {
 
 export class DataObjAction {
 	allTabs: boolean
-	name: string
-	header: string
+	checkObjChanged: boolean
 	color: string
+	dbAction: string
+	header: string
+	name: string
+	isDisabled: string
+	isHidden: boolean
 	constructor(obj: any) {
+		const clazz = 'DataObjAction'
 		obj = valueOrDefault(obj, {})
 		this.allTabs = Object.hasOwn(obj, 'allTabs') && obj.allTabs !== null ? obj.allTabs : false
-		this.name = strRequired(obj.name, 'ObjectAction', 'name')
-		this.header = strRequired(obj.header, 'ObjectAction', 'header')
+		this.checkObjChanged = booleanOrFalse(obj.checkObjChanged, clazz)
 		this.color = valueOrDefault(obj.color, 'variant-filled-primary')
+		this.dbAction = memberOfEnum(
+			obj._codeActionType,
+			clazz,
+			'dbAction',
+			'TokenAppDoAction',
+			TokenAppDoAction
+		)
+		this.header = strRequired(obj.header, clazz, 'header')
+		this.isDisabled = Object.hasOwn(obj, 'isDisabled') ? obj.isDisabled : ''
+		this.isHidden = Object.hasOwn(obj, 'isHidden') ? booleanOrFalse(obj.isHidden, clazz) : false
+		this.name = strRequired(obj.name, clazz, 'name')
+		console.log('DataObjAction:', this)
+	}
+	getIsDisabled(state: State) {
+		return false
+	}
+	getIsHidden(state: State) {
+		return ''
+	}
+}
+
+export class DataObjActionDelete extends DataObjAction {
+	constructor(obj: any) {
+		super(obj)
+	}
+	getIsDisabled(state: State) {
+		return false
+	}
+	getIsHidden(state: State) {
+		return ''
+	}
+}
+
+export class DataObjActionSave extends DataObjAction {
+	constructor(obj: any) {
+		super(obj)
+	}
+	getIsDisabled(state: State) {
+		// {@const disabled = action.name === 'noa_detail_save' && !state.objValidToSave ? true : false}
+		return !state.objValidToSave
+	}
+	getIsHidden(state: State) {
+		// {@const hidden = action.name === 'noa_detail_save' && !state.objHasChanged ? 'hidden' : ''}
+		return !state.objHasChanged ? 'hidden' : ''
+	}
+}
+
+export class DataObjActionGroup {
+	actions: DataObjAction[]
+	isEditing: boolean = false
+	justify: string
+	marginBottom: string
+	marginTop: string
+	constructor(obj: any) {
+		const clazz = 'DataObjActionGroup'
+		obj = valueOrDefault(obj, {})
+		this.actions = getArray(obj.actions)
+		this.justify = Object.hasOwn(obj, 'justify') ? obj.justify : ''
+		this.marginBottom = Object.hasOwn(obj, 'marginBottom') ? obj.marginBottom : ''
+		this.marginTop = Object.hasOwn(obj, 'marginTop') ? obj.justify : ''
 	}
 }
 

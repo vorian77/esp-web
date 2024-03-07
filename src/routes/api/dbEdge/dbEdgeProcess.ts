@@ -41,8 +41,8 @@ export async function processQuery(token: TokenApiQuery) {
 	let rawDataList: RawDataList = []
 	let script = ''
 
-	log('processQuery.queryType:', token.queryType)
-	// log('processQuery.dataObjRaw:', dataObjRaw)
+	log('processQuery.queryType:', `queryType: ${token.queryType}`)
+	// console.log('processQuery.dataObjRaw._tables:', dataObjRaw._tables)
 
 	switch (token.queryType) {
 		case TokenApiQueryType.dataObj:
@@ -128,20 +128,25 @@ function checkResult(script: string, result: Record<string, any>) {
 }
 
 async function getDataObjRaw(dataObj: TokenApiDbDataObj): Promise<DataObjRaw> {
+	let dataObjRaw: any
 	if (dataObj.dataObjRaw) {
 		return dataObj.dataObjRaw
 	} else if (dataObj.dataObjId) {
-		let dataObjRaw = await getDataObjById(dataObj.dataObjId)
-		if (dataObjRaw) return dataObjRaw
+		dataObjRaw = await getDataObjById(dataObj.dataObjId)
 	} else if (dataObj.dataObjName) {
-		let dataObjRaw = await getDataObjByName(dataObj.dataObjName)
+		dataObjRaw = await getDataObjByName(dataObj.dataObjName)
 		if (dataObjRaw) return dataObjRaw
 	}
-	error(500, {
-		file: FILENAME,
-		function: 'getDataObjRaw',
-		message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
-	})
+	if (dataObjRaw) {
+		dataObjRaw._actionsField = [...dataObjRaw.actionFieldBack, ...dataObjRaw.actionsField]
+		console.log('getDataObjRaw.dataObjRaw._actionsField:', dataObjRaw._actionsField)
+		return dataObjRaw
+	} else
+		error(500, {
+			file: FILENAME,
+			function: 'getDataObjRaw',
+			message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
+		})
 }
 
 async function processDataPost(

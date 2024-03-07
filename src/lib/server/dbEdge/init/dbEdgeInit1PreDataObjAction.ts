@@ -1,98 +1,85 @@
-import { sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { codeTypes, codes, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObjAction } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 export async function initPreDataObjAction() {
 	sectionHeader('DataObjAction')
 
 	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_list_save',
-		header: 'Save',
-		order: 100
-	})
-	await addDataObjAction({
-		owner: 'app_sys',
+		checkObjChanged: false,
+		codeActionType: 'listNew',
+		header: 'New',
 		name: 'noa_list_new',
-		header: 'New',
-		order: 110
+		order: 110,
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_list_edit',
+		checkObjChanged: false,
+		codeActionType: 'listEdit',
 		header: 'Edit',
-		order: 120
-	})
-	await addDataObjAction({
-		color: 'variant-filled-error',
-		owner: 'app_sys',
-		name: 'noa_list_delete',
-		header: 'Delete',
-		order: 130
-	})
-	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_list_columns',
-		header: 'Columns',
-		order: 140
+		name: 'noa_list_edit',
+		order: 120,
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
 		allTabs: true,
+		checkObjChanged: false,
+		codeActionType: 'none',
 		color: 'none',
-		owner: 'app_sys',
-		name: 'noa_detail_cancel',
 		header: 'Cancel',
-		order: 200
+		name: 'noa_detail_cancel',
+		order: 200,
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
 		allTabs: true,
-		owner: 'app_sys',
-		name: 'noa_detail_save',
+		checkObjChanged: false,
+		codeActionType: 'detailSaveInsert',
 		header: 'Save',
-		order: 210
+		name: 'noa_detail_save',
+		order: 210,
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_detail_save_new',
-		header: 'Save/New',
-		order: 220
-	})
-	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_detail_save_as',
+		checkObjChanged: false,
+		codeActionType: 'detailSaveAs',
 		header: 'Save As',
-		order: 230
+		name: 'noa_detail_save_as',
+		order: 230,
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_detail_new',
+		checkObjChanged: true,
+		codeActionType: 'detailNew',
 		header: 'New',
-		order: 240
+		name: 'noa_detail_new',
+		order: 240,
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_detail_delete',
+		checkObjChanged: true,
+		codeActionType: 'detailDelete',
+		color: 'variant-filled-error',
 		header: 'Delete',
+		name: 'noa_detail_delete',
 		order: 250,
-		color: 'variant-filled-error'
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
 		allTabs: true,
+		checkObjChanged: true,
+		codeActionType: 'back',
 		color: 'variant-ghost-primary',
-		owner: 'app_sys',
-		name: 'noa_back',
 		header: '< Back',
-		order: 5
+		name: 'noa_back',
+		order: 5,
+		owner: 'app_sys'
 	})
 	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_common_refresh',
+		checkObjChanged: false,
+		codeActionType: 'refresh',
 		header: 'Refresh',
-		order: 300
-	})
-	await addDataObjAction({
-		owner: 'app_sys',
-		name: 'noa_common_print',
-		header: 'Print',
-		order: 400
+		name: 'noa_common_refresh',
+		order: 300,
+		owner: 'app_sys'
 	})
 }

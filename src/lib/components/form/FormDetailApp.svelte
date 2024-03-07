@@ -15,5 +15,5 @@
 </script>
 
 {#if dataObj}
-	<FormDetail {state} {dataObj} {dataObjData} on:formCancelled />
+	<FormDetail bind:state {dataObj} {dataObjData} on:formCancelled />
 {/if}

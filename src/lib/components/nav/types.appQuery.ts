@@ -7,18 +7,10 @@ import {
 	memberOfEnum,
 	ResponseBody,
 	strRequired,
-	valueOrDefault,
-	type DataObjRecord
+	valueOrDefault
 } from '$comps/types'
-import { apiFetch, ApiFunction } from '$lib/api'
-import {
-	TokenApiDbDataObj,
-	TokenApiQueryType,
-	TokenApiQuery,
-	TokenApiQueryData,
-	TokenApiQueryDataTree
-} from '$comps/types.token'
-import { Token } from '$comps/types.token'
+import { apiDbQuery } from '$lib/api'
+import { TokenApiQueryType, TokenApiQueryData, TokenApiQueryDataTree } from '$comps/types.token'
 import { getEnhancement } from '$enhance/crud/_crud'
 import { error } from '@sveltejs/kit'
 
@@ -152,14 +144,11 @@ function queryDataPost(queryType: TokenApiQueryType, dataPre: any, dataQuery: an
 }
 
 export async function queryExecute(
-	dataObjSource: any,
+	dataObjSource: Record<string, any>,
 	queryType: TokenApiQueryType,
 	queryData: TokenApiQueryData
 ) {
-	const result: ResponseBody = await apiFetch(
-		ApiFunction.dbEdgeProcessQuery,
-		new TokenApiQuery(queryType, new TokenApiDbDataObj(dataObjSource), queryData)
-	)
+	const result: ResponseBody = await apiDbQuery(queryType, dataObjSource, queryData)
 
 	if (!result.success) {
 		let errMsg = result.message

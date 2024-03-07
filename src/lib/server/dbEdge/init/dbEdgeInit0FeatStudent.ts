@@ -5,8 +5,6 @@ import init from './dbEdgeInit2DOSysAuth'
 export async function initFeatCMStudent() {
 	sectionHeader('DataObject - CM-Student')
 	await reset()
-	// await initCodes()
-	// await initColumns()
 
 	await initCMStudent()
 	await initStudentCsf()
@@ -28,51 +26,7 @@ async function reset() {
 	reset.delFeature('cm_client_service_flow')
 	reset.delFeature('cm_student')
 
-	// // columns
-	// reset.delColumn('codeReferralEndType')
-	// reset.delColumn('codeReferralType')
-
-	// // code types/codes
-	// reset.delCodeType('ct_cm_service_flow_type')
-	// reset.delCodeType('ct_cm_service_flow_end_type')
-
 	await reset.execute()
-}
-
-async function initCodes() {
-	await codeTypes([
-		['app_cm', 0, 'ct_cm_service_flow_type'],
-		['app_cm', 0, 'ct_cm_service_flow_end_type']
-	])
-
-	await codes([
-		// ct_cm_service_flow_type
-		['ct_cm_service_flow_type', 'app_cm', 'From Administrator', 0],
-		['ct_cm_service_flow_type', 'app_cm', 'From School', 0],
-		['ct_cm_service_flow_type', 'app_cm', 'Walk-in', 0],
-		['ct_cm_service_flow_type', 'app_cm', 'Our World', 0],
-
-		// ct_cm_service_flow_end_type
-		['ct_cm_service_flow_end_type', 'app_cm', 'Completed', 0],
-		['ct_cm_service_flow_end_type', 'app_cm', 'Dropped Out', 0],
-		['ct_cm_service_flow_end_type', 'app_cm', 'Suspended', 0],
-		['ct_cm_service_flow_end_type', 'app_cm', 'Unappointed', 0]
-	])
-}
-
-async function initColumns() {
-	await addColumn({
-		codeDataType: 'link',
-		header: 'Referral End Type',
-		name: 'codeReferralEndType',
-		owner: 'app_sys'
-	})
-	await addColumn({
-		codeDataType: 'link',
-		header: 'Referral Type',
-		name: 'codeReferralType',
-		owner: 'app_sys'
-	})
 }
 
 async function initCMStudent() {

@@ -13,7 +13,7 @@
 	export let hiddenMode = false
 	export let isHeader: boolean
 
-	const footerOnly = ['noa_detail_cancel', 'noa_detail_save']
+	const footerOnly = ['noa_detail_cancel', 'noa_detail_save_insert', , 'noa_detail_save_update']
 	let actions: Array<DataObjAction> = []
 	dataObj.actionsField.forEach((a) => {
 		if (isHeader) {
@@ -59,8 +59,12 @@
 				await objAction(TokenAppDoAction.detailNew, true)
 				break
 
-			case 'noa_detail_save':
-				await objActionSave(rowStatus)
+			case 'noa_detail_save_insert':
+				await objAction(TokenAppDoAction.detailSaveInsert, false)
+				break
+
+			case 'noa_detail_save_update':
+				await objAction(TokenAppDoAction.detailSaveUpdate, false)
 				break
 
 			case 'noa_detail_save_as':
@@ -99,13 +103,13 @@
 		})
 	}
 
-	async function objActionSave(rowStatus: DataObjRecordStatus) {
-		if ([DataObjRecordStatus.retrieved, DataObjRecordStatus.updated].includes(rowStatus)) {
-			await objAction(TokenAppDoAction.detailSaveUpdate, false)
-		} else if (rowStatus === DataObjRecordStatus.created) {
-			await objAction(TokenAppDoAction.detailSaveInsert, false)
-		}
-	}
+	// async function objActionSave(rowStatus: DataObjRecordStatus) {
+	// 	if ([DataObjRecordStatus.retrieved, DataObjRecordStatus.updated].includes(rowStatus)) {
+	// 		await objAction(TokenAppDoAction.detailSaveUpdate, false)
+	// 	} else if (rowStatus === DataObjRecordStatus.created) {
+	// 		await objAction(TokenAppDoAction.detailSaveInsert, false)
+	// 	}
+	// }
 </script>
 
 <!-- <DataViewer header="formObj" data={formObj} /> -->

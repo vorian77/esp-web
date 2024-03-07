@@ -406,6 +406,9 @@ export class ResetDb {
 	delFieldChips(name: string) {
 		this.addStatement(`DELETE sys_core::SysDataObjFieldListChips FILTER .name = '${name}'`)
 	}
+	delFieldConfig(name: string) {
+		this.addStatement(`DELETE sys_core::SysDataObjFieldListConfig FILTER .name = '${name}'`)
+	}
 	delFieldItems(name: string) {
 		this.addStatement(`DELETE sys_core::SysDataObjFieldListItems FILTER .name = '${name}'`)
 	}

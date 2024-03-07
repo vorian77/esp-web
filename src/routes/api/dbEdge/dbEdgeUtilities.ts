@@ -25,6 +25,8 @@ export async function getDataObjById(dataObjId: string) {
 	const query = e.select(e.sys_core.SysDataObj, (do1) => {
 		const actionFieldBack = e.select(e.sys_core.SysDataObjAction, (doa) => ({
 			allTabs: true,
+			checkObjChanged: true,
+			_codeActionType: doa.codeActionType.name,
 			color: true,
 			header: true,
 			name: true,
@@ -33,22 +35,18 @@ export async function getDataObjById(dataObjId: string) {
 		}))
 		const actionsField = e.select(do1.actionsField, (a) => ({
 			allTabs: true,
+			checkObjChanged: true,
+			_codeActionType: a.codeActionType.name,
 			color: true,
 			header: true,
 			name: true,
 			order: true,
 			filter: e.op(do1.id, '=', e.cast(e.uuid, dataObjId))
 		}))
-		const _actionsField = e.select(e.op(actionFieldBack, 'union', actionsField), (a) => ({
-			allTabs: true,
-			color: true,
-			header: true,
-			name: true,
-			order: true,
-			order_by: a.order
-		}))
 
 		return {
+			actionFieldBack,
+			actionsField,
 			actionsQuery: true,
 			description: true,
 			exprFilter: true,
@@ -59,7 +57,6 @@ export async function getDataObjById(dataObjId: string) {
 			name: true,
 			subHeader: true,
 
-			_actionsField,
 			_codeCardinality: do1.codeCardinality.name,
 			_codeComponent: do1.codeComponent.name,
 
@@ -105,8 +102,13 @@ export async function getDataObjById(dataObjId: string) {
 					btnLabelComplete: true,
 					columnLabelDisplay: true,
 					_dataObjName: i.dataObj.name,
-					isMultiSelect: true,
-					name: true
+					isMultiSelect: true
+				})),
+				_fieldListConfig: e.select(f.fieldListConfig, (i) => ({
+					btnLabelComplete: true,
+					_dataObjNameConfig: i.dataObjConfig.name,
+					_dataObjNameDisplay: i.dataObjDisplay.name,
+					isMultiSelect: true
 				})),
 				_fieldListItems: e.select(f.fieldListItems, (idb) => ({
 					_codeDataTypeDisplay: idb.codeDataTypeDisplay.name,
@@ -117,8 +119,7 @@ export async function getDataObjById(dataObjId: string) {
 				_fieldListSelect: e.select(f.fieldListSelect, (i) => ({
 					btnLabelComplete: true,
 					_dataObjName: i.dataObj.name,
-					isMultiSelect: true,
-					name: true
+					isMultiSelect: true
 				})),
 				customElement: true,
 				fieldListItemsParms: true,

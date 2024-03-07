@@ -12,8 +12,10 @@ import {
 	widgets
 } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 
-await initUserResources()
-await initUsers()
+export async function initOldUsers() {
+	await initUserResources()
+	// await initUsers()
+}
 
 async function initUserResources() {
 	await nodeObjPrograms([
@@ -22,25 +24,25 @@ async function initUserResources() {
 		['app_cm', 'node_pgm_cm_student', 'AI-Role: Student', 70, 'application']
 	])
 
-	await userType([
-		['app_cm', 'ut_cm_staff_admin'],
-		['app_cm', 'ut_cm_staff_provider'],
-		['app_cm', 'ut_cm_student'],
-		['app_sys', 'ut_sys_admin']
-	])
+	// await userType([
+	// 	['app_cm', 'ut_cm_staff_admin'],
+	// 	['app_cm', 'ut_cm_staff_provider'],
+	// 	['app_cm', 'ut_cm_student'],
+	// 	['app_sys', 'ut_sys_admin']
+	// ])
 
-	await widgets([
-		['app_cm', 'widget_cm_user'],
-		['app_cm', 'widget_cm_quotes'],
-		['app_sys', 'widget_sys_user']
-	])
+	// await widgets([
+	// 	['app_cm', 'widget_cm_user'],
+	// 	['app_cm', 'widget_cm_quotes'],
+	// 	['app_sys', 'widget_sys_user']
+	// ])
 
-	await userTypeResourcesApps([
-		['ut_sys_admin', 'app_cm'],
-		['ut_sys_admin', 'app_cm'],
-		['ut_sys_admin', 'app_db'],
-		['ut_sys_admin', 'app_sys']
-	])
+	// await userTypeResourcesApps([
+	// 	['ut_sys_admin', 'app_cm'],
+	// 	['ut_sys_admin', 'app_cm'],
+	// 	['ut_sys_admin', 'app_db'],
+	// 	['ut_sys_admin', 'app_sys']
+	// ])
 
 	await userTypeResourcesPrograms([
 		['ut_cm_staff_admin', 'node_pgm_cm_staff_adm'],
@@ -51,11 +53,11 @@ async function initUserResources() {
 		['ut_sys_admin', 'node_pgm_cm_student']
 	])
 
-	await userTypeResourcesWidgets([
-		['ut_cm_staff_admin', 'widget_sys_user'],
-		['ut_cm_staff_provider', 'widget_sys_user'],
-		['ut_sys_admin', 'widget_sys_user']
-	])
+	// await userTypeResourcesWidgets([
+	// 	['ut_cm_staff_admin', 'widget_sys_user'],
+	// 	['ut_cm_staff_provider', 'widget_sys_user'],
+	// 	['ut_sys_admin', 'widget_sys_user']
+	// ])
 
 	// await userTypeResourcesWidgets([
 	// 	['ut_cm_staff_admin', 'widget_sys_user'],
@@ -64,19 +66,19 @@ async function initUserResources() {
 	// 	['ut_cm_student', 'widget_cm_quotes']
 	// ])
 
-	await userUserType([
-		['user_sys', 'ut_cm_staff_admin'],
-		['user_sys', 'ut_cm_staff_provider'],
-		['user_sys', 'ut_cm_student'],
-		['user_sys', 'ut_sys_admin']
-	])
+	// await userUserType([
+	// 	['user_sys', 'ut_cm_staff_admin'],
+	// 	['user_sys', 'ut_cm_staff_provider'],
+	// 	['user_sys', 'ut_cm_student'],
+	// 	['user_sys', 'ut_sys_admin']
+	// ])
 
-	await addRoleOrg([
-		['Atlantic Impact', 'cm_training_role_org_agency'],
-		['Atlantic Impact - School Site 1', 'cm_training_role_org_venue'],
-		['Atlantic Impact - School Site 2', 'cm_training_role_org_venue'],
-		['Atlantic Impact - School Site 3', 'cm_training_role_org_venue']
-	])
+	// await addRoleOrg([
+	// 	['Atlantic Impact', 'cm_training_role_org_agency'],
+	// 	['Atlantic Impact - School Site 1', 'cm_training_role_org_venue'],
+	// 	['Atlantic Impact - School Site 2', 'cm_training_role_org_venue'],
+	// 	['Atlantic Impact - School Site 3', 'cm_training_role_org_venue']
+	// ])
 }
 
 async function initUsers() {

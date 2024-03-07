@@ -7,7 +7,7 @@
 		AppLevelTab
 	} from '$comps/nav/types.app'
 	import { query } from '$comps/nav/types.appQuery'
-	import { State, StateObj, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import {
 		TokenApiQuery,
 		TokenApiQueryType,
@@ -29,16 +29,13 @@
 	import FormDetailApp from '$comps/form/FormDetailApp.svelte'
 	import NavCrumbs from '$comps/nav/NavCrumbs.svelte'
 	import NavRow from '$comps/nav/NavRow.svelte'
+	import { setContext } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
-	const FILENAME = '$comps/nav/NavApp.svelte'
+	const FILENAME = '$comps/form/Form.svelte'
 
 	export let state: State
-
-	if (state instanceof StateObj) {
-		console.log('Form.state:', state)
-	}
 
 	const comps: Record<string, any> = {
 		FormList: FormListApp,
@@ -64,6 +61,7 @@
 		StatePacketComponent.appDataObj,
 		StatePacketComponent.appRow,
 		StatePacketComponent.appTab,
+		StatePacketComponent.query,
 		StatePacketComponent.navApp
 	]
 
@@ -75,6 +73,7 @@
 	}
 
 	async function processState(packet: StatePacket) {
+		console.log('Form.processState.packet:', packet)
 		if (!packet.token)
 			error(500, {
 				file: FILENAME,
@@ -192,11 +191,13 @@
 				}
 				break
 
-			case StatePacketComponent.navApp:
+			case StatePacketComponent.query:
 				if (token instanceof TokenApiQuery) {
 					app = await App.initDataObj(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
+
+			case StatePacketComponent.navApp:
 				if (token instanceof TokenAppTreeNode) {
 					app = await App.initNode(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
@@ -219,6 +220,26 @@
 				component: StatePacketComponent.appTab,
 				token: new TokenAppTab(parseInt(event.target.value))
 			})
+		})
+	}
+
+	if (state?.nodeType === NodeType.programObject) {
+		setContext('onRowClick', async function onRowClick(rows: any, record: any) {
+			if (dataObj) {
+				console.log('Form.onRowClick1:', { rows, record })
+				state.update({
+					packet: new StatePacket({
+						checkObjChanged: false,
+						component: StatePacketComponent.appDataObj,
+						token: new TokenAppDoList(
+							TokenAppDoAction.listEdit,
+							dataObj,
+							rows.map((r: any) => r.id),
+							record.id
+						)
+					})
+				})
+			}
 		})
 	}
 
@@ -301,7 +322,7 @@
 						{#if currTab}
 							<svelte:component
 								this={currComponent}
-								{state}
+								bind:state
 								{dataObj}
 								{dataObjData}
 								on:formCancelled
@@ -313,5 +334,5 @@
 		{/if}
 	</AppShell>
 {:else if state?.nodeType === NodeType.object && currTab}
-	<svelte:component this={currComponent} {state} {dataObj} {dataObjData} on:formCancelled />
+	<svelte:component this={currComponent} bind:state {dataObj} {dataObjData} on:formCancelled />
 {/if}

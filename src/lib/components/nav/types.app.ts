@@ -32,7 +32,6 @@ export class App {
 	}
 	static async initDataObj(state: State, token: TokenApiQuery) {
 		const newApp = new App(await AppLevel.initDataObj(state, token))
-		console.log('types.app.initDataObj.newApp:', { newApp })
 		await query(state, newApp.getCurrTab(), token.queryType, newApp)
 		return newApp
 	}

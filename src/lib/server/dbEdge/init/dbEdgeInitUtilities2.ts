@@ -254,6 +254,10 @@ export async function addDataObj(data: any) {
 							e.sys_core.getDataObjFieldListChips(e.cast(e.str, e.json_get(f, 'fieldListChips')))
 						),
 
+						fieldListConfig: e.select(
+							e.sys_core.getDataObjFieldListConfig(e.cast(e.str, e.json_get(f, 'fieldListConfig')))
+						),
+
 						fieldListItems: e.select(
 							e.sys_core.getDataObjFieldListItems(e.cast(e.str, e.json_get(f, 'fieldListItems')))
 						),
@@ -313,22 +317,28 @@ export async function addDataObjAction(data: any) {
 	const query = e.params(
 		{
 			allTabs: e.optional(e.bool),
-			owner: e.str,
-			name: e.str,
+			checkObjChanged: e.bool,
+			codeActionType: e.str,
+			color: e.optional(e.str),
 			header: e.str,
+			name: e.str,
 			order: e.int64,
-			color: e.optional(e.str)
+			owner: e.str
 		},
 		(p) => {
 			return e.insert(e.sys_core.SysDataObjAction, {
 				allTabs: p.allTabs,
-				owner: e.select(e.sys_core.getEnt(p.owner)),
-				name: p.name,
-				header: p.header,
-				order: p.order,
+				checkObjChanged: p.checkObjChanged,
+				codeActionType: e.select(
+					e.sys_core.getCode('ct_cm_data_obj_action_type', p.codeActionType)
+				),
 				color: p.color,
 				createdBy: e.select(e.sys_user.getRootUser()),
-				modifiedBy: e.select(e.sys_user.getRootUser())
+				header: p.header,
+				modifiedBy: e.select(e.sys_user.getRootUser()),
+				name: p.name,
+				order: p.order,
+				owner: e.select(e.sys_core.getEnt(p.owner))
 			})
 		}
 	)

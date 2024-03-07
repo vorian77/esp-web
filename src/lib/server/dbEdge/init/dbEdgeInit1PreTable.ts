@@ -36,6 +36,9 @@ export async function initPreTable() {
 		['app_cm', 'app_cm', 'CmCohort', true],
 		['app_cm', 'app_cm', 'CmCsfCohort', true],
 		['app_cm', 'app_cm', 'CmCsfCohortAttd', true],
-		['app_cm', 'app_cm', 'CmCsfNote', true]
+		['app_cm', 'app_cm', 'CmCsfDocument', true],
+		['app_cm', 'app_cm', 'CmCsfJobPlacement', true],
+		['app_cm', 'app_cm', 'CmCsfNote', true],
+		['app_cm', 'app_cm', 'CmEmployer', true]
 	])
 }
