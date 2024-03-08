@@ -34,10 +34,6 @@
 		const rowStatus = dataObj.objData.dataObjRow.status
 
 		switch (actionName) {
-			case 'noa_back':
-				await objAction(TokenAppDoAction.back, true)
-				break
-
 			case 'noa_detail_cancel':
 				await objAction(TokenAppDoAction.back, false)
 				break
@@ -98,7 +94,7 @@
 			packet: new StatePacket({
 				checkObjChanged,
 				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoDetail(action, dataObj, confirm)
+				token: new TokenAppDoDetail(action, dataObj.objData, confirm)
 			})
 		})
 	}

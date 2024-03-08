@@ -65,7 +65,7 @@
 	}
 </script>
 
-<DataObjActionsHeader {state} {dataObj} on:formCancelled />
+<!-- <DataObjActionsHeader {state} {dataObj} on:formCancelled /> -->
 
 <div id={state.surface}>
 	<Datatable {handler} pagination={false} rowsPerPage={false} search={!isSurfaceEmbedded}>

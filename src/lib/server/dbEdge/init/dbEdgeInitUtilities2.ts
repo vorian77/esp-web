@@ -163,7 +163,7 @@ export async function addDataObj(data: any) {
 
 	const query = e.params(
 		{
-			actionsField: e.optional(e.array(e.str)),
+			actionsFieldGroup: e.optional(e.str),
 			actionsQuery: e.optional(e.array(e.json)),
 			codeCardinality: e.str,
 			codeComponent: e.str,
@@ -181,9 +181,7 @@ export async function addDataObj(data: any) {
 		},
 		(p) => {
 			return e.insert(e.sys_core.SysDataObj, {
-				actionsField: e.select(e.sys_core.SysDataObjAction, (af) => ({
-					filter: e.contains(p.actionsField, af.name)
-				})),
+				actionsFieldGroup: e.select(e.sys_core.getDataObjActionGroup(p.actionsFieldGroup)),
 				actionsQuery: actionsQuery,
 				codeCardinality: e.select(e.sys_core.getCode('ct_sys_do_cardinality', p.codeCardinality)),
 				codeComponent: e.select(e.sys_core.getCode('ct_sys_do_component', p.codeComponent)),
@@ -320,6 +318,9 @@ export async function addDataObjAction(data: any) {
 			checkObjChanged: e.bool,
 			codeActionType: e.str,
 			color: e.optional(e.str),
+			confirButtonLabel: e.optional(e.str),
+			confirmMsg: e.optional(e.str),
+			confirmTitle: e.optional(e.str),
 			header: e.str,
 			name: e.str,
 			order: e.int64,
@@ -333,11 +334,41 @@ export async function addDataObjAction(data: any) {
 					e.sys_core.getCode('ct_cm_data_obj_action_type', p.codeActionType)
 				),
 				color: p.color,
+				confirmButtonLabel: p.confirButtonLabel,
+				confirmMsg: p.confirmMsg,
+				confirmTitle: p.confirmTitle,
 				createdBy: e.select(e.sys_user.getRootUser()),
 				header: p.header,
 				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,
 				order: p.order,
+				owner: e.select(e.sys_core.getEnt(p.owner))
+			})
+		}
+	)
+	return await query.run(client, data)
+}
+
+export async function addDataObjActionGroup(data: any) {
+	sectionHeader(`addDataObjActionGroup - ${data.name}`)
+	const query = e.params(
+		{
+			actions: e.array(e.str),
+			name: e.str,
+			owner: e.str
+		},
+		(p) => {
+			return e.insert(e.sys_core.SysDataObjActionGroup, {
+				actions: e.assert_distinct(
+					e.set(
+						e.for(e.array_unpack(p.actions), (a) => {
+							return e.select(e.sys_core.getDataObjAction(a))
+						})
+					)
+				),
+				createdBy: e.select(e.sys_user.getRootUser()),
+				modifiedBy: e.select(e.sys_user.getRootUser()),
+				name: p.name,
 				owner: e.select(e.sys_core.getEnt(p.owner))
 			})
 		}

@@ -44,7 +44,7 @@ export async function query(
 	if (!result.success) return false
 
 	// successful
-	const resultData = DataObjData.loadData(result.data.dataObjData)
+	const resultData = DataObjData.load(result.data.dataObjData)
 	tab.dataObjRaw = result.data.dataObjRaw
 	tab.dataObj = await DataObj.init(state, result.data.dataObjRaw, queryData)
 	tab.isRetrieved = true

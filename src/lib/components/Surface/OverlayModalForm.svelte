@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte'
-	import Form from '$comps/form/Form.svelte'
+	import Form from '$comps/dataObj/DataObj.svelte'
 	import { StateObjModal, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import {
 		TokenApiQueryType,
@@ -67,15 +67,15 @@
 		modalStore.close()
 	}
 
-	async function updateState(action: TokenAppDoAction) {
-		state.update({
-			packet: new StatePacket({
-				checkObjChanged: false,
-				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoDetail(action, dataObj)
-			})
-		})
-	}
+	// async function updateState(action: TokenAppDoAction) {
+	// 	state.update({
+	// 		packet: new StatePacket({
+	// 			checkObjChanged: false,
+	// 			component: StatePacketComponent.appDataObj,
+	// 			token: new TokenAppDoDetail(action, dataObj.objData)
+	// 		})
+	// 	})
+	// }
 
 	async function query() {
 		// let result: ResponseBody = await apiDbQuery(

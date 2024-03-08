@@ -31,7 +31,7 @@ async function reset() {
 
 async function initCMStudent() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
@@ -94,7 +94,7 @@ async function initCMStudent() {
 			{ index: '0', table: 'CmClient' },
 			{ columnParent: 'person', indexParent: '0', index: '1', table: 'SysPerson' }
 		],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -346,7 +346,7 @@ async function initStudentCsf() {
 		header: 'Service Flows',
 		tables: [{ index: '0', table: 'CmClientServiceFlow' }],
 		exprFilter: '.client.id = <uuid,tree,CmClient.id>',
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -426,7 +426,7 @@ async function initStudentCsf() {
 		name: 'data_obj_cm_client_service_flow_detail',
 		header: 'Service Flow',
 		tables: [{ index: '0', table: 'CmClientServiceFlow' }],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -576,7 +576,7 @@ async function initStudentCsfCohort() {
 		subHeader: "Student's course enrollments.",
 		tables: [{ index: '0', table: 'CmCsfCohort' }],
 		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -642,7 +642,7 @@ async function initStudentCsfCohort() {
 		name: 'data_obj_cm_csf_cohort_detail',
 		header: 'Cohort',
 		tables: [{ index: '0', table: 'CmCsfCohort' }],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -760,7 +760,7 @@ async function initStudentCsfCohortAttd() {
 		header: 'Attendances',
 		tables: [{ index: '0', table: 'CmCsfCohortAttd' }],
 		exprFilter: '.csfCohort.id = <uuid,tree,CmCsfCohort.id>',
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -803,7 +803,7 @@ async function initStudentCsfCohortAttd() {
 		name: 'data_obj_cm_csf_cohort_attd_detail',
 		header: 'Attendance',
 		tables: [{ index: '0', table: 'CmCsfCohortAttd' }],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -903,7 +903,7 @@ async function initStudentCsfNote() {
 		header: 'Case Notes',
 		tables: [{ index: '0', table: 'CmCsfNote' }],
 		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -945,7 +945,7 @@ async function initStudentCsfNote() {
 		name: 'data_obj_cm_csf_note_detail',
 		header: 'Case Note',
 		tables: [{ index: '0', table: 'CmCsfNote' }],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		fields: [
 			{
 				codeAccess: 'readOnly',

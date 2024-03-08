@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DataObjActions from '$comps/dataObj/DataObjActions.svelte'
+	import DataObjActions from '$comps/dataObj/DataObjActionsOld.svelte'
 	import type { DataObj } from '$comps/types'
 	import type { State } from '$comps/nav/types.appState'
 	import { SurfaceType } from '$comps/types.master'

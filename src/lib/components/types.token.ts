@@ -259,6 +259,11 @@ export class TokenApp extends Token {
 		super()
 	}
 }
+export class TokenAppBack extends TokenApp {
+	constructor() {
+		super()
+	}
+}
 export class TokenAppCrumbs extends TokenApp {
 	crumbIdx: number
 	constructor(crumbIdx: number) {
@@ -266,14 +271,13 @@ export class TokenAppCrumbs extends TokenApp {
 		this.crumbIdx = crumbIdx
 	}
 }
-
 export class TokenAppDo extends TokenApp {
 	action: TokenAppDoAction
-	dataObj: DataObj
-	constructor(action: TokenAppDoAction, dataObj: DataObj) {
+	data: DataObjData | undefined
+	constructor(action: TokenAppDoAction, data: DataObjData | undefined) {
 		super()
 		this.action = action
-		this.dataObj = dataObj
+		this.data = data
 	}
 }
 export enum TokenAppDoAction {
@@ -290,9 +294,13 @@ export enum TokenAppDoAction {
 }
 
 export class TokenAppDoDetail extends TokenAppDo {
-	confirm: TokenAppDoDetailConfirm | undefined
-	constructor(action: TokenAppDoAction, dataObj: DataObj, confirm?: TokenAppDoDetailConfirm) {
-		super(action, dataObj)
+	confirm?: TokenAppDoDetailConfirm
+	constructor(
+		action: TokenAppDoAction,
+		data: DataObjData | undefined,
+		confirm?: TokenAppDoDetailConfirm
+	) {
+		super(action, data)
 		this.confirm = confirm
 	}
 }
@@ -313,11 +321,11 @@ export class TokenAppDoList extends TokenAppDo {
 	listRowId: string
 	constructor(
 		action: TokenAppDoAction,
-		dataObj: DataObj,
+		data: DataObjData | undefined,
 		listFilterIds: Array<string>,
 		listRowId: string
 	) {
-		super(action, dataObj)
+		super(action, data)
 		this.listFilterIds = listFilterIds
 		this.listRowId = listRowId
 	}

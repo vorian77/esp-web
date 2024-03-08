@@ -192,7 +192,7 @@ async function initFieldListConfigDataObjTables() {
 
 async function initApp() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: 'none',
@@ -226,7 +226,7 @@ async function initApp() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Application',
@@ -324,7 +324,7 @@ async function initApp() {
 
 async function initCodeType() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner.id = <uuid,tree,SysApp.id>',
@@ -371,7 +371,7 @@ async function initCodeType() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Code Type',
@@ -476,7 +476,7 @@ async function initCodeType() {
 
 async function initCode() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.codeType.id = <uuid,tree,SysCodeType.id>',
@@ -548,7 +548,7 @@ async function initCode() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Code',
@@ -683,7 +683,7 @@ async function initCode() {
 
 async function initColumn() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner.id = <uuid,tree,SysApp.id>',
@@ -717,7 +717,7 @@ async function initColumn() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Column',
@@ -1010,7 +1010,7 @@ async function initColumn() {
 
 async function initDataObj() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner.id = <uuid,tree,SysApp.id>',
@@ -1038,7 +1038,7 @@ async function initDataObj() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Data Object',
@@ -1177,7 +1177,7 @@ async function initDataObj() {
 
 async function initDataObjTable() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter:
@@ -1219,7 +1219,7 @@ async function initDataObjTable() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Table',
@@ -1302,7 +1302,7 @@ async function initDataObjTable() {
 
 async function initDataObjColumn() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter:
@@ -1338,7 +1338,7 @@ async function initDataObjColumn() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Column',
@@ -1413,7 +1413,7 @@ async function initDataObjColumn() {
 
 async function initDataObjAction() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner.id = <uuid,tree,SysApp.id>',
@@ -1448,7 +1448,7 @@ async function initDataObjAction() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Data Object Action',
@@ -1556,7 +1556,7 @@ async function initDataObjAction() {
 
 async function initDataObjNodeObj() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner.id = <uuid,tree,SysApp.id>',
@@ -1591,7 +1591,7 @@ async function initDataObjNodeObj() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Node Object',
@@ -1729,7 +1729,7 @@ async function initDataObjNodeObj() {
 
 async function initDataObjNodeObjFooter() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner.id = <uuid,tree,SysApp.id>',
@@ -1764,7 +1764,7 @@ async function initDataObjNodeObjFooter() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Node Object Footer',
@@ -1903,7 +1903,7 @@ async function initDataObjNodeObjFooter() {
 async function initTable() {
 	// field list - chips
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: 'none',
@@ -1942,7 +1942,7 @@ async function initTable() {
 
 	// field list - select
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: 'none',
@@ -1980,7 +1980,7 @@ async function initTable() {
 
 	// data objects
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.owner.id = <uuid,tree,SysApp.id>',
@@ -2014,7 +2014,7 @@ async function initTable() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Table',
@@ -2134,7 +2134,7 @@ async function initConfig() {
 		header: 'Data Object Configs',
 		table: 'SysObjConfig',
 		exprFilter: 'none',
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		fields: [
 			{
 				codeAccess: 'readOnly',

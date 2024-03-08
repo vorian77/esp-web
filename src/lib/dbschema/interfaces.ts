@@ -184,7 +184,7 @@ export namespace sys_core {
     "tables": SysDataObjTable[];
     "columns": SysDataObjColumn[];
     "actionsQuery"?: unknown[] | null;
-    "actionsField": SysDataObjAction[];
+    "actionsFieldGroup"?: SysDataObjActionGroup | null;
   }
   export interface SysDataObjAction extends SysObj {
     "allTabs"?: boolean | null;
@@ -192,6 +192,13 @@ export namespace sys_core {
     "order": number;
     "checkObjChanged": boolean;
     "codeActionType": SysCode;
+    "confirm"?: boolean | null;
+    "confirmButtonLabel"?: string | null;
+    "confirmMsg"?: string | null;
+    "confirmTitle"?: string | null;
+  }
+  export interface SysDataObjActionGroup extends SysObj {
+    "actions": SysDataObjAction[];
   }
   export interface SysDataObjColumn extends std.$Object {
     "codeAccess"?: SysCode | null;
@@ -701,6 +708,7 @@ export interface types {
     "SysCodeType": sys_core.SysCodeType;
     "SysDataObj": sys_core.SysDataObj;
     "SysDataObjAction": sys_core.SysDataObjAction;
+    "SysDataObjActionGroup": sys_core.SysDataObjActionGroup;
     "SysDataObjColumn": sys_core.SysDataObjColumn;
     "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;
     "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;

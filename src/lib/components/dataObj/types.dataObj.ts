@@ -63,13 +63,14 @@ export class DataObj {
 	isPopup: boolean
 	name: string
 	orderItems: DataObjListOrder
+	saveMode: DataObjSaveMode = DataObjSaveMode.none
 	subHeader: string
 	table?: Table
 
 	constructor(dataObjRaw: DataObjRaw) {
 		const clazz = 'DataObj'
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
-		this.actionsField = this.initActions(dataObjRaw._actionsField)
+		this.actionsField = this.initActions(dataObjRaw._actionsFieldGroup)
 		this.cardinality = memberOfEnum(
 			dataObjRaw._codeCardinality,
 			clazz,
@@ -191,6 +192,13 @@ export class DataObj {
 	}
 	set objData(dataSource: DataObjData) {
 		this.data = dataSource
+		this.saveMode =
+			this.data.cardinality === DataObjCardinality.detail
+				? this.data.dataObjRow.status === DataObjRecordStatus.created
+					? DataObjSaveMode.insert
+					: DataObjSaveMode.update
+				: DataObjSaveMode.none
+
 		switch (this.data.cardinality) {
 			case DataObjCardinality.list:
 				this.dataListRecord = dataSource.dataObjRowList.map((row: DataObjRecordRow) => {
@@ -207,24 +215,18 @@ export class DataObj {
 				const status = dataRow.status
 				const record = dataRow.record
 				const hasData = Object.keys(record).length > 0
-				// console.log('types.dataObj.getObjData.dataRow:', { dataSource, record, status, hasData })
 
 				this.fields.forEach((f) => {
-					// console.log('dataObj.objData.field:', f.name)
 					if (hasData && Object.hasOwn(dataRow.record, f.name)) {
-						// console.log('from db: ', f.name)
 						f.valueCurrent = f.copyValue(dataRow.record[f.name])
 						f.valueInitial = f.copyValue(dataRow.record[f.name])
 					} else if (status === DataObjRecordStatus.created) {
-						// console.log('insert - nullifying: ', f.name)
 						f.valueCurrent = null
 						f.valueInitial = null
 					} else if (status === DataObjRecordStatus.updated) {
-						// console.log('update - copying: ', f.name)
 						f.valueInitial = f.copyValue(f.valueCurrent)
 					}
 				})
-				// console.log('dataObj.objData.fields:', this.fields)
 				break
 		}
 	}
@@ -237,19 +239,7 @@ export class DataObj {
 		actions = valueOrDefault(actions, [])
 		let newActions: Array<DataObjAction> = []
 		actions.forEach((a: any) => {
-			switch (a.name) {
-				case 'noa_detail_delete':
-					newActions.push(new DataObjActionDelete(a))
-					break
-
-				case 'noa_detail_save_insert':
-				case 'noa_detail_save_update':
-					newActions.push(new DataObjActionSave(a))
-					break
-
-				default:
-					newActions.push(new DataObjAction(a))
-			}
+			newActions.push(new DataObjAction(a))
 		})
 		return newActions
 	}
@@ -433,17 +423,22 @@ export class DataObjAction {
 	allTabs: boolean
 	checkObjChanged: boolean
 	color: string
-	dbAction: string
+	confirmButtonLabel?: string
+	confirmMsg?: string
+	confirmTitle?: string
+	dbAction: TokenAppDoAction
 	header: string
 	name: string
-	isDisabled: string
-	isHidden: boolean
+	isDisabled: boolean = false
 	constructor(obj: any) {
 		const clazz = 'DataObjAction'
 		obj = valueOrDefault(obj, {})
 		this.allTabs = Object.hasOwn(obj, 'allTabs') && obj.allTabs !== null ? obj.allTabs : false
 		this.checkObjChanged = booleanOrFalse(obj.checkObjChanged, clazz)
 		this.color = valueOrDefault(obj.color, 'variant-filled-primary')
+		this.confirmButtonLabel = strOptional(obj.confirmButtonLabel, clazz, 'confirmButtonLabel')
+		this.confirmMsg = strOptional(obj.confirmMsg, clazz, 'confirmMsg')
+		this.confirmTitle = strOptional(obj.confirmTitle, clazz, 'confirmTitle')
 		this.dbAction = memberOfEnum(
 			obj._codeActionType,
 			clazz,
@@ -452,42 +447,7 @@ export class DataObjAction {
 			TokenAppDoAction
 		)
 		this.header = strRequired(obj.header, clazz, 'header')
-		this.isDisabled = Object.hasOwn(obj, 'isDisabled') ? obj.isDisabled : ''
-		this.isHidden = Object.hasOwn(obj, 'isHidden') ? booleanOrFalse(obj.isHidden, clazz) : false
 		this.name = strRequired(obj.name, clazz, 'name')
-		console.log('DataObjAction:', this)
-	}
-	getIsDisabled(state: State) {
-		return false
-	}
-	getIsHidden(state: State) {
-		return ''
-	}
-}
-
-export class DataObjActionDelete extends DataObjAction {
-	constructor(obj: any) {
-		super(obj)
-	}
-	getIsDisabled(state: State) {
-		return false
-	}
-	getIsHidden(state: State) {
-		return ''
-	}
-}
-
-export class DataObjActionSave extends DataObjAction {
-	constructor(obj: any) {
-		super(obj)
-	}
-	getIsDisabled(state: State) {
-		// {@const disabled = action.name === 'noa_detail_save' && !state.objValidToSave ? true : false}
-		return !state.objValidToSave
-	}
-	getIsHidden(state: State) {
-		// {@const hidden = action.name === 'noa_detail_save' && !state.objHasChanged ? 'hidden' : ''}
-		return !state.objHasChanged ? 'hidden' : ''
 	}
 }
 
@@ -536,10 +496,15 @@ export class DataObjData {
 			this.dataObjRow = new DataObjRecordRow(DataObjRecordStatus.unknown, {})
 		}
 	}
+	static load(data: DataObjData) {
+		if (data.cardinality === DataObjCardinality.detail) {
+			return new DataObjData(data.cardinality, data.dataObjRow)
+		} else {
+			return new DataObjData(data.cardinality, data.dataObjRowList)
+		}
+	}
 	copy() {
-		return this.cardinality === DataObjCardinality.detail
-			? new DataObjData(this.cardinality, this.dataObjRow)
-			: new DataObjData(this.cardinality, this.dataObjRowList)
+		return DataObjData.load(this)
 	}
 	getData() {
 		return this.cardinality === DataObjCardinality.detail
@@ -554,13 +519,6 @@ export class DataObjData {
 		if (!this.dataObjRow) return false
 		if (!this.dataObjRow.record) return false
 		return Object.keys(this.dataObjRow.record).length > 0
-	}
-	static loadData(data: DataObjData) {
-		if (data.cardinality === DataObjCardinality.detail) {
-			return new DataObjData(data.cardinality, data.dataObjRow)
-		} else {
-			return new DataObjData(data.cardinality, data.dataObjRowList)
-		}
 	}
 	parmsUpsert(data: any) {
 		if (!data) return
@@ -618,7 +576,7 @@ export enum DataObjProcessType {
 }
 
 export interface DataObjRaw {
-	_actionsField?: any
+	_actionsFieldGroup?: any
 	_codeCardinality: string
 	_codeComponent: string
 	_fieldsEl: any
@@ -664,6 +622,11 @@ export enum DataObjRecordStatus {
 	selected = 'selected',
 	unknown = 'unknown',
 	updated = 'updated'
+}
+export enum DataObjSaveMode {
+	insert = 'insert',
+	none = 'none',
+	update = 'update'
 }
 export class DataObjStatus {
 	objHasChanged: boolean

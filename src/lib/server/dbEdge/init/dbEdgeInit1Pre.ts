@@ -1,6 +1,7 @@
 import { codes, codeTypes, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { initPreColumn } from '$server/dbEdge/init/dbEdgeInit1PreColumn'
 import { initPreDataObjAction } from '$server/dbEdge/init/dbEdgeInit1PreDataObjAction'
+import { initPreDataObjActionGroups } from './dbEdgeInit1PreDataObjActionGroup'
 import { initPreDataObjFieldItem } from '$server/dbEdge/init/dbEdgeInit1PreDataObjFieldItem'
 import { initPreTable } from '$server/dbEdge/init/dbEdgeInit1PreTable'
 import { initPreTableColumn } from '$server/dbEdge/init/dbEdgeInit1PreTableColumn'
@@ -10,6 +11,7 @@ export async function initPre() {
 	// await initPreCodes()
 	await initPreColumn()
 	await initPreDataObjAction()
+	await initPreDataObjActionGroups()
 	await initPreDataObjFieldItem()
 	await initPreTable()
 	await initPreTableColumn()
@@ -28,7 +30,6 @@ async function initPreCodes() {
 
 	await codes([
 		// ct_cm_data_obj_action_type
-		['ct_cm_data_obj_action_type', 'app_sys', 'back', 0],
 		['ct_cm_data_obj_action_type', 'app_sys', 'listEdit', 0],
 		['ct_cm_data_obj_action_type', 'app_sys', 'listNew', 0],
 		['ct_cm_data_obj_action_type', 'app_sys', 'detailDelete', 0],

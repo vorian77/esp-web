@@ -44,26 +44,25 @@ export class App {
 		if (newLevel) {
 			this.levels.push(newLevel)
 			await query(state, this.getCurrTab(), queryType, this)
-			return true
-		} else {
-			return false
 		}
+		return this
 	}
 	async back(backCnt: number) {
 		for (let i = 0; i < backCnt; i++) {
 			const currLevel = this.getCurrLevel()
-
 			if (currLevel.currTabIdx > 0) {
 				currLevel.setTabIdx(0, true)
 			} else {
 				this.levels.pop()
 			}
 		}
+		return this
 	}
 	async changeCrumbs(token: TokenAppCrumbs) {
 		const crumbIdx = token.crumbIdx
 		const backCnt = this.crumbs.length - 1 - crumbIdx
 		this.back(backCnt)
+		return this
 	}
 	getCrumbsList() {
 		this.crumbs = [new AppLevelCrumb(-1, 'Home')]
@@ -109,22 +108,23 @@ export class App {
 
 			await query(state, tabCurrent, TokenApiQueryType.retrieve, this)
 		}
+		return this
 	}
 	async tabDuplicate(state: State, token: TokenAppDoDetail) {
 		const currTab = this.getCurrTab()
-		currTab.data = token.dataObj.objData
-		currTab.data.dataObjRow.status = DataObjRecordStatus.created
-		return true
+		currTab.data = token.data
+		if (currTab.data) currTab.data.dataObjRow.status = DataObjRecordStatus.created
+		return this
 	}
 	async tabUpdate(state: State, token: TokenAppDoDetail, queryType: TokenApiQueryType) {
 		this.getCurrLevel().resetTabs()
 
 		const currTab = this.getCurrTab()
-		currTab.data = token.dataObj.objData
-		if (!(await query(state, currTab, queryType, this))) return false
+		currTab.data = token.data
+		if (!(await query(state, currTab, queryType, this))) return this
 
 		if (this.levels.length > 1) await this.getCurrTabParent().listUpdate(state, currTab, this)
-		return true
+		return this
 	}
 }
 

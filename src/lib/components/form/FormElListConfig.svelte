@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { FieldListConfig } from '$comps/form/fieldListConfig'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { State, StateObj, StateObjModal } from '$comps/nav/types.appState'
+	import { State, StateLayout, StateObj, StateObjModal } from '$comps/nav/types.appState'
 	import { SurfaceType } from '$comps/types.master'
 	import {
 		TokenApiQueryType,
 		TokenAppModalReturn,
 		TokenAppModalReturnType
 	} from '$comps/types.token'
-	import Form from '$comps/form/Form.svelte'
+	import Form from '$comps/dataObj/DataObj.svelte'
 	import { type DataObjData } from '$comps/types'
 	import { setContext } from 'svelte'
 	import { createEventDispatcher } from 'svelte'
@@ -34,6 +34,7 @@
 		stateDisplay = new StateObj({
 			dataObjData: setData(ids),
 			dataObjName: field.dataObjNameDisplay,
+			layout: StateLayout.LayoutObjModal,
 			modalStore,
 			queryType: TokenApiQueryType.retrieve,
 			surface: SurfaceType.embedded

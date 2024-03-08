@@ -15,21 +15,21 @@ import { initTraining } from '$server/dbEdge/init/dbEdgeInit2DOCMTraining'
 export async function dbEdgeInit() {
 	sectionHeader('Init Start')
 	// await initSys()
-	await initFeatures()
+	// await initFeatures()
 	sectionHeader('Init Complete')
 }
 export async function initSys() {
 	await initReset()
+	await initOldUsers()
 	await initPre()
 	await initDO()
 }
 
 export async function initFeatures() {
-	await initOldUsers()
-	// await initFeatSysAdmin()
-	// await initFeatCMStudent()
-	// await initFeatDocument()
-	// await initFeatEmploy()
-	// await initReports()
-	// await initTraining()
+	await initFeatSysAdmin()
+	await initFeatCMStudent()
+	await initFeatDocument()
+	await initFeatEmploy()
+	await initReports()
+	await initTraining()
 }

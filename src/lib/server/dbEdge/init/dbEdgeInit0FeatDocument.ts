@@ -30,7 +30,7 @@ async function config() {
 		header: 'Documents',
 		tables: [{ index: '0', table: 'CmCsfDocument' }],
 		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		fields: [
 			{
 				codeAccess: 'readOnly',
@@ -96,7 +96,7 @@ async function config() {
 		name: 'data_obj_cm_csf_document_detail',
 		header: 'Document',
 		tables: [{ index: '0', table: 'CmCsfDocument' }],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		actionsQuery: [
 			{
 				name: 'qa_file_storage',

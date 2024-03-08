@@ -43,7 +43,7 @@ async function initCodes() {
 
 async function initCMTrainingCourse() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
@@ -104,7 +104,7 @@ async function initCMTrainingCourse() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Course',
@@ -301,7 +301,7 @@ async function initCMTrainingCourse() {
 
 async function initCMTrainingCohort() {
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: '.course.id = <uuid,tree,CmCourse.id>',
@@ -379,7 +379,7 @@ async function initCMTrainingCohort() {
 		name: 'data_obj_cm_cohort_detail',
 		header: 'Cohort',
 		tables: [{ index: '0', table: 'CmCohort' }],
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		fields: [
 			{
 				codeAccess: 'readOnly',

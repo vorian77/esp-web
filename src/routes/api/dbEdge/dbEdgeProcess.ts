@@ -33,6 +33,7 @@ export async function processQuery(token: TokenApiQuery) {
 
 	const queryData = TokenApiQueryData.load(token.queryData)
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
+	log('processQuery.1:', { actions: dataObjRaw._actionsFieldGroup })
 	const query = new EdgeQL(dataObjRaw)
 	const dataObj = new DataObj(dataObjRaw)
 
@@ -133,20 +134,16 @@ async function getDataObjRaw(dataObj: TokenApiDbDataObj): Promise<DataObjRaw> {
 		return dataObj.dataObjRaw
 	} else if (dataObj.dataObjId) {
 		dataObjRaw = await getDataObjById(dataObj.dataObjId)
+		if (dataObjRaw) return dataObjRaw
 	} else if (dataObj.dataObjName) {
 		dataObjRaw = await getDataObjByName(dataObj.dataObjName)
 		if (dataObjRaw) return dataObjRaw
 	}
-	if (dataObjRaw) {
-		dataObjRaw._actionsField = [...dataObjRaw.actionFieldBack, ...dataObjRaw.actionsField]
-		console.log('getDataObjRaw.dataObjRaw._actionsField:', dataObjRaw._actionsField)
-		return dataObjRaw
-	} else
-		error(500, {
-			file: FILENAME,
-			function: 'getDataObjRaw',
-			message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
-		})
+	error(500, {
+		file: FILENAME,
+		function: 'getDataObjRaw',
+		message: `Could not retrieve dataObj by id: ${dataObj.dataObjId}`
+	})
 }
 
 async function processDataPost(

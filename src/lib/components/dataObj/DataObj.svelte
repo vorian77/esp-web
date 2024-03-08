@@ -1,16 +1,11 @@
 <script lang="ts">
-	import {
-		App,
-		AppLevel,
-		AppLevelCrumb,
-		AppLevelRowStatus,
-		AppLevelTab
-	} from '$comps/nav/types.app'
+	import { App, AppLevel, AppLevelTab } from '$comps/nav/types.app'
 	import { query } from '$comps/nav/types.appQuery'
 	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import {
 		TokenApiQuery,
 		TokenApiQueryType,
+		TokenAppBack,
 		TokenAppCrumbs,
 		TokenAppDo,
 		TokenAppDoAction,
@@ -23,12 +18,9 @@
 	} from '$comps/types.token'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { NodeType } from '$comps/types'
-	import { AppBar, AppShell } from '@skeletonlabs/skeleton'
-	import { TabGroup, Tab } from '@skeletonlabs/skeleton'
-	import FormListApp from '$comps/form/FormListApp.svelte'
-	import FormDetailApp from '$comps/form/FormDetailApp.svelte'
-	import NavCrumbs from '$comps/nav/NavCrumbs.svelte'
-	import NavRow from '$comps/nav/NavRow.svelte'
+	import LayoutObj from '../Surface/LayoutObj.svelte'
+	import LayoutObjModal from '../Surface/LayoutObjModal.svelte'
+	import LayoutObjTab from '../Surface/LayoutObjTab.svelte'
 	import { setContext } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -37,24 +29,13 @@
 
 	export let state: State
 
-	const comps: Record<string, any> = {
-		FormList: FormListApp,
-		FormDetail: FormDetailApp
-	}
-
 	let app: App
 	let currLevel: AppLevel
 	let currTab: AppLevelTab
-	let currComponent: any
-	let crumbsList: Array<AppLevelCrumb> = []
-	let rowStatus: AppLevelRowStatus | undefined
 
 	let dataObj: DataObj | undefined
 	let dataObjData: DataObjData | undefined
 	let dataObjUpdate: DataObjUpdate | undefined
-
-	let isEditing = false
-	$: isEditing = state?.objHasChanged
 
 	const components = [
 		StatePacketComponent.appCrumbs,
@@ -64,6 +45,11 @@
 		StatePacketComponent.query,
 		StatePacketComponent.navApp
 	]
+	const layouts: Record<string, any> = {
+		LayoutObj: LayoutObj,
+		LayoutObjModal: LayoutObjModal,
+		LayoutObjTab: LayoutObjTab
+	}
 
 	$: if (state && state.packet) {
 		const packet = state.consume(components)
@@ -73,7 +59,6 @@
 	}
 
 	async function processState(packet: StatePacket) {
-		console.log('Form.processState.packet:', packet)
 		if (!packet.token)
 			error(500, {
 				file: FILENAME,
@@ -89,7 +74,7 @@
 					if (token.crumbIdx === 0) {
 						returnHome()
 					} else {
-						await app.changeCrumbs(token)
+						app = await app.changeCrumbs(token)
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 					}
 				}
@@ -98,15 +83,6 @@
 			case StatePacketComponent.appDataObj:
 				if (token instanceof TokenAppDo) {
 					switch (token.action) {
-						case TokenAppDoAction.back:
-							if (app.levels.length === 1) {
-								returnHome()
-							} else {
-								await app.back(1)
-								dataObjUpdate = new DataObjUpdate(true, true, true)
-							}
-							break
-
 						case TokenAppDoAction.detailDelete:
 							if (token instanceof TokenAppDoDetail) {
 								if (await app.tabUpdate(state, token, TokenApiQueryType.delete)) {
@@ -119,26 +95,27 @@
 						case TokenAppDoAction.detailNew:
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
 							app.getCurrTabParent().listSetId('')
+							app = app
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
 
 						case TokenAppDoAction.detailSaveAs:
 							if (token instanceof TokenAppDoDetail) {
-								await app.tabDuplicate(state, token)
+								app = await app.tabDuplicate(state, token)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
 
 						case TokenAppDoAction.detailSaveInsert:
 							if (token instanceof TokenAppDoDetail) {
-								await app.tabUpdate(state, token, TokenApiQueryType.saveInsert)
+								app = await app.tabUpdate(state, token, TokenApiQueryType.saveInsert)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
 
 						case TokenAppDoAction.detailSaveUpdate:
 							if (token instanceof TokenAppDoDetail) {
-								await app.tabUpdate(state, token, TokenApiQueryType.saveUpdate)
+								app = await app.tabUpdate(state, token, TokenApiQueryType.saveUpdate)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
@@ -146,7 +123,7 @@
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
 								app.getCurrTab().listInit(token)
-								await app.addLevel(state, TokenApiQueryType.retrieve)
+								app = await app.addLevel(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
 							break
@@ -154,11 +131,13 @@
 						case TokenAppDoAction.listNew:
 							await app.addLevel(state, TokenApiQueryType.new)
 							app.getCurrTabParent().listSetId('')
+							app = app
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break
 
 						case TokenAppDoAction.refresh:
 							await query(state, app.getCurrTab(), TokenApiQueryType.retrieve, app)
+							app = app
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
 
@@ -174,7 +153,7 @@
 
 			case StatePacketComponent.appRow:
 				if (token instanceof TokenAppRow) {
-					await app.setRowAction(state, token.rowAction)
+					app = await app.setRowAction(state, token.rowAction)
 					dataObjUpdate = new DataObjUpdate(false, false, true)
 				}
 				break
@@ -189,6 +168,7 @@
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 					}
 				}
+				app = app
 				break
 
 			case StatePacketComponent.query:
@@ -202,6 +182,14 @@
 					app = await App.initNode(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
+				if (token instanceof TokenAppBack) {
+					if (app.levels.length === 1) {
+						returnHome()
+					} else {
+						app = await app.back(1)
+						dataObjUpdate = new DataObjUpdate(true, true, true)
+					}
+				}
 				break
 
 			default:
@@ -214,13 +202,19 @@
 		setNavApp()
 	}
 
-	async function onClickTab(event: any) {
-		state.update({
-			packet: new StatePacket({
-				component: StatePacketComponent.appTab,
-				token: new TokenAppTab(parseInt(event.target.value))
-			})
-		})
+	function setNavApp() {
+		if (app) {
+			console.log('Form.setNavApp.app.levels:', app.levels.length)
+			currTab = app.getCurrTab()
+			if (currTab && currTab.dataObj) {
+				if (dataObjUpdate?.updateObj) dataObj = currTab.dataObj
+				if (dataObjUpdate?.updateObjData) {
+					state.statusReset()
+					state.programId = app.getProgramId()
+					dataObjData = currTab.data
+				}
+			}
+		}
 	}
 
 	if (state?.nodeType === NodeType.programObject) {
@@ -233,7 +227,7 @@
 						component: StatePacketComponent.appDataObj,
 						token: new TokenAppDoList(
 							TokenAppDoAction.listEdit,
-							dataObj,
+							dataObj.objData,
 							rows.map((r: any) => r.id),
 							record.id
 						)
@@ -241,25 +235,6 @@
 				})
 			}
 		})
-	}
-
-	function setNavApp() {
-		if (app) {
-			currLevel = app.getCurrLevel()
-			currTab = app.getCurrTab()
-			crumbsList = app.getCrumbsList()
-			rowStatus = app.getRowStatus()
-
-			if (currTab && currTab.dataObj) {
-				if (dataObjUpdate?.updateComponent) currComponent = comps[currTab.dataObj.component]
-				if (dataObjUpdate?.updateObj) dataObj = currTab.dataObj
-				if (dataObjUpdate?.updateObjData) {
-					state.statusReset()
-					state.programId = app.getProgramId()
-					dataObjData = currTab.data
-				}
-			}
-		}
 	}
 
 	function returnHome() {
@@ -285,54 +260,13 @@
 	}
 </script>
 
-{#if state?.nodeType === NodeType.programObject}
-	<AppShell slotSidebarLeft="w-0 md:w-52">
-		<svelte:fragment slot="header">
-			{@const hidden = crumbsList.length < 2 ? 'hidden' : ''}
-
-			<AppBar background="bg-neutral-200 {hidden}" padding="p-3">
-				<svelte:fragment slot="lead">
-					<div class="flex">
-						<div>
-							<NavCrumbs {state} {crumbsList} />
-						</div>
-					</div>
-				</svelte:fragment>
-
-				<svelte:fragment slot="trail">
-					<NavRow {state} {rowStatus} />
-				</svelte:fragment>
-			</AppBar>
-		</svelte:fragment>
-
-		{#if currLevel}
-			<div class="mt-2">
-				<TabGroup>
-					{#each currLevel.tabs as tab, idx}
-						{@const name = 'tab' + idx}
-						{@const hidden = isEditing && idx > 0}
-						<div {hidden}>
-							<Tab bind:group={currLevel.tabSet} {name} value={idx} {hidden} on:click={onClickTab}>
-								{tab.label}
-							</Tab>
-						</div>
-					{/each}
-
-					<svelte:fragment slot="panel">
-						{#if currTab}
-							<svelte:component
-								this={currComponent}
-								bind:state
-								{dataObj}
-								{dataObjData}
-								on:formCancelled
-							/>
-						{/if}
-					</svelte:fragment>
-				</TabGroup>
-			</div>
-		{/if}
-	</AppShell>
-{:else if state?.nodeType === NodeType.object && currTab}
-	<svelte:component this={currComponent} bind:state {dataObj} {dataObjData} on:formCancelled />
+{#if dataObj && dataObjData}
+	<svelte:component
+		this={layouts[state.layout]}
+		bind:app
+		bind:state
+		{dataObj}
+		{dataObjData}
+		on:formCancelled
+	/>
 {/if}

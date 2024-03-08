@@ -23,30 +23,7 @@ export async function getDataObjId(dataObjName: string) {
 
 export async function getDataObjById(dataObjId: string) {
 	const query = e.select(e.sys_core.SysDataObj, (do1) => {
-		const actionFieldBack = e.select(e.sys_core.SysDataObjAction, (doa) => ({
-			allTabs: true,
-			checkObjChanged: true,
-			_codeActionType: doa.codeActionType.name,
-			color: true,
-			header: true,
-			name: true,
-			order: true,
-			filter: e.op(doa.allTabs, '=', true)
-		}))
-		const actionsField = e.select(do1.actionsField, (a) => ({
-			allTabs: true,
-			checkObjChanged: true,
-			_codeActionType: a.codeActionType.name,
-			color: true,
-			header: true,
-			name: true,
-			order: true,
-			filter: e.op(do1.id, '=', e.cast(e.uuid, dataObjId))
-		}))
-
 		return {
-			actionFieldBack,
-			actionsField,
 			actionsQuery: true,
 			description: true,
 			exprFilter: true,
@@ -57,6 +34,18 @@ export async function getDataObjById(dataObjId: string) {
 			name: true,
 			subHeader: true,
 
+			_actionsFieldGroup: e.select(do1.actionsFieldGroup.actions, (a) => ({
+				allTabs: true,
+				checkObjChanged: true,
+				_codeActionType: a.codeActionType.name,
+				color: true,
+				confirmButtonLabel: true,
+				confirmMsg: true,
+				confirmTitle: true,
+				header: true,
+				name: true,
+				order_by: a.order
+			})),
 			_codeCardinality: do1.codeCardinality.name,
 			_codeComponent: do1.codeComponent.name,
 

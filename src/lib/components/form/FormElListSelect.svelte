@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { State, StateObj, StateObjModal } from '$comps/nav/types.appState'
+	import { State, StateLayout, StateObj, StateObjModal } from '$comps/nav/types.appState'
 	import { SurfaceType } from '$comps/types.master'
 	import { TokenApiQueryType } from '$comps/types.token'
-	import Form from '$comps/form/Form.svelte'
+	import Form from '$comps/dataObj/DataObj.svelte'
 	import { type DataObjData } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -62,6 +62,7 @@
 		stateLocal = new StateObj({
 			dataObjData: data,
 			dataObjName: field.dataObjName,
+			layout: StateLayout.LayoutObjModal,
 			modalStore,
 			queryType: TokenApiQueryType.retrieve,
 			surface: SurfaceType.embedded

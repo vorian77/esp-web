@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { State } from '$comps/nav/types.appState'
-	import Form from '$comps/form/Form.svelte'
+	import Form from '$comps/dataObj/DataObj.svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 	import { error } from '@sveltejs/kit'
 

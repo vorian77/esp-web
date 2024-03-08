@@ -5,7 +5,7 @@
 	import { userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiQueryType, TokenApiUserName } from '$comps/types.token'
-	import { StateObj } from '$comps/nav/types.appState'
+	import { StateLayout, StateObj } from '$comps/nav/types.appState'
 	import { SurfaceType } from '$comps/types.master'
 	import { goto } from '$app/navigation'
 
@@ -38,6 +38,7 @@
 				state: new StateObj({
 					dataObjName,
 					drawerStore,
+					layout: StateLayout.LayoutObj,
 					page: '/',
 					queryType: TokenApiQueryType.new,
 					surface: SurfaceType.overlay,

@@ -1,4 +1,4 @@
-import { codeTypes, codes, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
+import { codeTypes, codes, ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObjAction } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 export async function initPreDataObjAction() {
@@ -33,10 +33,28 @@ export async function initPreDataObjAction() {
 	await addDataObjAction({
 		allTabs: true,
 		checkObjChanged: false,
-		codeActionType: 'detailSaveInsert',
+		codeActionType: 'detailSaveUpdate',
 		header: 'Save',
 		name: 'noa_detail_save',
+		order: 205,
+		owner: 'app_sys'
+	})
+	await addDataObjAction({
+		allTabs: true,
+		checkObjChanged: false,
+		codeActionType: 'detailSaveInsert',
+		header: 'Save',
+		name: 'noa_detail_save_insert',
 		order: 210,
+		owner: 'app_sys'
+	})
+	await addDataObjAction({
+		allTabs: true,
+		checkObjChanged: false,
+		codeActionType: 'detailSaveUpdate',
+		header: 'Save',
+		name: 'noa_detail_save_update',
+		order: 220,
 		owner: 'app_sys'
 	})
 	await addDataObjAction({
@@ -59,19 +77,12 @@ export async function initPreDataObjAction() {
 		checkObjChanged: true,
 		codeActionType: 'detailDelete',
 		color: 'variant-filled-error',
+		confirmButtonLabel: 'Confirm Delete',
+		confirmMsg: 'Are you sure you want to delete this record (this action cannot be reversed)?',
+		confirmTitle: 'Delete Record',
 		header: 'Delete',
 		name: 'noa_detail_delete',
 		order: 250,
-		owner: 'app_sys'
-	})
-	await addDataObjAction({
-		allTabs: true,
-		checkObjChanged: true,
-		codeActionType: 'back',
-		color: 'variant-ghost-primary',
-		header: '< Back',
-		name: 'noa_back',
-		order: 5,
 		owner: 'app_sys'
 	})
 	await addDataObjAction({

@@ -42,7 +42,7 @@ export async function config() {
 
 	// Employers
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
@@ -100,7 +100,7 @@ export async function config() {
 		]
 	})
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Employer',
@@ -253,7 +253,7 @@ export async function config() {
 
 	// job placement
 	await addDataObj({
-		actionsField: ['noa_list_new'],
+		actionsFieldGroup: 'doag_base_list',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: '.csf.id = <uuid,tree,CmClientServiceFlow.id>',
@@ -297,7 +297,7 @@ export async function config() {
 		]
 	})
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_delete'],
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Job Placement',

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { appStoreUser, initNavTree, NodeType, valueOrDefault } from '$comps/types'
 	import { User } from '$comps/types'
-	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import { State, StateLayout, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import { TokenAppDoDetail, TokenAppDoDetailConfirm, TokenAppTreeReset } from '$comps/types.token'
 	import {
 		AppBar,
@@ -49,7 +49,14 @@
 		;(async () => {
 			await initNavTree(user)
 		})()
-		state = new State({ drawerStore, modalStore, toastStore, updateFunction: stateUpdate, user })
+		state = new State({
+			drawerStore,
+			layout: StateLayout.LayoutObjTab,
+			modalStore,
+			toastStore,
+			updateFunction: stateUpdate,
+			user
+		})
 		launchApp = false
 	}
 	$: {
@@ -149,7 +156,6 @@
 		})
 	}
 	async function askB4Transition(obj: any, confirm: TokenAppDoDetailConfirm) {
-		console.log('askB4Transition:', { obj, confirm })
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: confirm.title,

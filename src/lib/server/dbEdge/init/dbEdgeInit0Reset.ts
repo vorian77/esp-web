@@ -8,9 +8,8 @@ export async function initReset() {
 		`UPDATE sys_user::SysUserType FILTER .name = 'ut_sys_amin' SET { resources -= (SELECT sys_core::getNodeObjByName('node_obj_sys_admin_app_list')) }`
 	)
 
-	// reset.addStatement(`DELETE sys_core::SysNodeObj FILTER .codeType.name != 'program'`)
-	reset.addStatement(`DELETE sys_core::SysNodeObj`)
-	reset.addTable('sys_core::SysNodeObjFooter')
+	reset.delTableRecords(`sys_core::SysNodeObj`)
+	reset.delTableRecords('sys_core::SysNodeObjFooter')
 
 	// data object
 	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldListChips := {} }`)
@@ -18,21 +17,22 @@ export async function initReset() {
 	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldListItems := {} }`)
 	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldListSelect := {} }`)
 
-	reset.addTable('sys_core::SysDataObjFieldListChips')
-	reset.addTable('sys_core::SysDataObjFieldListConfig')
-	reset.addTable('sys_core::SysDataObjFieldListItems')
-	reset.addTable('sys_core::SysDataObjFieldListSelect')
+	reset.delTableRecords('sys_core::SysDataObjFieldListChips')
+	reset.delTableRecords('sys_core::SysDataObjFieldListConfig')
+	reset.delTableRecords('sys_core::SysDataObjFieldListItems')
+	reset.delTableRecords('sys_core::SysDataObjFieldListSelect')
 
-	reset.addTable('sys_core::SysDataObj')
+	reset.delTableRecords('sys_core::SysDataObj')
 
 	// other
-	reset.addTable('sys_core::SysDataObjAction')
-	reset.addTable('sys_core::SysObjConfig')
+	reset.delTableRecords('sys_core::SysDataObjActionGroup')
+	reset.delTableRecords('sys_core::SysDataObjAction')
+	reset.delTableRecords('sys_core::SysObjConfig')
 
 	// db
 	reset.addStatement(`UPDATE sys_db::SysTable SET { columns := {} }`)
-	reset.addTable('sys_db::SysTable')
-	reset.addTable('sys_db::SysColumn')
+	reset.delTableRecords('sys_db::SysTable')
+	reset.delTableRecords('sys_db::SysColumn')
 
 	await reset.execute()
 }

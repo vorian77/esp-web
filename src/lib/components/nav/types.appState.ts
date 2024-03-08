@@ -3,6 +3,7 @@ import {
 	DataObjCardinality,
 	DataObjData,
 	initNavTree,
+	memberOfEnum,
 	NodeType,
 	User,
 	userInit
@@ -21,6 +22,7 @@ const FILENAME = '/$comps/nav/types.appState.ts'
 
 export class State {
 	drawerStore: any
+	layout: StateLayout
 	modalStore: any
 	nodeType: NodeType = NodeType.home
 	objHasChanged: boolean = false
@@ -34,10 +36,13 @@ export class State {
 	user: User | undefined = undefined
 
 	constructor(obj: any) {
-		if (Object.hasOwn(obj, 'updateFunction')) this.updateFunction = obj.updateFunction
+		const clazz = 'State'
+		this.layout = memberOfEnum(obj.layout, clazz, 'layout', 'StateLayout', StateLayout)
+
 		if (Object.hasOwn(obj, 'drawerStore')) this.drawerStore = obj.drawerStore
 		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
 		if (Object.hasOwn(obj, 'toastStore')) this.toastStore = obj.toastStore
+		if (Object.hasOwn(obj, 'updateFunction')) this.updateFunction = obj.updateFunction
 		if (Object.hasOwn(obj, 'user')) this.user = obj.user
 	}
 
@@ -81,14 +86,20 @@ export class State {
 	}
 }
 
+export enum StateLayout {
+	LayoutObj = 'LayoutObj',
+	LayoutObjTab = 'LayoutObjTab',
+	LayoutObjModal = 'LayoutObjModal'
+}
+
 export class StateObj extends State {
-	dataObjData: DataObjData
+	dataObjData?: DataObjData
 	dataObjName: string
 	queryType: TokenApiQueryType
 	constructor(obj: any) {
 		const clazz = 'StateObj'
 		super(obj)
-		this.dataObjData = valueOrDefault(obj.dataObjData, new DataObjData(DataObjCardinality.detail))
+		this.dataObjData = valueOrDefault(obj.dataObjData, undefined)
 		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
 

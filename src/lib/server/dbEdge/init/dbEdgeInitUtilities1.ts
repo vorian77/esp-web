@@ -364,26 +364,12 @@ export function sectionHeader(section: string) {
 }
 
 export class ResetDb {
-	owner: string
-	query: string
-	constructor(owner: string = '') {
-		this.owner = owner
+	query: string = ''
+	constructor() {
 		this.query = ''
 	}
 	addStatement(statement: string) {
 		this.query += statement + ';\n'
-	}
-	addDataObj(dataObj: string) {
-		const filter = this.owner ? `AND .owner.name = '${this.owner}'` : ''
-		this.addStatement(`DELETE sys_core::SysDataObj FILTER .name = '${dataObj}' ${filter}`)
-	}
-	addNode(node: string) {
-		const filter = this.owner ? `AND .owner.name = '${this.owner}'` : ''
-		this.addStatement(`DELETE sys_core::SysNodeObj FILTER .name = '${node}' ${filter}`)
-	}
-	addTable(table: string) {
-		const filter = this.owner ? `FILTER .owner.name = '${this.owner}'` : ''
-		this.addStatement(`DELETE ${table} ${filter}`)
 	}
 	delCodeType(codeTypeName: string) {
 		this.addStatement(`DELETE sys_core::SysCode FILTER .codeType.name = '${codeTypeName}'`)
@@ -420,6 +406,9 @@ export class ResetDb {
 	}
 	delTable(name: string) {
 		this.addStatement(`DELETE sys_db::SysTable FILTER .name = '${name}'`)
+	}
+	delTableRecords(table: string) {
+		this.addStatement(`DELETE ${table}`)
 	}
 	async execute() {
 		sectionHeader('Execute DB Transaction')

@@ -56,7 +56,9 @@ module sys_core {
   type SysNodeObjFooter extending sys_core::SysNodeObj {}
 
   type SysDataObj extending sys_core::SysObj {
-    multi actionsField: sys_core::SysDataObjAction;
+    actionsFieldGroup: sys_core::SysDataObjActionGroup {
+      on target delete allow;
+    }
     actionsQuery: array<json>;
     required codeCardinality: sys_core::SysCode;
     required codeComponent: sys_core::SysCode;
@@ -75,12 +77,21 @@ module sys_core {
   } 
 
   type SysDataObjAction extending sys_core::SysObj {
-    required codeActionType: sys_core::SysCode;
     allTabs: bool;
     required checkObjChanged: bool;
+    required codeActionType: sys_core::SysCode;
+    confirm: bool;
+    confirmButtonLabel: str;
+    confirmMsg: str;
+    confirmTitle: str;
     color: str;
     required order: default::nonNegative;
     constraint exclusive on (.name);
+  }
+
+  type SysDataObjActionGroup extending sys_core::SysObj {
+   multi actions: sys_core::SysDataObjAction;
+   constraint exclusive on (.name);
   }
   
   type SysDataObjColumn {
@@ -247,6 +258,9 @@ module sys_core {
     
   function getDataObjAction(dataObjActionName: str) -> optional sys_core::SysDataObjAction
     using (select sys_core::SysDataObjAction filter .name = dataObjActionName);        
+    
+  function getDataObjActionGroup(name: str) -> optional sys_core::SysDataObjActionGroup
+    using (select sys_core::SysDataObjActionGroup filter .name = name);        
     
   function getDataObjFieldListChips(name: str) -> optional sys_core::SysDataObjFieldListChips
     using (select sys_core::SysDataObjFieldListChips filter .name = name);

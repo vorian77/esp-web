@@ -92,7 +92,7 @@
 	}
 </script>
 
-<DataObjActionsHeader {state} {dataObj} on:formCancelled />
+<!-- <DataObjActionsHeader {state} {dataObj} on:formCancelled /> -->
 
 <div id={state.surface} class="px-2">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
@@ -144,7 +144,7 @@
 	</form>
 </div>
 
-<DataObjActionsFooter {state} {dataObj} />
+<!-- <DataObjActionsFooter {state} {dataObj} /> -->
 
 <!-- <DataViewer header="dataObjList" data={dataObjList} /> -->
 <!-- <DataViewer header="dataSource" data={dataSource} /> -->

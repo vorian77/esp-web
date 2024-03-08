@@ -75,44 +75,44 @@ async function reset() {
 
 	resetDb.addStatement('UPDATE sys_user::SysUser SET { modifiedBy := sys_user::getRootUser()}')
 
-	resetDb.addTable('app_cm::CmCsfCohortAttd')
-	resetDb.addTable('app_cm::CmCsfCohort')
-	resetDb.addTable('app_cm::CmCsfNote')
-	resetDb.addTable('app_cm::CmClientServiceFlow')
-	resetDb.addTable('app_cm::CmClient')
+	resetDb.delTableRecords('app_cm::CmCsfCohortAttd')
+	resetDb.delTableRecords('app_cm::CmCsfCohort')
+	resetDb.delTableRecords('app_cm::CmCsfNote')
+	resetDb.delTableRecords('app_cm::CmClientServiceFlow')
+	resetDb.delTableRecords('app_cm::CmClient')
 
-	resetDb.addTable('app_cm::CmCohort')
-	resetDb.addTable('app_cm::CmCourse')
-	resetDb.addTable('app_cm::CmServiceFlow')
+	resetDb.delTableRecords('app_cm::CmCohort')
+	resetDb.delTableRecords('app_cm::CmCourse')
+	resetDb.delTableRecords('app_cm::CmServiceFlow')
 
-	resetDb.addTable('sys_core::SysNodeObj')
+	resetDb.delTableRecords('sys_core::SysNodeObj')
 
 	resetDb.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldChips := {} }`)
-	resetDb.addTable('sys_core::SysDataObjFieldListChips')
+	resetDb.delTableRecords('sys_core::SysDataObjFieldListChips')
 
-	resetDb.addTable('sys_core::SysDataObj')
-	resetDb.addTable('sys_core::SysDataObjFieldListItems')
-	resetDb.addTable('sys_core::SysDataObjTable')
-	resetDb.addTable('sys_core::SysObjConfig')
+	resetDb.delTableRecords('sys_core::SysDataObj')
+	resetDb.delTableRecords('sys_core::SysDataObjFieldListItems')
+	resetDb.delTableRecords('sys_core::SysDataObjTable')
+	resetDb.delTableRecords('sys_core::SysObjConfig')
 
-	resetDb.addTable('sys_db::SysTable')
-	resetDb.addTable('sys_db::SysColumn')
-	resetDb.addTable('sys_core::SysDataObjAction')
-	resetDb.addTable('sys_user::SysWidget')
-	resetDb.addTable('sys_user::SysUserType')
+	resetDb.delTableRecords('sys_db::SysTable')
+	resetDb.delTableRecords('sys_db::SysColumn')
+	resetDb.delTableRecords('sys_core::SysDataObjAction')
+	resetDb.delTableRecords('sys_user::SysWidget')
+	resetDb.delTableRecords('sys_user::SysUserType')
 
-	resetDb.addTable('sys_user::SysStaff')
+	resetDb.delTableRecords('sys_user::SysStaff')
 
-	resetDb.addTable('sys_user::SysUser')
+	resetDb.delTableRecords('sys_user::SysUser')
 
-	resetDb.addTable('sys_core::SysCode')
-	resetDb.addTable('sys_core::SysCodeType')
+	resetDb.delTableRecords('sys_core::SysCode')
+	resetDb.delTableRecords('sys_core::SysCodeType')
 
 	resetDb.addStatement(`DELETE default::SysPerson FILTER .firstName not in  {"Root", "System"}`)
 
-	resetDb.addTable('sys_core::SysObj')
-	resetDb.addTable('sys_user::UserRoot')
-	resetDb.addTable('sys_core::ObjRoot')
+	resetDb.delTableRecords('sys_core::SysObj')
+	resetDb.delTableRecords('sys_user::UserRoot')
+	resetDb.delTableRecords('sys_core::ObjRoot')
 
 	await resetDb.execute()
 }

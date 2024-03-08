@@ -1,5 +1,6 @@
 import { nodeObjHeaders, ResetDb, sectionHeader } from '$server/dbEdge/init/dbEdgeInitUtilities1'
 import { addDataObj, addNodeProgramObj } from '$server/dbEdge/init/dbEdgeInitUtilities2'
+import init from './dbEdgeInit2DOSysAuth'
 
 export async function initReports() {
 	sectionHeader('DataObject - Reports')
@@ -14,6 +15,7 @@ async function reset() {
 	reset.delNodeObj('node_obj_cm_ai_report_course_summary')
 	reset.delNodeObj('node_obj_cm_ai_report_our_world_summary')
 	reset.delNodeObj('node_obj_cm_ai_report_student_summary')
+	reset.delNodeObj('node_hdr_cm_ai_reports')
 
 	reset.delDataObj('data_obj_cm_ai_report_course_summary')
 	reset.delDataObj('data_obj_cm_ai_report_our_world_summary')
@@ -24,11 +26,12 @@ async function reset() {
 
 async function initFeatures() {
 	sectionHeader('DataObject - Reports')
-	// await initNodeObjHeaders()
+	await initNodeObjHeaders()
 	await initReportCourseSummary()
 	await initReportOurWorldSummary()
 	await initReportStudentSummary()
 }
+
 async function initNodeObjHeaders() {
 	sectionHeader('NodeObjHeader - Report')
 	// reports
@@ -39,7 +42,7 @@ async function initNodeObjHeaders() {
 
 async function initReportCourseSummary() {
 	await addDataObj({
-		actionsField: ['noa_common_refresh'],
+		actionsFieldGroup: 'doag_base_refresh',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
@@ -164,7 +167,7 @@ async function initReportCourseSummary() {
 
 async function initReportOurWorldSummary() {
 	await addDataObj({
-		actionsField: ['noa_common_refresh'],
+		actionsFieldGroup: 'doag_base_refresh',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: `.serviceFlow.name = 'sf_cm_ai_our_world'`,
@@ -271,7 +274,7 @@ async function initReportOurWorldSummary() {
 
 async function initReportStudentSummary() {
 	await addDataObj({
-		actionsField: ['noa_common_refresh'],
+		actionsFieldGroup: 'doag_base_refresh',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
