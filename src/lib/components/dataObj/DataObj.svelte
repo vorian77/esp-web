@@ -19,8 +19,8 @@
 	import type { DataObj, DataObjData } from '$comps/types'
 	import { NodeType } from '$comps/types'
 	import LayoutObj from '../Surface/LayoutObj.svelte'
-	import LayoutObjModal from '../Surface/LayoutObjModal.svelte'
 	import LayoutObjTab from '../Surface/LayoutObjTab.svelte'
+	import LayoutObjWizard from '../Surface/LayoutObjWizard.svelte'
 	import { setContext } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -47,8 +47,8 @@
 	]
 	const layouts: Record<string, any> = {
 		LayoutObj: LayoutObj,
-		LayoutObjModal: LayoutObjModal,
-		LayoutObjTab: LayoutObjTab
+		LayoutObjTab: LayoutObjTab,
+		LayoutObjWizard: LayoutObjWizard
 	}
 
 	$: if (state && state.packet) {
@@ -204,7 +204,6 @@
 
 	function setNavApp() {
 		if (app) {
-			console.log('Form.setNavApp.app.levels:', app.levels.length)
 			currTab = app.getCurrTab()
 			if (currTab && currTab.dataObj) {
 				if (dataObjUpdate?.updateObj) dataObj = currTab.dataObj
@@ -220,7 +219,6 @@
 	if (state?.nodeType === NodeType.programObject) {
 		setContext('onRowClick', async function onRowClick(rows: any, record: any) {
 			if (dataObj) {
-				console.log('Form.onRowClick1:', { rows, record })
 				state.update({
 					packet: new StatePacket({
 						checkObjChanged: false,
@@ -262,7 +260,7 @@
 
 {#if dataObj && dataObjData}
 	<svelte:component
-		this={layouts[state.layout]}
+		this={layouts[state.layout.layoutType]}
 		bind:app
 		bind:state
 		{dataObj}

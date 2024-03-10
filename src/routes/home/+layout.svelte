@@ -1,8 +1,21 @@
 <script lang="ts">
-	import { appStoreUser, initNavTree, NodeType, valueOrDefault } from '$comps/types'
+	import {
+		appStoreUser,
+		DataObjActionConfirm,
+		initNavTree,
+		NodeType,
+		valueOrDefault
+	} from '$comps/types'
 	import { User } from '$comps/types'
-	import { State, StateLayout, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
-	import { TokenAppDoDetail, TokenAppDoDetailConfirm, TokenAppTreeReset } from '$comps/types.token'
+	import {
+		State,
+		StateLayout,
+		StateLayoutType,
+		StatePacket,
+		StatePacketComponent,
+		StateSurfaceType
+	} from '$comps/nav/types.appState'
+	import { TokenAppDoDetail, TokenAppTreeReset } from '$comps/types.token'
 	import {
 		AppBar,
 		AppShell,
@@ -14,7 +27,7 @@
 		type ModalSettings,
 		type ToastSettings
 	} from '@skeletonlabs/skeleton'
-	import SurfacePageForm from '$comps/Surface/SurfacePageForm.svelte'
+	import DataObj from '$comps/dataObj/DataObj.svelte'
 	import NavHome from '$comps/nav/NavHome.svelte'
 	import NavFooter from '$comps/nav/NavFooter.svelte'
 	import NavTree from '$comps/nav/NavTree.svelte'
@@ -51,7 +64,10 @@
 		})()
 		state = new State({
 			drawerStore,
-			layout: StateLayout.LayoutObjTab,
+			layout: new StateLayout({
+				layoutType: StateLayoutType.LayoutObjTab,
+				surfaceType: StateSurfaceType.page
+			}),
 			modalStore,
 			toastStore,
 			updateFunction: stateUpdate,
@@ -72,7 +88,7 @@
 
 		const checkObjChanged = obj?.packet?.checkObjChanged || false
 
-		let confirm: TokenAppDoDetailConfirm | undefined = undefined
+		let confirm: DataObjActionConfirm | undefined = undefined
 
 		if (obj?.packet?.token instanceof TokenAppDoDetail && obj?.packet?.token.confirm) {
 			confirm = obj.packet.token.confirm
@@ -82,7 +98,7 @@
 		if ((checkObjChanged && state?.objHasChanged) || confirm) {
 			confirm = confirm
 				? confirm
-				: new TokenAppDoDetailConfirm(
+				: DataObjActionConfirm.new(
 						'Discard Changes',
 						'Are you sure you want to discard your changes?',
 						'Discard Changes'
@@ -155,13 +171,13 @@
 			})
 		})
 	}
-	async function askB4Transition(obj: any, confirm: TokenAppDoDetailConfirm) {
+	async function askB4Transition(obj: any, confirm: DataObjActionConfirm) {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: confirm.title,
-			body: confirm.msg,
+			body: confirm.message,
 			buttonTextCancel: 'Keep Editing',
-			buttonTextConfirm: confirm.buttonConfirmLabel,
+			buttonTextConfirm: confirm.buttonLabel,
 			response: async (r: boolean) => {
 				if (r) {
 					state.statusReset()
@@ -226,7 +242,7 @@
 			{#if state?.nodeType === NodeType.home}
 				<NavHome />
 			{:else}
-				<SurfacePageForm {state} />
+				<DataObj {state} />
 			{/if}
 		{:else}
 			<slot />

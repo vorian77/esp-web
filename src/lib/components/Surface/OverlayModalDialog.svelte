@@ -27,10 +27,10 @@
 	let btnLabelComplete = state.btnLabelComplete || 'Complete'
 
 	async function onBtnComplete() {
-		console.log('OverlayModalForm.onBtnComplete.state:', { state })
+		console.log('overlayModalDialog.onBtnComplete.state:', { state })
 		switch (state.queryType) {
 			case TokenApiQueryType.retrieve:
-				await updateState(TokenAppDoAction.detailSaveUpdate)
+				// await updateState(TokenAppDoAction.detailSaveUpdate)
 				break
 			case TokenApiQueryType.new:
 				// await onBtnCompleteExpression()
@@ -40,7 +40,7 @@
 		}
 		// TokenApiQueryType.retrieve
 
-		// 			constructor(action: TokenAppDoAction, dataObj: DataObj, confirm?: TokenAppDoDetailConfirm) {
+		// 			constructor(action: TokenAppDoAction, dataObj: DataObj, confirm?: ) {
 		// 	super(action, dataObj)
 		// 	this.confirm = confirm
 		// }
@@ -97,12 +97,11 @@
 				<button class="btn variant-filled-error" on:click={async () => onBtnDelete()}>Delete</button>
 			{/if}
 			<button class="btn {parent.buttonPositive}" on:click={async () => await onBtnComplete()}>{btnLabelComplete}</button>
+			abc
 		</footer>
-		<DataViewer
+		<!-- <DataViewer
 			header="state"
 			data={{ hasChanged: state.objHasChanged, validToSave: state.objValidToSave }}
-		/>
+		/> -->
 	</div>
 {/if}
-
-<!-- {@const disabled = action.name === 'noa_detail_save' && !state.objValidToSave ? true : false} -->

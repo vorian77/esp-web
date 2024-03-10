@@ -73,7 +73,7 @@ async function initFieldListConfigDataObjTables() {
 	sectionHeader('Field List Config - DataObj.Tables')
 
 	await addDataObj({
-		actionsField: ['noa_detail_delete'],
+		actionsField: ['noa_detail_delete_update'],
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		exprFilter: `.id = <uuid,parms,filterInIds>`,
@@ -1491,12 +1491,6 @@ async function initDataObjAction() {
 				indexTable: '0'
 			},
 			{
-				codeElement: 'checkbox',
-				columnName: 'allTabs',
-				dbOrderSelect: 100,
-				indexTable: '0'
-			},
-			{
 				codeAccess: 'optional',
 				columnName: 'color',
 				dbOrderSelect: 100,
@@ -2172,7 +2166,7 @@ async function initConfig() {
 	})
 
 	await addDataObj({
-		actionsField: ['noa_detail_new', 'noa_detail_save_as', 'noa_detail_delete'],
+		actionsField: ['noa_detail_new', 'noa_detail_save_as', 'noa_detail_delete_update'],
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		header: 'Data Object Config',

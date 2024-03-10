@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton'
 	import NavTree from '$comps/nav/NavTree.svelte'
-	import SurfaceOverlayDrawerForm from '$comps/Surface/SurfaceOverlayDrawerForm.svelte'
+	import DataObj from '$comps/dataObj/DataObj.svelte'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiUserId } from '$comps/types.token'
 	import { ResponseBody } from '$comps/types'
@@ -42,10 +42,9 @@
 	{#if $drawerStore.id === 'auth'}
 		<div>
 			{#if $drawerStore.meta.state}
-				<SurfaceOverlayDrawerForm
-					state={$drawerStore.meta.state}
-					on:formCancelled={onformCancelled}
-				/>
+				<div class="esp-card-space-y">
+					<DataObj state={$drawerStore.meta.state} on:formCancelled={onformCancelled} />
+				</div>
 			{/if}
 		</div>
 	{:else if $drawerStore.id === 'navLeft'}

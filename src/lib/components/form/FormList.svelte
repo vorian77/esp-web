@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { State, StateObjModal } from '$comps/nav/types.appState'
-	import { SurfaceType } from '$comps/types.master'
-	import type { DataObj, DataObjData } from '$comps/types'
+	import { State, StateObjModal, StateSurfaceType } from '$comps/nav/types.appState'
+	import { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
-	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
 	import { getContext } from 'svelte'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
@@ -25,9 +23,9 @@
 	const isAllSelected = handler.isAllSelected()
 	let isSelect = state instanceof StateObjModal
 	let isSelectMulti = state instanceof StateObjModal && state.isMultiSelect
-	let isSurfaceEmbedded = state.surface === SurfaceType.embedded
-	let isSurfaceOverlay = state.surface === SurfaceType.overlay
-	let isSurfacePage = state.surface === SurfaceType.page
+	let isSurfaceEmbedded = state.layout.surfaceType === StateSurfaceType.embedded
+	let isSurfaceOverlay = state.layout.surfaceType === StateSurfaceType.overlay
+	let isSurfacePage = state.layout.surfaceType === StateSurfaceType.page
 
 	if (state instanceof StateObjModal) {
 		state.records.forEach((r) => handler.select(r.id))
@@ -65,9 +63,7 @@
 	}
 </script>
 
-<!-- <DataObjActionsHeader {state} {dataObj} on:formCancelled /> -->
-
-<div id={state.surface}>
+<div id={state.layout.surfaceType}>
 	<Datatable {handler} pagination={false} rowsPerPage={false} search={!isSurfaceEmbedded}>
 		<table>
 			<thead>

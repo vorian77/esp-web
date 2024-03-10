@@ -158,6 +158,7 @@ export type $SysCodeλShape = $.typeutil.flatten<$SysObjλShape & {
   "<codeReferralEndType[is app_cm::CmClientServiceFlow]": $.LinkDesc<_app_cm.$CmClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeReferralType[is app_cm::CmClientServiceFlow]": $.LinkDesc<_app_cm.$CmClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeActionType[is sys_core::SysDataObjAction]": $.LinkDesc<$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeRenderShowSaveMode[is sys_core::SysDataObjAction]": $.LinkDesc<$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAccess": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeActionType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAlignment": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -185,6 +186,7 @@ export type $SysCodeλShape = $.typeutil.flatten<$SysObjλShape & {
   "<codeRace": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeReferralEndType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeReferralType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeRenderShowSaveMode": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeSector": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeState": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeStatus": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -247,15 +249,14 @@ const $SysDataObj = $.makeType<$SysDataObj>(_.spec, "503b00ed-b3c2-11ee-8d94-1fc
 const SysDataObj: $.$expr_PathNode<$.TypeSet<$SysDataObj, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysDataObj, $.Cardinality.Many), null);
 
 export type $SysDataObjActionλShape = $.typeutil.flatten<$SysObjλShape & {
-  "allTabs": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "color": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "order": $.PropertyDesc<_default.$nonNegative, $.Cardinality.One, false, false, false, false>;
   "checkObjChanged": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
   "codeActionType": $.LinkDesc<$SysCode, $.Cardinality.One, {}, false, false,  false, false>;
-  "confirm": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
-  "confirmButtonLabel": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "confirmMsg": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "confirmTitle": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "confirm": $.LinkDesc<$SysDataObjActionConfirm, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "codeRenderShowSaveMode": $.LinkDesc<$SysCode, $.Cardinality.One, {}, false, false,  false, false>;
+  "isRenderDisableOnInvalidToSave": $.PropertyDesc<_std.$bool, $.Cardinality.One, false, false, false, false>;
+  "isRenderShowRequiresObjHasChanged": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "<actions[is sys_core::SysDataObjActionGroup]": $.LinkDesc<$SysDataObjActionGroup, $.Cardinality.Many, {}, false, false,  false, false>;
   "<actions": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
@@ -265,6 +266,20 @@ type $SysDataObjAction = $.ObjectType<"sys_core::SysDataObjAction", $SysDataObjA
 const $SysDataObjAction = $.makeType<$SysDataObjAction>(_.spec, "503f7d4d-b3c2-11ee-a062-d1dfb79cac24", _.syntax.literal);
 
 const SysDataObjAction: $.$expr_PathNode<$.TypeSet<$SysDataObjAction, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysDataObjAction, $.Cardinality.Many), null);
+
+export type $SysDataObjActionConfirmλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
+  "confirmButtonLabel": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
+  "confirmMessage": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
+  "confirmTitle": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
+  "<confirm[is sys_core::SysDataObjAction]": $.LinkDesc<$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<confirm": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+}>;
+type $SysDataObjActionConfirm = $.ObjectType<"sys_core::SysDataObjActionConfirm", $SysDataObjActionConfirmλShape, null, [
+  ..._std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588['__exclusives__'],
+]>;
+const $SysDataObjActionConfirm = $.makeType<$SysDataObjActionConfirm>(_.spec, "9f5bd1c5-dda2-11ee-a63c-19556e0de346", _.syntax.literal);
+
+const SysDataObjActionConfirm: $.$expr_PathNode<$.TypeSet<$SysDataObjActionConfirm, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($SysDataObjActionConfirm, $.Cardinality.Many), null);
 
 export type $SysDataObjActionGroupλShape = $.typeutil.flatten<$SysObjλShape & {
   "actions": $.LinkDesc<$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -852,7 +867,7 @@ function getDataObjActionGroup(...args: any[]) {
 
 
 
-export { $ObjRoot, ObjRoot, $SysObj, SysObj, $SysEnt, SysEnt, $SysOrg, SysOrg, $SysApp, SysApp, $SysCode, SysCode, $SysCodeType, SysCodeType, $SysDataObj, SysDataObj, $SysDataObjAction, SysDataObjAction, $SysDataObjActionGroup, SysDataObjActionGroup, $SysDataObjColumn, SysDataObjColumn, $SysDataObjFieldLink, SysDataObjFieldLink, $SysDataObjFieldLinkJoin, SysDataObjFieldLinkJoin, $SysDataObjFieldListChips, SysDataObjFieldListChips, $SysDataObjFieldListConfig, SysDataObjFieldListConfig, $SysDataObjFieldListItems, SysDataObjFieldListItems, $SysDataObjFieldListSelect, SysDataObjFieldListSelect, $SysDataObjTable, SysDataObjTable, $SysNodeObj, SysNodeObj, $SysNodeObjFooter, SysNodeObjFooter, $SysObjConfig, SysObjConfig };
+export { $ObjRoot, ObjRoot, $SysObj, SysObj, $SysEnt, SysEnt, $SysOrg, SysOrg, $SysApp, SysApp, $SysCode, SysCode, $SysCodeType, SysCodeType, $SysDataObj, SysDataObj, $SysDataObjAction, SysDataObjAction, $SysDataObjActionConfirm, SysDataObjActionConfirm, $SysDataObjActionGroup, SysDataObjActionGroup, $SysDataObjColumn, SysDataObjColumn, $SysDataObjFieldLink, SysDataObjFieldLink, $SysDataObjFieldLinkJoin, SysDataObjFieldLinkJoin, $SysDataObjFieldListChips, SysDataObjFieldListChips, $SysDataObjFieldListConfig, SysDataObjFieldListConfig, $SysDataObjFieldListItems, SysDataObjFieldListItems, $SysDataObjFieldListSelect, SysDataObjFieldListSelect, $SysDataObjTable, SysDataObjTable, $SysNodeObj, SysNodeObj, $SysNodeObjFooter, SysNodeObjFooter, $SysObjConfig, SysObjConfig };
 
 type __defaultExports = {
   "ObjRoot": typeof ObjRoot;
@@ -864,6 +879,7 @@ type __defaultExports = {
   "SysCodeType": typeof SysCodeType;
   "SysDataObj": typeof SysDataObj;
   "SysDataObjAction": typeof SysDataObjAction;
+  "SysDataObjActionConfirm": typeof SysDataObjActionConfirm;
   "SysDataObjActionGroup": typeof SysDataObjActionGroup;
   "SysDataObjColumn": typeof SysDataObjColumn;
   "SysDataObjFieldLink": typeof SysDataObjFieldLink;
@@ -902,6 +918,7 @@ const __defaultExports: __defaultExports = {
   "SysCodeType": SysCodeType,
   "SysDataObj": SysDataObj,
   "SysDataObjAction": SysDataObjAction,
+  "SysDataObjActionConfirm": SysDataObjActionConfirm,
   "SysDataObjActionGroup": SysDataObjActionGroup,
   "SysDataObjColumn": SysDataObjColumn,
   "SysDataObjFieldLink": SysDataObjFieldLink,

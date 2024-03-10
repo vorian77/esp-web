@@ -1,5 +1,13 @@
-import { booleanOrFalse, required, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 import {
+	booleanOrFalse,
+	memberOfEnumOrDefault,
+	required,
+	strOptional,
+	strRequired,
+	valueOrDefault
+} from '$utils/utils'
+import {
+	DataObjActionGroup,
 	DataObjCardinality,
 	DataObjData,
 	initNavTree,
@@ -8,7 +16,6 @@ import {
 	User,
 	userInit
 } from '$comps/types'
-import { SurfaceType } from '$comps/types.master'
 import {
 	Token,
 	TokenApiDbDataObj,
@@ -30,14 +37,13 @@ export class State {
 	packet: StatePacket | undefined
 	page: string = '/home'
 	programId?: string
-	surface: SurfaceType = SurfaceType.page
 	toastStore: any
 	updateFunction?: Function
 	user: User | undefined = undefined
 
 	constructor(obj: any) {
 		const clazz = 'State'
-		this.layout = memberOfEnum(obj.layout, clazz, 'layout', 'StateLayout', StateLayout)
+		this.layout = required(obj.layout, clazz, 'layout')
 
 		if (Object.hasOwn(obj, 'drawerStore')) this.drawerStore = obj.drawerStore
 		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
@@ -81,15 +87,46 @@ export class State {
 	updateProperties(obj: any) {
 		if (Object.hasOwn(obj, 'nodeType')) this.nodeType = obj.nodeType
 		if (Object.hasOwn(obj, 'page')) this.page = obj.page
-		if (Object.hasOwn(obj, 'surface')) this.surface = obj.surface
 		return this
 	}
 }
 
-export enum StateLayout {
+export class StateLayout {
+	layoutType: StateLayoutType
+	surfaceType: StateSurfaceType
+	headerDialog?: string
+	footerActionGroup?: DataObjActionGroup
+	footerCompleteButtonLabel?: string
+	constructor(obj: any) {
+		const clazz = 'StateLayout'
+		this.layoutType = memberOfEnum(
+			obj.layoutType,
+			clazz,
+			'layoutType',
+			'StateLayoutType',
+			StateLayoutType
+		)
+		this.surfaceType = memberOfEnum(
+			obj.surfaceType,
+			clazz,
+			'surfaceType',
+			'surfaceType',
+			StateSurfaceType
+		)
+		this.headerDialog = strOptional(obj.headerDialog, clazz, 'headerDialog')
+		this.footerActionGroup = obj.footerActionGroup ? obj.footerActionGroup : undefined
+		this.footerCompleteButtonLabel = strOptional(
+			obj.footerCompleteButtonLabel,
+			clazz,
+			'footerCompleteButtonLabel'
+		)
+	}
+}
+
+export enum StateLayoutType {
 	LayoutObj = 'LayoutObj',
 	LayoutObjTab = 'LayoutObjTab',
-	LayoutObjModal = 'LayoutObjModal'
+	LayoutObjWizard = 'LayoutObjWizard'
 }
 
 export class StateObj extends State {
@@ -113,7 +150,6 @@ export class StateObj extends State {
 			)
 		})
 		this.page = obj.page ? obj.page : this.page
-		this.surface = obj.surface ? obj.surface : this.surface
 	}
 }
 
@@ -155,4 +191,9 @@ export enum StatePacketComponent {
 	query = 'query',
 	navApp = 'navApp',
 	navTree = 'navTree'
+}
+export enum StateSurfaceType {
+	embedded = 'embedded',
+	overlay = 'overlay',
+	page = 'page'
 }

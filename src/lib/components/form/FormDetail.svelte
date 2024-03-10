@@ -8,8 +8,6 @@
 		ValidityError
 	} from '$comps/types'
 	import { State, StateObjModal } from '$comps/nav/types.appState'
-	import DataObjActionsHeader from '$comps/dataObj/DataObjActionsHeader.svelte'
-	import DataObjActionsFooter from '$comps/dataObj/DataObjActionsFooter.svelte'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
 	import FormElFile from '$comps/form/FormElFile.svelte'
 	import FormElInp from '$comps/form/FormElInp.svelte'
@@ -92,9 +90,7 @@
 	}
 </script>
 
-<!-- <DataObjActionsHeader {state} {dataObj} on:formCancelled /> -->
-
-<div id={state.surface} class="px-2">
+<div id={state.layout.surfaceType} class="px-2">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
 		{#each dataObj.fields as field, idx (field.name)}
 			{#if field.isDisplayable && field.isDisplay}

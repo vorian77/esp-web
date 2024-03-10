@@ -35,14 +35,18 @@ export async function getDataObjById(dataObjId: string) {
 			subHeader: true,
 
 			_actionsFieldGroup: e.select(do1.actionsFieldGroup.actions, (a) => ({
-				allTabs: true,
 				checkObjChanged: true,
 				_codeActionType: a.codeActionType.name,
+				_codeRenderShowSaveMode: a.codeRenderShowSaveMode.name,
 				color: true,
-				confirmButtonLabel: true,
-				confirmMsg: true,
-				confirmTitle: true,
+				_confirm: e.select(a.confirm, (c) => ({
+					confirmButtonLabel: true,
+					confirmMessage: true,
+					confirmTitle: true
+				})),
 				header: true,
+				isRenderDisableOnInvalidToSave: true,
+				isRenderShowRequiresObjHasChanged: true,
 				name: true,
 				order_by: a.order
 			})),

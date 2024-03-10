@@ -14,8 +14,8 @@ import { initTraining } from '$server/dbEdge/init/dbEdgeInit2DOCMTraining'
 
 export async function dbEdgeInit() {
 	sectionHeader('Init Start')
-	// await initSys()
-	// await initFeatures()
+	await initSys()
+	await initFeatures()
 	sectionHeader('Init Complete')
 }
 export async function initSys() {

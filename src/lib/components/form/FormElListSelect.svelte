@@ -1,10 +1,16 @@
 <script lang="ts">
 	import type { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { State, StateLayout, StateObj, StateObjModal } from '$comps/nav/types.appState'
-	import { SurfaceType } from '$comps/types.master'
+	import {
+		State,
+		StateLayout,
+		StateLayoutType,
+		StateObj,
+		StateObjModal,
+		StateSurfaceType
+	} from '$comps/nav/types.appState'
 	import { TokenApiQueryType } from '$comps/types.token'
-	import Form from '$comps/dataObj/DataObj.svelte'
+	import DataObj from '$comps/dataObj/DataObj.svelte'
 	import { type DataObjData } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -28,18 +34,21 @@
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalForm',
+				component: 'overlayModalDialog',
 				meta: {
 					state: new StateObjModal({
 						btnLabelComplete: field.btnLabelComplete,
 						dataObjData,
 						dataObjName: field.dataObjName,
+						layout: new StateLayout({
+							layoutType: StateLayoutType.LayoutObj,
+							surfaceType: StateSurfaceType.overlay
+						}),
 						isMultiSelect: field.isMultiSelect,
 						modalStore,
 						page: '/',
 						queryType: TokenApiQueryType.retrieve,
-						selectedIds: field.valueCurrent,
-						surface: SurfaceType.overlay
+						selectedIds: field.valueCurrent
 					})
 				},
 				response: (r: any) => {
@@ -62,10 +71,12 @@
 		stateLocal = new StateObj({
 			dataObjData: data,
 			dataObjName: field.dataObjName,
-			layout: StateLayout.LayoutObjModal,
+			layout: new StateLayout({
+				layoutType: StateLayoutType.LayoutObj,
+				surfaceType: StateSurfaceType.embedded
+			}),
 			modalStore,
-			queryType: TokenApiQueryType.retrieve,
-			surface: SurfaceType.embedded
+			queryType: TokenApiQueryType.retrieve
 		})
 	}
 
@@ -86,9 +97,9 @@
 <div id="form">
 	{#if stateLocal && field.valueCurrent.length > 0}
 		<object title="embedded column" class="mb-10">
-			<Form state={stateLocal} />
+			<DataObj state={stateLocal} />
 		</object>
 	{/if}
 </div>
 
-<!-- <DataViewer header="state" data={state} /> -->
+<DataViewer header="field" data={field} />

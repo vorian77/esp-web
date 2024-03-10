@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DataObj, DataObjAction, DataObjRecordStatus, DataObjSaveMode } from '$comps/types'
 	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
-	import { TokenAppDoDetail, TokenAppDoDetailConfirm, TokenAppDoAction } from '$comps/types.token'
+	import { TokenAppDoDetail, TokenAppDoAction } from '$comps/types.token'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
@@ -13,47 +13,35 @@
 	let saveMode: DataObjSaveMode
 	let actions: Array<DataObjAction>
 
-	let show: Record<string, (saveMode: DataObjSaveMode, objHasChanged: boolean) => boolean> = {
-		noa_detail_save_insert: (saveMode: DataObjSaveMode, objHasChanged: boolean) =>
-			saveMode === DataObjSaveMode.insert && objHasChanged,
-		noa_detail_save_update: (saveMode: DataObjSaveMode, objHasChanged: boolean) =>
-			saveMode === DataObjSaveMode.update && objHasChanged,
-		noa_detail_delete: (saveMode: DataObjSaveMode, objHasChanged: boolean) =>
-			saveMode === DataObjSaveMode.update
-	}
-
-	let disabled: Record<string, (objValidToSave: boolean) => boolean> = {
-		noa_detail_save_insert: (objValidToSave: boolean) => !objValidToSave,
-		noa_detail_save_update: (objValidToSave: boolean) => !objValidToSave
-	}
-
 	$: {
 		saveMode = dataObj.saveMode
 		actions = dataObj.actionsField
-			.filter((a) =>
-				Object.hasOwn(show, a.name) ? show[a.name](saveMode, state.objHasChanged) : true
-			)
-			.map((a) => {
-				a.isDisabled = Object.hasOwn(disabled, a.name)
-					? disabled[a.name](state.objValidToSave)
-					: false
+			.filter((a: DataObjAction) => show(a, saveMode, state.objHasChanged))
+			.map((a: DataObjAction) => {
+				a.isDisabled = disable(a, state.objValidToSave)
 				return a
 			})
 	}
 
+	let show = function (action: DataObjAction, saveMode: DataObjSaveMode, objHasChanged: boolean) {
+		return (
+			action.renderShowSaveMode === DataObjSaveMode.any ||
+			(!action.isRenderShowRequiresObjHasChanged && action.renderShowSaveMode === saveMode) ||
+			(action.isRenderShowRequiresObjHasChanged &&
+				action.renderShowSaveMode === saveMode &&
+				objHasChanged)
+		)
+	}
+	let disable = function (action: DataObjAction, objValidToSave: boolean) {
+		return action.isRenderDisableOnInvalidToSave && !objValidToSave
+	}
+
 	async function onClick(action: DataObjAction) {
-		let confirm: TokenAppDoDetailConfirm | undefined
-		if (action.confirmButtonLabel && action.confirmMsg && action.confirmTitle)
-			confirm = new TokenAppDoDetailConfirm(
-				action.confirmTitle,
-				action.confirmMsg,
-				action.confirmButtonLabel
-			)
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: action.checkObjChanged,
 				component: StatePacketComponent.appDataObj,
-				token: new TokenAppDoDetail(action.dbAction, dataObj.objData, confirm)
+				token: new TokenAppDoDetail(action.dbAction, dataObj.objData, action.confirm)
 			})
 		})
 	}
@@ -63,7 +51,6 @@
 
 <div class="flex flex-col">
 	{#each actions as action}
-		{@const disabled = action.name === 'noa_detail_save' && !state.objValidToSave ? true : false}
 		<div class="pb-4">
 			<button
 				disabled={action.isDisabled}

@@ -6,7 +6,7 @@ import {
 	userGet,
 	valueOrDefault
 } from '$comps/types'
-import type { DataObjRaw } from '$comps/types'
+import type { DataObjActionConfirm, DataObjRaw } from '$comps/types'
 import { AppRowActionType } from '$comps/nav/types.app'
 import { type StateObjModalRecords } from '$comps/nav/types.appState'
 import { Node } from '$comps/nav/types.node'
@@ -294,25 +294,14 @@ export enum TokenAppDoAction {
 }
 
 export class TokenAppDoDetail extends TokenAppDo {
-	confirm?: TokenAppDoDetailConfirm
+	confirm?: DataObjActionConfirm
 	constructor(
 		action: TokenAppDoAction,
 		data: DataObjData | undefined,
-		confirm?: TokenAppDoDetailConfirm
+		confirm?: DataObjActionConfirm
 	) {
 		super(action, data)
 		this.confirm = confirm
-	}
-}
-
-export class TokenAppDoDetailConfirm {
-	buttonConfirmLabel: string
-	msg: string
-	title: string
-	constructor(title: string, msg: string, buttonConfirmLabel: string) {
-		this.buttonConfirmLabel = buttonConfirmLabel
-		this.msg = msg
-		this.title = title
 	}
 }
 

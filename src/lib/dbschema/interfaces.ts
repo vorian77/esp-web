@@ -187,15 +187,19 @@ export namespace sys_core {
     "actionsFieldGroup"?: SysDataObjActionGroup | null;
   }
   export interface SysDataObjAction extends SysObj {
-    "allTabs"?: boolean | null;
     "color"?: string | null;
     "order": number;
     "checkObjChanged": boolean;
     "codeActionType": SysCode;
-    "confirm"?: boolean | null;
-    "confirmButtonLabel"?: string | null;
-    "confirmMsg"?: string | null;
-    "confirmTitle"?: string | null;
+    "confirm"?: SysDataObjActionConfirm | null;
+    "codeRenderShowSaveMode": SysCode;
+    "isRenderDisableOnInvalidToSave": boolean;
+    "isRenderShowRequiresObjHasChanged"?: boolean | null;
+  }
+  export interface SysDataObjActionConfirm extends std.$Object {
+    "confirmButtonLabel": string;
+    "confirmMessage": string;
+    "confirmTitle": string;
   }
   export interface SysDataObjActionGroup extends SysObj {
     "actions": SysDataObjAction[];
@@ -708,6 +712,7 @@ export interface types {
     "SysCodeType": sys_core.SysCodeType;
     "SysDataObj": sys_core.SysDataObj;
     "SysDataObjAction": sys_core.SysDataObjAction;
+    "SysDataObjActionConfirm": sys_core.SysDataObjActionConfirm;
     "SysDataObjActionGroup": sys_core.SysDataObjActionGroup;
     "SysDataObjColumn": sys_core.SysDataObjColumn;
     "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;

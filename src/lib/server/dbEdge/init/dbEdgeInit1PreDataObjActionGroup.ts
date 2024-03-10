@@ -23,7 +23,8 @@ async function initFeatures() {
 			'noa_detail_save_insert',
 			'noa_detail_save_update',
 			'noa_detail_new',
-			'noa_detail_delete'
+			'noa_detail_delete_insert',
+			'noa_detail_delete_update'
 		],
 		name: 'doag_base_detail',
 		owner: 'app_sys'
@@ -39,7 +40,7 @@ async function initFeatures() {
 		owner: 'app_sys'
 	})
 	addDataObjActionGroup({
-		actions: ['noa_detail_delete'],
+		actions: ['noa_detail_delete_update'],
 		name: 'doag_modal_detail',
 		owner: 'app_sys'
 	})

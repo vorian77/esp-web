@@ -1,11 +1,10 @@
 <script lang="ts">
 	import type { FieldListChips, FieldListChipValues } from '$comps/form/fieldListChips'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { StateObjModal } from '$comps/nav/types.appState'
+	import { StateObjModal, StateSurfaceType } from '$comps/nav/types.appState'
 	import { TokenApiDbDataObj, TokenApiQueryType } from '$comps/types.token'
 	import { type DataObjData } from '$comps/types'
 	import { createEventDispatcher } from 'svelte'
-	import { SurfaceType } from '$comps/types.master'
 
 	const dispatch = createEventDispatcher()
 
@@ -28,7 +27,7 @@
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalForm',
+				component: 'overlayModalDialog',
 				meta: {
 					state: new StateObjModal({
 						btnLabelComplete: field.btnLabelComplete,
@@ -39,7 +38,7 @@
 						page: '/',
 						queryType: TokenApiQueryType.retrieve,
 						selectedIds,
-						surface: SurfaceType.overlay
+						surface: StateSurfaceType.overlay
 					})
 				},
 				response: (r: any) => {

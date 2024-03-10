@@ -1,14 +1,20 @@
 <script lang="ts">
 	import type { FieldListConfig } from '$comps/form/fieldListConfig'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
-	import { State, StateLayout, StateObj, StateObjModal } from '$comps/nav/types.appState'
-	import { SurfaceType } from '$comps/types.master'
+	import {
+		State,
+		StateLayout,
+		StateLayoutType,
+		StateObj,
+		StateObjModal,
+		StateSurfaceType
+	} from '$comps/nav/types.appState'
 	import {
 		TokenApiQueryType,
 		TokenAppModalReturn,
 		TokenAppModalReturnType
 	} from '$comps/types.token'
-	import Form from '$comps/dataObj/DataObj.svelte'
+	import DataObj from '$comps/dataObj/DataObj.svelte'
 	import { type DataObjData } from '$comps/types'
 	import { setContext } from 'svelte'
 	import { createEventDispatcher } from 'svelte'
@@ -34,10 +40,12 @@
 		stateDisplay = new StateObj({
 			dataObjData: setData(ids),
 			dataObjName: field.dataObjNameDisplay,
-			layout: StateLayout.LayoutObjModal,
+			layout: new StateLayout({
+				layoutType: StateLayoutType.LayoutObj,
+				surfaceType: StateSurfaceType.embedded
+			}),
 			modalStore,
-			queryType: TokenApiQueryType.retrieve,
-			surface: SurfaceType.embedded
+			queryType: TokenApiQueryType.retrieve
 		})
 	}
 
@@ -45,7 +53,7 @@
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalForm',
+				component: 'overlayModalDialog',
 				meta: {
 					state: new StateObjModal({
 						btnLabelComplete: field.btnLabelComplete,
@@ -53,11 +61,14 @@
 						dataObjName: field.dataObjNameConfig,
 						isBtnDelete: true,
 						isMultiSelect: field.isMultiSelect,
+						layout: new StateLayout({
+							layoutType: StateLayoutType.LayoutObj,
+							surfaceType: StateSurfaceType.overlay
+						}),
 						modalStore,
 						page: '/',
 						queryType,
-						selectedIds: field.valueCurrent,
-						surface: SurfaceType.overlay
+						selectedIds: field.valueCurrent
 					})
 				},
 				response: (r: any) => {
@@ -119,7 +130,7 @@
 <div id="form">
 	{#if stateDisplay && field.valueCurrent.length > 0}
 		<object title="embedded column" class="mb-10">
-			<Form state={stateDisplay} />
+			<DataObj state={stateDisplay} />
 		</object>
 	{/if}
 </div>

@@ -36,12 +36,6 @@ export async function initPreColumn() {
 		placeHolder: 'Enter agency ID'
 	})
 	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'All Tabs',
-		name: 'allTabs'
-	})
-	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'json',
 		exprStorageKey: 'avatar_<int64,calc,random10>',

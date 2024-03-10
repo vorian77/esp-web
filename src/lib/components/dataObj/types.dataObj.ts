@@ -63,7 +63,7 @@ export class DataObj {
 	isPopup: boolean
 	name: string
 	orderItems: DataObjListOrder
-	saveMode: DataObjSaveMode = DataObjSaveMode.none
+	saveMode: DataObjSaveMode = DataObjSaveMode.any
 	subHeader: string
 	table?: Table
 
@@ -197,7 +197,7 @@ export class DataObj {
 				? this.data.dataObjRow.status === DataObjRecordStatus.created
 					? DataObjSaveMode.insert
 					: DataObjSaveMode.update
-				: DataObjSaveMode.none
+				: DataObjSaveMode.any
 
 		switch (this.data.cardinality) {
 			case DataObjCardinality.list:
@@ -420,25 +420,22 @@ export class DataObj {
 }
 
 export class DataObjAction {
-	allTabs: boolean
 	checkObjChanged: boolean
 	color: string
-	confirmButtonLabel?: string
-	confirmMsg?: string
-	confirmTitle?: string
+	confirm?: DataObjActionConfirm
 	dbAction: TokenAppDoAction
 	header: string
 	name: string
 	isDisabled: boolean = false
+	isRenderDisableOnInvalidToSave: boolean
+	isRenderShowRequiresObjHasChanged: boolean
+	renderShowSaveMode: DataObjSaveMode
 	constructor(obj: any) {
 		const clazz = 'DataObjAction'
 		obj = valueOrDefault(obj, {})
-		this.allTabs = Object.hasOwn(obj, 'allTabs') && obj.allTabs !== null ? obj.allTabs : false
 		this.checkObjChanged = booleanOrFalse(obj.checkObjChanged, clazz)
 		this.color = valueOrDefault(obj.color, 'variant-filled-primary')
-		this.confirmButtonLabel = strOptional(obj.confirmButtonLabel, clazz, 'confirmButtonLabel')
-		this.confirmMsg = strOptional(obj.confirmMsg, clazz, 'confirmMsg')
-		this.confirmTitle = strOptional(obj.confirmTitle, clazz, 'confirmTitle')
+		this.confirm = obj._confirm ? new DataObjActionConfirm(obj._confirm) : undefined
 		this.dbAction = memberOfEnum(
 			obj._codeActionType,
 			clazz,
@@ -447,7 +444,39 @@ export class DataObjAction {
 			TokenAppDoAction
 		)
 		this.header = strRequired(obj.header, clazz, 'header')
+		this.isRenderDisableOnInvalidToSave = booleanOrFalse(obj.isRenderDisableOnInvalidToSave, clazz)
+		this.isRenderShowRequiresObjHasChanged = booleanOrFalse(
+			obj.isRenderShowRequiresObjHasChanged,
+			clazz
+		)
 		this.name = strRequired(obj.name, clazz, 'name')
+		this.renderShowSaveMode = memberOfEnum(
+			obj._codeRenderShowSaveMode,
+			clazz,
+			'renderShowSaveMode',
+			'DataObjSaveMode',
+			DataObjSaveMode
+		)
+	}
+}
+
+export class DataObjActionConfirm {
+	buttonLabel: string
+	message: string
+	title: string
+	constructor(obj: any) {
+		const clazz = 'DataObjActionConfirm'
+		obj = valueOrDefault(obj, {})
+		this.buttonLabel = strRequired(obj.confirmButtonLabel, clazz, 'confirmButtonLabel')
+		this.message = strRequired(obj.confirmMessage, clazz, 'confirmMessage')
+		this.title = strRequired(obj.confirmTitle, clazz, 'confirmTitle')
+	}
+	static new(title: string, message: string, buttonLabel: string) {
+		return new DataObjActionConfirm({
+			confirmButtonLabel: buttonLabel,
+			confirmMessage: message,
+			confirmTitle: title
+		})
 	}
 }
 
@@ -624,8 +653,8 @@ export enum DataObjRecordStatus {
 	updated = 'updated'
 }
 export enum DataObjSaveMode {
+	any = 'any',
 	insert = 'insert',
-	none = 'none',
 	update = 'update'
 }
 export class DataObjStatus {

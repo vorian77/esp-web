@@ -19,7 +19,7 @@ export async function initPre() {
 
 async function initPreCodes() {
 	await codeTypes([
-		['app_cm', 0, 'ct_cm_data_obj_action_type'],
+		['app_cm', 0, 'ct_sys_do_action_type'],
 		['app_cm', 0, 'ct_cm_doc_type'],
 		['app_cm', 0, 'ct_cm_job_type'],
 		['app_cm', 0, 'ct_cm_job_wage_type'],
@@ -29,16 +29,16 @@ async function initPreCodes() {
 	])
 
 	await codes([
-		// ct_cm_data_obj_action_type
-		['ct_cm_data_obj_action_type', 'app_sys', 'listEdit', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'listNew', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'detailDelete', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'detailNew', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'detailSaveAs', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'detailSaveInsert', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'detailSaveUpdate', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'none', 0],
-		['ct_cm_data_obj_action_type', 'app_sys', 'refresh', 0],
+		// ct_sys_do_action_type
+		['ct_sys_do_action_type', 'app_sys', 'listEdit', 0],
+		['ct_sys_do_action_type', 'app_sys', 'listNew', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailDelete', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailNew', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailSaveAs', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailSaveInsert', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailSaveUpdate', 0],
+		['ct_sys_do_action_type', 'app_sys', 'none', 0],
+		['ct_sys_do_action_type', 'app_sys', 'refresh', 0],
 
 		// ct_cm_doc_type
 		['ct_cm_doc_type', 'app_cm', 'Certificate - Asbestos Abatement', 0],

@@ -77,16 +77,23 @@ module sys_core {
   } 
 
   type SysDataObjAction extending sys_core::SysObj {
-    allTabs: bool;
     required checkObjChanged: bool;
+    required codeRenderShowSaveMode: sys_core::SysCode;
     required codeActionType: sys_core::SysCode;
-    confirm: bool;
-    confirmButtonLabel: str;
-    confirmMsg: str;
-    confirmTitle: str;
+    confirm: SysDataObjActionConfirm {
+      on source delete delete target;
+    };
     color: str;
     required order: default::nonNegative;
+    required isRenderDisableOnInvalidToSave: bool;
+    isRenderShowRequiresObjHasChanged: bool;
     constraint exclusive on (.name);
+  }
+
+  type SysDataObjActionConfirm{
+    required confirmButtonLabel: str;
+    required confirmMessage: str;
+    required confirmTitle: str;
   }
 
   type SysDataObjActionGroup extending sys_core::SysObj {

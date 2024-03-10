@@ -314,36 +314,59 @@ export async function addDataObjAction(data: any) {
 	sectionHeader(`addDataObjAction - ${data.name}`)
 	const query = e.params(
 		{
-			allTabs: e.optional(e.bool),
 			checkObjChanged: e.bool,
 			codeActionType: e.str,
+			codeRenderShowSaveMode: e.str,
 			color: e.optional(e.str),
-			confirButtonLabel: e.optional(e.str),
-			confirmMsg: e.optional(e.str),
-			confirmTitle: e.optional(e.str),
 			header: e.str,
+			isRenderDisableOnInvalidToSave: e.bool,
+			isRenderShowRequiresObjHasChanged: e.bool,
 			name: e.str,
 			order: e.int64,
 			owner: e.str
 		},
 		(p) => {
 			return e.insert(e.sys_core.SysDataObjAction, {
-				allTabs: p.allTabs,
 				checkObjChanged: p.checkObjChanged,
-				codeActionType: e.select(
-					e.sys_core.getCode('ct_cm_data_obj_action_type', p.codeActionType)
+				codeActionType: e.select(e.sys_core.getCode('ct_sys_do_action_type', p.codeActionType)),
+				codeRenderShowSaveMode: e.select(
+					e.sys_core.getCode('ct_sys_do_action_save_mode', p.codeRenderShowSaveMode)
 				),
 				color: p.color,
-				confirmButtonLabel: p.confirButtonLabel,
-				confirmMsg: p.confirmMsg,
-				confirmTitle: p.confirmTitle,
 				createdBy: e.select(e.sys_user.getRootUser()),
 				header: p.header,
+				isRenderDisableOnInvalidToSave: p.isRenderDisableOnInvalidToSave,
+				isRenderShowRequiresObjHasChanged: p.isRenderShowRequiresObjHasChanged,
 				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,
 				order: p.order,
 				owner: e.select(e.sys_core.getEnt(p.owner))
 			})
+		}
+	)
+	return await query.run(client, data)
+}
+
+export async function addDataObjActionConfirm(data: any) {
+	sectionHeader(`addDataObjActionConfirm - ${data.name}`)
+	const query = e.params(
+		{
+			confirmButtonLabel: e.optional(e.str),
+			confirmMessage: e.optional(e.str),
+			confirmTitle: e.optional(e.str),
+			name: e.str
+		},
+		(p) => {
+			return e.update(e.sys_core.SysDataObjAction, (a) => ({
+				filter: e.op(a.name, '=', p.name),
+				set: {
+					confirm: e.insert(e.sys_core.SysDataObjActionConfirm, {
+						confirmButtonLabel: p.confirmButtonLabel,
+						confirmMessage: p.confirmMessage,
+						confirmTitle: p.confirmTitle
+					})
+				}
+			}))
 		}
 	)
 	return await query.run(client, data)
