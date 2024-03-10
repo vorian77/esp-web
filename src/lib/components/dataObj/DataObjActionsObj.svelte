@@ -10,8 +10,9 @@
 	export let state: State
 	export let dataObj: DataObj
 
-	let saveMode: DataObjSaveMode
 	let actions: Array<DataObjAction>
+	let saveMode: DataObjSaveMode
+	let isEditing: boolean = false
 
 	$: {
 		saveMode = dataObj.saveMode
@@ -21,6 +22,12 @@
 				a.isDisabled = disable(a, state.objValidToSave)
 				return a
 			})
+		isEditing = dataObj.actionsField.some(
+			(a: DataObjAction) =>
+				(a.dbAction === TokenAppDoAction.detailSaveUpdate ||
+					a.dbAction === TokenAppDoAction.detailSaveInsert) &&
+				state.objHasChanged
+		)
 	}
 
 	let show = function (action: DataObjAction, saveMode: DataObjSaveMode, objHasChanged: boolean) {
@@ -50,6 +57,9 @@
 <!-- <DataViewer header="formObj" data={formObj} /> -->
 
 <div class="flex flex-col">
+	{#if isEditing}
+		<div class="mr-4"><p class="text-lg text-blue-600 mb-4">Editing...</p></div>
+	{/if}
 	{#each actions as action}
 		<div class="pb-4">
 			<button
