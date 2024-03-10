@@ -5,13 +5,7 @@ import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
 import { encrypt, userInit } from '$comps/types'
 import { apiDbQuery, apiFetch, ApiFunction } from '$lib/api'
-import {
-	TokenApiDbDataObj,
-	TokenApiQuery,
-	TokenApiQueryData,
-	TokenApiQueryType,
-	TokenApiSendText
-} from '$comps/types.token'
+import { TokenApiQueryData, TokenApiQueryType, TokenApiSendText } from '$comps/types.token'
 import { goto } from '$app/navigation'
 import { error } from '@sveltejs/kit'
 
