@@ -1,14 +1,6 @@
+import { booleanOrFalse, required, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 import {
-	booleanOrFalse,
-	memberOfEnumOrDefault,
-	required,
-	strOptional,
-	strRequired,
-	valueOrDefault
-} from '$utils/utils'
-import {
-	DataObjActionGroup,
-	DataObjCardinality,
+	DataObjAction,
 	DataObjData,
 	initNavTree,
 	memberOfEnum,
@@ -95,7 +87,7 @@ export class StateLayout {
 	layoutType: StateLayoutType
 	surfaceType: StateSurfaceType
 	headerDialog?: string
-	footerActionGroup?: DataObjActionGroup
+	footerActionGroup?: Array<DataObjAction>
 	footerCompleteButtonLabel?: string
 	constructor(obj: any) {
 		const clazz = 'StateLayout'

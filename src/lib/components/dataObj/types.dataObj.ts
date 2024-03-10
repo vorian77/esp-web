@@ -480,22 +480,6 @@ export class DataObjActionConfirm {
 	}
 }
 
-export class DataObjActionGroup {
-	actions: DataObjAction[]
-	isEditing: boolean = false
-	justify: string
-	marginBottom: string
-	marginTop: string
-	constructor(obj: any) {
-		const clazz = 'DataObjActionGroup'
-		obj = valueOrDefault(obj, {})
-		this.actions = getArray(obj.actions)
-		this.justify = Object.hasOwn(obj, 'justify') ? obj.justify : ''
-		this.marginBottom = Object.hasOwn(obj, 'marginBottom') ? obj.marginBottom : ''
-		this.marginTop = Object.hasOwn(obj, 'marginTop') ? obj.justify : ''
-	}
-}
-
 export enum DataObjCardinality {
 	list = 'list',
 	detail = 'detail'
