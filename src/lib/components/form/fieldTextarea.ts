@@ -7,8 +7,8 @@ export class FieldTextarea extends Field {
 	cols: number
 	classValue: string
 
-	constructor(obj: FieldRaw, index: number) {
-		super(obj, index)
+	constructor(obj: FieldRaw, index: number, isFirstVisible: boolean) {
+		super(obj, index, isFirstVisible)
 		obj = valueOrDefault(obj, {})
 		this.rows = valueOrDefault(obj.height, 3)
 		this.cols = valueOrDefault(obj.width, 0)

@@ -24,8 +24,8 @@ export class FieldInput extends Field {
 	patternReplacement?: string
 	placeHolder: string
 	spinStep?: string
-	constructor(obj: FieldRaw, index: number, fields: Array<Field>) {
-		super(obj, index)
+	constructor(obj: FieldRaw, index: number, isFirstVisible: boolean, fields: Array<Field>) {
+		super(obj, index, isFirstVisible)
 		obj = valueOrDefault(obj, {})
 		this.placeHolder =
 			this.access !== FieldAccess.readonly

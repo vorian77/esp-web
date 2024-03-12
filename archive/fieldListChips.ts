@@ -9,9 +9,9 @@ export class FieldListChips extends Field {
 	isMultiSelect: boolean
 	valuesRaw: FieldListChipValues = []
 	valuesSelected: FieldListChipValues = []
-	constructor(obj: FieldRaw, index: number) {
+	constructor(obj: FieldRaw, index: number, isFirstVisible: boolean) {
 		const clazz = 'FieldListChips'
-		super(obj, index)
+		super(obj, index, isFirstVisible)
 		this.access = FieldAccess.optional
 		this.btnLabelComplete = strOptional(
 			obj._fieldListChips.btnLabelComplete,

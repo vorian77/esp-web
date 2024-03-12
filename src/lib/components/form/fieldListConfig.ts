@@ -9,9 +9,9 @@ export class FieldListConfig extends Field {
 	isMultiSelect: boolean
 	valuesRaw: FieldListChipValues = []
 	valuesSelected: FieldListChipValues = []
-	constructor(obj: FieldRaw, index: number) {
+	constructor(obj: FieldRaw, index: number, isFirstVisible: boolean) {
 		const clazz = 'FieldListConfig'
-		super(obj, index)
+		super(obj, index, isFirstVisible)
 		this.access = FieldAccess.optional
 		this.actionsFieldDialog = DataObj.initActions(obj._fieldListConfig._actionsFieldGroup)
 		this.dataObjNameConfig = strRequired(

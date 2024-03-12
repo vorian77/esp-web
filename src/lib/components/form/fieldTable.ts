@@ -5,8 +5,8 @@ import { DataObj } from '$comps/types'
 export class FieldTable extends Field {
 	// dataObjList: DataObj
 	// dataObjDetail: DataObj
-	constructor(obj: FieldRaw, index: number) {
-		super(obj, index)
+	constructor(obj: FieldRaw, index: number, isFirstVisible: boolean) {
+		super(obj, index, isFirstVisible)
 		// this.access = FieldAccess.optional
 		// this.overlayNodeFieldItems = new OverlayNodeFieldItems(obj.fieldChips)
 	}

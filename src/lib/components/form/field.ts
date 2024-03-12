@@ -28,10 +28,11 @@ export class Field {
 	element: FieldElement
 	fieldListItems: FieldItems | undefined
 	hasChanged: boolean
+	index: number
 	isDisplay: boolean
 	isDisplayable: boolean
+	isFirstVisible: boolean
 	isMultiSelect: boolean
-	index: number
 	items: Array<FieldItem> = []
 	label: string
 	labelSide: string
@@ -40,7 +41,7 @@ export class Field {
 	valueInitial: any
 	valueCurrent: any
 
-	constructor(obj: FieldRaw, index: number) {
+	constructor(obj: FieldRaw, index: number, isFirstVisible: boolean) {
 		obj = valueOrDefault(obj, {})
 		this.access = memberOfEnumOrDefault(
 			obj._codeAccess,
@@ -75,6 +76,7 @@ export class Field {
 		this.index = index
 		this.isDisplay = valueOrDefault(obj.isDisplay, true)
 		this.isDisplayable = valueOrDefault(obj.isDisplayable, true)
+		this.isFirstVisible = isFirstVisible
 		this.isMultiSelect = valueOrDefault(obj._column.isMultiSelect, false)
 		this.items = valueOrDefault(obj.items, [])
 		this.fieldListItems = obj._fieldListItems

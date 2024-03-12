@@ -5,8 +5,8 @@ export class FieldToggle extends Field {
 	valueFalse: string
 	valueShow: boolean
 	valueTrue: string
-	constructor(obj: any, index: number) {
-		super(obj, index)
+	constructor(obj: any, index: number, isFirstVisible: boolean) {
+		super(obj, index, isFirstVisible)
 		this.access = FieldAccess.optional
 		this.valueFalse = valueOrDefault(obj._column.toggleValueFalse, undefined)
 		this.valueShow = valueOrDefault(obj._column.toggleValueShow, false)

@@ -239,9 +239,18 @@ export class DataObj {
 
 	initFields(fieldsRaw: Array<FieldRaw>) {
 		let list: Array<Field> = []
+		let firstVisible = -1
+		let isFirstVisible: boolean
+
 		fieldsRaw = valueOrDefault(fieldsRaw, [])
 		fieldsRaw.forEach((fieldRaw: any, index: number) => {
 			let newField: Field
+
+			firstVisible =
+				firstVisible < 0 && (fieldRaw.isDisplay || fieldRaw.isDisplay === null)
+					? index
+					: firstVisible
+			isFirstVisible = firstVisible === index
 
 			const element = memberOfEnumOrDefault(
 				fieldRaw._codeElement,
@@ -260,35 +269,35 @@ export class DataObj {
 				case FieldElement.password:
 				case FieldElement.tel:
 				case FieldElement.text:
-					newField = new FieldInput(fieldRaw, index, list)
+					newField = new FieldInput(fieldRaw, index, isFirstVisible, list)
 					break
 
 				case FieldElement.checkbox:
-					newField = new FieldCheckbox(fieldRaw, index)
+					newField = new FieldCheckbox(fieldRaw, index, isFirstVisible)
 					break
 
 				case FieldElement.listConfig:
-					newField = new FieldListConfig(fieldRaw, index)
+					newField = new FieldListConfig(fieldRaw, index, isFirstVisible)
 					break
 
 				case FieldElement.listSelect:
-					newField = new FieldListSelect(fieldRaw, index)
+					newField = new FieldListSelect(fieldRaw, index, isFirstVisible)
 					break
 
 				case FieldElement.custom:
 					const customType = fieldRaw.customElement._type
 					switch (customType) {
 						case FieldCustomType.button:
-							newField = new FieldCustomActionButton(fieldRaw, index)
+							newField = new FieldCustomActionButton(fieldRaw, index, isFirstVisible)
 							break
 						case FieldCustomType.header:
-							newField = new FieldCustomHeader(fieldRaw, index)
+							newField = new FieldCustomHeader(fieldRaw, index, isFirstVisible)
 							break
 						case FieldCustomType.link:
-							newField = new FieldCustomActionLink(fieldRaw, index)
+							newField = new FieldCustomActionLink(fieldRaw, index, isFirstVisible)
 							break
 						case FieldCustomType.text:
-							newField = new FieldCustomText(fieldRaw, index)
+							newField = new FieldCustomText(fieldRaw, index, isFirstVisible)
 							break
 						default:
 							error(500, {
@@ -300,23 +309,23 @@ export class DataObj {
 					break
 
 				case FieldElement.file:
-					newField = new FieldFile(fieldRaw, index)
+					newField = new FieldFile(fieldRaw, index, isFirstVisible)
 					break
 
 				case FieldElement.radio:
-					newField = new FieldRadio(fieldRaw, index)
+					newField = new FieldRadio(fieldRaw, index, isFirstVisible)
 					break
 
 				case FieldElement.select:
-					newField = new FieldSelect(fieldRaw, index)
+					newField = new FieldSelect(fieldRaw, index, isFirstVisible)
 					break
 
 				case FieldElement.textArea:
-					newField = new FieldTextarea(fieldRaw, index)
+					newField = new FieldTextarea(fieldRaw, index, isFirstVisible)
 					break
 
 				case FieldElement.toggle:
-					newField = new FieldToggle(fieldRaw, index)
+					newField = new FieldToggle(fieldRaw, index, isFirstVisible)
 					break
 
 				default:

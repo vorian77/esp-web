@@ -41,9 +41,10 @@
 {/if}
 
 {#if field instanceof FieldCustomHeader}
+	{@const margin = field.isFirstVisible ? '' : 'mt-8'}
 	{@const size = field.size ? 'h' + field.size : 'h3'}
 	{@const dynamicText = field.source && field.sourceKey ? ': ' + field.sourceKey : ''}
-	<div class="mt-8 {size}">
+	<div class="{margin} {size}">
 		<p>{field.label}<span class="font-semibold">{dynamicText}</span></p>
 	</div>
 {/if}

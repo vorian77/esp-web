@@ -8,9 +8,9 @@ export class FieldListSelect extends Field {
 	dataObjNameDisplay: string
 	dataObjNameSelect: string
 	isMultiSelect: boolean
-	constructor(obj: FieldRaw, index: number) {
+	constructor(obj: FieldRaw, index: number, isFirstVisible: boolean) {
 		const clazz = 'FieldListSelect'
-		super(obj, index)
+		super(obj, index, isFirstVisible)
 		this.access = FieldAccess.optional
 		this.actionsFieldDialog = DataObj.initActions(obj._fieldListSelect._actionsFieldGroup)
 		this.btnLabelComplete = strOptional(
