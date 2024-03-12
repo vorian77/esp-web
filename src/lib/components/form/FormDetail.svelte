@@ -13,14 +13,12 @@
 	import FormElInp from '$comps/form/FormElInp.svelte'
 	import FormElInpCheckbox from '$comps/form/FormElInpCheckbox.svelte'
 	import FormElInpRadio from '$comps/form/FormElInpRadio.svelte'
-	import FormElListChips from '$comps/form/FormElListChips.svelte'
 	import FormElListConfig from './FormElListConfig.svelte'
 	import FormElListSelect from './FormElListSelect.svelte'
 	import FormElSelect from '$comps/form/FormElSelect.svelte'
 	import FormElTextarea from '$comps/form/FormElTextarea.svelte'
 	import FormElToggle from '$comps/form/FormElToggle.svelte'
 	import { FieldCheckbox } from '$comps/form/fieldCheckbox'
-	import { FieldListChips } from '$comps/form/fieldListChips'
 	import { FieldListConfig } from '$comps/form/fieldListConfig'
 	import { FieldListSelect } from '$comps/form/fieldListSelect'
 	import { FieldCustom } from '$comps/form/fieldCustom'
@@ -90,11 +88,12 @@
 	}
 </script>
 
-<div id={state.layout.surfaceType} class="px-2">
+<!-- <div id="root" class="px-4 pb-4"> -->
+<div id="root" class="mx-4 mt-4">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
 		{#each dataObj.fields as field, idx (field.name)}
 			{#if field.isDisplayable && field.isDisplay}
-				<div class:mt-3={idx}>
+				<div class="mb-4">
 					{#if field instanceof FieldCheckbox}
 						<FormElInpCheckbox {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldCustom}
@@ -110,8 +109,6 @@
 						/>
 					{:else if field instanceof FieldRadio}
 						<FormElInpRadio {field} on:changeItem={onChangeItem} />
-					{:else if field instanceof FieldListChips}
-						<FormElListChips {field} on:changeItem={onChangeItem} {dataObjData} />
 					{:else if field instanceof FieldListConfig}
 						<FormElListConfig {state} {field} on:changeItem={onChangeItem} {dataObjData} />
 					{:else if field instanceof FieldListSelect}
@@ -147,8 +144,8 @@
 <!-- <DataViewer header="defn" data={formObj.defn} /> -->
 
 <style>
-	#page {
-		height: 74vh;
+	#root {
+		max-height: 90vh;
 		overflow-y: auto;
 	}
 </style>

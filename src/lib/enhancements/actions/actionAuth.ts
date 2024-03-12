@@ -1,5 +1,5 @@
-import { State, StateLayoutType, StateObj } from '$comps/nav/types.appState'
-import { StateSurfaceType } from '$comps/nav/types.appState'
+import { State, StateSurfaceType, StateObj } from '$comps/nav/types.appState'
+import { StateSurfaceStyle } from '$comps/nav/types.appState'
 import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
@@ -111,8 +111,8 @@ export default async function action(state: State, field: FieldCustomAction, dat
 					dataObjName,
 					drawerStore,
 					layout: {
-						layoutType: StateLayoutType.LayoutObj,
-						surfaceType: StateSurfaceType.overlay,
+						surfaceStyle: StateSurfaceStyle.drawer,
+						surfaceType: StateSurfaceType.LayoutObj,
 						headerCancelX: true
 					},
 					page: '/',

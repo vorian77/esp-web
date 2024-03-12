@@ -76,7 +76,7 @@
 	</svelte:fragment>
 
 	{#if currLevel}
-		<div class="mt-2">
+		<div class="mt-0">
 			<TabGroup>
 				{#each currLevel.tabs as tab, idx}
 					{@const name = 'tab' + idx}
@@ -90,7 +90,9 @@
 
 				<svelte:fragment slot="panel">
 					{#if dataObj && dataObjData}
-						<LayoutObj {app} bind:state {dataObj} {dataObjData} on:formCancelled />
+						<div class="mt-4">
+							<LayoutObj {app} bind:state {dataObj} {dataObjData} on:formCancelled />
+						</div>
 					{/if}
 				</svelte:fragment>
 			</TabGroup>

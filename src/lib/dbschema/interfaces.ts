@@ -232,7 +232,6 @@ export namespace sys_core {
     "nameCustom"?: string | null;
     "fieldListItems"?: SysDataObjFieldListItems | null;
     "fieldListItemsParms"?: unknown | null;
-    "fieldListChips"?: SysDataObjFieldListChips | null;
     "fieldListSelect"?: SysDataObjFieldListSelect | null;
     "fieldListConfig"?: SysDataObjFieldListConfig | null;
   }
@@ -250,17 +249,11 @@ export namespace sys_core {
     "order": number;
     "table": sys_db.SysTable;
   }
-  export interface SysDataObjFieldListChips extends SysObj {
-    "btnLabelComplete": string;
-    "columnLabelDisplay": string;
-    "isMultiSelect": boolean;
-    "dataObj": SysDataObj;
-  }
   export interface SysDataObjFieldListConfig extends SysObj {
     "dataObjConfig": SysDataObj;
     "dataObjDisplay": SysDataObj;
-    "btnLabelComplete": string;
     "isMultiSelect": boolean;
+    "actionsFieldGroup"?: SysDataObjActionGroup | null;
   }
   export interface SysDataObjFieldListItems extends SysObj {
     "codeDataTypeDisplay"?: SysCode | null;
@@ -270,7 +263,9 @@ export namespace sys_core {
   export interface SysDataObjFieldListSelect extends SysObj {
     "btnLabelComplete": string;
     "isMultiSelect": boolean;
-    "dataObj": SysDataObj;
+    "actionsFieldGroup"?: SysDataObjActionGroup | null;
+    "dataObjDisplay": SysDataObj;
+    "dataObjSelect": SysDataObj;
   }
   export interface SysDataObjTable extends std.$Object {
     "table": sys_db.SysTable;
@@ -717,7 +712,6 @@ export interface types {
     "SysDataObjColumn": sys_core.SysDataObjColumn;
     "SysDataObjFieldLink": sys_core.SysDataObjFieldLink;
     "SysDataObjFieldLinkJoin": sys_core.SysDataObjFieldLinkJoin;
-    "SysDataObjFieldListChips": sys_core.SysDataObjFieldListChips;
     "SysDataObjFieldListConfig": sys_core.SysDataObjFieldListConfig;
     "SysDataObjFieldListItems": sys_core.SysDataObjFieldListItems;
     "SysDataObjFieldListSelect": sys_core.SysDataObjFieldListSelect;

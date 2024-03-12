@@ -7,7 +7,6 @@ import {
 	addColumn,
 	addDataObj,
 	addDataObjFieldItems,
-	addDataObjFieldListChips,
 	addDataObjFieldListConfig,
 	addDataObjFieldListSelect,
 	addNodeProgramObj
@@ -40,12 +39,11 @@ async function reset() {
 	reset.delFeature('sys_admin_code_type')
 	reset.delFeature('sys_admin_app')
 
-	reset.delFieldChips('field_list_chips_sys_column')
 	reset.delFieldSelect('field_list_select_sys_column')
 
-	reset.delFieldConfig('field_list_config_data_obj_tables')
-	reset.delDataObj('data_obj_field_list_config_data_obj_tables_config')
-	reset.delDataObj('data_obj_field_list_config_data_obj_tables_display')
+	reset.delFieldConfig('flc_data_obj_tables')
+	reset.delDataObj('doflc_data_obj_tables_edit')
+	reset.delDataObj('doflc_data_obj_tables_display')
 
 	await reset.execute()
 }
@@ -73,12 +71,12 @@ async function initFieldListConfigDataObjTables() {
 	sectionHeader('Field List Config - DataObj.Tables')
 
 	await addDataObj({
-		actionsField: ['noa_detail_delete_update'],
+		actionsFieldGroup: 'doag_base_field_list_config_edit',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
 		exprFilter: `.id = <uuid,parms,filterInIds>`,
 		header: 'Table',
-		name: 'data_obj_field_list_config_data_obj_tables_config',
+		name: 'doflc_data_obj_tables_edit',
 		owner: 'app_sys_admin',
 		tables: [{ index: '0', table: 'SysDataObjTable' }],
 		fields: [
@@ -128,11 +126,12 @@ async function initFieldListConfigDataObjTables() {
 	})
 
 	await addDataObj({
+		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: 'none',
 		header: 'Table',
-		name: 'data_obj_field_list_config_data_obj_tables_display',
+		name: 'doflc_data_obj_tables_display',
 		owner: 'app_sys_admin',
 		tables: [{ index: '0', table: 'SysDataObjTable' }],
 		fields: [
@@ -181,10 +180,10 @@ async function initFieldListConfigDataObjTables() {
 	})
 
 	await addDataObjFieldListConfig({
-		btnLabelComplete: 'Save',
-		dataObjConfig: 'data_obj_field_list_config_data_obj_tables_config',
-		dataObjDisplay: 'data_obj_field_list_config_data_obj_tables_display',
-		name: 'field_list_config_data_obj_tables',
+		actionsFieldGroup: 'doag_base_field_list_config_dialog',
+		dataObjConfig: 'doflc_data_obj_tables_edit',
+		dataObjDisplay: 'doflc_data_obj_tables_display',
+		name: 'flc_data_obj_tables',
 		isMultiSelect: true,
 		owner: 'app_sys_admin'
 	})
@@ -1119,7 +1118,7 @@ async function initDataObj() {
 				codeElement: 'listConfig',
 				columnName: 'tables',
 				dbOrderSelect: 100,
-				fieldListConfig: 'field_list_config_data_obj_tables',
+				fieldListConfig: 'flc_data_obj_tables',
 				indexTable: '0',
 				link: { table: { module: 'sys_db', name: 'SysDataObjTable' } }
 			},
@@ -1895,48 +1894,8 @@ async function initDataObjNodeObjFooter() {
 }
 
 async function initTable() {
-	// field list - chips
+	// field list select - columns
 	await addDataObj({
-		actionsFieldGroup: 'doag_base_list',
-		codeCardinality: 'list',
-		codeComponent: 'FormList',
-		exprFilter: 'none',
-		header: 'Columns',
-		subHeader: 'Columns associated with the selected table.',
-		name: 'data_obj_field_list_chips_sys_column',
-		owner: 'app_sys_admin',
-		tables: [{ index: '0', table: 'SysColumn' }],
-		fields: [
-			{
-				codeAccess: 'readOnly',
-				columnName: 'id',
-				dbOrderSelect: 10,
-				indexTable: '0',
-				isDisplay: false
-			},
-			{
-				codeAccess: 'readOnly',
-				columnName: 'name',
-				dbOrderCrumb: 10,
-				dbOrderList: 10,
-				dbOrderSelect: 20,
-				indexTable: '0'
-			}
-		]
-	})
-
-	await addDataObjFieldListChips({
-		btnLabelComplete: 'Select Columns',
-		columnLabelDisplay: 'name',
-		dataObj: 'data_obj_field_list_chips_sys_column',
-		isMultiSelect: true,
-		name: 'field_list_chips_sys_column',
-		owner: 'app_sys_admin'
-	})
-
-	// field list - select
-	await addDataObj({
-		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: 'none',
@@ -1965,8 +1924,10 @@ async function initTable() {
 	})
 
 	await addDataObjFieldListSelect({
-		btnLabelComplete: 'Select Columns',
-		dataObj: 'data_obj_field_list_select_sys_column',
+		actionsFieldGroup: 'doag_base_field_list_select',
+		btnLabelComplete: 'Select Column(s)',
+		dataObjDisplay: 'data_obj_field_list_select_sys_column',
+		dataObjSelect: 'data_obj_field_list_select_sys_column',
 		isMultiSelect: true,
 		name: 'field_list_select_sys_column',
 		owner: 'app_sys_admin'
@@ -2044,14 +2005,6 @@ async function initTable() {
 				dbOrderSelect: 20,
 				indexTable: '0'
 			},
-			// {
-			// 	codeElement: 'listChips',
-			// 	columnName: 'columns',
-			// 	dbOrderSelect: 25,
-			// 	fieldListChips: 'field_list_chips_sys_column',
-			// 	indexTable: '0',
-			// 	link: { table: { module: 'sys_db', name: 'SysColumn' } }
-			// },
 			{
 				codeElement: 'listSelect',
 				columnName: 'columns',

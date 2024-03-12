@@ -91,14 +91,23 @@ export async function getDataObjById(dataObjId: string) {
 				})),
 				_codeAccess: f.codeAccess.name,
 				_codeElement: f.codeElement.name,
-				_fieldListChips: e.select(f.fieldListChips, (i) => ({
-					btnLabelComplete: true,
-					columnLabelDisplay: true,
-					_dataObjName: i.dataObj.name,
-					isMultiSelect: true
-				})),
 				_fieldListConfig: e.select(f.fieldListConfig, (i) => ({
-					btnLabelComplete: true,
+					_actionsFieldGroup: e.select(i.actionsFieldGroup.actions, (a) => ({
+						checkObjChanged: true,
+						_codeActionType: a.codeActionType.name,
+						_codeRenderShowSaveMode: a.codeRenderShowSaveMode.name,
+						color: true,
+						_confirm: e.select(a.confirm, (c) => ({
+							confirmButtonLabel: true,
+							confirmMessage: true,
+							confirmTitle: true
+						})),
+						header: true,
+						isRenderDisableOnInvalidToSave: true,
+						isRenderShowRequiresObjHasChanged: true,
+						name: true,
+						order_by: a.order
+					})),
 					_dataObjNameConfig: i.dataObjConfig.name,
 					_dataObjNameDisplay: i.dataObjDisplay.name,
 					isMultiSelect: true
@@ -110,8 +119,25 @@ export async function getDataObjById(dataObjId: string) {
 					name: true
 				})),
 				_fieldListSelect: e.select(f.fieldListSelect, (i) => ({
+					_actionsFieldGroup: e.select(i.actionsFieldGroup.actions, (a) => ({
+						checkObjChanged: true,
+						_codeActionType: a.codeActionType.name,
+						_codeRenderShowSaveMode: a.codeRenderShowSaveMode.name,
+						color: true,
+						_confirm: e.select(a.confirm, (c) => ({
+							confirmButtonLabel: true,
+							confirmMessage: true,
+							confirmTitle: true
+						})),
+						header: true,
+						isRenderDisableOnInvalidToSave: true,
+						isRenderShowRequiresObjHasChanged: true,
+						name: true,
+						order_by: a.order
+					})),
 					btnLabelComplete: true,
-					_dataObjName: i.dataObj.name,
+					_dataObjNameDisplay: i.dataObjDisplay.name,
+					_dataObjNameSelect: i.dataObjSelect.name,
 					isMultiSelect: true
 				})),
 				customElement: true,

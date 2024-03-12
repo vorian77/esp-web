@@ -19,7 +19,6 @@ import {
 import { State } from '$comps/nav/types.appState'
 import { type Field, FieldAccess, FieldElement, type FieldRaw } from '$comps/form/field'
 import { FieldCheckbox } from '$comps/form/fieldCheckbox'
-import { FieldListChips } from '$comps/form/fieldListChips'
 import { FieldListConfig } from '$comps/form/fieldListConfig'
 import { FieldListSelect } from '$comps/form/fieldListSelect'
 import {
@@ -70,7 +69,7 @@ export class DataObj {
 	constructor(dataObjRaw: DataObjRaw) {
 		const clazz = 'DataObj'
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
-		this.actionsField = this.initActions(dataObjRaw._actionsFieldGroup)
+		this.actionsField = DataObj.initActions(dataObjRaw._actionsFieldGroup)
 		this.cardinality = memberOfEnum(
 			dataObjRaw._codeCardinality,
 			clazz,
@@ -113,7 +112,6 @@ export class DataObj {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
-		await loadFieldListChips(dataObj.fields)
 		await loadFieldListItems(dataObj.fields)
 		return dataObj
 
@@ -126,20 +124,6 @@ export class DataObj {
 		}
 		async function loadActionsQuery() {
 			dataObj.actionsQuery = await ActionsQuery.initEnhancement(dataObjRaw.actionsQuery)
-		}
-		async function loadFieldListChips(fields: Array<Field>) {
-			for (const field of fields) {
-				if (field instanceof FieldListChips) {
-					const result = await queryExecute(
-						{ dataObjName: field.dataObjName },
-						TokenApiQueryType.retrieve,
-						queryData
-					)
-					if (field instanceof FieldListChips) {
-						field.valuesRaw = result.data.dataObjData.dataObjRowList.map((d: any) => d.record)
-					}
-				}
-			}
 		}
 		async function loadFieldListItems(fields: Array<Field>) {
 			for (const field of fields) {
@@ -158,6 +142,15 @@ export class DataObj {
 				}
 			}
 		}
+	}
+
+	static initActions(actions: any) {
+		actions = valueOrDefault(actions, [])
+		let newActions: Array<DataObjAction> = []
+		actions.forEach((a: any) => {
+			newActions.push(new DataObjAction(a))
+		})
+		return newActions
 	}
 
 	get objData() {
@@ -235,15 +228,6 @@ export class DataObj {
 		return this.fields.findIndex((f) => f.name == fieldName)
 	}
 
-	initActions(actions: any) {
-		actions = valueOrDefault(actions, [])
-		let newActions: Array<DataObjAction> = []
-		actions.forEach((a: any) => {
-			newActions.push(new DataObjAction(a))
-		})
-		return newActions
-	}
-
 	initCrumbs(crumbFields: any) {
 		crumbFields = getArray(crumbFields)
 		let list: DataObjListOrder = []
@@ -281,10 +265,6 @@ export class DataObj {
 
 				case FieldElement.checkbox:
 					newField = new FieldCheckbox(fieldRaw, index)
-					break
-
-				case FieldElement.listChips:
-					newField = new FieldListChips(fieldRaw, index)
 					break
 
 				case FieldElement.listConfig:

@@ -4,20 +4,21 @@
 	import {
 		State,
 		StateLayout,
-		StateLayoutType,
+		StateSurfaceType,
 		StateObj,
 		StateObjModal,
-		StateSurfaceType
+		StateSurfaceStyle
 	} from '$comps/nav/types.appState'
 	import { TokenApiQueryType } from '$comps/types.token'
 	import DataObj from '$comps/dataObj/DataObj.svelte'
 	import { type DataObjData } from '$comps/types'
+	import Icon from '$comps/Icon.svelte'
 	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 
+	const FILENAME = '$comps/form/FormElListSelect.svelte'
 	const dispatch = createEventDispatcher()
 	const modalStore = getModalStore()
-	const FILENAME = '$comps/form/FormElListSelect.svelte'
 
 	export let state: State
 	export let field: FieldListSelect
@@ -25,27 +26,26 @@
 
 	let stateLocal: State
 
-	$: {
-		console.log('FormElListSelect.field:', field)
-		setFormState(field.valueCurrent)
-	}
+	$: setStateDisplay(field.valueCurrent)
 
-	function add() {
+	function overlay() {
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
 				component: 'overlayModalDialog',
 				meta: {
 					state: new StateObjModal({
+						actionsFieldDialog: field.actionsFieldDialog,
 						btnLabelComplete: field.btnLabelComplete,
 						dataObjData,
-						dataObjName: field.dataObjName,
+						dataObjName: field.dataObjNameSelect,
 						layout: new StateLayout({
-							layoutType: StateLayoutType.LayoutObj,
-							surfaceType: StateSurfaceType.overlay
+							surfaceStyle: StateSurfaceStyle.dialogSelect,
+							surfaceType: StateSurfaceType.LayoutObj
 						}),
 						isMultiSelect: field.isMultiSelect,
 						modalStore,
+						onRowClick: (rows: any, record: any) => {},
 						page: '/',
 						queryType: TokenApiQueryType.retrieve,
 						selectedIds: field.valueCurrent
@@ -59,47 +59,49 @@
 		}).then((response) => {
 			if (response !== false) {
 				console.log('FormElListSelect.response:', response)
-				field.valueCurrent = response.map((v: any) => v.id)
-				setValue(field.valueCurrent)
+				// field.valueCurrent = response.map((v: any) => v.id)
+				// setValue(field.valueCurrent)
 			}
 		})
 	}
 
-	function setFormState(ids: string[]) {
+	function setStateDisplay(ids: string[]) {
 		const data = dataObjData.copy()
 		data.parmsUpsert({ filterInIds: ids, programId: state.programId })
 		stateLocal = new StateObj({
 			dataObjData: data,
-			dataObjName: field.dataObjName,
+			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
-				layoutType: StateLayoutType.LayoutObj,
-				surfaceType: StateSurfaceType.embedded
+				isEmbedHeight: true,
+				surfaceStyle: StateSurfaceStyle.embedded,
+				surfaceType: StateSurfaceType.LayoutObj
 			}),
 			modalStore,
-			queryType: TokenApiQueryType.retrieve
+			onRowClick: (rows: any, record: any) => overlay(),
+			queryType: TokenApiQueryType.retrieve,
+			updateFunction: () => overlay()
 		})
 	}
 
 	function setValue(value: string[]) {
-		setFormState(value)
+		setStateDisplay(value)
 		dispatch('changeItem', { fieldName: field.name, value })
 	}
 </script>
 
 <div class="flex mt-6">
 	<label for={field.name}>{field.label}</label>
-	<button
-		type="button"
-		class="btn-icon btn-icon-sm variant-ghost-primary ml-2 -mt-1"
-		on:click={() => add()}>&#177;</button
-	>
+	<button class="ml-1" on:click={() => overlay()}>
+		<Icon name={'select'} width="28" height="28" fill={'#3b79e1'} />
+	</button>
 </div>
-<div id="form">
-	{#if stateLocal && field.valueCurrent.length > 0}
-		<object title="embedded column" class="mb-10">
+
+<div>
+	{#if stateLocal}
+		<object title="embedded column" class="mb-4">
 			<DataObj state={stateLocal} />
 		</object>
 	{/if}
 </div>
 
-<DataViewer header="field" data={field} />
+<!-- <DataViewer header="field" data={field} /> -->

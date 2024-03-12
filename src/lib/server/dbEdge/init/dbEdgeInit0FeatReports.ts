@@ -42,7 +42,7 @@ async function initNodeObjHeaders() {
 
 async function initReportCourseSummary() {
 	await addDataObj({
-		actionsFieldGroup: 'doag_base_refresh',
+		actionsFieldGroup: 'doag_base_report',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',
@@ -167,7 +167,7 @@ async function initReportCourseSummary() {
 
 async function initReportOurWorldSummary() {
 	await addDataObj({
-		actionsFieldGroup: 'doag_base_refresh',
+		actionsFieldGroup: 'doag_base_report',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: `.serviceFlow.name = 'sf_cm_ai_our_world'`,
@@ -274,7 +274,7 @@ async function initReportOurWorldSummary() {
 
 async function initReportStudentSummary() {
 	await addDataObj({
-		actionsFieldGroup: 'doag_base_refresh',
+		actionsFieldGroup: 'doag_base_report',
 		codeComponent: 'FormList',
 		codeCardinality: 'list',
 		exprFilter: '.owner in (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs',

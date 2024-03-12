@@ -1,9 +1,9 @@
 import { Field, FieldAccess, FieldItem, type FieldRaw } from '$comps/form/field'
-import { Validation, ValidationStatus } from '$comps/types'
+import { DataObj, DataObjAction, Validation, ValidationStatus } from '$comps/types'
 import { booleanOrFalse, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 
 export class FieldListConfig extends Field {
-	btnLabelComplete?: string
+	actionsFieldDialog: Array<DataObjAction> = []
 	dataObjNameConfig: string
 	dataObjNameDisplay: string
 	isMultiSelect: boolean
@@ -13,11 +13,7 @@ export class FieldListConfig extends Field {
 		const clazz = 'FieldListConfig'
 		super(obj, index)
 		this.access = FieldAccess.optional
-		this.btnLabelComplete = strOptional(
-			obj._fieldListConfig.btnLabelComplete,
-			clazz,
-			'btnLabelComplete'
-		)
+		this.actionsFieldDialog = DataObj.initActions(obj._fieldListConfig._actionsFieldGroup)
 		this.dataObjNameConfig = strRequired(
 			obj._fieldListConfig._dataObjNameConfig,
 			clazz,

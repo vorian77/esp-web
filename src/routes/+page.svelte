@@ -5,7 +5,7 @@
 	import { userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiQueryType, TokenApiUserName } from '$comps/types.token'
-	import { StateLayoutType, StateObj, StateSurfaceType } from '$comps/nav/types.appState'
+	import { StateSurfaceType, StateObj, StateSurfaceStyle } from '$comps/nav/types.appState'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -38,8 +38,8 @@
 					dataObjName,
 					drawerStore,
 					layout: {
-						layoutType: StateLayoutType.LayoutObj,
-						surfaceType: StateSurfaceType.overlay,
+						surfaceStyle: StateSurfaceStyle.drawer,
+						surfaceType: StateSurfaceType.LayoutObj,
 						headerCancelX: true
 					},
 					page: '/',

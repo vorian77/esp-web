@@ -20,8 +20,7 @@
 	import { NodeType } from '$comps/types'
 	import LayoutObj from '../Surface/LayoutObj.svelte'
 	import LayoutObjTab from '../Surface/LayoutObjTab.svelte'
-	import LayoutObjWizard from '../Surface/LayoutObjWizard.svelte'
-	import { setContext } from 'svelte'
+	import LayoutObjDialogDetail from '../Surface/LayoutObjDialogDetail.svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
@@ -45,14 +44,15 @@
 		StatePacketComponent.query,
 		StatePacketComponent.navApp
 	]
-	const layouts: Record<string, any> = {
+	const surfaceTypes: Record<string, any> = {
 		LayoutObj: LayoutObj,
 		LayoutObjTab: LayoutObjTab,
-		LayoutObjWizard: LayoutObjWizard
+		LayoutObjDialogDetail: LayoutObjDialogDetail
 	}
 
 	$: if (state && state.packet) {
 		const packet = state.consume(components)
+		console.log('DataObj.packet:', packet)
 		if (packet) {
 			;(async () => await processState(packet))()
 		}
@@ -217,20 +217,22 @@
 	}
 
 	if (state?.nodeType === NodeType.programObject) {
-		setContext('onRowClick', async function onRowClick(rows: any, record: any) {
-			if (dataObj) {
-				state.update({
-					packet: new StatePacket({
-						checkObjChanged: false,
-						component: StatePacketComponent.appDataObj,
-						token: new TokenAppDoList(
-							TokenAppDoAction.listEdit,
-							dataObj.objData,
-							rows.map((r: any) => r.id),
-							record.id
-						)
+		state.updateProperties({
+			onRowClick: async function onRowClick(rows: any, record: any) {
+				if (dataObj) {
+					state.update({
+						packet: new StatePacket({
+							checkObjChanged: false,
+							component: StatePacketComponent.appDataObj,
+							token: new TokenAppDoList(
+								TokenAppDoAction.listEdit,
+								dataObj.objData,
+								rows.map((r: any) => r.id),
+								record.id
+							)
+						})
 					})
-				})
+				}
 			}
 		})
 	}
@@ -259,12 +261,14 @@
 </script>
 
 {#if dataObj && dataObjData}
-	<svelte:component
-		this={layouts[state.layout.layoutType]}
-		bind:app
-		bind:state
-		{dataObj}
-		{dataObjData}
-		on:formCancelled
-	/>
+	<div class="p-4">
+		<svelte:component
+			this={surfaceTypes[state.layout.surfaceType]}
+			bind:app
+			bind:state
+			{dataObj}
+			{dataObjData}
+			on:formCancelled
+		/>
+	</div>
 {/if}

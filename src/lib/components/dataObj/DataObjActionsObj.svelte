@@ -13,6 +13,7 @@
 	let actions: Array<DataObjAction>
 	let saveMode: DataObjSaveMode
 	let isEditing: boolean = false
+	let padding = ''
 
 	$: {
 		saveMode = dataObj.saveMode
@@ -28,6 +29,7 @@
 					a.dbAction === TokenAppDoAction.detailSaveInsert) &&
 				state.objHasChanged
 		)
+		padding = actions.length > 0 ? 'mx-4' : ''
 	}
 
 	let show = function (action: DataObjAction, saveMode: DataObjSaveMode, objHasChanged: boolean) {
@@ -44,6 +46,7 @@
 	}
 
 	async function onClick(action: DataObjAction) {
+		console.log('DataObjActionsObj.onClick.action:', { action, state })
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: action.checkObjChanged,
@@ -56,12 +59,14 @@
 
 <!-- <DataViewer header="formObj" data={formObj} /> -->
 
-<div class="flex flex-col">
+<div class="flex flex-col {padding} -mr-0">
 	{#if isEditing}
-		<div class="mr-4"><p class="text-lg text-blue-600 mb-4">Editing...</p></div>
+		<div>
+			<p class="text-lg text-blue-600 mb-4">Editing...</p>
+		</div>
 	{/if}
 	{#each actions as action}
-		<div class="pb-4">
+		<div class="mb-4">
 			<button
 				disabled={action.isDisabled}
 				class="btn {action.color} w-full"

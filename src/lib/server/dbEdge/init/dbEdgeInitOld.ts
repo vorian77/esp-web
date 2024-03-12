@@ -88,7 +88,6 @@ async function reset() {
 	resetDb.delTableRecords('sys_core::SysNodeObj')
 
 	resetDb.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldChips := {} }`)
-	resetDb.delTableRecords('sys_core::SysDataObjFieldListChips')
 
 	resetDb.delTableRecords('sys_core::SysDataObj')
 	resetDb.delTableRecords('sys_core::SysDataObjFieldListItems')

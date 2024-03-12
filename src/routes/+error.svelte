@@ -2,7 +2,7 @@
 	import { page } from '$app/stores'
 </script>
 
-<div class="esp-card-space-y text-lg">
+<div class="esp-card-space-y p-4 text-lg">
 	<h2 class="h2">ERROR</h2>
 
 	<div>File: {$page.error.file}</div>

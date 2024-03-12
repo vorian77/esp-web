@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FieldListChips, FieldListChipValues } from '$comps/form/fieldListChips'
+	import type { FieldListChips, FieldListChipValues } from './fieldListChips'
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
 	import { StateObjModal, StateSurfaceType } from '$comps/nav/types.appState'
 	import { TokenApiDbDataObj, TokenApiQueryType } from '$comps/types.token'

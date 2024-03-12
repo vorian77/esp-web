@@ -179,7 +179,6 @@ export enum FieldElement {
 	date = 'date',
 	email = 'email',
 	file = 'file',
-	listChips = 'listChips',
 	listConfig = 'listConfig',
 	listSelect = 'listSelect',
 	number = 'number',
@@ -261,14 +260,8 @@ export interface FieldRaw {
 		toggleValueShow: boolean
 		toggleValueTrue: string
 	}
-	_fieldListChips: {
-		btnLabelComplete: string
-		columnLabelDisplay: string
-		_dataObjName: string
-		isMultiSelect: boolean
-	}
 	_fieldListConfig: {
-		btnLabelComplete: string
+		_actionsFieldGroup: any
 		_dataObjNameConfig: string
 		_dataObjNameDisplay: string
 		isMultiSelect: boolean
@@ -280,8 +273,10 @@ export interface FieldRaw {
 		name: string
 	}
 	_fieldListSelect: {
+		_actionsFieldGroup: any
 		btnLabelComplete: string
-		_dataObjName: string
+		_dataObjNameDisplay: string
+		_dataObjNameSelect: string
 		isMultiSelect: boolean
 	}
 	customElement: FieldCustomRaw

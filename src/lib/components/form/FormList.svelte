@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { State, StateObjModal, StateSurfaceType } from '$comps/nav/types.appState'
+	import { State, StateObj, StateObjModal, StateSurfaceStyle } from '$comps/nav/types.appState'
 	import { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
-	import { getContext } from 'svelte'
 	import data0 from '$routes/data0.json'
 	import data1 from '$routes/data1.json'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -15,20 +14,19 @@
 
 	const DATA_FIELD = 'id'
 
-	const handler = new DataHandler([], { rowsPerPage: 100 })
+	const handler = new DataHandler([])
 	const rows = handler.getRows()
 	const selected = handler.getSelected()
-	const onRowClick: Function = getContext('onRowClick')
 
 	const isAllSelected = handler.isAllSelected()
-	let isSelect = state instanceof StateObjModal
+	let isSelect =
+		state instanceof StateObjModal && state.layout.surfaceStyle === StateSurfaceStyle.dialogSelect
 	let isSelectMulti = state instanceof StateObjModal && state.isMultiSelect
-	let isSurfaceEmbedded = state.layout.surfaceType === StateSurfaceType.embedded
-	let isSurfaceOverlay = state.layout.surfaceType === StateSurfaceType.overlay
-	let isSurfacePage = state.layout.surfaceType === StateSurfaceType.page
+	let isSurfaceEmbedded = state.layout.surfaceStyle === StateSurfaceStyle.embedded
+	let listHeight = 'full'
 
 	if (state instanceof StateObjModal) {
-		state.records.forEach((r) => handler.select(r.id))
+		state.selectedIds.forEach((id) => handler.select(id))
 	}
 
 	$: {
@@ -39,8 +37,9 @@
 		handler.setPage(1)
 		sortList()
 	}
+
 	$: if (state instanceof StateObjModal) {
-		state.setRecords($rows.filter((r: any) => $selected.includes(r.id)))
+		state.selectedIds = $rows.filter((r: any) => $selected.includes(r.id)).map((r: any) => r.id)
 	}
 
 	function sortList() {
@@ -63,7 +62,7 @@
 	}
 </script>
 
-<div id={state.layout.surfaceType}>
+<div id={listHeight} class="px-4">
 	<Datatable {handler} pagination={false} rowsPerPage={false} search={!isSurfaceEmbedded}>
 		<table>
 			<thead>
@@ -106,8 +105,8 @@
 					{#each $rows as row, i}
 						<tr
 							class:active={$selected.includes(row[DATA_FIELD])}
-							on:click={async () => await onRowClick($rows, row)}
-							on:keyup={async () => await onRowClick($rows, row)}
+							on:click={async () => await state.onRowClick($rows, row)}
+							on:keyup={async () => await state.onRowClick($rows, row)}
 						>
 							{#if isSelect}
 								<td class="selection">
@@ -132,10 +131,6 @@
 	</Datatable>
 </div>
 
-<!-- <DataViewer
-	header="surfaceType"
-	data={{ isSelectMulti, isSurfaceEmbedded, isSurfaceOverlay, isSurfacePage }}
-/> -->
 <!-- <DataViewer header="dataListRecord" data={dataObj.dataListRecord} /> -->
 <!-- <DataViewer header="isSelect" data={state instanceof StateOverlayModal} /> -->
 <!-- <DataViewer header="$selected" data={$selected} /> -->
@@ -174,17 +169,9 @@
 	tr:nth-child(even) {
 		background-color: #97ed9e;
 	}
-	/* surface type */
+	/* surface styles */
 	#embedded {
 		max-height: 200px;
 		overflow: scroll;
-	}
-	#overlay {
-		height: 74vh;
-		overflow-y: auto;
-	}
-	#page {
-		max-height: 72vh;
-		overflow-y: auto;
 	}
 </style>

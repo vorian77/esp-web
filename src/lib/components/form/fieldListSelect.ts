@@ -1,22 +1,43 @@
 import { Field, FieldAccess, FieldItem, type FieldRaw } from '$comps/form/field'
-import { Validation, ValidationStatus } from '$comps/types'
+import { DataObj, DataObjAction, Validation, ValidationStatus } from '$comps/types'
 import { booleanOrFalse, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 
 export class FieldListSelect extends Field {
+	actionsFieldDialog: Array<DataObjAction> = []
 	btnLabelComplete?: string
-	dataObjName: string
+	dataObjNameDisplay: string
+	dataObjNameSelect: string
 	isMultiSelect: boolean
 	constructor(obj: FieldRaw, index: number) {
 		const clazz = 'FieldListSelect'
 		super(obj, index)
 		this.access = FieldAccess.optional
+		this.actionsFieldDialog = DataObj.initActions(obj._fieldListSelect._actionsFieldGroup)
 		this.btnLabelComplete = strOptional(
 			obj._fieldListSelect.btnLabelComplete,
 			clazz,
 			'btnLabelComplete'
 		)
-		this.dataObjName = strRequired(obj._fieldListSelect._dataObjName, clazz, 'dataObjName')
+		this.dataObjNameDisplay = strRequired(
+			obj._fieldListSelect._dataObjNameDisplay,
+			clazz,
+			'dataObjNameDisplay'
+		)
+		this.dataObjNameSelect = strRequired(
+			obj._fieldListSelect._dataObjNameSelect,
+			clazz,
+			'dataObjNameSelect'
+		)
 		this.isMultiSelect = booleanOrFalse(obj._fieldListSelect.isMultiSelect, 'isMultiSelect')
+
+		// update complete action header
+		if (this.btnLabelComplete) {
+			this.actionsFieldDialog.forEach((action) => {
+				if (action.name === 'noa_dialog_complete') {
+					action.header = this.btnLabelComplete!
+				}
+			})
+		}
 	}
 	validate(dataValue: any): Validation {
 		const v = super.validate(dataValue)

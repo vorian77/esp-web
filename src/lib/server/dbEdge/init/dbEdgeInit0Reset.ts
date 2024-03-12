@@ -12,12 +12,10 @@ export async function initReset() {
 	reset.delTableRecords('sys_core::SysNodeObjFooter')
 
 	// data object
-	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldListChips := {} }`)
 	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldListConfig := {} }`)
 	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldListItems := {} }`)
 	reset.addStatement(`UPDATE sys_core::SysDataObjColumn SET { fieldListSelect := {} }`)
 
-	reset.delTableRecords('sys_core::SysDataObjFieldListChips')
 	reset.delTableRecords('sys_core::SysDataObjFieldListConfig')
 	reset.delTableRecords('sys_core::SysDataObjFieldListItems')
 	reset.delTableRecords('sys_core::SysDataObjFieldListSelect')

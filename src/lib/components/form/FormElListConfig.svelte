@@ -4,10 +4,10 @@
 	import {
 		State,
 		StateLayout,
-		StateLayoutType,
+		StateSurfaceType,
 		StateObj,
 		StateObjModal,
-		StateSurfaceType
+		StateSurfaceStyle
 	} from '$comps/nav/types.appState'
 	import {
 		TokenApiQueryType,
@@ -16,7 +16,7 @@
 	} from '$comps/types.token'
 	import DataObj from '$comps/dataObj/DataObj.svelte'
 	import { type DataObjData } from '$comps/types'
-	import { setContext } from 'svelte'
+	import Icon from '$comps/Icon.svelte'
 	import { createEventDispatcher } from 'svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -25,7 +25,6 @@
 
 	const modalStore = getModalStore()
 	const dispatch = createEventDispatcher()
-	setContext('onRowClick', onRowClick)
 
 	export let state: State
 	export let field: FieldListConfig
@@ -41,29 +40,32 @@
 			dataObjData: setData(ids),
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
-				layoutType: StateLayoutType.LayoutObj,
-				surfaceType: StateSurfaceType.embedded
+				isEmbedHeight: true,
+				surfaceStyle: StateSurfaceStyle.embedded,
+				surfaceType: StateSurfaceType.LayoutObj
 			}),
 			modalStore,
+			onRowClick: (rows: any, record: any) => {},
 			queryType: TokenApiQueryType.retrieve
 		})
 	}
 
 	function overlay(queryType: TokenApiQueryType, id: string | undefined = undefined) {
+		console.log('FormElListConfig.overlay.field:', field)
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
 				component: 'overlayModalDialog',
 				meta: {
 					state: new StateObjModal({
-						btnLabelComplete: field.btnLabelComplete,
+						actionsFieldDialog: field.actionsFieldDialog,
 						dataObjData: id ? setData([id]) : setData([]),
 						dataObjName: field.dataObjNameConfig,
 						isBtnDelete: true,
 						isMultiSelect: field.isMultiSelect,
 						layout: new StateLayout({
-							layoutType: StateLayoutType.LayoutObj,
-							surfaceType: StateSurfaceType.overlay
+							surfaceStyle: StateSurfaceStyle.dialog,
+							surfaceType: StateSurfaceType.LayoutObjDialogDetail
 						}),
 						modalStore,
 						page: '/',
@@ -121,15 +123,13 @@
 
 <div class="flex mt-6">
 	<label for={field.name}>{field.label}</label>
-	<button
-		type="button"
-		class="btn-icon btn-icon-sm variant-ghost-primary ml-2 -mt-1"
-		on:click={() => overlay(TokenApiQueryType.new)}>+</button
-	>
+	<button class="ml-1 -mt-0.5" on:click={() => overlay(TokenApiQueryType.new)}>
+		<Icon name={'change'} width="36" height="36" fill={'#3b79e1'} />
+	</button>
 </div>
-<div id="form">
+<div>
 	{#if stateDisplay && field.valueCurrent.length > 0}
-		<object title="embedded column" class="mb-10">
+		<object title="embedded column" class="-mt-4 mb-4">
 			<DataObj state={stateDisplay} />
 		</object>
 	{/if}

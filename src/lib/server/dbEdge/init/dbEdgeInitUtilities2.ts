@@ -248,10 +248,6 @@ export async function addDataObj(data: any) {
 
 						dbOrderSelect: e.cast(e.int16, e.json_get(f, 'dbOrderSelect')),
 
-						fieldListChips: e.select(
-							e.sys_core.getDataObjFieldListChips(e.cast(e.str, e.json_get(f, 'fieldListChips')))
-						),
-
 						fieldListConfig: e.select(
 							e.sys_core.getDataObjFieldListConfig(e.cast(e.str, e.json_get(f, 'fieldListConfig')))
 						),
@@ -505,39 +501,12 @@ export async function addOrg(data: any) {
 	return await query.run(client, data)
 }
 
-export async function addDataObjFieldListChips(data: any) {
-	sectionHeader(`addDataObjFieldListChips - ${data.name}`)
-	const query = e.params(
-		{
-			btnLabelComplete: e.str,
-			columnLabelDisplay: e.str,
-			dataObj: e.str,
-			isMultiSelect: e.bool,
-			name: e.str,
-			owner: e.str
-		},
-		(p) => {
-			return e.insert(e.sys_core.SysDataObjFieldListChips, {
-				btnLabelComplete: p.btnLabelComplete,
-				columnLabelDisplay: p.columnLabelDisplay,
-				createdBy: e.select(e.sys_user.getRootUser()),
-				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
-				isMultiSelect: p.isMultiSelect,
-				modifiedBy: e.select(e.sys_user.getRootUser()),
-				name: p.name,
-				owner: e.select(e.sys_core.getEnt(p.owner))
-			})
-		}
-	)
-	return await query.run(client, data)
-}
-
 export async function addDataObjFieldListConfig(data: any) {
 	sectionHeader(`addDataObjFieldListConfig - ${data.name}`)
 
 	const query = e.params(
 		{
-			btnLabelComplete: e.str,
+			actionsFieldGroup: e.str,
 			dataObjConfig: e.str,
 			dataObjDisplay: e.str,
 			isMultiSelect: e.bool,
@@ -546,7 +515,7 @@ export async function addDataObjFieldListConfig(data: any) {
 		},
 		(p) => {
 			return e.insert(e.sys_core.SysDataObjFieldListConfig, {
-				btnLabelComplete: p.btnLabelComplete,
+				actionsFieldGroup: e.select(e.sys_core.getDataObjActionGroup(p.actionsFieldGroup)),
 				createdBy: e.select(e.sys_user.getRootUser()),
 				dataObjConfig: e.select(e.sys_core.getDataObj(p.dataObjConfig)),
 				dataObjDisplay: e.select(e.sys_core.getDataObj(p.dataObjDisplay)),
@@ -565,17 +534,21 @@ export async function addDataObjFieldListSelect(data: any) {
 
 	const query = e.params(
 		{
+			actionsFieldGroup: e.str,
 			btnLabelComplete: e.str,
-			dataObj: e.str,
+			dataObjDisplay: e.str,
+			dataObjSelect: e.str,
 			isMultiSelect: e.bool,
 			name: e.str,
 			owner: e.str
 		},
 		(p) => {
 			return e.insert(e.sys_core.SysDataObjFieldListSelect, {
+				actionsFieldGroup: e.select(e.sys_core.getDataObjActionGroup(p.actionsFieldGroup)),
 				btnLabelComplete: p.btnLabelComplete,
 				createdBy: e.select(e.sys_user.getRootUser()),
-				dataObj: e.select(e.sys_core.getDataObj(p.dataObj)),
+				dataObjDisplay: e.select(e.sys_core.getDataObj(p.dataObjDisplay)),
+				dataObjSelect: e.select(e.sys_core.getDataObj(p.dataObjSelect)),
 				isMultiSelect: p.isMultiSelect,
 				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,

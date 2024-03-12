@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { SvelteComponent } from 'svelte'
-	import Form from '$comps/dataObj/DataObj.svelte'
+	import DataObj from '$comps/dataObj/DataObj.svelte'
 	import { StateObjModal, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
 	import {
 		TokenApiQueryType,
@@ -11,7 +11,8 @@
 	} from '$comps/types.token'
 	import { getDrawerStore, getModalStore, getToastStore } from '@skeletonlabs/skeleton'
 	import { apiDbQuery } from '$lib/api'
-	import { ResponseBody } from '$comps/types'
+	import { DataObjAction, ResponseBody } from '$comps/types'
+	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
 	const FILENAME = '/$comps/overlay/OverlayModalItems.svelte'
@@ -23,11 +24,10 @@
 	export let parent: SvelteComponent
 
 	let state: StateObjModal = $modalStore[0].meta.state
-
+	let actions: Array<DataObjAction> = state.actionsFieldDialog
 	let btnLabelComplete = state.btnLabelComplete || 'Complete'
 
 	async function onBtnComplete() {
-		console.log('overlayModalDialog.onBtnComplete.state:', { state })
 		switch (state.queryType) {
 			case TokenApiQueryType.retrieve:
 				// await updateState(TokenAppDoAction.detailSaveUpdate)
@@ -84,24 +84,46 @@
 		// 	new TokenApiQueryData({ parms: data })
 		// )
 	}
+	async function onClick(action: DataObjAction) {
+		console.log('OverlayModalItems.onClick.action:', action)
+		switch (action.dbAction) {
+			case TokenAppDoAction.dialogCancel:
+				parent.onClose()
+				break
+
+			case TokenAppDoAction.dialogComplete:
+				onBtnComplete()
+				break
+
+			default:
+				error(500, {
+					file: FILENAME,
+					function: 'onClick',
+					message: `No case defined for TokenApiDbActionType: ${action.dbAction} `
+				})
+		}
+		// onBtnDelete()
+	}
 </script>
 
 {#if state}
 	<div class="esp-card-space-y w-modal-wide">
-		<Form bind:state on:formCancelled={parent.onClose} />
+		<DataObj bind:state on:formCancelled={parent.onClose} />
 
-		<!-- prettier-ignore -->
-		<footer class={parent.regionFooter}>
-			<button class="btn {parent.buttonNeutral}" on:click={parent.onClose}>{parent.buttonTextCancel}</button>
-			{#if state && state.isBtnDelete}
-				<button class="btn variant-filled-error" on:click={async () => onBtnDelete()}>Delete</button>
-			{/if}
-			<button class="btn {parent.buttonPositive}" on:click={async () => await onBtnComplete()}>{btnLabelComplete}</button>
-			abc
-		</footer>
-		<!-- <DataViewer
-			header="state"
-			data={{ hasChanged: state.objHasChanged, validToSave: state.objValidToSave }}
-		/> -->
+		<div class="mr-4">
+			<footer class={parent.regionFooter}>
+				{#each state.actionsFieldDialog as action}
+					<div class="pb-4">
+						<button
+							disabled={action.isDisabled}
+							class="btn {action.color}"
+							on:click={async () => await onClick(action)}
+						>
+							{action.header}
+						</button>
+					</div>
+				{/each}
+			</footer>
+		</div>
 	</div>
 {/if}

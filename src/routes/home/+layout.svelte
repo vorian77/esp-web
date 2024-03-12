@@ -10,10 +10,10 @@
 	import {
 		State,
 		StateLayout,
-		StateLayoutType,
+		StateSurfaceType,
 		StatePacket,
 		StatePacketComponent,
-		StateSurfaceType
+		StateSurfaceStyle
 	} from '$comps/nav/types.appState'
 	import { TokenAppDoDetail, TokenAppTreeReset } from '$comps/types.token'
 	import {
@@ -65,8 +65,8 @@
 		state = new State({
 			drawerStore,
 			layout: new StateLayout({
-				layoutType: StateLayoutType.LayoutObjTab,
-				surfaceType: StateSurfaceType.page
+				surfaceStyle: StateSurfaceStyle.embedded,
+				surfaceType: StateSurfaceType.LayoutObjTab
 			}),
 			modalStore,
 			toastStore,
@@ -191,53 +191,55 @@
 
 <AppShell slotSidebarLeft="w-{SIDEBAR_LEFT_WIDTH} ">
 	<svelte:fragment slot="header">
-		<AppBar background="bg-neutral-200" padding="p-3">
-			<svelte:fragment slot="lead">
-				<div
-					class="md:hidden mr-2"
-					role="button"
-					tabindex="0"
-					on:click={navLeft}
-					on:keyup={navLeft}
-				>
-					<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill={NAV_COLOR} />
-				</div>
+		<div class="mb-4">
+			<AppBar background="bg-neutral-200" padding="p-3">
+				<svelte:fragment slot="lead">
+					<div
+						class="md:hidden mr-2"
+						role="button"
+						tabindex="0"
+						on:click={navLeft}
+						on:keyup={navLeft}
+					>
+						<Icon name="hamburger-menu" width="1.5rem" height="1.5rem" fill={NAV_COLOR} />
+					</div>
 
-				<div role="button" tabindex="0" class="text-black" on:click={goHome} on:keyup={goHome}>
-					{#if user?.org?.header}
-						{user.org.header}
-					{:else}
-						{DEFAULT_APP_NAME}
-					{/if}
-				</div>
-			</svelte:fragment>
-			<svelte:fragment slot="trail">
-				<div role="button" tabindex="0" class="mr-2" on:click={navRight} on:keyup={navRight}>
-					<!-- <div role="button" tabindex="0" class="mr-2" use:popup={popupClick}> -->
-					<!-- <button class="btn variant-filled" use:popup={popupClick}>Click</button> -->
-					<!-- src={avatarSrc} -->
-					<!-- src="https://images.unsplash.com/photo-1617296538902-887900d9b592?ixid=M3w0Njc5ODF8MHwxfGFsbHx8fHx8fHx8fDE2ODc5NzExMDB8&ixlib=rb-4.0.3&w=128&h=128&auto=format&fit=crop" -->
-					<Avatar
-						initials={user ? user.initials : undefined}
-						background="bg-primary-400"
-						rounded="rounded-full"
-						src={userAvatarSrc}
-						width="w-9"
-					/>
-				</div>
-			</svelte:fragment>
-		</AppBar>
+					<div role="button" tabindex="0" class="text-black" on:click={goHome} on:keyup={goHome}>
+						{#if user?.org?.header}
+							{user.org.header}
+						{:else}
+							{DEFAULT_APP_NAME}
+						{/if}
+					</div>
+				</svelte:fragment>
+				<svelte:fragment slot="trail">
+					<div role="button" tabindex="0" class="mr-2" on:click={navRight} on:keyup={navRight}>
+						<!-- <div role="button" tabindex="0" class="mr-2" use:popup={popupClick}> -->
+						<!-- <button class="btn variant-filled" use:popup={popupClick}>Click</button> -->
+						<!-- src={avatarSrc} -->
+						<!-- src="https://images.unsplash.com/photo-1617296538902-887900d9b592?ixid=M3w0Njc5ODF8MHwxfGFsbHx8fHx8fHx8fDE2ODc5NzExMDB8&ixlib=rb-4.0.3&w=128&h=128&auto=format&fit=crop" -->
+						<Avatar
+							initials={user ? user.initials : undefined}
+							background="bg-primary-400"
+							rounded="rounded-full"
+							src={userAvatarSrc}
+							width="w-9"
+						/>
+					</div>
+				</svelte:fragment>
+			</AppBar>
+		</div>
 	</svelte:fragment>
 
 	<svelte:fragment slot="sidebarLeft">
-		<div class="hidden md:block mt-2">
+		<div class="hidden md:block">
 			{#if user && state?.nodeType === NodeType.home}
 				<NavTree {state} on:treeChanged />
 			{/if}
 		</div>
 	</svelte:fragment>
 
-	<div class="mx-3 mt-2">
+	<div>
 		{#if $page.route.id === '/home'}
 			{#if state?.nodeType === NodeType.home}
 				<NavHome />

@@ -26,6 +26,7 @@ export class State {
 	nodeType: NodeType = NodeType.home
 	objHasChanged: boolean = false
 	objValidToSave: boolean = true
+	onRowClick: Function = (rows: any, record: any) => {}
 	packet: StatePacket | undefined
 	page: string = '/home'
 	programId?: string
@@ -39,6 +40,7 @@ export class State {
 
 		if (Object.hasOwn(obj, 'drawerStore')) this.drawerStore = obj.drawerStore
 		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
+		if (Object.hasOwn(obj, 'onRowClick')) this.onRowClick = obj.onRowClick
 		if (Object.hasOwn(obj, 'toastStore')) this.toastStore = obj.toastStore
 		if (Object.hasOwn(obj, 'updateFunction')) this.updateFunction = obj.updateFunction
 		if (Object.hasOwn(obj, 'user')) this.user = obj.user
@@ -78,47 +80,44 @@ export class State {
 	}
 	updateProperties(obj: any) {
 		if (Object.hasOwn(obj, 'nodeType')) this.nodeType = obj.nodeType
+		if (Object.hasOwn(obj, 'onRowClick')) this.onRowClick = obj.onRowClick
 		if (Object.hasOwn(obj, 'page')) this.page = obj.page
 		return this
 	}
 }
 
 export class StateLayout {
-	layoutType: StateLayoutType
-	surfaceType: StateSurfaceType
-	headerDialog?: string
 	footerActionGroup?: Array<DataObjAction>
 	footerCompleteButtonLabel?: string
+	headerDialog?: string
+	isEmbedHeight: boolean = false
+	surfaceStyle: StateSurfaceStyle
+	surfaceType: StateSurfaceType
 	constructor(obj: any) {
 		const clazz = 'StateLayout'
-		this.layoutType = memberOfEnum(
-			obj.layoutType,
-			clazz,
-			'layoutType',
-			'StateLayoutType',
-			StateLayoutType
-		)
-		this.surfaceType = memberOfEnum(
-			obj.surfaceType,
-			clazz,
-			'surfaceType',
-			'surfaceType',
-			StateSurfaceType
-		)
-		this.headerDialog = strOptional(obj.headerDialog, clazz, 'headerDialog')
 		this.footerActionGroup = obj.footerActionGroup ? obj.footerActionGroup : undefined
 		this.footerCompleteButtonLabel = strOptional(
 			obj.footerCompleteButtonLabel,
 			clazz,
 			'footerCompleteButtonLabel'
 		)
+		this.headerDialog = strOptional(obj.headerDialog, clazz, 'headerDialog')
+		this.isEmbedHeight = booleanOrFalse(obj.isEmbedHeight, 'isEmbedHeight')
+		this.surfaceStyle = memberOfEnum(
+			obj.surfaceStyle,
+			clazz,
+			'surfaceStyle',
+			'StateSurfaceStyle',
+			StateSurfaceStyle
+		)
+		this.surfaceType = memberOfEnum(
+			obj.surfaceType,
+			clazz,
+			'surfaceType',
+			'StateSurfaceType',
+			StateSurfaceType
+		)
 	}
-}
-
-export enum StateLayoutType {
-	LayoutObj = 'LayoutObj',
-	LayoutObjTab = 'LayoutObjTab',
-	LayoutObjWizard = 'LayoutObjWizard'
 }
 
 export class StateObj extends State {
@@ -146,16 +145,20 @@ export class StateObj extends State {
 }
 
 export class StateObjModal extends StateObj {
+	actionsFieldDialog: Array<DataObjAction> = []
 	btnLabelComplete?: string
 	isBtnDelete: boolean
 	isMultiSelect: boolean = false
 	records: StateObjModalRecords = []
+	selectedIds: Array<string> = []
 	constructor(obj: any) {
 		const clazz = 'StateObjSelect'
 		super(obj)
+		this.actionsFieldDialog = obj.actionsFieldDialog ? obj.actionsFieldDialog : []
 		this.btnLabelComplete = strOptional(obj.btnLabelComplete, clazz, 'btnLabelComplete')
 		this.isBtnDelete = booleanOrFalse(obj.isBtnDelete, 'isBtnDelete')
 		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
+		this.selectedIds = obj.selectedIds ? obj.selectedIds : []
 	}
 	setRecords(records: Array<Record<string, any>>) {
 		this.records = records
@@ -184,8 +187,15 @@ export enum StatePacketComponent {
 	navApp = 'navApp',
 	navTree = 'navTree'
 }
-export enum StateSurfaceType {
+export enum StateSurfaceStyle {
+	drawer = 'drawer',
 	embedded = 'embedded',
-	overlay = 'overlay',
-	page = 'page'
+	dialog = 'dialog',
+	dialogSelect = 'dialogSelect',
+	dialogWizard = 'dialogWizard'
+}
+export enum StateSurfaceType {
+	LayoutObj = 'LayoutObj',
+	LayoutObjTab = 'LayoutObjTab',
+	LayoutObjDialogDetail = 'LayoutObjDialogDetail'
 }

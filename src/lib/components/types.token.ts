@@ -289,6 +289,10 @@ export enum TokenAppDoAction {
 	detailSaveAs = 'detailSaveAs',
 	detailSaveInsert = 'detailSaveInsert',
 	detailSaveUpdate = 'detailSaveUpdate',
+	dialogCancel = 'dialogCancel',
+	dialogComplete = 'dialogComplete',
+	dialogNext = 'dialogNext',
+	dialogPrevious = 'dialogPrevious',
 	none = 'none',
 	refresh = 'refresh'
 }

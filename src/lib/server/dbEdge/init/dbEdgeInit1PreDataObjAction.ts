@@ -4,6 +4,18 @@ import { addDataObjAction, addDataObjActionConfirm } from '$server/dbEdge/init/d
 export async function initPreDataObjAction() {
 	sectionHeader('DataObjAction')
 
+	// list
+	await addDataObjAction({
+		checkObjChanged: false,
+		codeActionType: 'refresh',
+		codeRenderShowSaveMode: 'any',
+		header: 'Refresh',
+		isRenderDisableOnInvalidToSave: false,
+		isRenderShowRequiresObjHasChanged: false,
+		name: 'noa_list_refresh',
+		order: 100,
+		owner: 'app_sys'
+	})
 	await addDataObjAction({
 		checkObjChanged: false,
 		codeActionType: 'listNew',
@@ -26,6 +38,8 @@ export async function initPreDataObjAction() {
 		order: 120,
 		owner: 'app_sys'
 	})
+
+	// detail
 	await addDataObjAction({
 		checkObjChanged: false,
 		codeActionType: 'none',
@@ -35,7 +49,7 @@ export async function initPreDataObjAction() {
 		isRenderDisableOnInvalidToSave: false,
 		isRenderShowRequiresObjHasChanged: false,
 		name: 'noa_detail_cancel',
-		order: 200,
+		order: 100,
 		owner: 'app_sys'
 	})
 	await addDataObjAction({
@@ -46,7 +60,7 @@ export async function initPreDataObjAction() {
 		isRenderDisableOnInvalidToSave: true,
 		isRenderShowRequiresObjHasChanged: true,
 		name: 'noa_detail_save_insert',
-		order: 210,
+		order: 110,
 		owner: 'app_sys'
 	})
 	await addDataObjAction({
@@ -57,7 +71,7 @@ export async function initPreDataObjAction() {
 		isRenderDisableOnInvalidToSave: true,
 		isRenderShowRequiresObjHasChanged: true,
 		name: 'noa_detail_save_update',
-		order: 220,
+		order: 120,
 		owner: 'app_sys'
 	})
 	await addDataObjAction({
@@ -68,7 +82,7 @@ export async function initPreDataObjAction() {
 		isRenderDisableOnInvalidToSave: false,
 		isRenderShowRequiresObjHasChanged: false,
 		name: 'noa_detail_save_as',
-		order: 230,
+		order: 130,
 		owner: 'app_sys'
 	})
 	await addDataObjAction({
@@ -79,7 +93,7 @@ export async function initPreDataObjAction() {
 		isRenderDisableOnInvalidToSave: false,
 		isRenderShowRequiresObjHasChanged: false,
 		name: 'noa_detail_new',
-		order: 240,
+		order: 140,
 		owner: 'app_sys'
 	})
 	await addDataObjAction({
@@ -91,12 +105,12 @@ export async function initPreDataObjAction() {
 		isRenderDisableOnInvalidToSave: false,
 		isRenderShowRequiresObjHasChanged: false,
 		name: 'noa_detail_delete_insert',
-		order: 245,
+		order: 150,
 		owner: 'app_sys'
 	})
 	await addDataObjActionConfirm({
 		confirmButtonLabel: 'Confirm Discard',
-		confirmMessage: 'Are you sure you want to discard the data you have entered?',
+		confirmMessage: 'Are you sure you want to discard your data?',
 		confirmTitle: 'Discard Data',
 		name: 'noa_detail_delete_insert'
 	})
@@ -110,7 +124,7 @@ export async function initPreDataObjAction() {
 		isRenderDisableOnInvalidToSave: false,
 		isRenderShowRequiresObjHasChanged: false,
 		name: 'noa_detail_delete_update',
-		order: 250,
+		order: 160,
 		owner: 'app_sys'
 	})
 	await addDataObjActionConfirm({
@@ -119,15 +133,36 @@ export async function initPreDataObjAction() {
 		confirmTitle: 'Delete Record',
 		name: 'noa_detail_delete_update'
 	})
+
+	// dialog
 	await addDataObjAction({
-		checkObjChanged: false,
-		codeActionType: 'refresh',
+		checkObjChanged: true,
+		codeActionType: 'dialogCancel',
 		codeRenderShowSaveMode: 'any',
-		header: 'Refresh',
+		color: 'none',
+		header: 'Cancel',
 		isRenderDisableOnInvalidToSave: false,
 		isRenderShowRequiresObjHasChanged: false,
-		name: 'noa_common_refresh',
-		order: 300,
+		name: 'noa_dialog_cancel',
+		order: 100,
+		owner: 'app_sys'
+	})
+	await addDataObjActionConfirm({
+		confirmButtonLabel: 'Confirm Cancel',
+		confirmMessage: 'Are you sure you want to discard your data?',
+		confirmTitle: 'Cancel',
+		name: 'noa_dialog_cancel'
+	})
+
+	await addDataObjAction({
+		checkObjChanged: true,
+		codeActionType: 'dialogComplete',
+		codeRenderShowSaveMode: 'any',
+		header: 'Complete',
+		isRenderDisableOnInvalidToSave: true,
+		isRenderShowRequiresObjHasChanged: false,
+		name: 'noa_dialog_complete',
+		order: 110,
 		owner: 'app_sys'
 	})
 }

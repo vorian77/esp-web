@@ -91,8 +91,6 @@ export type $UserRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f738
   "<createdBy[is app_cm::CmEmployer]": $.LinkDesc<_app_cm.$CmEmployer, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is app_cm::CmCsfDocument]": $.LinkDesc<_app_cm.$CmCsfDocument, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is app_cm::CmCsfDocument]": $.LinkDesc<_app_cm.$CmCsfDocument, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<modifiedBy[is sys_core::SysDataObjFieldListChips]": $.LinkDesc<_sys_core.$SysDataObjFieldListChips, $.Cardinality.Many, {}, false, false,  false, false>;
-  "<createdBy[is sys_core::SysDataObjFieldListChips]": $.LinkDesc<_sys_core.$SysDataObjFieldListChips, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::SysDataObjFieldListSelect]": $.LinkDesc<_sys_core.$SysDataObjFieldListSelect, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_core::SysDataObjFieldListSelect]": $.LinkDesc<_sys_core.$SysDataObjFieldListSelect, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::SysDataObjFieldListConfig]": $.LinkDesc<_sys_core.$SysDataObjFieldListConfig, $.Cardinality.Many, {}, false, false,  false, false>;

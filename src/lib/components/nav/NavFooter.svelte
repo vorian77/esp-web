@@ -85,7 +85,7 @@
 	}
 </script>
 
-<div id="container" style={styleContainer}>
+<div style={styleContainer}>
 	{#each footer as node}
 		<div
 			role="button"

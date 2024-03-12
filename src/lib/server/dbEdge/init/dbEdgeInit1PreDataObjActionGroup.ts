@@ -34,24 +34,33 @@ async function initFeatures() {
 		name: 'doag_base_list',
 		owner: 'app_sys'
 	})
+
 	addDataObjActionGroup({
-		actions: ['noa_common_refresh'],
-		name: 'doag_base_refresh',
+		actions: ['noa_dialog_cancel', 'noa_dialog_complete'],
+		name: 'doag_base_field_list_config_dialog',
 		owner: 'app_sys'
 	})
+
 	addDataObjActionGroup({
-		actions: ['noa_detail_delete_update'],
-		name: 'doag_modal_detail',
+		actions: ['noa_dialog_cancel', 'noa_dialog_complete'],
+		name: 'doag_base_field_list_select',
 		owner: 'app_sys'
 	})
+
 	addDataObjActionGroup({
-		actions: ['noa_detail_cancel', 'noa_detail_save_insert', 'noa_detail_save_update'],
-		name: 'doag_modal_footer_detail',
+		actions: [
+			'noa_detail_save_insert',
+			'noa_detail_save_update',
+			'noa_detail_delete_insert',
+			'noa_detail_delete_update'
+		],
+		name: 'doag_base_field_list_config_edit',
 		owner: 'app_sys'
 	})
+
 	addDataObjActionGroup({
-		actions: ['noa_detail_cancel'],
-		name: 'doag_modal_footer_select',
+		actions: ['noa_list_refresh'],
+		name: 'doag_base_report',
 		owner: 'app_sys'
 	})
 }

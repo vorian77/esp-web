@@ -126,9 +126,6 @@ module sys_core {
     customElement: json;
     dbOrderCrumb: default::nonNegative;
     dbOrderSelect: default::nonNegative;
-    fieldListChips: sys_core::SysDataObjFieldListChips {
-      on source delete delete target;
-    };
     fieldListConfig: sys_core::SysDataObjFieldListConfig {
       on source delete delete target;
     };
@@ -160,19 +157,11 @@ module sys_core {
     required table: sys_db::SysTable;
     required order: default::nonNegative;
   }
-
-  type SysDataObjFieldListChips extending sys_core::SysObj {
-    required btnLabelComplete: str;
-    required columnLabelDisplay: str;
-    required dataObj: sys_core::SysDataObj {
-      on source delete delete target if orphan;
-    };
-    required isMultiSelect: bool;
-    constraint exclusive on (.name);
- }
  
   type SysDataObjFieldListConfig extending sys_core::SysObj {
-    required btnLabelComplete: str;
+     actionsFieldGroup: sys_core::SysDataObjActionGroup {
+      on target delete allow;
+    }
     required dataObjConfig: sys_core::SysDataObj {
       on source delete delete target if orphan;
     };
@@ -191,8 +180,14 @@ module sys_core {
   }
 
   type SysDataObjFieldListSelect extending sys_core::SysObj {
+     actionsFieldGroup: sys_core::SysDataObjActionGroup {
+      on target delete allow;
+    }
     required btnLabelComplete: str;
-    required dataObj: sys_core::SysDataObj {
+    required dataObjDisplay: sys_core::SysDataObj {
+      on source delete delete target if orphan;
+    };
+    required dataObjSelect: sys_core::SysDataObj {
       on source delete delete target if orphan;
     };
     required isMultiSelect: bool;
@@ -268,10 +263,7 @@ module sys_core {
     
   function getDataObjActionGroup(name: str) -> optional sys_core::SysDataObjActionGroup
     using (select sys_core::SysDataObjActionGroup filter .name = name);        
-    
-  function getDataObjFieldListChips(name: str) -> optional sys_core::SysDataObjFieldListChips
-    using (select sys_core::SysDataObjFieldListChips filter .name = name);
-  
+      
   function getDataObjFieldListConfig(name: str) -> optional sys_core::SysDataObjFieldListConfig
     using (select sys_core::SysDataObjFieldListConfig filter .name = name);
   
