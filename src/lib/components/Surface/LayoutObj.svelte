@@ -1,9 +1,15 @@
 <script lang="ts">
-	import { App } from '$comps/nav/types.app'
-	import { StateSurfaceType, type State, StateSurfaceStyle } from '$comps/nav/types.appState'
+	import { App, AppLevelRowStatus } from '$comps/nav/types.app'
+	import {
+		StateSurfaceType,
+		type State,
+		StateSurfaceStyle,
+		StateObjDialog
+	} from '$comps/nav/types.appState'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import FormListApp from '$comps/form/FormListApp.svelte'
 	import FormDetailApp from '$comps/form/FormDetailApp.svelte'
+	import NavRow from '$comps/nav/NavRow.svelte'
 	import DataObjActionsObj from '$comps/dataObj/DataObjActionsObj.svelte'
 	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -22,21 +28,38 @@
 	export let dataObjData: DataObjData
 
 	let currComponent: any
-	let border: string = ''
 	let headerDialog: string = ''
 	let headerObj: string = ''
 	let headerObjSub: string = ''
 	let isHeaderObjX: boolean = false
 	let classContent = ''
+	let rowStatus: AppLevelRowStatus | undefined = {
+		rowCount: 5,
+		rowCurrentDisplay: 2,
+		show: true,
+		status: '[2 of 5]'
+	}
+	let padding = '300' //  <todo> 240314 - calc specific padding
+	let dataHeight = `max-height: calc(100vh - ${padding}px);`
+	// $: rowStatus = app.getRowStatus()
 
 	$: currComponent = comps[dataObj.component]
 
 	$: {
+		headerDialog = ''
+		headerObj = ''
+		headerObjSub = ''
+		rowStatus = undefined
 		switch (state.layout.surfaceStyle) {
-			case StateSurfaceStyle.dialog:
-				// border = 'border-2'
+			case StateSurfaceStyle.dialogDetail:
 				headerObj = dataObj.header
 				headerObjSub = dataObj.subHeader
+				// if (state instanceof StateObjDialog) {
+				// 	const rowId = state.parentIdCurrent
+				// 	const rowCount = state.parentIdList.length
+				// 	const rowIdx = state.parentIdList.findIndex((id) => id === rowId)
+				// 	rowStatus = new AppLevelRowStatus(rowCount, rowIdx)
+				// }
 				break
 
 			case StateSurfaceStyle.dialogSelect:
@@ -45,7 +68,7 @@
 				break
 
 			case StateSurfaceStyle.dialogWizard:
-				border = 'border-2'
+				headerDialog = ''
 				headerObj = dataObj.header
 				headerObjSub = dataObj.subHeader
 				break
@@ -60,7 +83,7 @@
 				break
 		}
 		classContent =
-			dataObj.actionsField.length > 0 || headerDialog || headerObj || headerObjSub
+			dataObj.actionsField.length > 0 || headerDialog || headerObj || headerObjSub || rowStatus
 				? 'border-2 p-4'
 				: ''
 	}
@@ -70,23 +93,22 @@
 	}
 </script>
 
-<!-- <DataViewer header="width" data={{ surfaceWidth, surfaceHeight }} /> -->
-
 {#if dataObj}
+	{#if headerDialog}
+		<div class="mb-4">
+			<h1 class="h1">{headerDialog}</h1>
+		</div>
+	{/if}
 	<div class={classContent}>
 		<div>
-			{#if state.layout}
-				{#if headerDialog}
-					<div class="flex justify-between items-start mb-4">
-						<h1 class="h1">{headerDialog}</h1>
-					</div>
-				{/if}
-			{/if}
-			<div class={border}>
+			<div>
 				{#if headerObj}
 					<div class="mb-4">
 						<div class="flex justify-between items-start">
 							<h2 class="h2">{headerObj}</h2>
+							<div class="mr-0">
+								<NavRow {state} {rowStatus} />
+							</div>
 							{#if isHeaderObjX}
 								<button
 									type="button"
@@ -102,8 +124,8 @@
 				{/if}
 			</div>
 
-			<div class="flex flex-row">
-				<div class="grow border-2">
+			<div class="flex flex-row gap-4">
+				<div class="grow overflow-y-scroll border-2 p-4" style={dataHeight}>
 					<svelte:component
 						this={currComponent}
 						bind:state
@@ -119,3 +141,5 @@
 		</div>
 	</div>
 {/if}
+
+<!-- <DataViewer header="headerDialog" data={{ headerDialog, headerObj }} /> -->

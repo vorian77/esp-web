@@ -1,14 +1,15 @@
 import {
 	DataObj,
-	type DataObjData,
+	DataObjCardinality,
+	DataObjData,
 	type DataObjRecord,
 	required,
+	strRequired,
 	userGet,
 	valueOrDefault
 } from '$comps/types'
 import type { DataObjActionConfirm, DataObjRaw } from '$comps/types'
 import { AppRowActionType } from '$comps/nav/types.app'
-import { type StateObjModalRecords } from '$comps/nav/types.appState'
 import { Node } from '$comps/nav/types.node'
 import { error } from '@sveltejs/kit'
 
@@ -271,6 +272,28 @@ export class TokenAppCrumbs extends TokenApp {
 		this.crumbIdx = crumbIdx
 	}
 }
+export class TokenAppDialog extends TokenApp {
+	dataObjData: DataObjData
+	dataObjIdDialog: string
+	dataObjIdDisplay: string
+	parentIdCurrent?: string
+	parentIdList: Array<string> = []
+	queryType: TokenApiQueryType
+	constructor(obj: any) {
+		const clazz = 'StateObj'
+		super()
+		this.dataObjData = required(obj.dataObjData, clazz, 'dataObjData')
+		this.dataObjIdDialog = strRequired(obj.dataObjIdDialog, clazz, 'dataObjIdDialog')
+		this.dataObjIdDisplay = strRequired(obj.dataObjIdDisplay, clazz, 'dataObjIdDisplay')
+		this.parentIdCurrent = this.dataObjData?.parms.parentIdCurrent
+			? this.dataObjData.parms.parentIdCurrent
+			: undefined
+		this.parentIdList = this.dataObjData?.parms.parentIdList
+			? this.dataObjData?.parms.parentIdList
+			: []
+		this.queryType = required(obj.queryType, clazz, 'queryType')
+	}
+}
 export class TokenAppDo extends TokenApp {
 	action: TokenAppDoAction
 	data: DataObjData | undefined
@@ -290,7 +313,7 @@ export enum TokenAppDoAction {
 	detailSaveInsert = 'detailSaveInsert',
 	detailSaveUpdate = 'detailSaveUpdate',
 	dialogCancel = 'dialogCancel',
-	dialogComplete = 'dialogComplete',
+	dialogDone = 'dialogDone',
 	dialogNext = 'dialogNext',
 	dialogPrevious = 'dialogPrevious',
 	none = 'none',
@@ -312,13 +335,8 @@ export class TokenAppDoDetail extends TokenAppDo {
 export class TokenAppDoList extends TokenAppDo {
 	listFilterIds: Array<string>
 	listRowId: string
-	constructor(
-		action: TokenAppDoAction,
-		data: DataObjData | undefined,
-		listFilterIds: Array<string>,
-		listRowId: string
-	) {
-		super(action, data)
+	constructor(action: TokenAppDoAction, listFilterIds: Array<string>, listRowId: string) {
+		super(action, new DataObjData(DataObjCardinality.list))
 		this.listFilterIds = listFilterIds
 		this.listRowId = listRowId
 	}
@@ -333,8 +351,8 @@ export class TokenAppDoName extends TokenApp {
 }
 export class TokenAppModalReturn extends TokenApp {
 	type: TokenAppModalReturnType
-	records: StateObjModalRecords
-	constructor(type: TokenAppModalReturnType, records: StateObjModalRecords = []) {
+	records: any
+	constructor(type: TokenAppModalReturnType, records: any = []) {
 		super()
 		this.type = type
 		this.records = records

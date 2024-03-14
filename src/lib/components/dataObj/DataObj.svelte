@@ -7,6 +7,7 @@
 		TokenApiQueryType,
 		TokenAppBack,
 		TokenAppCrumbs,
+		TokenAppDialog,
 		TokenAppDo,
 		TokenAppDoAction,
 		TokenAppDoDetail,
@@ -16,7 +17,7 @@
 		TokenAppTreeNode,
 		TokenAppTreeSetParent
 	} from '$comps/types.token'
-	import type { DataObj, DataObjData } from '$comps/types'
+	import { DataObjData, type DataObj, DataObjCardinality } from '$comps/types'
 	import { NodeType } from '$comps/types'
 	import LayoutObj from '../Surface/LayoutObj.svelte'
 	import LayoutObjTab from '../Surface/LayoutObjTab.svelte'
@@ -52,7 +53,6 @@
 
 	$: if (state && state.packet) {
 		const packet = state.consume(components)
-		console.log('DataObj.packet:', packet)
 		if (packet) {
 			;(async () => await processState(packet))()
 		}
@@ -86,7 +86,7 @@
 						case TokenAppDoAction.detailDelete:
 							if (token instanceof TokenAppDoDetail) {
 								if (await app.tabUpdate(state, token, TokenApiQueryType.delete)) {
-									app.popLevel()
+									app = app.popLevel()
 									dataObjUpdate = new DataObjUpdate(true, true, true)
 								}
 							}
@@ -123,13 +123,13 @@
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
 								app.getCurrTab().listInit(token)
-								app = await app.addLevel(state, TokenApiQueryType.retrieve)
+								app = await app.addLevelNode(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
 							break
 
 						case TokenAppDoAction.listNew:
-							await app.addLevel(state, TokenApiQueryType.new)
+							await app.addLevelNode(state, TokenApiQueryType.new)
 							app.getCurrTabParent().listSetId('')
 							app = app
 							dataObjUpdate = new DataObjUpdate(true, true, true)
@@ -178,10 +178,6 @@
 				}
 
 			case StatePacketComponent.navApp:
-				if (token instanceof TokenAppTreeNode) {
-					app = await App.initNode(state, token)
-					dataObjUpdate = new DataObjUpdate(true, true, true)
-				}
 				if (token instanceof TokenAppBack) {
 					if (app.levels.length === 1) {
 						returnHome()
@@ -189,6 +185,38 @@
 						app = await app.back(1)
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 					}
+				}
+				if (token instanceof TokenAppDialog) {
+					app = await App.initDialog(state, token)
+
+					// retrieve dialog
+					switch (token.dataObjData?.cardinality) {
+						case DataObjCardinality.list:
+							break
+
+						case DataObjCardinality.detail:
+							const tokenDoList = new TokenAppDoList(
+								TokenAppDoAction.listEdit,
+								token.parentIdList,
+								token.parentIdCurrent!
+							)
+							app.getCurrTab().listInit(tokenDoList)
+							app = await app.addLevelDialog(state, token, TokenApiQueryType.retrieve)
+							break
+
+						default:
+							error(500, {
+								file: FILENAME,
+								function: 'App.initDialog',
+								message: `No case defined for token.cardinality: ${token.dataObjData?.cardinality}`
+							})
+					}
+					console.log('App.initDialog.app:', app)
+					dataObjUpdate = new DataObjUpdate(true, true, true)
+				}
+				if (token instanceof TokenAppTreeNode) {
+					app = await App.initNode(state, token)
+					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
 				break
 
@@ -214,27 +242,6 @@
 				}
 			}
 		}
-	}
-
-	if (state?.nodeType === NodeType.programObject) {
-		state.updateProperties({
-			onRowClick: async function onRowClick(rows: any, record: any) {
-				if (dataObj) {
-					state.update({
-						packet: new StatePacket({
-							checkObjChanged: false,
-							component: StatePacketComponent.appDataObj,
-							token: new TokenAppDoList(
-								TokenAppDoAction.listEdit,
-								dataObj.objData,
-								rows.map((r: any) => r.id),
-								record.id
-							)
-						})
-					})
-				}
-			}
-		})
 	}
 
 	function returnHome() {

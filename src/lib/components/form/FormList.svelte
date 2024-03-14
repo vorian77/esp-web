@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { State, StateObj, StateObjModal, StateSurfaceStyle } from '$comps/nav/types.appState'
+	import { State, StateObjDialog, StateSurfaceStyle } from '$comps/nav/types.appState'
 	import { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import data0 from '$routes/data0.json'
@@ -20,13 +20,14 @@
 
 	const isAllSelected = handler.isAllSelected()
 	let isSelect =
-		state instanceof StateObjModal && state.layout.surfaceStyle === StateSurfaceStyle.dialogSelect
-	let isSelectMulti = state instanceof StateObjModal && state.isMultiSelect
-	let isSurfaceEmbedded = state.layout.surfaceStyle === StateSurfaceStyle.embedded
+		state instanceof StateObjDialog && state.layout.surfaceStyle === StateSurfaceStyle.dialogSelect
+	let isSelectMulti = state instanceof StateObjDialog && state.isMultiSelect
+	// let isSurfaceEmbedded = state.layout.surfaceStyle === StateSurfaceStyle.embedded
+	let isSurfaceEmbedded = false
 	let listHeight = 'full'
 
-	if (state instanceof StateObjModal) {
-		state.selectedIds.forEach((id) => handler.select(id))
+	if (state instanceof StateObjDialog) {
+		state.parentIdList.forEach((id) => handler.select(id))
 	}
 
 	$: {
@@ -38,8 +39,8 @@
 		sortList()
 	}
 
-	$: if (state instanceof StateObjModal) {
-		state.selectedIds = $rows.filter((r: any) => $selected.includes(r.id)).map((r: any) => r.id)
+	$: if (state instanceof StateObjDialog) {
+		state.parentIdList = $rows.filter((r: any) => $selected.includes(r.id)).map((r: any) => r.id)
 	}
 
 	function sortList() {
@@ -62,7 +63,7 @@
 	}
 </script>
 
-<div id={listHeight} class="px-4">
+<div id={listHeight} class="-mt-2">
 	<Datatable {handler} pagination={false} rowsPerPage={false} search={!isSurfaceEmbedded}>
 		<table>
 			<thead>
@@ -168,10 +169,5 @@
 	}
 	tr:nth-child(even) {
 		background-color: #97ed9e;
-	}
-	/* surface styles */
-	#embedded {
-		max-height: 200px;
-		overflow: scroll;
 	}
 </style>

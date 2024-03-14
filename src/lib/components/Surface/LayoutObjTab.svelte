@@ -28,6 +28,7 @@
 	$: crumbsList = app.getCrumbsList()
 	$: rowStatus = app.getRowStatus()
 	$: isEditing = state?.objHasChanged
+	$: console.log('LayoutObjTab.rowStatus:', app.getRowStatus())
 
 	async function onClickTab(event: any) {
 		state.update({
@@ -51,7 +52,7 @@
 
 <!-- <DataViewer header="LayoutObjTab.levels" data={{ levels: app.levels.length }} /> -->
 
-<AppShell slotSidebarLeft="w-0 md:w-52">
+<AppShell slotSidebarLeft="w-0 md:w-52 h-full">
 	<svelte:fragment slot="header">
 		{@const hidden = crumbsList.length < 2 ? 'hidden' : ''}
 		<AppBar background="bg-neutral-200 {hidden}" padding="p-3">
@@ -76,7 +77,7 @@
 	</svelte:fragment>
 
 	{#if currLevel}
-		<div class="mt-0">
+		<div class="mt-4">
 			<TabGroup>
 				{#each currLevel.tabs as tab, idx}
 					{@const name = 'tab' + idx}

@@ -4,7 +4,8 @@ import { booleanOrFalse, strOptional, strRequired, valueOrDefault } from '$utils
 
 export class FieldListConfig extends Field {
 	actionsFieldDialog: Array<DataObjAction> = []
-	dataObjNameConfig: string
+	dataObjIdConfig: string
+	dataObjIdDisplay: string
 	dataObjNameDisplay: string
 	isMultiSelect: boolean
 	valuesRaw: FieldListChipValues = []
@@ -14,10 +15,15 @@ export class FieldListConfig extends Field {
 		super(obj, index, isFirstVisible)
 		this.access = FieldAccess.optional
 		this.actionsFieldDialog = DataObj.initActions(obj._fieldListConfig._actionsFieldGroup)
-		this.dataObjNameConfig = strRequired(
-			obj._fieldListConfig._dataObjNameConfig,
+		this.dataObjIdConfig = strRequired(
+			obj._fieldListConfig._dataObjIdConfig,
 			clazz,
-			'dataObjNameConfig'
+			'dataObjIdConfig'
+		)
+		this.dataObjIdDisplay = strRequired(
+			obj._fieldListConfig._dataObjIdDisplay,
+			clazz,
+			'dataObjIdDisplay'
 		)
 		this.dataObjNameDisplay = strRequired(
 			obj._fieldListConfig._dataObjNameDisplay,

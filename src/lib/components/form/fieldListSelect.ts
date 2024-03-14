@@ -33,7 +33,7 @@ export class FieldListSelect extends Field {
 		// update complete action header
 		if (this.btnLabelComplete) {
 			this.actionsFieldDialog.forEach((action) => {
-				if (action.name === 'noa_dialog_complete') {
+				if (action.name === 'noa_dialog_done') {
 					action.header = this.btnLabelComplete!
 				}
 			})

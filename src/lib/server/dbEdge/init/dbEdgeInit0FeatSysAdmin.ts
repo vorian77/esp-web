@@ -71,11 +71,11 @@ async function initFieldListConfigDataObjTables() {
 	sectionHeader('Field List Config - DataObj.Tables')
 
 	await addDataObj({
-		actionsFieldGroup: 'doag_base_field_list_config_edit',
+		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
-		exprFilter: `.id = <uuid,parms,filterInIds>`,
-		header: 'Table',
+		exprFilter: `.id = <uuid,parms,parentIdCurrent>`,
+		header: 'Data Object - Table',
 		name: 'doflc_data_obj_tables_edit',
 		owner: 'app_sys_admin',
 		tables: [{ index: '0', table: 'SysDataObjTable' }],
@@ -129,7 +129,7 @@ async function initFieldListConfigDataObjTables() {
 		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
-		exprFilter: 'none',
+		exprFilter: `.id in <uuidList,parms,parentIdList>`,
 		header: 'Table',
 		name: 'doflc_data_obj_tables_display',
 		owner: 'app_sys_admin',
@@ -180,7 +180,7 @@ async function initFieldListConfigDataObjTables() {
 	})
 
 	await addDataObjFieldListConfig({
-		actionsFieldGroup: 'doag_base_field_list_config_dialog',
+		actionsFieldGroup: 'doag_base_field_list_dialog',
 		dataObjConfig: 'doflc_data_obj_tables_edit',
 		dataObjDisplay: 'doflc_data_obj_tables_display',
 		name: 'flc_data_obj_tables',
@@ -1040,7 +1040,7 @@ async function initDataObj() {
 		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
-		header: 'Data Object',
+		header: 'Data Object (Ronald)',
 		name: 'data_obj_sys_admin_data_obj_detail',
 		owner: 'app_sys_admin',
 		tables: [{ index: '0', table: 'SysDataObj' }],
@@ -1899,7 +1899,7 @@ async function initTable() {
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: 'none',
-		header: 'Columns',
+		header: 'Select Table - Columns',
 		subHeader: 'Columns associated with the selected table.',
 		name: 'data_obj_field_list_select_sys_column',
 		owner: 'app_sys_admin',
@@ -1924,7 +1924,7 @@ async function initTable() {
 	})
 
 	await addDataObjFieldListSelect({
-		actionsFieldGroup: 'doag_base_field_list_select',
+		actionsFieldGroup: 'doag_base_field_list_dialog',
 		btnLabelComplete: 'Select Column(s)',
 		dataObjDisplay: 'data_obj_field_list_select_sys_column',
 		dataObjSelect: 'data_obj_field_list_select_sys_column',

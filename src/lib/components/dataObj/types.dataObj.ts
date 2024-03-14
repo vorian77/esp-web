@@ -505,6 +505,9 @@ export class DataObjData {
 			return new DataObjData(data.cardinality, data.dataObjRowList)
 		}
 	}
+	cardinalitySet(cardinality: DataObjCardinality) {
+		this.cardinality = cardinality
+	}
 	copy() {
 		return DataObjData.load(this)
 	}

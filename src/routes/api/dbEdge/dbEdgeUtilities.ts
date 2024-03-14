@@ -108,7 +108,8 @@ export async function getDataObjById(dataObjId: string) {
 						name: true,
 						order_by: a.order
 					})),
-					_dataObjNameConfig: i.dataObjConfig.name,
+					_dataObjIdConfig: i.dataObjConfig.id,
+					_dataObjIdDisplay: i.dataObjDisplay.id,
 					_dataObjNameDisplay: i.dataObjDisplay.name,
 					isMultiSelect: true
 				})),

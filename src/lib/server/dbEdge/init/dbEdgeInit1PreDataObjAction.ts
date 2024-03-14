@@ -156,12 +156,12 @@ export async function initPreDataObjAction() {
 
 	await addDataObjAction({
 		checkObjChanged: true,
-		codeActionType: 'dialogComplete',
+		codeActionType: 'dialogDone',
 		codeRenderShowSaveMode: 'any',
-		header: 'Complete',
+		header: 'Done',
 		isRenderDisableOnInvalidToSave: true,
 		isRenderShowRequiresObjHasChanged: false,
-		name: 'noa_dialog_complete',
+		name: 'noa_dialog_done',
 		order: 110,
 		owner: 'app_sys'
 	})

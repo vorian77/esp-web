@@ -38,7 +38,7 @@ async function initPreCodes() {
 		['ct_sys_do_action_type', 'app_sys', 'detailSaveInsert', 0],
 		['ct_sys_do_action_type', 'app_sys', 'detailSaveUpdate', 0],
 		['ct_sys_do_action_type', 'app_sys', 'dialogCancel', 0],
-		['ct_sys_do_action_type', 'app_sys', 'dialogComplete', 0],
+		['ct_sys_do_action_type', 'app_sys', 'dialogDone', 0],
 		['ct_sys_do_action_type', 'app_sys', 'dialogNext', 0],
 		['ct_sys_do_action_type', 'app_sys', 'dialogPrevious', 0],
 		['ct_sys_do_action_type', 'app_sys', 'none', 0],

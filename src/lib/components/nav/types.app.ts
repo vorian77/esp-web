@@ -1,5 +1,6 @@
 import {
 	DataObj,
+	DataObjCardinality,
 	DataObjData,
 	DataObjRecordStatus,
 	Node,
@@ -12,6 +13,7 @@ import { apiFetch, ApiFunction } from '$lib/api'
 import {
 	TokenApiQueryType,
 	TokenApiQuery,
+	TokenAppDialog,
 	TokenAppDoList,
 	TokenAppTreeNode,
 	TokenAppTreeNodeId,
@@ -35,12 +37,28 @@ export class App {
 		await query(state, newApp.getCurrTab(), token.queryType, newApp)
 		return newApp
 	}
+	static async initDialog(state: State, token: TokenAppDialog) {
+		const newApp = new App(
+			await AppLevel.initDialog(state, token.dataObjIdDisplay, token.dataObjData)
+		)
+		await query(state, newApp.getCurrTab(), TokenApiQueryType.retrieve)
+		return newApp
+	}
 	static async initNode(state: State, token: TokenAppTreeNode) {
 		return new App(await AppLevel.initNode(state, token))
 	}
-	async addLevel(state: State, queryType: TokenApiQueryType) {
+	async addLevelDialog(state: State, token: TokenAppDialog, queryType: TokenApiQueryType) {
 		const newLevelIdx = this.levels.length
-		const newLevel = await AppLevel.add(newLevelIdx, this.getCurrLevel().getCurrTab())
+		const newLevel = await AppLevel.initDialog(state, token.dataObjIdDialog, token.dataObjData)
+		if (newLevel) {
+			this.levels.push(newLevel)
+			await query(state, this.getCurrTab(), queryType, this)
+		}
+		return this
+	}
+	async addLevelNode(state: State, queryType: TokenApiQueryType) {
+		const newLevelIdx = this.levels.length
+		const newLevel = await AppLevel.addLevelNode(newLevelIdx, this.getCurrLevel().getCurrTab())
 		if (newLevel) {
 			this.levels.push(newLevel)
 			await query(state, this.getCurrTab(), queryType, this)
@@ -95,6 +113,7 @@ export class App {
 	}
 	popLevel() {
 		this.levels.pop()
+		return this
 	}
 	async setRowAction(state: State, rowAction: AppRowActionType) {
 		if (this.levels.length > 1) {
@@ -141,13 +160,16 @@ export class AppLevel {
 	static async initDataObj(state: State, token: TokenApiQuery) {
 		return new AppLevel([await AppLevelTab.initDataObj(token)])
 	}
+	static async initDialog(state: State, dataObjId: string, data: DataObjData) {
+		return new AppLevel([AppLevelTab.initDialog(dataObjId, data)])
+	}
 	static async initNode(state: State, token: TokenAppTreeNode) {
 		const nodeApp = new NodeApp(token.node)
 		const newLevel = new AppLevel([AppLevelTab.initNode(0, 0, nodeApp)], token.programId)
 		await query(state, newLevel.getCurrTab(), TokenApiQueryType.retrieve)
 		return newLevel
 	}
-	static async add(newLevelIdx: number, currTab: AppLevelTab) {
+	static async addLevelNode(newLevelIdx: number, currTab: AppLevelTab) {
 		const tabs: Array<AppLevelTab> = []
 
 		const rawNodes: {
@@ -209,6 +231,8 @@ export class AppLevelRowStatus {
 	}
 }
 
+export class AppLevelRowStatusDialog extends AppLevelRowStatus {}
+
 export class AppLevelTab {
 	data?: DataObjData
 	dataObj?: DataObj
@@ -249,6 +273,9 @@ export class AppLevelTab {
 				message: `Error retrieving dataObj: ${token.dataObj.dataObjName}`
 			})
 		}
+	}
+	static initDialog(dataObjId: string, data: DataObjData) {
+		return new AppLevelTab(0, 0, dataObjId, data)
 	}
 	static initNode(levelIdx: number, idx: number, node: NodeApp) {
 		return new AppLevelTab(levelIdx, idx, node.dataObjId, undefined, node.label, node.id)

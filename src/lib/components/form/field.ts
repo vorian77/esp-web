@@ -264,7 +264,8 @@ export interface FieldRaw {
 	}
 	_fieldListConfig: {
 		_actionsFieldGroup: any
-		_dataObjNameConfig: string
+		_dataObjIdConfig: string
+		_dataObjIdDisplay: string
 		_dataObjNameDisplay: string
 		isMultiSelect: boolean
 	}

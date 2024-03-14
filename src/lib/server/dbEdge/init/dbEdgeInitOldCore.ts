@@ -170,6 +170,7 @@ async function initSysCodes() {
 		['ct_db_col_data_type', 'app_sys', 'literal', 0],
 		['ct_db_col_data_type', 'app_sys', 'str', 0],
 		['ct_db_col_data_type', 'app_sys', 'uuid', 0],
+		['ct_db_col_data_type', 'app_sys', 'uuidlist', 0],
 
 		// db col - mask
 		['ct_db_col_mask', 'app_sys', 'currencyUs', 0],

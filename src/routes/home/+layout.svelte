@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		appStoreUser,
-		DataObjActionConfirm,
-		initNavTree,
-		NodeType,
-		valueOrDefault
-	} from '$comps/types'
+	import { appStoreUser, initNavTree, NodeType } from '$comps/types'
 	import { User } from '$comps/types'
 	import {
 		State,
@@ -13,9 +7,10 @@
 		StateSurfaceType,
 		StatePacket,
 		StatePacketComponent,
-		StateSurfaceStyle
+		StateSurfaceStyle,
+		stateUpdateDataObj
 	} from '$comps/nav/types.appState'
-	import { TokenAppDoDetail, TokenAppTreeReset } from '$comps/types.token'
+	import { TokenAppDoAction, TokenAppDoList, TokenAppTreeReset } from '$comps/types.token'
 	import {
 		AppBar,
 		AppShell,
@@ -24,7 +19,6 @@
 		getModalStore,
 		getToastStore,
 		type DrawerSettings,
-		type ModalSettings,
 		type ToastSettings
 	} from '@skeletonlabs/skeleton'
 	import DataObj from '$comps/dataObj/DataObj.svelte'
@@ -69,10 +63,22 @@
 				surfaceType: StateSurfaceType.LayoutObjTab
 			}),
 			modalStore,
+			onRowClick: (rows: any, record: any) =>
+				state.update({
+					packet: new StatePacket({
+						checkObjChanged: false,
+						component: StatePacketComponent.appDataObj,
+						token: new TokenAppDoList(
+							TokenAppDoAction.listEdit,
+							rows.map((r: any) => r.id),
+							record.id
+						)
+					})
+				}),
 			toastStore,
-			updateFunction: stateUpdate,
 			user
 		})
+		state.setUpdate(stateUpdateDataObj, stateUpdateProcess)
 		launchApp = false
 	}
 	$: {
@@ -83,32 +89,10 @@
 		}
 	}
 
-	async function stateUpdate(obj: any) {
-		obj = valueOrDefault(obj, {})
-
-		const checkObjChanged = obj?.packet?.checkObjChanged || false
-
-		let confirm: DataObjActionConfirm | undefined = undefined
-
-		if (obj?.packet?.token instanceof TokenAppDoDetail && obj?.packet?.token.confirm) {
-			confirm = obj.packet.token.confirm
-			delete obj.packet.token.confirm
-		}
-
-		if ((checkObjChanged && state?.objHasChanged) || confirm) {
-			confirm = confirm
-				? confirm
-				: DataObjActionConfirm.new(
-						'Discard Changes',
-						'Are you sure you want to discard your changes?',
-						'Discard Changes'
-					)
-			await askB4Transition(obj, confirm)
-		} else {
-			state = state.updateProperties(obj)
-			if (obj.packet) await statePacketAdd(obj.packet)
-			if (state.page !== $page.route.id) goto(state.page)
-		}
+	async function stateUpdateProcess(obj: any) {
+		state = state.updateProperties(obj)
+		if (obj.packet) await statePacketAdd(obj.packet)
+		if (state.page !== $page.route.id) goto(state.page)
 	}
 
 	async function statePacketAdd(packet: StatePacket) {
@@ -129,17 +113,16 @@
 		statePackets = [...statePackets.slice(0, -1)]
 		return packet
 	}
-	export function toast(type: ToastType, message: string) {
-		const background = {
-			success: 'variant-filled-secondary',
-			warning: 'variant-filled-warning',
-			error: 'variant-filled-error'
-		}
-		const t: ToastSettings = {
-			background: background[type],
-			message
-		}
-		toastStore.trigger(t)
+
+	function goHome() {
+		state.update({
+			page: '/home',
+			nodeType: NodeType.home,
+			packet: new StatePacket({
+				component: StatePacketComponent.navTree,
+				token: new TokenAppTreeReset()
+			})
+		})
 	}
 	function navLeft(): void {
 		const settings: DrawerSettings = {
@@ -161,37 +144,23 @@
 		}
 		drawerStore.open(settings)
 	}
-	function goHome() {
-		stateUpdate({
-			page: '/home',
-			nodeType: NodeType.home,
-			packet: new StatePacket({
-				component: StatePacketComponent.navTree,
-				token: new TokenAppTreeReset()
-			})
-		})
-	}
-	async function askB4Transition(obj: any, confirm: DataObjActionConfirm) {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: confirm.title,
-			body: confirm.message,
-			buttonTextCancel: 'Keep Editing',
-			buttonTextConfirm: confirm.buttonLabel,
-			response: async (r: boolean) => {
-				if (r) {
-					state.statusReset()
-					stateUpdate(obj)
-				}
-			}
+	export function toast(type: ToastType, message: string) {
+		const background = {
+			success: 'variant-filled-secondary',
+			warning: 'variant-filled-warning',
+			error: 'variant-filled-error'
 		}
-		return modalStore.trigger(modal)
+		const t: ToastSettings = {
+			background: background[type],
+			message
+		}
+		toastStore.trigger(t)
 	}
 </script>
 
-<AppShell slotSidebarLeft="w-{SIDEBAR_LEFT_WIDTH} ">
+<AppShell slotSidebarLeft="w-{SIDEBAR_LEFT_WIDTH}">
 	<svelte:fragment slot="header">
-		<div class="mb-4">
+		<div>
 			<AppBar background="bg-neutral-200" padding="p-3">
 				<svelte:fragment slot="lead">
 					<div
@@ -234,7 +203,9 @@
 	<svelte:fragment slot="sidebarLeft">
 		<div class="hidden md:block">
 			{#if user && state?.nodeType === NodeType.home}
-				<NavTree {state} on:treeChanged />
+				<div class="my-4">
+					<NavTree {state} on:treeChanged />
+				</div>
 			{/if}
 		</div>
 	</svelte:fragment>
@@ -242,7 +213,9 @@
 	<div>
 		{#if $page.route.id === '/home'}
 			{#if state?.nodeType === NodeType.home}
-				<NavHome />
+				<div class="m-4">
+					<NavHome />
+				</div>
 			{:else}
 				<DataObj {state} />
 			{/if}

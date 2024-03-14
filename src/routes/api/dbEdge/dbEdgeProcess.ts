@@ -30,10 +30,8 @@ const FILENAME = 'server/dbEdgeQueryProcessor.ts'
 
 export async function processQuery(token: TokenApiQuery) {
 	log('processQuery.0')
-
 	const queryData = TokenApiQueryData.load(token.queryData)
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
-	log('processQuery.1:', { actions: dataObjRaw._actionsFieldGroup })
 	const query = new EdgeQL(dataObjRaw)
 	const dataObj = new DataObj(dataObjRaw)
 

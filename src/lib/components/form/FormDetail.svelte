@@ -7,7 +7,7 @@
 		ValidityErrorLevel,
 		ValidityError
 	} from '$comps/types'
-	import { State, StateObjModal } from '$comps/nav/types.appState'
+	import { State, StateObjDialog } from '$comps/nav/types.appState'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
 	import FormElFile from '$comps/form/FormElFile.svelte'
 	import FormElInp from '$comps/form/FormElInp.svelte'
@@ -40,8 +40,8 @@
 
 	$: loadData(dataObjData)
 
-	$: if (state instanceof StateObjModal) {
-		state.setRecords([dataObj.objData.getData()])
+	$: if (state instanceof StateObjDialog) {
+		// state.setRecords([dataObj.objData.getData()])
 	}
 
 	function loadData(data: DataObjData) {
@@ -88,8 +88,7 @@
 	}
 </script>
 
-<!-- <div id="root" class="px-4 pb-4"> -->
-<div id="root" class="mx-4 mt-4">
+<div id="root">
 	<form id={'form_' + dataObj.name} on:submit|preventDefault>
 		{#each dataObj.fields as field, idx (field.name)}
 			{#if field.isDisplayable && field.isDisplay}

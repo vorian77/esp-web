@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { FieldListConfig } from '$comps/form/fieldListConfig'
-	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
+	import { type ModalSettings, getDrawerStore, getModalStore } from '@skeletonlabs/skeleton'
 	import {
 		State,
+		StateObjDataObj,
+		StateObjDialog,
 		StateLayout,
 		StateSurfaceType,
-		StateObj,
-		StateObjModal,
 		StateSurfaceStyle
 	} from '$comps/nav/types.appState'
 	import {
@@ -15,7 +15,7 @@
 		TokenAppModalReturnType
 	} from '$comps/types.token'
 	import DataObj from '$comps/dataObj/DataObj.svelte'
-	import { type DataObjData } from '$comps/types'
+	import { DataObjCardinality, DataObjData } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { createEventDispatcher } from 'svelte'
 	import { error } from '@sveltejs/kit'
@@ -23,7 +23,9 @@
 
 	const FILENAME = '$comps/form/FormElListConfig.svelte'
 
+	const drawerStore = getDrawerStore()
 	const modalStore = getModalStore()
+
 	const dispatch = createEventDispatcher()
 
 	export let state: State
@@ -35,9 +37,9 @@
 	$: setStateDisplay(field.valueCurrent)
 
 	function setStateDisplay(ids: string[]) {
-		console.log('FormElListConfig.setStateDisplay.ids:', ids)
-		stateDisplay = new StateObj({
-			dataObjData: setData(ids),
+		console.log('FormElListConfig.setStateDisplay.valueCurrent:', ids)
+		stateDisplay = new StateObjDataObj({
+			dataObjData: setData(DataObjCardinality.list, field.valueCurrent),
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
 				isEmbedHeight: true,
@@ -45,7 +47,7 @@
 				surfaceType: StateSurfaceType.LayoutObj
 			}),
 			modalStore,
-			onRowClick: (rows: any, record: any) => {},
+			onRowClick: (rows: any, record: any) => overlay(TokenApiQueryType.retrieve, record.id),
 			queryType: TokenApiQueryType.retrieve
 		})
 	}
@@ -57,20 +59,21 @@
 				type: 'component',
 				component: 'overlayModalDialog',
 				meta: {
-					state: new StateObjModal({
+					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
-						dataObjData: id ? setData([id]) : setData([]),
-						dataObjName: field.dataObjNameConfig,
+						dataObjData: setData(DataObjCardinality.detail, field.valueCurrent, id),
+						dataObjIdDialog: field.dataObjIdConfig,
+						dataObjIdDisplay: field.dataObjIdDisplay,
+						drawerStore,
 						isBtnDelete: true,
 						isMultiSelect: field.isMultiSelect,
 						layout: new StateLayout({
-							surfaceStyle: StateSurfaceStyle.dialog,
+							surfaceStyle: StateSurfaceStyle.dialogDetail,
 							surfaceType: StateSurfaceType.LayoutObjDialogDetail
 						}),
 						modalStore,
 						page: '/',
-						queryType,
-						selectedIds: field.valueCurrent
+						queryType
 					})
 				},
 				response: (r: any) => {
@@ -85,15 +88,15 @@
 				console.log('FormElListConfig.modalReturn:', modalReturn)
 				switch (modalReturn.type) {
 					case TokenAppModalReturnType.complete:
-						id = modalReturn.records[0].id
-						if (!field.valueCurrent.includes(id)) {
-							field.valueCurrent.push(id)
-						}
+						// id = modalReturn.records[0].id
+						// if (!field.valueCurrent.includes(id)) {
+						// 	field.valueCurrent.push(id)
+						// }
 						break
 
 					case TokenAppModalReturnType.delete:
-						id = modalReturn.records[0].id
-						field.valueCurrent = field.valueCurrent.filter((v: string) => v !== id)
+						// id = modalReturn.records[0].id
+						// field.valueCurrent = field.valueCurrent.filter((v: string) => v !== id)
 						break
 
 					default:
@@ -107,28 +110,27 @@
 			}
 		})
 	}
-	function setData(ids: string[]) {
+	function setData(
+		cardinality: DataObjCardinality,
+		parentIdList: string[],
+		parentIdCurrent: string | undefined = undefined
+	) {
 		const data = dataObjData.copy()
-		data.parmsUpsert({ filterInIds: ids, programId: state.programId })
+		data.cardinalitySet(cardinality)
+		data.parmsUpsert({ parentIdList, parentIdCurrent, programId: state.programId })
 		return data
 	}
 	function setValue(value: string[]) {
 		setStateDisplay(value)
 		dispatch('changeItem', { fieldName: field.name, value })
 	}
-	async function onRowClick(rows: any, record: any) {
-		overlay(TokenApiQueryType.retrieve, record.id)
-	}
 </script>
 
 <div class="flex mt-6">
 	<label for={field.name}>{field.label}</label>
-	<button class="ml-1 -mt-0.5" on:click={() => overlay(TokenApiQueryType.new)}>
-		<Icon name={'change'} width="36" height="36" fill={'#3b79e1'} />
-	</button>
 </div>
 <div>
-	{#if stateDisplay && field.valueCurrent.length > 0}
+	{#if stateDisplay}
 		<object title="embedded column" class="-mt-4 mb-4">
 			<DataObj state={stateDisplay} />
 		</object>

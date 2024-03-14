@@ -1,7 +1,9 @@
 import { booleanOrFalse, required, strOptional, strRequired, valueOrDefault } from '$utils/utils'
 import {
 	DataObjAction,
+	DataObjActionConfirm,
 	DataObjData,
+	type DataObjRecord,
 	initNavTree,
 	memberOfEnum,
 	NodeType,
@@ -13,8 +15,11 @@ import {
 	TokenApiDbDataObj,
 	TokenApiQuery,
 	TokenApiQueryData,
-	TokenApiQueryType
+	TokenApiQueryType,
+	TokenAppDialog,
+	TokenAppDoDetail
 } from '$comps/types.token'
+import { getModalStore, type DrawerSettings, type ModalSettings } from '@skeletonlabs/skeleton'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/nav/types.appState.ts'
@@ -31,6 +36,7 @@ export class State {
 	page: string = '/home'
 	programId?: string
 	toastStore: any
+	updateCallbackk?: Function
 	updateFunction?: Function
 	user: User | undefined = undefined
 
@@ -42,7 +48,6 @@ export class State {
 		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
 		if (Object.hasOwn(obj, 'onRowClick')) this.onRowClick = obj.onRowClick
 		if (Object.hasOwn(obj, 'toastStore')) this.toastStore = obj.toastStore
-		if (Object.hasOwn(obj, 'updateFunction')) this.updateFunction = obj.updateFunction
 		if (Object.hasOwn(obj, 'user')) this.user = obj.user
 	}
 
@@ -75,8 +80,12 @@ export class State {
 	set(packet: StatePacket) {
 		this.packet = packet
 	}
+	setUpdate(stateUpdate: Function, processCallback: Function | undefined = undefined) {
+		this.updateFunction = stateUpdate
+		this.updateCallbackk = processCallback
+	}
 	update(obj: any) {
-		if (this.updateFunction) this.updateFunction(obj)
+		if (this.updateFunction) this.updateFunction(this, obj, this.updateCallbackk)
 	}
 	updateProperties(obj: any) {
 		if (Object.hasOwn(obj, 'nodeType')) this.nodeType = obj.nodeType
@@ -120,14 +129,14 @@ export class StateLayout {
 	}
 }
 
-export class StateObj extends State {
-	dataObjData?: DataObjData
+export class StateObjDataObj extends State {
+	data?: DataObjData
 	dataObjName: string
 	queryType: TokenApiQueryType
 	constructor(obj: any) {
 		const clazz = 'StateObj'
 		super(obj)
-		this.dataObjData = valueOrDefault(obj.dataObjData, undefined)
+		this.data = valueOrDefault(obj.dataObjData, undefined)
 		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
 
@@ -137,35 +146,36 @@ export class StateObj extends State {
 			token: new TokenApiQuery(
 				this.queryType,
 				new TokenApiDbDataObj({ dataObjName: this.dataObjName }),
-				new TokenApiQueryData({ dataObjData: this.dataObjData })
+				new TokenApiQueryData({ dataObjData: this.data })
 			)
 		})
 		this.page = obj.page ? obj.page : this.page
 	}
 }
 
-export class StateObjModal extends StateObj {
+export class StateObjDialog extends State {
 	actionsFieldDialog: Array<DataObjAction> = []
 	btnLabelComplete?: string
 	isBtnDelete: boolean
 	isMultiSelect: boolean = false
-	records: StateObjModalRecords = []
-	selectedIds: Array<string> = []
+	parentRecordId?: string
+	parentIdList: DataObjRecord[] = []
 	constructor(obj: any) {
-		const clazz = 'StateObjSelect'
+		const clazz = 'StateObjDialog'
 		super(obj)
 		this.actionsFieldDialog = obj.actionsFieldDialog ? obj.actionsFieldDialog : []
 		this.btnLabelComplete = strOptional(obj.btnLabelComplete, clazz, 'btnLabelComplete')
 		this.isBtnDelete = booleanOrFalse(obj.isBtnDelete, 'isBtnDelete')
 		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
-		this.selectedIds = obj.selectedIds ? obj.selectedIds : []
-	}
-	setRecords(records: Array<Record<string, any>>) {
-		this.records = records
+		this.packet = new StatePacket({
+			component: StatePacketComponent.navApp,
+			token: new TokenAppDialog(obj)
+		})
+		this.parentRecordId = obj.parentRecordId ? obj.parentRecordId : undefined
+		this.parentIdList = obj.parentIdList ? obj.parentIdList : []
+		console.log('StateObjDialog', { state: this })
 	}
 }
-
-export type StateObjModalRecords = Array<Record<string, any>>
 
 export class StatePacket {
 	checkObjChanged: boolean = true
@@ -190,7 +200,7 @@ export enum StatePacketComponent {
 export enum StateSurfaceStyle {
 	drawer = 'drawer',
 	embedded = 'embedded',
-	dialog = 'dialog',
+	dialogDetail = 'dialogDetail',
 	dialogSelect = 'dialogSelect',
 	dialogWizard = 'dialogWizard'
 }
@@ -198,4 +208,65 @@ export enum StateSurfaceType {
 	LayoutObj = 'LayoutObj',
 	LayoutObjTab = 'LayoutObjTab',
 	LayoutObjDialogDetail = 'LayoutObjDialogDetail'
+}
+
+export async function stateUpdateDataObj(
+	state: State,
+	obj: any,
+	callback: Function | undefined = undefined
+) {
+	obj = valueOrDefault(obj, {})
+	const checkObjChanged = obj?.packet?.checkObjChanged || false
+
+	let confirm: DataObjActionConfirm | undefined = undefined
+
+	if (obj?.packet?.token instanceof TokenAppDoDetail && obj?.packet?.token.confirm) {
+		confirm = obj.packet.token.confirm
+		delete obj.packet.token.confirm
+	}
+
+	if ((checkObjChanged && state?.objHasChanged) || confirm) {
+		confirm = confirm
+			? confirm
+			: DataObjActionConfirm.new(
+					'Discard Changes',
+					'Are you sure you want to discard your changes?',
+					'Discard Changes'
+				)
+		await askB4Transition(state, obj, confirm, stateUpdateDataObj, callback)
+		// await askDrawer(state)
+	} else {
+		if (callback) await callback(obj)
+	}
+}
+
+async function askB4Transition(
+	state: State,
+	obj: any,
+	confirmConfig: DataObjActionConfirm,
+	updateFunction: Function,
+	updateCallback?: Function
+) {
+	if (state instanceof StateObjDialog) {
+		if (confirm(confirmConfig.message)) {
+			state.statusReset()
+			updateFunction(state, obj, updateCallback)
+		}
+	} else {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: confirmConfig.title,
+			body: confirmConfig.message,
+			buttonTextCancel: 'Keep Editing',
+			buttonTextConfirm: confirmConfig.buttonLabel,
+			response: async (r: boolean) => {
+				if (r) {
+					state.statusReset()
+					updateFunction(state, obj, updateCallback)
+				}
+			}
+		}
+
+		return state.modalStore.trigger(modal)
+	}
 }

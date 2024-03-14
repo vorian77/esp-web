@@ -405,7 +405,7 @@ class DataObjTableActionFilter extends DataObjTableAction {
 		const script = new DataObjTableScript({ prefix: 'FILTER' })
 		let exprFilter = ''
 
-		console.log('DataObjTableActionFilter.getScript.parms:', data.parms)
+		// console.log('DataObjTableActionFilter.getScript.parms:', data.parms)
 
 		if (!this.query.exprFilter) {
 			exprFilter = `.id = <uuid,tree,id>`
@@ -766,7 +766,7 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 
 			case DataFieldDataType.link:
 				const getId = (id: string) => {
-					return `<uuid>${getValQuote(id)}`
+					return getValUUID(id)
 				}
 
 				if (field.link) {
@@ -791,7 +791,11 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 				break
 
 			case DataFieldDataType.uuid:
-				val = '<uuid>' + getValQuote(val)
+				val = getValUUID(val)
+				break
+
+			case DataFieldDataType.uuidList:
+				val = `{${getArray(val).map((v: string) => getValUUID(v))}}`
 				break
 
 			default:
@@ -805,6 +809,9 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 
 		function getValQuote(val: string) {
 			return "'" + val + "'"
+		}
+		function getValUUID(val: string) {
+			return '<uuid>' + getValQuote(val)
 		}
 	}
 }
@@ -1029,7 +1036,8 @@ export enum DataFieldDataType {
 	link = 'link',
 	literal = 'literal',
 	str = 'str',
-	uuid = 'uuid'
+	uuid = 'uuid',
+	uuidList = 'uuidList'
 }
 export enum DataFieldDirection {
 	asc = 'asc',

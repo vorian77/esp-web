@@ -36,25 +36,8 @@ async function initFeatures() {
 	})
 
 	addDataObjActionGroup({
-		actions: ['noa_dialog_cancel', 'noa_dialog_complete'],
-		name: 'doag_base_field_list_config_dialog',
-		owner: 'app_sys'
-	})
-
-	addDataObjActionGroup({
-		actions: ['noa_dialog_cancel', 'noa_dialog_complete'],
-		name: 'doag_base_field_list_select',
-		owner: 'app_sys'
-	})
-
-	addDataObjActionGroup({
-		actions: [
-			'noa_detail_save_insert',
-			'noa_detail_save_update',
-			'noa_detail_delete_insert',
-			'noa_detail_delete_update'
-		],
-		name: 'doag_base_field_list_config_edit',
+		actions: ['noa_dialog_cancel', 'noa_dialog_done'],
+		name: 'doag_base_field_list_dialog',
 		owner: 'app_sys'
 	})
 

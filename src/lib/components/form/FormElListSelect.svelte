@@ -3,11 +3,11 @@
 	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
 	import {
 		State,
+		StateObjDataObj,
+		StateObjDialog,
 		StateLayout,
-		StateSurfaceType,
-		StateObj,
-		StateObjModal,
-		StateSurfaceStyle
+		StateSurfaceStyle,
+		StateSurfaceType
 	} from '$comps/nav/types.appState'
 	import { TokenApiQueryType } from '$comps/types.token'
 	import DataObj from '$comps/dataObj/DataObj.svelte'
@@ -34,10 +34,11 @@
 				type: 'component',
 				component: 'overlayModalDialog',
 				meta: {
-					state: new StateObjModal({
+					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
 						btnLabelComplete: field.btnLabelComplete,
 						dataObjData,
+
 						dataObjName: field.dataObjNameSelect,
 						layout: new StateLayout({
 							surfaceStyle: StateSurfaceStyle.dialogSelect,
@@ -48,7 +49,7 @@
 						onRowClick: (rows: any, record: any) => {},
 						page: '/',
 						queryType: TokenApiQueryType.retrieve,
-						selectedIds: field.valueCurrent
+						parentIdList: field.valueCurrent
 					})
 				},
 				response: (r: any) => {
@@ -68,7 +69,7 @@
 	function setStateDisplay(ids: string[]) {
 		const data = dataObjData.copy()
 		data.parmsUpsert({ filterInIds: ids, programId: state.programId })
-		stateLocal = new StateObj({
+		stateLocal = new StateObjDataObj({
 			dataObjData: data,
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({

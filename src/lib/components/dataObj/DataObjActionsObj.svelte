@@ -46,7 +46,6 @@
 	}
 
 	async function onClick(action: DataObjAction) {
-		console.log('DataObjActionsObj.onClick.action:', { action, state })
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: action.checkObjChanged,

@@ -1,4 +1,4 @@
-import { State, StateSurfaceType, StateObj } from '$comps/nav/types.appState'
+import { State, StateObjDataObj, StateSurfaceType } from '$comps/nav/types.appState'
 import { StateSurfaceStyle } from '$comps/nav/types.appState'
 import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
@@ -107,7 +107,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 			position: 'bottom',
 			height: 'h-[50%]',
 			meta: {
-				state: new StateObj({
+				state: new StateObjDataObj({
 					dataObjName,
 					drawerStore,
 					layout: {
