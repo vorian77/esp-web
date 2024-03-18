@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { App, AppLevel, AppLevelTab } from '$comps/nav/types.app'
 	import { query } from '$comps/nav/types.appQuery'
-	import { State, StatePacket, StatePacketComponent } from '$comps/nav/types.appState'
+	import {
+		State,
+		StatePacket,
+		StatePacketComponent,
+		StateSurfaceStyle
+	} from '$comps/nav/types.appState'
 	import {
 		TokenApiQuery,
 		TokenApiQueryType,
@@ -19,9 +24,9 @@
 	} from '$comps/types.token'
 	import { DataObjData, type DataObj, DataObjCardinality } from '$comps/types'
 	import { NodeType } from '$comps/types'
-	import LayoutObj from '../Surface/LayoutObj.svelte'
-	import LayoutObjTab from '../Surface/LayoutObjTab.svelte'
-	import LayoutObjDialogDetail from '../Surface/LayoutObjDialogDetail.svelte'
+	import DataObjLayout from '$comps/dataObj/DataObjLayout.svelte'
+	import DataObjLayoutTab from '$comps/dataObj/DataObjLayoutTab.svelte'
+	import DataObjLayoutDialogDetail from '$comps/dataObj/DataObjLayoutDialogDetail.svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
@@ -46,9 +51,9 @@
 		StatePacketComponent.navApp
 	]
 	const surfaceTypes: Record<string, any> = {
-		LayoutObj: LayoutObj,
-		LayoutObjTab: LayoutObjTab,
-		LayoutObjDialogDetail: LayoutObjDialogDetail
+		DataObjLayout: DataObjLayout,
+		DataObjLayoutTab: DataObjLayoutTab,
+		DataObjLayoutDialogDetail: DataObjLayoutDialogDetail
 	}
 
 	$: if (state && state.packet) {
@@ -86,7 +91,8 @@
 						case TokenAppDoAction.detailDelete:
 							if (token instanceof TokenAppDoDetail) {
 								if (await app.tabUpdate(state, token, TokenApiQueryType.delete)) {
-									app = app.popLevel()
+									if (state.layout.surfaceStyle === StateSurfaceStyle.page) app.popLevel()
+									app = app
 									dataObjUpdate = new DataObjUpdate(true, true, true)
 								}
 							}
@@ -122,7 +128,7 @@
 
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
-								app.getCurrTab().listInit(token)
+								app.getCurrTab().listInitPage(token)
 								app = await app.addLevelNode(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
@@ -186,34 +192,32 @@
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 					}
 				}
+
 				if (token instanceof TokenAppDialog) {
 					app = await App.initDialog(state, token)
 
 					// retrieve dialog
-					switch (token.dataObjData?.cardinality) {
+					switch (token.data?.cardinality) {
 						case DataObjCardinality.list:
 							break
 
 						case DataObjCardinality.detail:
-							const tokenDoList = new TokenAppDoList(
-								TokenAppDoAction.listEdit,
-								token.parentIdList,
-								token.parentIdCurrent!
-							)
-							app.getCurrTab().listInit(tokenDoList)
-							app = await app.addLevelDialog(state, token, TokenApiQueryType.retrieve)
+							app.getCurrTab().listInitDialog(token)
+							await app.addLevelDialog(state, token)
+							if (token.queryType === TokenApiQueryType.new) app.getCurrTabParent().listSetId('')
+							app = app
 							break
 
 						default:
 							error(500, {
 								file: FILENAME,
 								function: 'App.initDialog',
-								message: `No case defined for token.cardinality: ${token.dataObjData?.cardinality}`
+								message: `No case defined for token.cardinality: ${token.data?.cardinality}`
 							})
 					}
-					console.log('App.initDialog.app:', app)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
+
 				if (token instanceof TokenAppTreeNode) {
 					app = await App.initNode(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)

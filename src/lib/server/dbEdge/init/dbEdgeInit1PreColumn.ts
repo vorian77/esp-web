@@ -625,12 +625,6 @@ export async function initPreColumn() {
 		name: 'isMultiSelect'
 	})
 	await addColumn({
-		codeDataType: 'bool',
-		header: 'Popup',
-		name: 'isPopup',
-		owner: 'app_sys'
-	})
-	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'bool',
 		header: 'Self Reference',

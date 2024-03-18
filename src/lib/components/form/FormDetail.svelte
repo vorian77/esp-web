@@ -7,7 +7,7 @@
 		ValidityErrorLevel,
 		ValidityError
 	} from '$comps/types'
-	import { State, StateObjDialog } from '$comps/nav/types.appState'
+	import { State, StateObj } from '$comps/nav/types.appState'
 	import FormElCustom from '$comps/form/FormElCustom.svelte'
 	import FormElFile from '$comps/form/FormElFile.svelte'
 	import FormElInp from '$comps/form/FormElInp.svelte'
@@ -40,8 +40,8 @@
 
 	$: loadData(dataObjData)
 
-	$: if (state instanceof StateObjDialog) {
-		// state.setRecords([dataObj.objData.getData()])
+	$: if (state instanceof StateObj) {
+		state.data.setRecord(dataObj.objData.getData())
 	}
 
 	function loadData(data: DataObjData) {

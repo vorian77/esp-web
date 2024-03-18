@@ -71,66 +71,11 @@ async function initFieldListConfigDataObjTables() {
 	sectionHeader('Field List Config - DataObj.Tables')
 
 	await addDataObj({
-		actionsFieldGroup: 'doag_base_detail',
-		codeCardinality: 'detail',
-		codeComponent: 'FormDetail',
-		exprFilter: `.id = <uuid,parms,parentIdCurrent>`,
-		header: 'Data Object - Table',
-		name: 'doflc_data_obj_tables_edit',
-		owner: 'app_sys_admin',
-		tables: [{ index: '0', table: 'SysDataObjTable' }],
-		fields: [
-			{
-				columnName: 'id',
-				dbOrderSelect: 10,
-				indexTable: '0',
-				isDisplay: false
-			},
-			{
-				columnName: 'index',
-				dbOrderSelect: 20,
-				indexTable: '0'
-			},
-			{
-				codeElement: 'select',
-				columnName: 'table',
-				dbOrderSelect: 30,
-				indexTable: '0',
-				fieldListItems: 'il_sys_table_order_name',
-				link: { table: { module: 'sys_core', name: 'SysTable' } }
-			},
-			{
-				codeAccess: 'optional',
-				columnName: 'indexParent',
-				dbOrderSelect: 40,
-				headerAlt: 'Parent Table Index',
-				indexTable: '0'
-			},
-			{
-				codeAccess: 'optional',
-				codeElement: 'select',
-				columnName: 'columnParent',
-				dbOrderSelect: 50,
-				fieldListItems: 'il_sys_column_order_name',
-				headerAlt: 'Parent Table Column',
-				indexTable: '0',
-				link: { table: { module: 'sys_core', name: 'Sys' } }
-			},
-			{
-				columnAccess: 'optional',
-				columnName: 'order',
-				dbOrderSelect: 60,
-				indexTable: '0'
-			}
-		]
-	})
-
-	await addDataObj({
 		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
-		exprFilter: `.id in <uuidList,parms,parentIdList>`,
-		header: 'Table',
+		exprFilter: `.id in <uuidList,parms,embedRecordIdList>`,
+		header: 'Data Object - Tables',
 		name: 'doflc_data_obj_tables_display',
 		owner: 'app_sys_admin',
 		tables: [{ index: '0', table: 'SysDataObjTable' }],
@@ -179,8 +124,65 @@ async function initFieldListConfigDataObjTables() {
 		]
 	})
 
+	await addDataObj({
+		actionsFieldGroup: 'doag_base_detail',
+		codeCardinality: 'detail',
+		codeComponent: 'FormDetail',
+		exprFilter: `.id = <uuid,parms,embedRecordIdCurrent>`,
+		header: 'Data Object - Table',
+		name: 'doflc_data_obj_tables_edit',
+		owner: 'app_sys_admin',
+		parentColumn: 'tables',
+		parentTable: 'SysDataObj',
+		tables: [{ index: '0', table: 'SysDataObjTable' }],
+		fields: [
+			{
+				columnName: 'id',
+				dbOrderSelect: 10,
+				indexTable: '0',
+				isDisplay: false
+			},
+			{
+				columnName: 'index',
+				dbOrderSelect: 20,
+				indexTable: '0'
+			},
+			{
+				codeElement: 'select',
+				columnName: 'table',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				fieldListItems: 'il_sys_table_order_name',
+				link: { table: { module: 'sys_db', name: 'SysTable' } }
+			},
+			{
+				codeAccess: 'optional',
+				columnName: 'indexParent',
+				dbOrderSelect: 40,
+				headerAlt: 'Parent Table Index',
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
+				codeElement: 'select',
+				columnName: 'columnParent',
+				dbOrderSelect: 50,
+				fieldListItems: 'il_sys_column_order_name',
+				headerAlt: 'Parent Table Column',
+				indexTable: '0',
+				link: { table: { module: 'sys_core', name: 'Sys' } }
+			},
+			{
+				columnAccess: 'optional',
+				columnName: 'order',
+				dbOrderSelect: 60,
+				indexTable: '0'
+			}
+		]
+	})
+
 	await addDataObjFieldListConfig({
-		actionsFieldGroup: 'doag_base_field_list_dialog',
+		actionsFieldGroup: 'doag_base_dialog_detail',
 		dataObjConfig: 'doflc_data_obj_tables_edit',
 		dataObjDisplay: 'doflc_data_obj_tables_display',
 		name: 'flc_data_obj_tables',
@@ -1040,7 +1042,7 @@ async function initDataObj() {
 		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
-		header: 'Data Object (Ronald)',
+		header: 'Data Object',
 		name: 'data_obj_sys_admin_data_obj_detail',
 		owner: 'app_sys_admin',
 		tables: [{ index: '0', table: 'SysDataObj' }],
@@ -1106,12 +1108,6 @@ async function initDataObj() {
 				codeElement: 'textArea',
 				columnName: 'exprObject',
 				dbOrderSelect: 80,
-				indexTable: '0'
-			},
-			{
-				codeElement: 'toggle',
-				columnName: 'isPopup',
-				dbOrderSelect: 90,
 				indexTable: '0'
 			},
 			{
@@ -1924,7 +1920,7 @@ async function initTable() {
 	})
 
 	await addDataObjFieldListSelect({
-		actionsFieldGroup: 'doag_base_field_list_dialog',
+		actionsFieldGroup: 'doag_base_dialog_list',
 		btnLabelComplete: 'Select Column(s)',
 		dataObjDisplay: 'data_obj_field_list_select_sys_column',
 		dataObjSelect: 'data_obj_field_list_select_sys_column',

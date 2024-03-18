@@ -59,9 +59,10 @@ export class DataObj {
 	exprObject?: string
 	fields: Array<Field> = []
 	header: string
-	isPopup: boolean
 	name: string
 	orderItems: DataObjListOrder
+	parentColumn?: string
+	parentTable?: Table
 	saveMode: DataObjSaveMode = DataObjSaveMode.any
 	subHeader: string
 	table?: Table
@@ -70,6 +71,7 @@ export class DataObj {
 		const clazz = 'DataObj'
 		dataObjRaw = valueOrDefault(dataObjRaw, {})
 		this.actionsField = DataObj.initActions(dataObjRaw._actionsFieldGroup)
+		this.actionsQueryRaw = this.initActionsQueryRaw(dataObjRaw.actionsQuery)
 		this.cardinality = memberOfEnum(
 			dataObjRaw._codeCardinality,
 			clazz,
@@ -90,10 +92,10 @@ export class DataObj {
 		this.exprObject = strOptional(dataObjRaw.exprObject, clazz, 'exprObject')
 		this.fields = this.initFields(dataObjRaw._fieldsEl)
 		this.header = valueOrDefault(dataObjRaw.header, '')
-		this.orderItems = this.initOrderItems(dataObjRaw._fieldsDbOrder)
-		this.isPopup = valueOrDefault(dataObjRaw.isPopup, false)
 		this.name = strRequired(dataObjRaw.name, clazz, 'name')
-		this.actionsQueryRaw = this.initActionsQueryRaw(dataObjRaw.actionsQuery)
+		this.parentColumn = strOptional(dataObjRaw._parentColumn, clazz, 'parentColumn')
+		this.parentTable = dataObjRaw._parentTable ? new Table(dataObjRaw._parentTable) : undefined
+		this.orderItems = this.initOrderItems(dataObjRaw._fieldsDbOrder)
 		this.subHeader = valueOrDefault(dataObjRaw.subHeader, '')
 		this.table =
 			dataObjRaw._tables && dataObjRaw._tables.length > 0
@@ -108,7 +110,7 @@ export class DataObj {
 		})
 		return newActions
 	}
-	static async init(state: State, dataObjRaw: DataObjRaw, queryData: TokenApiQueryData) {
+	static async init(dataObjRaw: DataObjRaw, data: DataObjData) {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
@@ -128,15 +130,18 @@ export class DataObj {
 		async function loadFieldListItems(fields: Array<Field>) {
 			for (const field of fields) {
 				if (field.fieldListItems) {
-					queryData.parmsUpsert({
-						...field.fieldListItems.parms,
-						field,
-						programId: state.programId
-					})
 					const result = await queryExecute(
 						{ dataObjName: dataObj.name },
 						TokenApiQueryType.fieldItems,
-						queryData
+						new TokenApiQueryData({
+							parms: {
+								field: {
+									items: field.items,
+									fieldListItems: field.fieldListItems,
+									valueCurrent: data.getRecordValue(field.name)
+								}
+							}
+						})
 					)
 					field.items = result.data
 				}
@@ -593,6 +598,8 @@ export interface DataObjRaw {
 	_fieldsDbSaveUpdate?: any
 	_fieldsDbSelectSys?: any
 	_fieldsDbSelectUser?: any
+	_parentColumn?: string
+	_parentTable?: any
 	_tables?: any
 	_updateTables?: Array<any>
 	actionsQuery?: Array<any> | null
@@ -601,7 +608,6 @@ export interface DataObjRaw {
 	exprObject?: string | null
 	header: string | null
 	id?: string
-	isPopup: boolean | null
 	name: string
 	subHeader?: string | null
 }

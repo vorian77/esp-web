@@ -273,25 +273,28 @@ export class TokenAppCrumbs extends TokenApp {
 	}
 }
 export class TokenAppDialog extends TokenApp {
-	dataObjData: DataObjData
+	data: DataObjData
 	dataObjIdDialog: string
 	dataObjIdDisplay: string
-	parentIdCurrent?: string
-	parentIdList: Array<string> = []
+	embedRecordIdCurrent?: string
+	embedRecordIdList: Array<string> = []
+	parentRecordId: string
 	queryType: TokenApiQueryType
-	constructor(obj: any) {
-		const clazz = 'StateObj'
+	constructor(obj: any, data: DataObjData) {
+		const clazz = 'TokenAppDialog'
 		super()
-		this.dataObjData = required(obj.dataObjData, clazz, 'dataObjData')
+		this.data = data
 		this.dataObjIdDialog = strRequired(obj.dataObjIdDialog, clazz, 'dataObjIdDialog')
 		this.dataObjIdDisplay = strRequired(obj.dataObjIdDisplay, clazz, 'dataObjIdDisplay')
-		this.parentIdCurrent = this.dataObjData?.parms.parentIdCurrent
-			? this.dataObjData.parms.parentIdCurrent
+		this.embedRecordIdCurrent = this.data?.parms.embedRecordIdCurrent
+			? this.data.parms.embedRecordIdCurrent
 			: undefined
-		this.parentIdList = this.dataObjData?.parms.parentIdList
-			? this.dataObjData?.parms.parentIdList
+		this.embedRecordIdList = this.data?.parms.embedRecordIdList
+			? this.data?.parms.embedRecordIdList
 			: []
+		this.parentRecordId = strRequired(obj.parentRecordId, clazz, 'parentRecordId')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
+		console.log('TokenAppDialog', { obj, data, token: this })
 	}
 }
 export class TokenAppDo extends TokenApp {

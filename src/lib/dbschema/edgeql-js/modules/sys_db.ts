@@ -36,10 +36,12 @@ export type $SysColumnλShape = $.typeutil.flatten<_sys_core.$SysObjλShape & {
   "<columnsDisplay[is sys_core::SysDataObjFieldLink]": $.LinkDesc<_sys_core.$SysDataObjFieldLink, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columnParent[is sys_core::SysDataObjTable]": $.LinkDesc<_sys_core.$SysDataObjTable, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column[is sys_core::SysDataObjColumn]": $.LinkDesc<_sys_core.$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<parentColumn[is sys_core::SysDataObj]": $.LinkDesc<_sys_core.$SysDataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<column": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columnParent": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columns": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columnsDisplay": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<parentColumn": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $SysColumn = $.ObjectType<"sys_db::SysColumn", $SysColumnλShape, null, [
   ..._sys_core.$SysObj['__exclusives__'],
@@ -54,6 +56,8 @@ export type $SysTableλShape = $.typeutil.flatten<_sys_core.$SysObjλShape & {
   "mod": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
   "<table[is sys_core::SysDataObjFieldLinkJoin]": $.LinkDesc<_sys_core.$SysDataObjFieldLinkJoin, $.Cardinality.Many, {}, false, false,  false, false>;
   "<table[is sys_core::SysDataObjTable]": $.LinkDesc<_sys_core.$SysDataObjTable, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<parentTable[is sys_core::SysDataObj]": $.LinkDesc<_sys_core.$SysDataObj, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<parentTable": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<table": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $SysTable = $.ObjectType<"sys_db::SysTable", $SysTableλShape, null, [

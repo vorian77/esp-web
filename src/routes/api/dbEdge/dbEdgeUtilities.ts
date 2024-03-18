@@ -30,7 +30,6 @@ export async function getDataObjById(dataObjId: string) {
 			exprObject: true,
 			header: true,
 			id: true,
-			isPopup: true,
 			name: true,
 			subHeader: true,
 
@@ -52,6 +51,13 @@ export async function getDataObjById(dataObjId: string) {
 			})),
 			_codeCardinality: do1.codeCardinality.name,
 			_codeComponent: do1.codeComponent.name,
+			_parentColumn: do1.parentColumn.name,
+
+			_parentTable: e.select(do1.parentTable, (tbl) => ({
+				hasMgmt: true,
+				module: tbl.mod,
+				name: true
+			})),
 
 			_tables: e.select(do1.tables, (t) => ({
 				_columnParent: t.columnParent.name,

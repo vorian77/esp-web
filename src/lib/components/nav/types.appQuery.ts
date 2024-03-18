@@ -22,9 +22,10 @@ export async function query(
 	queryType: TokenApiQueryType,
 	app: App | undefined = undefined
 ) {
-	const dataPre = { ...tab.data?.getData() }
-	let dataTree = queryDataPre(queryType, app)
-	const queryData = new TokenApiQueryData({ tree: dataTree, parms: tab.data?.parms })
+	const dataRecord = { ...tab.data?.getData() }
+	let { dataMeta, dataTree } = queryDataPre(queryType, app)
+	console.log('types.appQuery.query.dataMeta:', dataMeta)
+	const queryData = new TokenApiQueryData({ tree: dataTree, parms: dataMeta })
 	let table = tab.getTable() // table will be undefined prior to retrieve
 
 	dataTree = await queryExecuteActions(
@@ -44,10 +45,10 @@ export async function query(
 	if (!result.success) return false
 
 	// successful
-	const resultData = DataObjData.load(result.data.dataObjData)
-	tab.dataObjRaw = result.data.dataObjRaw
-	tab.dataObj = await DataObj.init(state, result.data.dataObjRaw, queryData)
 	tab.isRetrieved = true
+	tab.dataObjRaw = result.data.dataObjRaw
+	const resultData = DataObjData.load(result.data.dataObjData)
+	tab.dataObj = await DataObj.init(result.data.dataObjRaw, resultData)
 
 	if (tab.dataObj) {
 		if (tab.dataObj.cardinality === DataObjCardinality.list) {
@@ -58,7 +59,7 @@ export async function query(
 
 		table = tab.getTable()
 		const queryDataRecord = resultData.getData()
-		let dataAction = queryDataPost(queryType, dataPre, queryDataRecord)
+		let dataAction = queryDataPost(queryType, dataRecord, queryDataRecord)
 		tab.data = resultData
 
 		dataTree.upsertData(table, dataAction)
@@ -78,6 +79,7 @@ export async function query(
 
 function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undefined) {
 	let dataTree = new TokenApiQueryDataTree()
+	let dataMeta = {}
 	if (app) {
 		let offset = 0
 		switch (queryType) {
@@ -102,37 +104,41 @@ function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undef
 		}
 
 		for (let i = 0; i < app.levels.length - offset; i++) {
-			const currTab = app.levels[i].getCurrTab()
+			const level = app.levels[i]
+			const currTab = level.getCurrTab()
 			const dataObj = currTab.dataObj
 			if (dataObj) {
 				if (dataObj.cardinality === DataObjCardinality.list) {
-					if (currTab.listIDCurrent) {
+					const { listRecordIdCurrent } = currTab.listData()
+					if (listRecordIdCurrent) {
 						dataTree.upsertData(dataObj.table?.name, currTab.listGetData())
 					}
 				} else {
 					if (currTab.data) dataTree.upsertData(dataObj.table?.name, currTab.detailGetData())
 				}
+				if (level.programId) currTab.dataMeta.setValue('programId', level.programId, true)
+				currTab.dataMeta.setParms(dataMeta)
 			}
 		}
 	}
-	return dataTree
+	return { dataTree, dataMeta }
 }
 
-function queryDataPost(queryType: TokenApiQueryType, dataPre: any, dataQuery: any) {
+function queryDataPost(queryType: TokenApiQueryType, dataRecord: any, queryDataQuery: any) {
 	switch (queryType) {
 		case TokenApiQueryType.delete:
-			return dataPre
+			return dataRecord
 
 		case TokenApiQueryType.saveInsert:
 		case TokenApiQueryType.saveUpdate:
-			for (const [key, value] of Object.entries(dataQuery)) {
-				dataPre[key] = value
+			for (const [key, value] of Object.entries(queryDataQuery)) {
+				dataRecord[key] = value
 			}
-			return dataPre
+			return dataRecord
 
 		case TokenApiQueryType.new:
 		case TokenApiQueryType.retrieve:
-			return dataQuery
+			return queryDataQuery
 
 		default:
 			error(500, {

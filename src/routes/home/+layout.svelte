@@ -7,8 +7,7 @@
 		StateSurfaceType,
 		StatePacket,
 		StatePacketComponent,
-		StateSurfaceStyle,
-		stateUpdateDataObj
+		StateSurfaceStyle
 	} from '$comps/nav/types.appState'
 	import { TokenAppDoAction, TokenAppDoList, TokenAppTreeReset } from '$comps/types.token'
 	import {
@@ -59,11 +58,11 @@
 		state = new State({
 			drawerStore,
 			layout: new StateLayout({
-				surfaceStyle: StateSurfaceStyle.embedded,
-				surfaceType: StateSurfaceType.LayoutObjTab
+				surfaceStyle: StateSurfaceStyle.page,
+				surfaceType: StateSurfaceType.DataObjLayoutTab
 			}),
 			modalStore,
-			onRowClick: (rows: any, record: any) =>
+			onRowClick: (rows: any, record: any) => {
 				state.update({
 					packet: new StatePacket({
 						checkObjChanged: false,
@@ -74,11 +73,13 @@
 							record.id
 						)
 					})
-				}),
+				})
+			},
 			toastStore,
+			updateCallback: stateUpdateCallback,
 			user
 		})
-		state.setUpdate(stateUpdateDataObj, stateUpdateProcess)
+
 		launchApp = false
 	}
 	$: {
@@ -89,7 +90,7 @@
 		}
 	}
 
-	async function stateUpdateProcess(obj: any) {
+	async function stateUpdateCallback(obj: any) {
 		state = state.updateProperties(obj)
 		if (obj.packet) await statePacketAdd(obj.packet)
 		if (state.page !== $page.route.id) goto(state.page)

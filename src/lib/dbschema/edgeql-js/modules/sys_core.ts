@@ -224,12 +224,13 @@ export type $SysDataObjλShape = $.typeutil.flatten<$SysObjλShape & {
   "description": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "exprFilter": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "exprObject": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "isPopup": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "subHeader": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
-  "tables": $.LinkDesc<$SysDataObjTable, $.Cardinality.Many, {}, false, false,  false, false>;
   "columns": $.LinkDesc<$SysDataObjColumn, $.Cardinality.Many, {}, false, false,  false, false>;
   "actionsQuery": $.PropertyDesc<$.ArrayType<_std.$json>, $.Cardinality.AtMostOne, false, false, false, false>;
   "actionsFieldGroup": $.LinkDesc<$SysDataObjActionGroup, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "tables": $.LinkDesc<$SysDataObjTable, $.Cardinality.Many, {}, false, false,  false, false>;
+  "parentColumn": $.LinkDesc<_sys_db.$SysColumn, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "parentTable": $.LinkDesc<_sys_db.$SysTable, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "<dataObj[is sys_core::SysNodeObj]": $.LinkDesc<$SysNodeObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObj[is sys_core::SysNodeObjFooter]": $.LinkDesc<$SysNodeObjFooter, $.Cardinality.Many, {}, false, false,  false, false>;
   "<dataObjDisplay[is sys_core::SysDataObjFieldListSelect]": $.LinkDesc<$SysDataObjFieldListSelect, $.Cardinality.Many, {}, false, false,  false, false>;

@@ -173,9 +173,10 @@ export async function addDataObj(data: any) {
 			exprObject: e.optional(e.str),
 			fields: e.optional(e.array(e.json)),
 			header: e.optional(e.str),
-			isPopup: e.optional(e.bool),
 			name: e.str,
 			owner: e.str,
+			parentColumn: e.optional(e.str),
+			parentTable: e.optional(e.str),
 			subHeader: e.optional(e.str),
 			tables: e.optional(e.array(e.json))
 		},
@@ -283,10 +284,11 @@ export async function addDataObj(data: any) {
 				exprFilter: p.exprFilter,
 				exprObject: p.exprObject,
 				header: p.header,
-				isPopup: p.isPopup,
 				modifiedBy: e.select(e.sys_user.getRootUser()),
 				name: p.name,
 				owner: e.select(e.sys_core.getEnt(p.owner)),
+				parentColumn: e.select(e.sys_db.getColumn(p.parentColumn)),
+				parentTable: e.select(e.sys_db.getTable(p.parentTable)),
 				subHeader: p.subHeader,
 
 				tables: e.for(e.array_unpack(p.tables), (t) => {

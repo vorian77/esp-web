@@ -36,8 +36,14 @@ async function initFeatures() {
 	})
 
 	addDataObjActionGroup({
-		actions: ['noa_dialog_cancel', 'noa_dialog_done'],
-		name: 'doag_base_field_list_dialog',
+		actions: ['noa_dialog_done'],
+		name: 'doag_base_dialog_detail',
+		owner: 'app_sys'
+	})
+
+	addDataObjActionGroup({
+		actions: ['noa_dialog_done'],
+		name: 'doag_base_dialog_list',
 		owner: 'app_sys'
 	})
 

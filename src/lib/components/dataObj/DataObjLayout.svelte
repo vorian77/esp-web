@@ -1,11 +1,6 @@
 <script lang="ts">
 	import { App, AppLevelRowStatus } from '$comps/nav/types.app'
-	import {
-		StateSurfaceType,
-		type State,
-		StateSurfaceStyle,
-		StateObjDialog
-	} from '$comps/nav/types.appState'
+	import { State, StateSurfaceStyle, StateObjDialog } from '$comps/nav/types.appState'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import FormListApp from '$comps/form/FormListApp.svelte'
 	import FormDetailApp from '$comps/form/FormDetailApp.svelte'
@@ -14,7 +9,7 @@
 	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 
-	const FILENAME = '$comps/Surface/LayoutObj.svelte'
+	const FILENAME = '$comps/Surface/DataObjLayout.svelte'
 	const dispatch = createEventDispatcher()
 
 	const comps: Record<string, any> = {
@@ -27,21 +22,15 @@
 	export let dataObj: DataObj
 	export let dataObjData: DataObjData
 
+	let classContent = ''
 	let currComponent: any
+	let dataHeightPadding = '300' //  <todo> 240314 - calc specific padding
+	let dataHeight = `max-height: calc(100vh - ${dataHeightPadding}px);`
 	let headerDialog: string = ''
 	let headerObj: string = ''
 	let headerObjSub: string = ''
 	let isHeaderObjX: boolean = false
-	let classContent = ''
-	let rowStatus: AppLevelRowStatus | undefined = {
-		rowCount: 5,
-		rowCurrentDisplay: 2,
-		show: true,
-		status: '[2 of 5]'
-	}
-	let padding = '300' //  <todo> 240314 - calc specific padding
-	let dataHeight = `max-height: calc(100vh - ${padding}px);`
-	// $: rowStatus = app.getRowStatus()
+	let rowStatus: AppLevelRowStatus | undefined
 
 	$: currComponent = comps[dataObj.component]
 
@@ -50,16 +39,12 @@
 		headerObj = ''
 		headerObjSub = ''
 		rowStatus = undefined
+
 		switch (state.layout.surfaceStyle) {
 			case StateSurfaceStyle.dialogDetail:
 				headerObj = dataObj.header
 				headerObjSub = dataObj.subHeader
-				// if (state instanceof StateObjDialog) {
-				// 	const rowId = state.parentIdCurrent
-				// 	const rowCount = state.parentIdList.length
-				// 	const rowIdx = state.parentIdList.findIndex((id) => id === rowId)
-				// 	rowStatus = new AppLevelRowStatus(rowCount, rowIdx)
-				// }
+				rowStatus = app.getRowStatus()
 				break
 
 			case StateSurfaceStyle.dialogSelect:

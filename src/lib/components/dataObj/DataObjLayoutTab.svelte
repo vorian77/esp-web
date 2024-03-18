@@ -9,10 +9,10 @@
 	import NavCrumbs from '$comps/nav/NavCrumbs.svelte'
 	import NavRow from '$comps/nav/NavRow.svelte'
 	import Icon from '$comps/Icon.svelte'
-	import LayoutObj from '../Surface/LayoutObj.svelte'
+	import DataObjLayout from '$comps/dataObj/DataObjLayout.svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
 
-	const FILENAME = '$comps/Surface/LayoutObjTab.svelte'
+	const FILENAME = '$comps/Surface/DataObjLayoutTab.svelte'
 
 	export let app: App
 	export let state: State
@@ -28,7 +28,6 @@
 	$: crumbsList = app.getCrumbsList()
 	$: rowStatus = app.getRowStatus()
 	$: isEditing = state?.objHasChanged
-	$: console.log('LayoutObjTab.rowStatus:', app.getRowStatus())
 
 	async function onClickTab(event: any) {
 		state.update({
@@ -50,7 +49,7 @@
 	}
 </script>
 
-<!-- <DataViewer header="LayoutObjTab.levels" data={{ levels: app.levels.length }} /> -->
+<!-- <DataViewer header="DataObjLayoutTab.levels" data={{ levels: app.levels.length }} /> -->
 
 <AppShell slotSidebarLeft="w-0 md:w-52 h-full">
 	<svelte:fragment slot="header">
@@ -92,7 +91,7 @@
 				<svelte:fragment slot="panel">
 					{#if dataObj && dataObjData}
 						<div class="mt-4">
-							<LayoutObj {app} bind:state {dataObj} {dataObjData} on:formCancelled />
+							<DataObjLayout {app} bind:state {dataObj} {dataObjData} on:formCancelled />
 						</div>
 					{/if}
 				</svelte:fragment>

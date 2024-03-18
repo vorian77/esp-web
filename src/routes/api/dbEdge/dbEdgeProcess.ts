@@ -14,7 +14,7 @@ import {
 	DataObjRecordStatus,
 	formatDateTime
 } from '$comps/types'
-import { EdgeQL } from '$routes/api/dbEdge/dbEdgeScriptBuilder'
+import { EdgeQL, getValExpr } from '$routes/api/dbEdge/dbEdgeScriptBuilder'
 import type { DataObjRecord, DataObjRecordRowList, DataObjRaw } from '$comps/types'
 import {
 	getDataObjById,
@@ -40,7 +40,7 @@ export async function processQuery(token: TokenApiQuery) {
 	let rawDataList: RawDataList = []
 	let script = ''
 
-	log('processQuery.queryType:', `queryType: ${token.queryType}`)
+	log('processQuery.1.queryType:', `queryType: ${token.queryType}`)
 	// console.log('processQuery.dataObjRaw._tables:', dataObjRaw._tables)
 
 	switch (token.queryType) {
@@ -246,10 +246,8 @@ export async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData) 
 		return field.items
 	} else if (field.fieldListItems) {
 		queryData = TokenApiQueryData.load(queryData)
-		queryData.parmsUpsert(field.fieldListItems.parms)
-		const resultObj = await queryMultiple(
-			query.getScriptDataItems(field.fieldListItems.exprSelect, queryData)
-		)
+		queryData.parmsUpsert({ ...field.fieldListItems.parms, fieldValueCurrent: field.valueCurrent })
+		const resultObj = await queryMultiple(getValExpr(field.fieldListItems.exprSelect, queryData))
 		const resultArray = []
 		for (const [key, value] of Object.entries(resultObj)) {
 			resultArray.push(value)

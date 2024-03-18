@@ -42,14 +42,14 @@
 						dataObjName: field.dataObjNameSelect,
 						layout: new StateLayout({
 							surfaceStyle: StateSurfaceStyle.dialogSelect,
-							surfaceType: StateSurfaceType.LayoutObj
+							surfaceType: StateSurfaceType.DataObjLayout
 						}),
 						isMultiSelect: field.isMultiSelect,
 						modalStore,
 						onRowClick: (rows: any, record: any) => {},
 						page: '/',
 						queryType: TokenApiQueryType.retrieve,
-						parentIdList: field.valueCurrent
+						embedRecordIdList: field.valueCurrent
 					})
 				},
 				response: (r: any) => {
@@ -75,7 +75,7 @@
 			layout: new StateLayout({
 				isEmbedHeight: true,
 				surfaceStyle: StateSurfaceStyle.embedded,
-				surfaceType: StateSurfaceType.LayoutObj
+				surfaceType: StateSurfaceType.DataObjLayout
 			}),
 			modalStore,
 			onRowClick: (rows: any, record: any) => overlay(),

@@ -179,12 +179,13 @@ export namespace sys_core {
     "description"?: string | null;
     "exprFilter"?: string | null;
     "exprObject"?: string | null;
-    "isPopup"?: boolean | null;
     "subHeader"?: string | null;
-    "tables": SysDataObjTable[];
     "columns": SysDataObjColumn[];
     "actionsQuery"?: unknown[] | null;
     "actionsFieldGroup"?: SysDataObjActionGroup | null;
+    "tables": SysDataObjTable[];
+    "parentColumn"?: sys_db.SysColumn | null;
+    "parentTable"?: sys_db.SysTable | null;
   }
   export interface SysDataObjAction extends SysObj {
     "color"?: string | null;

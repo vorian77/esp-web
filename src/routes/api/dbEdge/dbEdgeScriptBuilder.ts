@@ -21,11 +21,11 @@ export class EdgeQL {
 	exprFilter: string | undefined
 	exprObject: string | undefined
 	objName: string
+	parentColumn?: string
+	parentTable?: Table
 	tables: DataObjTables
 
 	constructor(dataObjRaw: DataObjRaw) {
-		// console.log()
-		// console.log('EdgeQL...')
 		const clazz = 'EdgeQL'
 		const obj = valueOrDefault(dataObjRaw, {})
 		this.cardinality = memberOfEnum(
@@ -37,16 +37,10 @@ export class EdgeQL {
 		)
 		this.exprFilter = strOptional(obj.exprFilter, clazz, 'exprFilter')
 		this.exprObject = strOptional(obj.exprObject, clazz, 'exprObject')
-
-		// console.log('exprFilter:', this.exprFilter)
-		// console.log('exprObject:', this.exprObject)
-
 		this.objName = obj.name
+		this.parentColumn = strOptional(dataObjRaw._parentColumn, clazz, 'parentColumn')
+		this.parentTable = dataObjRaw._parentTable ? new Table(dataObjRaw._parentTable) : undefined
 		this.tables = new DataObjTables(this, obj)
-	}
-
-	getScriptDataItems(dbSelect: string, data: TokenApiQueryData) {
-		return getValExpr(dbSelect, data)
 	}
 	queryScriptObjectExpr(data: TokenApiQueryData) {
 		if (this.exprObject) {
@@ -66,10 +60,13 @@ export class EdgeQL {
 type DataObjTableMap = Map<string, DataObjTable>
 
 class DataObjTables {
+	parentColumn?: string
+	parentTable?: Table
 	tables: DataObjTableMap
-	tree: DataObjTable[] = []
 	constructor(query: EdgeQL, obj: any) {
 		obj = valueOrDefault(obj, {})
+		this.parentColumn = query.parentColumn
+		this.parentTable = query.parentTable
 		this.tables = new Map()
 		const tables = getArray(obj._tables)
 		tables.forEach((t: any) => {
@@ -122,12 +119,6 @@ class DataObjTables {
 	getTableRoot() {
 		return this.tables.values().next().value
 	}
-	logScript(type: string, script: string) {
-		if (!script) return
-		console.log()
-		console.log(`getScript: ${type}...`)
-		console.log(script)
-	}
 	queryScriptDelete(data: TokenApiQueryData) {
 		const rootTable = this.getDbTableRoot()
 		const rootFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
@@ -159,7 +150,14 @@ class DataObjTables {
 		let prefix = ''
 		let prevTable: DataObjTable | undefined = undefined
 
-		this.setDataRoot(data)
+		// root parms
+		data.parmsValueSet('rootTable', this.getDbTableRoot())
+		if (action === DataObjTableActionType.saveUpdate) {
+			data.parmsValueSet(
+				'rootFilter',
+				this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
+			)
+		}
 
 		while (tableArray && tableArray.length > 0) {
 			const table = tableArray.pop()
@@ -184,7 +182,11 @@ class DataObjTables {
 	}
 
 	queryScriptSaveInsert(data: TokenApiQueryData) {
-		return this.queryScriptSave(data, DataObjTableActionType.saveInsert)
+		let script = this.queryScriptSave(data, DataObjTableActionType.saveInsert)
+		if (this.parentColumn && this.parentTable) {
+			script = `UPDATE ${this.parentTable.getObject()} FILTER .id = ${getValExpr('<uuid,parms,parentRecordId>', data)} SET { ${this.parentColumn} += (${script}) }`
+		}
+		return script
 	}
 	queryScriptSaveUpdate(data: TokenApiQueryData) {
 		return this.queryScriptSave(data, DataObjTableActionType.saveUpdate)
@@ -192,7 +194,6 @@ class DataObjTables {
 
 	queryScriptSelect(querySelectItems: string, data: TokenApiQueryData) {
 		const queryFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
-		console.log('queryFilter:', queryFilter)
 		const queryOrder = this.queryScriptOrder()
 
 		const script = `SELECT ${this.getDbTableRoot()} {\n${querySelectItems}\n} \n${queryFilter} \n${queryOrder}`
@@ -206,13 +207,6 @@ class DataObjTables {
 	queryScriptSelectUser(data: TokenApiQueryData) {
 		const querySelectItems = this.getScriptItemsAll(DataObjTableActionType.selectUser, data)
 		return this.queryScriptSelect(querySelectItems, data)
-	}
-	setDataRoot(data: TokenApiQueryData) {
-		data.parmsValueSet('rootTable', this.getDbTableRoot())
-		data.parmsValueSet(
-			'rootFilter',
-			this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
-		)
 	}
 }
 
@@ -264,9 +258,6 @@ class DataObjTableAction {
 	}
 	getId(id: string) {
 		return `<uuid>'${id}'`
-	}
-	getIdZero() {
-		return this.getId('00000000-0000-0000-0000-000000000000')
 	}
 	getScript(data: TokenApiQueryData): DataObjTableScript {
 		return new DataObjTableScript()
@@ -352,13 +343,6 @@ class DataObjTableAction {
 
 		// root table and native fields
 		fields.forEach((f) => {
-			if (f.name === 'parent') {
-				console.log('field.parent:', f)
-			}
-			if (f.isSelfReference) {
-				console.log('field.selfReference:', f)
-			}
-
 			const expr = f?.link?.exprSave ? f.link.exprSave : ''
 			let value = expr ? `${getValExpr(expr, data)}` : getValSave(f, data)
 
@@ -405,26 +389,21 @@ class DataObjTableActionFilter extends DataObjTableAction {
 		const script = new DataObjTableScript({ prefix: 'FILTER' })
 		let exprFilter = ''
 
-		// console.log('DataObjTableActionFilter.getScript.parms:', data.parms)
-
+		// exprFilter
 		if (!this.query.exprFilter) {
 			exprFilter = `.id = <uuid,tree,id>`
 		} else if (this.query.exprFilter?.toLowerCase() !== 'none') {
 			exprFilter = this.query.exprFilter
 		}
-		if (exprFilter) script.concatScript(getValExpr(exprFilter, data))
+		if (exprFilter) script.concatScript(exprFilter)
 
-		const filterInIds = data.parmsValueGet('filterInIds')
-		if (filterInIds) {
-			const ids =
-				filterInIds.length > 0
-					? filterInIds.map((i: string) => this.getId(i)).toString()
-					: this.getIdZero()
-			script.concatScript(`.id in {${ids}}`)
+		// filterInIds
+		if (Object.hasOwn(data.parms, 'filterInIds')) {
+			script.concatScript(`.id in {<uuidList,parms,filterInIds>}`)
 		}
 
-		// const filterInIds = data.parmsValueGet('filterInIds')
-		// if (filterInIds) script.concatScript(`.id in {${filterInIds.toString()}}`)
+		// data
+		script.script = getValExpr(script.script, data)
 
 		return script
 	}
@@ -741,6 +720,17 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 			return val ? '<json>' + getValQuote(JSON.stringify(val)) : '{}'
 		}
 
+		if (field.codeDataType === DataFieldDataType.uuid) {
+			return getValUUID(val)
+		}
+
+		if (field.codeDataType === DataFieldDataType.uuidList) {
+			val = getArray(val)
+			return val.length > 0
+				? `{${getArray(val).map((v: string) => getValUUID(v))}}`
+				: `{${getValUUID('')}}`
+		}
+
 		// scalar values
 		if (field.codeDataType === DataFieldDataType.bool) {
 			return [undefined, null].includes(val) ? false : val
@@ -790,19 +780,11 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 				val = `"${val}"`
 				break
 
-			case DataFieldDataType.uuid:
-				val = getValUUID(val)
-				break
-
-			case DataFieldDataType.uuidList:
-				val = `{${getArray(val).map((v: string) => getValUUID(v))}}`
-				break
-
 			default:
 				error(500, {
 					file: FILENAME,
 					function: 'getValFormatted',
-					message: `No case defined for data type: (${field.codeDataType}).`
+					message: `No case defined for dataType: (${field.codeDataType}).`
 				})
 		}
 		return val
@@ -810,7 +792,8 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 		function getValQuote(val: string) {
 			return "'" + val + "'"
 		}
-		function getValUUID(val: string) {
+		function getValUUID(val?: string) {
+			if (!val) val = '00000000-0000-0000-0000-000000000000'
 			return '<uuid>' + getValQuote(val)
 		}
 	}
@@ -821,12 +804,17 @@ export function getValExpr(expr: string, data: TokenApiQueryData): string {
 		data token <[dataType],[source],[sourceKey]>
 		eg. (select sys_user::getUser(<str,user,userName>))
 	*/
+	const regex = /<(.*?)>/g
 	expr = expr.replace(/(\r\n|\n|\r)/gm, '')
 	expr = expr.replace(/\s+/g, ' ').trim()
-	const regex = /<(.*?)>/g
-	const newExpr = expr.replace(regex, (t) => {
-		const token = t.slice(1, t.length - 1)
-		const tokenItems = token.split(',')
+	let newExpr = expr
+
+	const iter = expr.matchAll(regex)
+	for (const match of iter) {
+		const token = match[0]
+		const tokenParms = match[1]
+		const tokenItems = tokenParms.split(',')
+		let tokenValue = ''
 		if (tokenItems.length === 3) {
 			const exprField = new DataFieldData({
 				_codeDataType: tokenItems[0],
@@ -834,12 +822,13 @@ export function getValExpr(expr: string, data: TokenApiQueryData): string {
 				_name: 'expr',
 				QueryParmDataSourceKey: tokenItems[2]
 			})
-			return getValSave(exprField, data)
+			tokenValue = getValSave(exprField, data)
 		} else {
 			// ignore
-			return '<' + token + '>'
+			tokenValue = match[0]
 		}
-	})
+		newExpr = newExpr.replace(token, tokenValue)
+	}
 	return newExpr
 }
 

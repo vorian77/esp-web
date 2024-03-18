@@ -156,7 +156,6 @@ async function initDataObjLogin() {
 		FILTER .userName = userName and .password = password 
 		`,
 		header: 'Log in',
-		isPopup: true,
 		name: 'data_obj_auth_login',
 		owner: 'app_sys',
 		table: 'SysUser',
@@ -217,7 +216,6 @@ async function initDataObjResetPasswordAccount() {
 		)
 		SELECT { userId := user.id }`,
 		header: 'Reset Password',
-		isPopup: true,
 		name: 'data_obj_auth_reset_password_account',
 		owner: 'app_sys',
 		table: 'SysUser',
@@ -279,7 +277,6 @@ async function initDataObjResetPasswordLogin() {
 		)
 		SELECT { userId := user.id }`,
 		header: 'Reset Password',
-		isPopup: true,
 		name: 'data_obj_auth_reset_password_login',
 		owner: 'app_sys',
 		table: 'SysUser',
@@ -345,7 +342,6 @@ async function initDataObjVerify() {
 		codeComponent: 'FormDetail',
 		codeCardinality: 'detail',
 		header: 'Verify Mobile Phone Number',
-		isPopup: true,
 		name: 'data_obj_auth_verify_phone_mobile',
 		owner: 'app_sys',
 		table: 'SysUser',
@@ -443,7 +439,6 @@ async function initDataObjSignup() {
 			isNew := user NOT IN sys_user::SysUser
 		}`,
 		header: 'Sign up',
-		isPopup: true,
 		name: 'data_obj_auth_signup',
 		owner: 'app_sys',
 		table: 'SysUser',

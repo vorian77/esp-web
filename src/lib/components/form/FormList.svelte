@@ -22,12 +22,11 @@
 	let isSelect =
 		state instanceof StateObjDialog && state.layout.surfaceStyle === StateSurfaceStyle.dialogSelect
 	let isSelectMulti = state instanceof StateObjDialog && state.isMultiSelect
-	// let isSurfaceEmbedded = state.layout.surfaceStyle === StateSurfaceStyle.embedded
-	let isSurfaceEmbedded = false
+	let isSurfaceEmbedded = state.layout.surfaceStyle === StateSurfaceStyle.embedded
 	let listHeight = 'full'
 
 	if (state instanceof StateObjDialog) {
-		state.parentIdList.forEach((id) => handler.select(id))
+		state.embedRecordIdList.forEach((id) => handler.select(id))
 	}
 
 	$: {
@@ -40,7 +39,9 @@
 	}
 
 	$: if (state instanceof StateObjDialog) {
-		state.parentIdList = $rows.filter((r: any) => $selected.includes(r.id)).map((r: any) => r.id)
+		state.embedRecordIdList = $rows
+			.filter((r: any) => $selected.includes(r.id))
+			.map((r: any) => r.id)
 	}
 
 	function sortList() {

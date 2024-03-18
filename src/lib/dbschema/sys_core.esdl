@@ -68,10 +68,12 @@ module sys_core {
     description: str;
     exprFilter: str;
     exprObject: str;
-    isPopup: bool;
     subHeader: str;
+    parentColumn: sys_db::SysColumn;
+    parentTable: sys_db::SysTable;
     multi tables: sys_core::SysDataObjTable {
       on source delete delete target;
+      on target delete allow;
     };
     constraint exclusive on (.name);
   } 

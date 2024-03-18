@@ -20,6 +20,12 @@ export async function initReset() {
 	reset.delTableRecords('sys_core::SysDataObjFieldListItems')
 	reset.delTableRecords('sys_core::SysDataObjFieldListSelect')
 
+	reset.addStatement(`UPDATE sys_core::SysDataObj SET { parentColumn := {} }`)
+	reset.addStatement(`UPDATE sys_core::SysDataObj SET { parentTable := {} }`)
+	reset.addStatement(`UPDATE sys_core::SysDataObj SET { tables := {} }`)
+
+	reset.delTableRecords('sys_core::SysDataObjTable')
+
 	reset.delTableRecords('sys_core::SysDataObj')
 
 	// other

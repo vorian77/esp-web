@@ -6,11 +6,13 @@
 		StateObjDataObj,
 		StateObjDialog,
 		StateLayout,
+		StatePacketComponent,
 		StateSurfaceType,
 		StateSurfaceStyle
 	} from '$comps/nav/types.appState'
 	import {
 		TokenApiQueryType,
+		TokenAppDoDetail,
 		TokenAppModalReturn,
 		TokenAppModalReturnType
 	} from '$comps/types.token'
@@ -37,23 +39,47 @@
 	$: setStateDisplay(field.valueCurrent)
 
 	function setStateDisplay(ids: string[]) {
-		console.log('FormElListConfig.setStateDisplay.valueCurrent:', ids)
 		stateDisplay = new StateObjDataObj({
-			dataObjData: setData(DataObjCardinality.list, field.valueCurrent),
+			cardinality: DataObjCardinality.list,
+			data: dataObjData,
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
 				isEmbedHeight: true,
 				surfaceStyle: StateSurfaceStyle.embedded,
-				surfaceType: StateSurfaceType.LayoutObj
+				surfaceType: StateSurfaceType.DataObjLayout
 			}),
 			modalStore,
 			onRowClick: (rows: any, record: any) => overlay(TokenApiQueryType.retrieve, record.id),
-			queryType: TokenApiQueryType.retrieve
+			embedRecordIdCurrent: undefined,
+			embedRecordIdList: field.valueCurrent,
+			parentRecordId: dataObjData.getRecordValue('id'),
+			programId: state.programId,
+			queryType: TokenApiQueryType.retrieve,
+			updateCallback: stateUpdateCallback
 		})
 	}
 
+	async function stateUpdateCallback(obj: any) {
+		console.log('FormElListConfig.stateUpdateCallback:', obj)
+		const packet = obj.packet
+		const token = packet.token
+		switch (packet.component) {
+			case StatePacketComponent.appDataObj:
+				if (token instanceof TokenAppDoDetail) {
+					overlay(TokenApiQueryType.new)
+				}
+				break
+
+			default:
+				error(500, {
+					file: FILENAME,
+					function: 'stateUpdateCallback',
+					message: `No case defined for packet component: ${packet.component}`
+				})
+		}
+	}
+
 	function overlay(queryType: TokenApiQueryType, id: string | undefined = undefined) {
-		console.log('FormElListConfig.overlay.field:', field)
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
@@ -61,7 +87,8 @@
 				meta: {
 					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
-						dataObjData: setData(DataObjCardinality.detail, field.valueCurrent, id),
+						cardinality: DataObjCardinality.detail,
+						data: dataObjData,
 						dataObjIdDialog: field.dataObjIdConfig,
 						dataObjIdDisplay: field.dataObjIdDisplay,
 						drawerStore,
@@ -69,10 +96,14 @@
 						isMultiSelect: field.isMultiSelect,
 						layout: new StateLayout({
 							surfaceStyle: StateSurfaceStyle.dialogDetail,
-							surfaceType: StateSurfaceType.LayoutObjDialogDetail
+							surfaceType: StateSurfaceType.DataObjLayoutDialogDetail
 						}),
 						modalStore,
 						page: '/',
+						embedRecordIdCurrent: id,
+						embedRecordIdList: field.valueCurrent,
+						parentRecordId: dataObjData.getRecordValue('id'),
+						programId: state.programId,
 						queryType
 					})
 				},
@@ -110,16 +141,7 @@
 			}
 		})
 	}
-	function setData(
-		cardinality: DataObjCardinality,
-		parentIdList: string[],
-		parentIdCurrent: string | undefined = undefined
-	) {
-		const data = dataObjData.copy()
-		data.cardinalitySet(cardinality)
-		data.parmsUpsert({ parentIdList, parentIdCurrent, programId: state.programId })
-		return data
-	}
+
 	function setValue(value: string[]) {
 		setStateDisplay(value)
 		dispatch('changeItem', { fieldName: field.name, value })

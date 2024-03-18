@@ -36,8 +36,8 @@ export class State {
 	page: string = '/home'
 	programId?: string
 	toastStore: any
-	updateCallbackk?: Function
-	updateFunction?: Function
+	updateCallback?: Function
+	updateFunction: Function = stateUpdateDataObj
 	user: User | undefined = undefined
 
 	constructor(obj: any) {
@@ -47,7 +47,9 @@ export class State {
 		if (Object.hasOwn(obj, 'drawerStore')) this.drawerStore = obj.drawerStore
 		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
 		if (Object.hasOwn(obj, 'onRowClick')) this.onRowClick = obj.onRowClick
+		if (Object.hasOwn(obj, 'programId')) this.programId = obj.programId
 		if (Object.hasOwn(obj, 'toastStore')) this.toastStore = obj.toastStore
+		if (Object.hasOwn(obj, 'updateCallback')) this.updateCallback = obj.updateCallback
 		if (Object.hasOwn(obj, 'user')) this.user = obj.user
 	}
 
@@ -80,12 +82,11 @@ export class State {
 	set(packet: StatePacket) {
 		this.packet = packet
 	}
-	setUpdate(stateUpdate: Function, processCallback: Function | undefined = undefined) {
-		this.updateFunction = stateUpdate
-		this.updateCallbackk = processCallback
+	setUpdateCallback(updateCallback: Function) {
+		this.updateCallback = updateCallback
 	}
 	update(obj: any) {
-		if (this.updateFunction) this.updateFunction(this, obj, this.updateCallbackk)
+		if (this.updateFunction) this.updateFunction(this, obj, this.updateCallback)
 	}
 	updateProperties(obj: any) {
 		if (Object.hasOwn(obj, 'nodeType')) this.nodeType = obj.nodeType
@@ -129,14 +130,37 @@ export class StateLayout {
 	}
 }
 
-export class StateObjDataObj extends State {
-	data?: DataObjData
-	dataObjName: string
-	queryType: TokenApiQueryType
+export class StateObj extends State {
+	data: DataObjData
+	embedRecordIdCurrent?: string
+	embedRecordIdList: string[] = []
+	parentRecordId: string
 	constructor(obj: any) {
 		const clazz = 'StateObj'
 		super(obj)
-		this.data = valueOrDefault(obj.dataObjData, undefined)
+		this.embedRecordIdCurrent = strOptional(obj.embedRecordIdCurrent, clazz, 'embedRecordIdCurrent')
+		this.embedRecordIdList = valueOrDefault(obj.embedRecordIdList, [])
+		this.parentRecordId = strRequired(obj.parentRecordId, clazz, 'parentRecordId')
+
+		// data
+		this.data = required(obj.data, clazz, 'data')
+		this.data.cardinalitySet(obj.cardinality)
+		this.setDataParms(this.data)
+	}
+	setDataParms(data: DataObjData) {
+		data.parmsValueSet('embedRecordIdCurrent', this.embedRecordIdCurrent)
+		data.parmsValueSet('embedRecordIdList', this.embedRecordIdList)
+		data.parmsValueSet('parentRecordId', this.parentRecordId)
+		data.parmsValueSet('programId', this.programId)
+	}
+}
+
+export class StateObjDataObj extends StateObj {
+	dataObjName: string
+	queryType: TokenApiQueryType
+	constructor(obj: any) {
+		const clazz = 'StateObjDataObj'
+		super(obj)
 		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
 
@@ -153,13 +177,11 @@ export class StateObjDataObj extends State {
 	}
 }
 
-export class StateObjDialog extends State {
+export class StateObjDialog extends StateObj {
 	actionsFieldDialog: Array<DataObjAction> = []
 	btnLabelComplete?: string
 	isBtnDelete: boolean
 	isMultiSelect: boolean = false
-	parentRecordId?: string
-	parentIdList: DataObjRecord[] = []
 	constructor(obj: any) {
 		const clazz = 'StateObjDialog'
 		super(obj)
@@ -169,11 +191,9 @@ export class StateObjDialog extends State {
 		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
 		this.packet = new StatePacket({
 			component: StatePacketComponent.navApp,
-			token: new TokenAppDialog(obj)
+			token: new TokenAppDialog(obj, this.data)
 		})
-		this.parentRecordId = obj.parentRecordId ? obj.parentRecordId : undefined
-		this.parentIdList = obj.parentIdList ? obj.parentIdList : []
-		console.log('StateObjDialog', { state: this })
+		console.log(clazz, { state: this, obj })
 	}
 }
 
@@ -202,12 +222,13 @@ export enum StateSurfaceStyle {
 	embedded = 'embedded',
 	dialogDetail = 'dialogDetail',
 	dialogSelect = 'dialogSelect',
-	dialogWizard = 'dialogWizard'
+	dialogWizard = 'dialogWizard',
+	page = 'page'
 }
 export enum StateSurfaceType {
-	LayoutObj = 'LayoutObj',
-	LayoutObjTab = 'LayoutObjTab',
-	LayoutObjDialogDetail = 'LayoutObjDialogDetail'
+	DataObjLayout = 'DataObjLayout',
+	DataObjLayoutTab = 'DataObjLayoutTab',
+	DataObjLayoutDialogDetail = 'DataObjLayoutDialogDetail'
 }
 
 export async function stateUpdateDataObj(

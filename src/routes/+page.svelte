@@ -39,7 +39,7 @@
 					drawerStore,
 					layout: {
 						surfaceStyle: StateSurfaceStyle.drawer,
-						surfaceType: StateSurfaceType.LayoutObj,
+						surfaceType: StateSurfaceType.DataObjLayout,
 						headerCancelX: true
 					},
 					page: '/',
