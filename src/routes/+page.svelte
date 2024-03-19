@@ -2,7 +2,7 @@
 	// import logo from '$assets/YO-Baltimore-logo.png'
 	import logo from '$assets/clientLogo-AtlanticImpact.png'
 	import { getDrawerStore, type DrawerSettings, getToastStore } from '@skeletonlabs/skeleton'
-	import { userInit } from '$comps/types'
+	import { DataObjCardinality, userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiQueryType, TokenApiUserName } from '$comps/types.token'
 	import { StateObjDataObj, StateSurfaceType, StateSurfaceStyle } from '$comps/nav/types.appState'
@@ -35,6 +35,7 @@
 			height: 'h-[50%]',
 			meta: {
 				state: new StateObjDataObj({
+					cardinality: DataObjCardinality.detail,
 					dataObjName,
 					drawerStore,
 					layout: {

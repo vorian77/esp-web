@@ -38,7 +38,7 @@
 						page: '/',
 						queryType: TokenApiQueryType.retrieve,
 						selectedIds,
-						surface: StateSurfaceType.overlay
+						surface: StateSurfaceType.DataObjLayout
 					})
 				},
 				response: (r: any) => {

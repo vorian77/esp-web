@@ -3,7 +3,7 @@ import { StateSurfaceStyle } from '$comps/nav/types.appState'
 import type { DrawerSettings } from '@skeletonlabs/skeleton'
 import type { FieldCustomAction } from '$comps/form/fieldCustom'
 import type { DataObjRecord, ResponseBody } from '$comps/types'
-import { encrypt, userInit } from '$comps/types'
+import { DataObjCardinality, encrypt, userInit } from '$comps/types'
 import { apiDbQuery, apiFetch, ApiFunction } from '$lib/api'
 import { TokenApiQueryData, TokenApiQueryType, TokenApiSendText } from '$comps/types.token'
 import { goto } from '$app/navigation'
@@ -108,6 +108,7 @@ export default async function action(state: State, field: FieldCustomAction, dat
 			height: 'h-[50%]',
 			meta: {
 				state: new StateObjDataObj({
+					cardinality: DataObjCardinality.detail,
 					dataObjName,
 					drawerStore,
 					layout: {

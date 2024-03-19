@@ -74,7 +74,7 @@ async function initFieldListConfigDataObjTables() {
 		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
-		exprFilter: `.id IN (SELECT sys_core::SysDataObj FILTER .id = <uuid,parms,parentRecordId>).tables.id`,
+		exprFilter: `.id IN (SELECT sys_core::SysDataObj FILTER .id = <uuid,parms,listRecordIdParent>).tables.id`,
 		header: 'Data Object - Tables',
 		name: 'doflc_data_obj_tables_display',
 		owner: 'app_sys_admin',

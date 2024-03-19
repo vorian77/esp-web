@@ -133,8 +133,9 @@ export class StateObj extends State {
 	constructor(obj: any) {
 		const clazz = 'StateObj'
 		super(obj)
-		this.data = required(obj.data, clazz, 'data')
-		this.data.cardinalitySet(obj.cardinality)
+		console.log('StateObj', obj)
+		this.data = new DataObjData(obj.cardinality)
+		if (Object.hasOwn(obj, 'parms')) this.data.parms = obj.parms
 	}
 }
 

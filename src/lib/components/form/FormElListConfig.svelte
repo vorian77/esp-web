@@ -35,18 +35,14 @@
 	export let dataObjData: DataObjData
 
 	let stateDisplay: State
-	let parentRecordId: string
+	let listRecordIdParent: string
 
-	$: parentRecordId = dataObjData.getRecordValue('id') || ''
+	$: listRecordIdParent = dataObjData.getRecordValue('id') || ''
 	$: setStateDisplay(field.valueCurrent)
 
 	function setStateDisplay(ids: string[]) {
-		let data: DataObjData = dataObjData.copy()
-		data.parmsUpsert({ parentRecordId })
-
 		stateDisplay = new StateObjDataObj({
 			cardinality: DataObjCardinality.list,
-			data,
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
 				isEmbedHeight: true,
@@ -55,6 +51,7 @@
 			}),
 			modalStore,
 			onRowClick: (rows: any, record: any) => overlay(TokenApiQueryType.retrieve, record.id),
+			parms: { listRecordIdParent },
 			queryType: TokenApiQueryType.retrieve,
 			updateCallback: stateUpdateCallback
 		})
@@ -81,13 +78,6 @@
 	}
 
 	function overlay(queryType: TokenApiQueryType, id: string | undefined = undefined) {
-		let data = dataObjData.copy()
-		data.parmsUpsert({
-			listRecordIdCurrent: id,
-			listRecordIdList: field.valueCurrent,
-			parentRecordId
-		})
-
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
@@ -96,7 +86,6 @@
 					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
 						cardinality: DataObjCardinality.detail,
-						data,
 						dataObjIdDialog: field.dataObjIdConfig,
 						dataObjIdDisplay: field.dataObjIdDisplay,
 						drawerStore,
@@ -108,6 +97,7 @@
 						}),
 						modalStore,
 						page: '/',
+						parms: { listRecordIdCurrent: id, listRecordIdParent },
 						queryType
 					})
 				},

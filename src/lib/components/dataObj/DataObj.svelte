@@ -3,6 +3,7 @@
 	import { query } from '$comps/nav/types.appQuery'
 	import {
 		State,
+		StateObjDialog,
 		StatePacket,
 		StatePacketComponent,
 		StateSurfaceStyle
@@ -194,7 +195,7 @@
 					}
 				}
 
-				if (token instanceof TokenAppDialog) {
+				if (token instanceof TokenAppDialog && state instanceof StateObjDialog) {
 					app = await App.initDialog(state, token)
 
 					// retrieve dialog
@@ -203,7 +204,7 @@
 							break
 
 						case DataObjCardinality.detail:
-							app.getCurrTab().listInitDialog(token)
+							app.getCurrTab().listInitDialog(state)
 							await app.addLevelDialog(state, token)
 							if (token.queryType === TokenApiQueryType.new) app.getCurrTabParent().listSetId('')
 							app = app

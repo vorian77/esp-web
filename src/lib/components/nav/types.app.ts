@@ -22,7 +22,7 @@ import {
 	TokenAppDoDetail
 } from '$comps/types.token'
 import { query } from '$comps/nav/types.appQuery'
-import { State } from '$comps/nav/types.appState'
+import { State, StateObjDialog } from '$comps/nav/types.appState'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/nav/types.app.ts'
@@ -38,17 +38,17 @@ export class App {
 		await query(state, newApp.getCurrTab(), token.queryType, newApp)
 		return newApp
 	}
-	static async initDialog(state: State, token: TokenAppDialog) {
-		const newApp = new App(await AppLevel.initDialog(state, token.dataObjIdDisplay, token.data))
+	static async initDialog(state: StateObjDialog, token: TokenAppDialog) {
+		const newApp = new App(await AppLevel.initDialog(state, token.dataObjIdDisplay))
 		await query(state, newApp.getCurrTab(), TokenApiQueryType.retrieve)
 		return newApp
 	}
 	static async initNode(state: State, token: TokenAppTreeNode) {
 		return new App(await AppLevel.initNode(state, token))
 	}
-	async addLevelDialog(state: State, token: TokenAppDialog) {
+	async addLevelDialog(state: StateObjDialog, token: TokenAppDialog) {
 		const newLevelIdx = this.levels.length
-		const newLevel = await AppLevel.initDialog(state, token.dataObjIdDialog, token.data)
+		const newLevel = await AppLevel.initDialog(state, token.dataObjIdDialog)
 		if (newLevel) {
 			this.levels.push(newLevel)
 			await query(state, this.getCurrTab(), token.queryType, this)
@@ -154,8 +154,8 @@ export class AppLevel {
 	static async initDataObj(state: State, token: TokenApiQuery) {
 		return new AppLevel([await AppLevelTab.initDataObj(token)])
 	}
-	static async initDialog(state: State, dataObjId: string, data: DataObjData) {
-		return new AppLevel([AppLevelTab.initDialog(dataObjId, data)])
+	static async initDialog(state: StateObjDialog, dataObjId: string) {
+		return new AppLevel([AppLevelTab.initDialog(dataObjId, state.data)])
 	}
 	static async initNode(state: State, token: TokenAppTreeNode) {
 		const nodeApp = new NodeApp(token.node)
@@ -239,8 +239,9 @@ export class AppLevelTab {
 	levelIdx: number
 	metaParmListRecordIdCurrent = 'listRecordIdCurrent'
 	metaParmListRecordIdList = 'listRecordIdList'
+	metaParmListRecordIdParent = 'listRecordIdParent'
 	metaParmListRecords = 'listRecords'
-	metaParmParentRecordId = 'parentRecordId'
+
 	nodeId: string
 	private constructor(
 		levelIdx: number,
@@ -344,16 +345,17 @@ export class AppLevelTab {
 		this.listSetId(listRecordId)
 		this.listFilter(listRecordIdList)
 	}
-	listInitDialog(token: TokenAppDialog) {
-		this.listInit(
-			token.data.parmsValueGet('listRecordIdList'),
-			token.data.parmsValueGet('listRecordIdCurrent')
-		)
-		this.dataMeta.setValue(
-			this.metaParmParentRecordId,
-			token.data.parmsValueGet('parentRecordId'),
-			true
-		)
+	listInitDialog(state: StateObjDialog) {
+		// this.listInit(
+		// 	state.data.parmsValueGet('listRecordIdList'),
+		// 	state.data.parmsValueGet('listRecordIdCurrent')
+		// )
+		// this.dataMeta.setValue(
+		// 	this.metaParmListRecordIdParent,
+		// 	state.data.parmsValueGet('listRecordIdParent'),
+		// 	true
+		// )
+		this.listSetId(state.data.parmsValueGet('listRecordIdCurrent'))
 	}
 	listInitPage(token: TokenAppDoList) {
 		this.listInit(token.listFilterIds, token.listRowId)
