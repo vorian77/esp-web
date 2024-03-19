@@ -35,13 +35,18 @@
 	export let dataObjData: DataObjData
 
 	let stateDisplay: State
+	let parentRecordId: string
 
+	$: parentRecordId = dataObjData.getRecordValue('id') || ''
 	$: setStateDisplay(field.valueCurrent)
 
 	function setStateDisplay(ids: string[]) {
+		let data: DataObjData = dataObjData.copy()
+		data.parmsUpsert({ parentRecordId })
+
 		stateDisplay = new StateObjDataObj({
 			cardinality: DataObjCardinality.list,
-			data: dataObjData,
+			data,
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
 				isEmbedHeight: true,
@@ -50,10 +55,6 @@
 			}),
 			modalStore,
 			onRowClick: (rows: any, record: any) => overlay(TokenApiQueryType.retrieve, record.id),
-			embedRecordIdCurrent: undefined,
-			embedRecordIdList: field.valueCurrent,
-			parentRecordId: dataObjData.getRecordValue('id'),
-			programId: state.programId,
 			queryType: TokenApiQueryType.retrieve,
 			updateCallback: stateUpdateCallback
 		})
@@ -80,6 +81,13 @@
 	}
 
 	function overlay(queryType: TokenApiQueryType, id: string | undefined = undefined) {
+		let data = dataObjData.copy()
+		data.parmsUpsert({
+			listRecordIdCurrent: id,
+			listRecordIdList: field.valueCurrent,
+			parentRecordId
+		})
+
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
@@ -88,7 +96,7 @@
 					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
 						cardinality: DataObjCardinality.detail,
-						data: dataObjData,
+						data,
 						dataObjIdDialog: field.dataObjIdConfig,
 						dataObjIdDisplay: field.dataObjIdDisplay,
 						drawerStore,
@@ -100,10 +108,6 @@
 						}),
 						modalStore,
 						page: '/',
-						embedRecordIdCurrent: id,
-						embedRecordIdList: field.valueCurrent,
-						parentRecordId: dataObjData.getRecordValue('id'),
-						programId: state.programId,
 						queryType
 					})
 				},
@@ -117,26 +121,26 @@
 				let id: string
 				const modalReturn = response as TokenAppModalReturn
 				console.log('FormElListConfig.modalReturn:', modalReturn)
-				switch (modalReturn.type) {
-					case TokenAppModalReturnType.complete:
-						// id = modalReturn.records[0].id
-						// if (!field.valueCurrent.includes(id)) {
-						// 	field.valueCurrent.push(id)
-						// }
-						break
+				// switch (modalReturn.type) {
+				// 	case TokenAppModalReturnType.complete:
+				// 		// id = modalReturn.records[0].id
+				// 		// if (!field.valueCurrent.includes(id)) {
+				// 		// 	field.valueCurrent.push(id)
+				// 		// }
+				// 		break
 
-					case TokenAppModalReturnType.delete:
-						// id = modalReturn.records[0].id
-						// field.valueCurrent = field.valueCurrent.filter((v: string) => v !== id)
-						break
+				// 	case TokenAppModalReturnType.delete:
+				// 		// id = modalReturn.records[0].id
+				// 		// field.valueCurrent = field.valueCurrent.filter((v: string) => v !== id)
+				// 		break
 
-					default:
-						error(500, {
-							file: FILENAME,
-							function: 'overlay',
-							message: `No case defined for modal return type: ${modalReturn.type} for field: ${field.name}`
-						})
-				}
+				// 	default:
+				// 		error(500, {
+				// 			file: FILENAME,
+				// 			function: 'overlay',
+				// 			message: `No case defined for modal return type: ${modalReturn.type} for field: ${field.name}`
+				// 		})
+				// }
 				setValue(field.valueCurrent)
 			}
 		})
@@ -159,4 +163,6 @@
 	{/if}
 </div>
 
-<!-- <DataViewer header="state" data={state} /> -->
+<!-- <DataViewer header="record" data={dataObjData.dataObjRow.record} />
+<DataViewer header="parentRecordId" data={parentRecordId} /> -->
+<DataViewer header="parms" data={dataObjData} />

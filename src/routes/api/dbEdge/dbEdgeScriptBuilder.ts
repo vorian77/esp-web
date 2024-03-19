@@ -175,9 +175,8 @@ class DataObjTables {
 			}
 			prevTable = table
 		}
-
-		script = scriptObj.getScript()
 		logScript('save', script)
+		script = scriptObj.getScript()
 		return script
 	}
 
@@ -185,6 +184,7 @@ class DataObjTables {
 		let script = this.queryScriptSave(data, DataObjTableActionType.saveInsert)
 		if (this.parentColumn && this.parentTable) {
 			script = `UPDATE ${this.parentTable.getObject()} FILTER .id = ${getValExpr('<uuid,parms,parentRecordId>', data)} SET { ${this.parentColumn} += (${script}) }`
+			logScript('save', script)
 		}
 		return script
 	}

@@ -27,65 +27,65 @@
 
 	let state: StateObjDialog = $modalStore[0].meta.state
 
-	state.setUpdateCallback(onClickObjAction)
+	state.setUpdateCallback(onClickActionObj)
 
-	async function onClickObjAction(obj: any) {
+	async function onClickActionObj(obj: any) {
 		const func = 'OverlayModalDialog.onClickObjAction'
 		const packet = obj.packet
 		console.log('OverlayModalDialog.onClickObjAction:', { state, packet })
 
-		switch (packet.token.component) {
-			case StatePacketComponent.appDataObj:
-				state.setDataParms(packet.token.data)
-				break
+		// switch (packet.token.component) {
+		// 	case StatePacketComponent.appDataObj:
+		// 		// state.setDataParms(packet.token.data)
+		// 		break
 
-			// 	case StatePacketComponent.appRow:
-			// 		if (packet.token instanceof TokenAppRow) {
-			// 			switch (packet.token.rowAction) {
-			// 				case AppRowActionType.first:
-			// 					state.embedRecordIdCurrent = state.embedRecordIdList[0]
-			// 					break
+		// 	case StatePacketComponent.appRow:
+		// 		if (packet.token instanceof TokenAppRow) {
+		// 			switch (packet.token.rowAction) {
+		// 				case AppRowActionType.first:
+		// 					state.embedRecordIdCurrent = state.embedRecordIdList[0]
+		// 					break
 
-			// 				case AppRowActionType.left:
-			// 					if (state.embedRecordIdCurrent) {
-			// 						state.embedRecordIdCurrent =
-			// 							state.embedRecordIdList[
-			// 								state.embedRecordIdList.indexOf(state.embedRecordIdCurrent) - 1
-			// 							]
-			// 					}
-			// 					break
+		// 				case AppRowActionType.left:
+		// 					if (state.embedRecordIdCurrent) {
+		// 						state.embedRecordIdCurrent =
+		// 							state.embedRecordIdList[
+		// 								state.embedRecordIdList.indexOf(state.embedRecordIdCurrent) - 1
+		// 							]
+		// 					}
+		// 					break
 
-			// 				case AppRowActionType.right:
-			// 					if (state.embedRecordIdCurrent) {
-			// 						state.embedRecordIdCurrent =
-			// 							state.embedRecordIdList[
-			// 								state.embedRecordIdList.indexOf(state.embedRecordIdCurrent) + 1
-			// 							]
-			// 					}
-			// 					break
+		// 				case AppRowActionType.right:
+		// 					if (state.embedRecordIdCurrent) {
+		// 						state.embedRecordIdCurrent =
+		// 							state.embedRecordIdList[
+		// 								state.embedRecordIdList.indexOf(state.embedRecordIdCurrent) + 1
+		// 							]
+		// 					}
+		// 					break
 
-			// 				case AppRowActionType.last:
-			// 					state.embedRecordIdCurrent =
-			// 						state.embedRecordIdList[state.embedRecordIdList.length - 1]
-			// 					break
+		// 				case AppRowActionType.last:
+		// 					state.embedRecordIdCurrent =
+		// 						state.embedRecordIdList[state.embedRecordIdList.length - 1]
+		// 					break
 
-			// 				default:
-			// 					error(500, {
-			// 						file: FILENAME,
-			// 						function: func,
-			// 						message: `No case defined for packet.token.rowAction: ${packet.token.rowAction} `
-			// 					})
-			// 			}
-			// 		}
-			// 		break
+		// 				default:
+		// 					error(500, {
+		// 						file: FILENAME,
+		// 						function: func,
+		// 						message: `No case defined for packet.token.rowAction: ${packet.token.rowAction} `
+		// 					})
+		// 			}
+		// 		}
+		// 		break
 
-			// 	default:
-			// 		error(500, {
-			// 			file: FILENAME,
-			// 			function: func,
-			// 			message: `No case defined for state.component: ${packet.token.component} `
-			// 		})
-		}
+		// 	default:
+		// 		error(500, {
+		// 			file: FILENAME,
+		// 			function: func,
+		// 			message: `No case defined for state.component: ${packet.token.component} `
+		// 		})
+		// }
 		state.packet = packet
 	}
 	async function onBtnComplete() {
@@ -96,7 +96,7 @@
 		// 		await objAction(TokenAppDoAction.detailSaveInsert, false)
 		// 	}
 		// }
-		console.log('OverlayModalItems.onBtnComplete.state:', state)
+		// console.log('OverlayModalItems.onBtnComplete.state:', state)
 
 		// if ($modalStore[0].response)
 		// 	$modalStore[0].response(
@@ -128,15 +128,23 @@
 	// 	new TokenApiQueryData({ parms: data })
 	// )
 
-	async function onClickDialog(action: DataObjAction) {
-		console.log('OverlayModalItems.onClick.action:', action)
+	async function onClickActionDialog(action: DataObjAction) {
+		console.log('OverlayModalItems.onClickDialog.action:', action)
 		switch (action.dbAction) {
 			case TokenAppDoAction.dialogCancel:
-				parent.onClose()
+				if ($modalStore[0].response)
+					$modalStore[0].response(
+						new TokenAppModalReturn(TokenAppModalReturnType.cancel, undefined)
+					)
+				modalStore.close()
 				break
 
 			case TokenAppDoAction.dialogDone:
-				onBtnComplete()
+				if ($modalStore[0].response)
+					$modalStore[0].response(
+						new TokenAppModalReturn(TokenAppModalReturnType.complete, undefined)
+					)
+				modalStore.close()
 				break
 
 			default:
@@ -161,7 +169,7 @@
 						<button
 							disabled={action.isDisabled}
 							class="btn {action.color}"
-							on:click={async () => await onClickDialog(action)}
+							on:click={async () => await onClickActionDialog(action)}
 						>
 							{action.header}
 						</button>

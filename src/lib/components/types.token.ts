@@ -276,9 +276,6 @@ export class TokenAppDialog extends TokenApp {
 	data: DataObjData
 	dataObjIdDialog: string
 	dataObjIdDisplay: string
-	embedRecordIdCurrent?: string
-	embedRecordIdList: Array<string> = []
-	parentRecordId: string
 	queryType: TokenApiQueryType
 	constructor(obj: any, data: DataObjData) {
 		const clazz = 'TokenAppDialog'
@@ -286,15 +283,7 @@ export class TokenAppDialog extends TokenApp {
 		this.data = data
 		this.dataObjIdDialog = strRequired(obj.dataObjIdDialog, clazz, 'dataObjIdDialog')
 		this.dataObjIdDisplay = strRequired(obj.dataObjIdDisplay, clazz, 'dataObjIdDisplay')
-		this.embedRecordIdCurrent = this.data?.parms.embedRecordIdCurrent
-			? this.data.parms.embedRecordIdCurrent
-			: undefined
-		this.embedRecordIdList = this.data?.parms.embedRecordIdList
-			? this.data?.parms.embedRecordIdList
-			: []
-		this.parentRecordId = strRequired(obj.parentRecordId, clazz, 'parentRecordId')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
-		console.log('TokenAppDialog', { obj, data, token: this })
 	}
 }
 export class TokenAppDo extends TokenApp {
@@ -354,14 +343,15 @@ export class TokenAppDoName extends TokenApp {
 }
 export class TokenAppModalReturn extends TokenApp {
 	type: TokenAppModalReturnType
-	records: any
-	constructor(type: TokenAppModalReturnType, records: any = []) {
+	data: any
+	constructor(type: TokenAppModalReturnType, data: any) {
 		super()
 		this.type = type
-		this.records = records
+		this.data = data
 	}
 }
 export enum TokenAppModalReturnType {
+	cancel = 'cancel',
 	complete = 'complete',
 	delete = 'delete'
 }

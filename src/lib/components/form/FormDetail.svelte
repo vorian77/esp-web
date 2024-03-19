@@ -41,7 +41,7 @@
 	$: loadData(dataObjData)
 
 	$: if (state instanceof StateObj) {
-		state.data.setRecord(dataObj.objData.getData())
+		state.data.setRecord(dataObj.objData.getDataRecord())
 	}
 
 	function loadData(data: DataObjData) {
@@ -96,7 +96,7 @@
 					{#if field instanceof FieldCheckbox}
 						<FormElInpCheckbox {field} on:changeItem={onChangeItem} />
 					{:else if field instanceof FieldCustom}
-						<FormElCustom bind:field {state} data={dataObj.objData.getData()} />
+						<FormElCustom bind:field {state} data={dataObj.objData.getDataRecord()} />
 					{:else if field instanceof FieldFile}
 						<FormElFile bind:field onChange={onChangeFile} />
 					{:else if field instanceof FieldInput}

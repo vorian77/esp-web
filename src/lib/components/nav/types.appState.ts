@@ -34,7 +34,6 @@ export class State {
 	onRowClick: Function = (rows: any, record: any) => {}
 	packet: StatePacket | undefined
 	page: string = '/home'
-	programId?: string
 	toastStore: any
 	updateCallback?: Function
 	updateFunction: Function = stateUpdateDataObj
@@ -47,7 +46,6 @@ export class State {
 		if (Object.hasOwn(obj, 'drawerStore')) this.drawerStore = obj.drawerStore
 		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
 		if (Object.hasOwn(obj, 'onRowClick')) this.onRowClick = obj.onRowClick
-		if (Object.hasOwn(obj, 'programId')) this.programId = obj.programId
 		if (Object.hasOwn(obj, 'toastStore')) this.toastStore = obj.toastStore
 		if (Object.hasOwn(obj, 'updateCallback')) this.updateCallback = obj.updateCallback
 		if (Object.hasOwn(obj, 'user')) this.user = obj.user
@@ -132,26 +130,11 @@ export class StateLayout {
 
 export class StateObj extends State {
 	data: DataObjData
-	embedRecordIdCurrent?: string
-	embedRecordIdList: string[] = []
-	parentRecordId: string
 	constructor(obj: any) {
 		const clazz = 'StateObj'
 		super(obj)
-		this.embedRecordIdCurrent = strOptional(obj.embedRecordIdCurrent, clazz, 'embedRecordIdCurrent')
-		this.embedRecordIdList = valueOrDefault(obj.embedRecordIdList, [])
-		this.parentRecordId = strRequired(obj.parentRecordId, clazz, 'parentRecordId')
-
-		// data
 		this.data = required(obj.data, clazz, 'data')
 		this.data.cardinalitySet(obj.cardinality)
-		this.setDataParms(this.data)
-	}
-	setDataParms(data: DataObjData) {
-		data.parmsValueSet('embedRecordIdCurrent', this.embedRecordIdCurrent)
-		data.parmsValueSet('embedRecordIdList', this.embedRecordIdList)
-		data.parmsValueSet('parentRecordId', this.parentRecordId)
-		data.parmsValueSet('programId', this.programId)
 	}
 }
 
@@ -193,7 +176,6 @@ export class StateObjDialog extends StateObj {
 			component: StatePacketComponent.navApp,
 			token: new TokenAppDialog(obj, this.data)
 		})
-		console.log(clazz, { state: this, obj })
 	}
 }
 

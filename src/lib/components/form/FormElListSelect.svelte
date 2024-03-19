@@ -68,7 +68,7 @@
 
 	function setStateDisplay(ids: string[]) {
 		const data = dataObjData.copy()
-		data.parmsUpsert({ filterInIds: ids, programId: state.programId })
+		data.parmsUpsert({ filterInIds: ids })
 		stateLocal = new StateObjDataObj({
 			dataObjData: data,
 			dataObjName: field.dataObjNameDisplay,

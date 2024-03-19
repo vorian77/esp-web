@@ -93,6 +93,7 @@
 								if (await app.tabUpdate(state, token, TokenApiQueryType.delete)) {
 									if (state.layout.surfaceStyle === StateSurfaceStyle.page) app.popLevel()
 									app = app
+									console.log('app.detailDelete...')
 									dataObjUpdate = new DataObjUpdate(true, true, true)
 								}
 							}
@@ -159,7 +160,7 @@
 
 			case StatePacketComponent.appRow:
 				if (token instanceof TokenAppRow) {
-					app = await app.setRowAction(state, token.rowAction)
+					app = await app.rowUpdate(state, token.rowAction)
 					dataObjUpdate = new DataObjUpdate(false, false, true)
 				}
 				break
@@ -241,8 +242,8 @@
 				if (dataObjUpdate?.updateObj) dataObj = currTab.dataObj
 				if (dataObjUpdate?.updateObjData) {
 					state.statusReset()
-					state.programId = app.getProgramId()
 					dataObjData = currTab.data
+					currTab.dataMeta.setParms(dataObjData?.parms)
 				}
 			}
 		}

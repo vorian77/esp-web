@@ -22,10 +22,9 @@ export async function query(
 	queryType: TokenApiQueryType,
 	app: App | undefined = undefined
 ) {
-	const dataRecord = { ...tab.data?.getData() }
-	let { dataMeta, dataTree } = queryDataPre(queryType, app)
-	console.log('types.appQuery.query.dataMeta:', dataMeta)
-	const queryData = new TokenApiQueryData({ tree: dataTree, parms: dataMeta })
+	const dataRecord = { ...tab.data?.getDataRecord() }
+	let { dataTree, parms } = queryDataPre(queryType, tab.data?.parms, app)
+	const queryData = new TokenApiQueryData({ tree: dataTree, parms })
 	let table = tab.getTable() // table will be undefined prior to retrieve
 
 	dataTree = await queryExecuteActions(
@@ -53,12 +52,13 @@ export async function query(
 	if (tab.dataObj) {
 		if (tab.dataObj.cardinality === DataObjCardinality.list) {
 			tab.data = resultData
-			tab.listFilter()
+			const dataList = tab.data.getDataList()
+			tab.listFilter(dataList.map((recordRow) => recordRow.record.id))
 			return true
 		}
 
 		table = tab.getTable()
-		const queryDataRecord = resultData.getData()
+		const queryDataRecord = resultData.getDataRecord()
 		let dataAction = queryDataPost(queryType, dataRecord, queryDataRecord)
 		tab.data = resultData
 
@@ -77,9 +77,12 @@ export async function query(
 	return false
 }
 
-function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undefined) {
+function queryDataPre(
+	queryType: TokenApiQueryType,
+	parms: { [key: string]: any } = {},
+	app: App | undefined = undefined
+) {
 	let dataTree = new TokenApiQueryDataTree()
-	let dataMeta = {}
 	if (app) {
 		let offset = 0
 		switch (queryType) {
@@ -116,12 +119,14 @@ function queryDataPre(queryType: TokenApiQueryType, app: App | undefined = undef
 				} else {
 					if (currTab.data) dataTree.upsertData(dataObj.table?.name, currTab.detailGetData())
 				}
-				if (level.programId) currTab.dataMeta.setValue('programId', level.programId, true)
-				currTab.dataMeta.setParms(dataMeta)
+				if (level.programId && !Object.hasOwn(parms, 'programId')) {
+					parms['programId'] = level.programId
+				}
+				currTab.dataMeta.setParms(parms)
 			}
 		}
 	}
-	return { dataTree, dataMeta }
+	return { dataTree, parms }
 }
 
 function queryDataPost(queryType: TokenApiQueryType, dataRecord: any, queryDataQuery: any) {

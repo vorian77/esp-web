@@ -516,10 +516,11 @@ export class DataObjData {
 	copy() {
 		return DataObjData.load(this)
 	}
-	getData() {
-		return this.cardinality === DataObjCardinality.detail
-			? this.dataObjRow.record
-			: this.dataObjRowList
+	getDataList() {
+		return this.dataObjRowList
+	}
+	getDataRecord() {
+		return this.dataObjRow.record
 	}
 	getRecordValue(key: string) {
 		if (!this.hasRecord()) return undefined

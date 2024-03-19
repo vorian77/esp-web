@@ -74,7 +74,7 @@ async function initFieldListConfigDataObjTables() {
 		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
-		exprFilter: `.id in <uuidList,parms,embedRecordIdList>`,
+		exprFilter: `.id IN (SELECT sys_core::SysDataObj FILTER .id = <uuid,parms,parentRecordId>).tables.id`,
 		header: 'Data Object - Tables',
 		name: 'doflc_data_obj_tables_display',
 		owner: 'app_sys_admin',
@@ -118,6 +118,7 @@ async function initFieldListConfigDataObjTables() {
 			{
 				codeAccess: 'readOnly',
 				columnName: 'order',
+				dbOrderList: 10,
 				dbOrderSelect: 60,
 				indexTable: '0'
 			}
@@ -128,7 +129,6 @@ async function initFieldListConfigDataObjTables() {
 		actionsFieldGroup: 'doag_base_detail',
 		codeCardinality: 'detail',
 		codeComponent: 'FormDetail',
-		exprFilter: `.id = <uuid,parms,embedRecordIdCurrent>`,
 		header: 'Data Object - Table',
 		name: 'doflc_data_obj_tables_edit',
 		owner: 'app_sys_admin',
@@ -170,7 +170,7 @@ async function initFieldListConfigDataObjTables() {
 				fieldListItems: 'il_sys_column_order_name',
 				headerAlt: 'Parent Table Column',
 				indexTable: '0',
-				link: { table: { module: 'sys_core', name: 'Sys' } }
+				link: { table: { module: 'sys_db', name: 'SysColumn' } }
 			},
 			{
 				columnAccess: 'optional',
@@ -1052,6 +1052,16 @@ async function initDataObj() {
 				dbOrderSelect: 10,
 				indexTable: '0',
 				isDisplay: false
+			},
+			{
+				columnName: 'owner',
+				dbOrderSelect: 15,
+				indexTable: '0',
+				isDisplay: false,
+				link: {
+					exprSave: `(SELECT sys_core::SysApp FILTER .id = <uuid,tree,SysApp.id>)`,
+					table: { module: 'sys_core', name: 'SysOrg' }
+				}
 			},
 			{
 				columnName: 'name',

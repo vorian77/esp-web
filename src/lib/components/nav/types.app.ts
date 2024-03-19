@@ -100,12 +100,6 @@ export class App {
 	getCurrTabParent() {
 		return this.levels[this.levels.length - 2].getCurrTab()
 	}
-	getProgramId() {
-		for (let i = 0; i < this.levels.length; i++) {
-			if (this.levels[i].programId) return this.levels[i].programId
-		}
-		return undefined
-	}
 	getRowStatus() {
 		const parentLevel = this.levels.length - 2
 		if (parentLevel > -1) return this.levels[parentLevel].getCurrTab().listRowStatus()
@@ -114,17 +108,17 @@ export class App {
 		this.levels.pop()
 		return this
 	}
-	async setRowAction(state: State, rowAction: AppRowActionType) {
+	async rowUpdate(state: State, rowAction: AppRowActionType) {
 		if (this.levels.length > 1) {
 			const tabParent = this.getCurrTabParent()
 			tabParent.listSetIdByAction(rowAction)
 
 			this.getCurrLevel().resetTabs()
 
-			const tabCurrent = this.getCurrTab()
-			tabCurrent.detaiSetData(tabParent.listGetData())
+			const currTab = this.getCurrTab()
+			currTab.detailSetData(tabParent.listGetData())
 
-			await query(state, tabCurrent, TokenApiQueryType.retrieve, this)
+			await query(state, currTab, TokenApiQueryType.retrieve, this)
 		}
 		return this
 	}
@@ -139,6 +133,7 @@ export class App {
 
 		const currTab = this.getCurrTab()
 		currTab.data = token.data
+		// currTab.detailSetData()
 		if (!(await query(state, currTab, queryType, this))) return this
 
 		if (this.levels.length > 1) await this.getCurrTabParent().listUpdate(state, currTab, this)
@@ -245,6 +240,7 @@ export class AppLevelTab {
 	metaParmListRecordIdCurrent = 'listRecordIdCurrent'
 	metaParmListRecordIdList = 'listRecordIdList'
 	metaParmListRecords = 'listRecords'
+	metaParmParentRecordId = 'parentRecordId'
 	nodeId: string
 	private constructor(
 		levelIdx: number,
@@ -281,9 +277,9 @@ export class AppLevelTab {
 	}
 
 	detailGetData() {
-		return this.data ? this.data.getData() : {}
+		return this.data ? this.data.getDataRecord() : {}
 	}
-	detaiSetData(data: DataObjRecord) {
+	detailSetData(data: DataObjRecord) {
 		if (this.data) this.data.setRecord(data)
 	}
 
@@ -313,9 +309,10 @@ export class AppLevelTab {
 		const listRecords: DataObjListRecord = this.dataMeta.getValue(this.metaParmListRecords)
 		return { listRecordIdCurrent, listRecordIdList, listRecords }
 	}
-	listFilter() {
+	listFilter(listRecordIdList: Array<string>) {
+		console.log('types.app.listFilter.listRecordIdList:', listRecordIdList)
+		this.dataMeta.setValue(this.metaParmListRecordIdList, listRecordIdList, true)
 		let listRecords: DataObjListRecord = []
-		const { listRecordIdList } = this.listData()
 		if (listRecordIdList) {
 			listRecords =
 				this.data?.dataObjRowList
@@ -343,13 +340,20 @@ export class AppLevelTab {
 				})
 			: -1
 	}
-	listInit(recordIdList: Array<string>, recordId?: string) {
-		this.listSetId(recordId)
-		this.listSetIdList(recordIdList)
-		this.listFilter()
+	listInit(listRecordIdList: Array<string>, listRecordId?: string) {
+		this.listSetId(listRecordId)
+		this.listFilter(listRecordIdList)
 	}
 	listInitDialog(token: TokenAppDialog) {
-		this.listInit(token.embedRecordIdList, token.embedRecordIdCurrent)
+		this.listInit(
+			token.data.parmsValueGet('listRecordIdList'),
+			token.data.parmsValueGet('listRecordIdCurrent')
+		)
+		this.dataMeta.setValue(
+			this.metaParmParentRecordId,
+			token.data.parmsValueGet('parentRecordId'),
+			true
+		)
 	}
 	listInitPage(token: TokenAppDoList) {
 		this.listInit(token.listFilterIds, token.listRowId)
@@ -365,9 +369,6 @@ export class AppLevelTab {
 	}
 	listSetId(recordId?: string) {
 		this.dataMeta.setValue(this.metaParmListRecordIdCurrent, recordId, true)
-	}
-	listSetIdList(recordIdList: Array<string>) {
-		this.dataMeta.setValue(this.metaParmListRecordIdList, recordIdList, true)
 	}
 	listSetIdByAction(rowAction: AppRowActionType) {
 		const { listRecords } = this.listData()
@@ -413,11 +414,11 @@ export class AppLevelTab {
 			if (currTab.data.dataObjRow.status === DataObjRecordStatus.deleted) {
 				listRecordIdList = listRecordIdList.filter((id) => id !== listRecordIdCurrent)
 			} else {
-				if (!listRecordIdList.includes(id)) listRecordIdList.push(id)
+				if (listRecordIdList) {
+					if (!listRecordIdList.includes(id)) listRecordIdList.push(id)
+				}
 			}
-
-			this.listSetIdList(listRecordIdList)
-			this.listFilter()
+			this.listFilter(listRecordIdList)
 		}
 	}
 
@@ -432,10 +433,12 @@ class AppLevelTabMetaData {
 		const value = this.data[key]
 		return value ? value.value : undefined
 	}
-	setParms(parms: TokenApiQueryDataValue) {
-		Object.entries(this.data).forEach(([key, value]) => {
-			if (value.value && value.isQueryParm) parms[key] = value.value
-		})
+	setParms(parms: TokenApiQueryDataValue | undefined) {
+		if (parms) {
+			Object.entries(this.data).forEach(([key, value]) => {
+				if (value.value && value.isQueryParm) parms[key] = value.value
+			})
+		}
 	}
 	setValue(key: string, value: any, isQueryParm: boolean) {
 		this.data[key] = { value, isQueryParm }

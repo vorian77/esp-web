@@ -26,7 +26,8 @@
 	let listHeight = 'full'
 
 	if (state instanceof StateObjDialog) {
-		state.embedRecordIdList.forEach((id) => handler.select(id))
+		const data = state.data.parmsValueGet('listRecordIdList')
+		data.forEach((id) => handler.select(id))
 	}
 
 	$: {
@@ -39,9 +40,8 @@
 	}
 
 	$: if (state instanceof StateObjDialog) {
-		state.embedRecordIdList = $rows
-			.filter((r: any) => $selected.includes(r.id))
-			.map((r: any) => r.id)
+		const data = $rows.filter((r: any) => $selected.includes(r.id)).map((r: any) => r.id)
+		state.data.parmsValueSet('listRecordIdList', data)
 	}
 
 	function sortList() {
