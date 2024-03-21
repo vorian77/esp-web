@@ -91,18 +91,14 @@
 					switch (token.action) {
 						case TokenAppDoAction.detailDelete:
 							if (token instanceof TokenAppDoDetail) {
-								if (await app.tabUpdate(state, token, TokenApiQueryType.delete)) {
-									if (state.layout.surfaceStyle === StateSurfaceStyle.page) app.popLevel()
-									app = app
-									console.log('app.detailDelete...')
-									dataObjUpdate = new DataObjUpdate(true, true, true)
-								}
+								app = await app.detailUpdate(state, token, TokenApiQueryType.delete)
+								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
 							break
 
 						case TokenAppDoAction.detailNew:
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
-							app.getCurrTabParent().listSetId('')
+							app.getCurrTabParent().metaParmSetId('')
 							app = app
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
@@ -116,14 +112,14 @@
 
 						case TokenAppDoAction.detailSaveInsert:
 							if (token instanceof TokenAppDoDetail) {
-								app = await app.tabUpdate(state, token, TokenApiQueryType.saveInsert)
+								app = await app.detailUpdate(state, token, TokenApiQueryType.saveInsert)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
 
 						case TokenAppDoAction.detailSaveUpdate:
 							if (token instanceof TokenAppDoDetail) {
-								app = await app.tabUpdate(state, token, TokenApiQueryType.saveUpdate)
+								app = await app.detailUpdate(state, token, TokenApiQueryType.saveUpdate)
 								dataObjUpdate = new DataObjUpdate(false, false, true)
 							}
 							break
@@ -138,7 +134,7 @@
 
 						case TokenAppDoAction.listNew:
 							await app.addLevelNode(state, TokenApiQueryType.new)
-							app.getCurrTabParent().listSetId('')
+							app.getCurrTabParent().metaParmSetId('')
 							app = app
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break
@@ -199,14 +195,15 @@
 					app = await App.initDialog(state, token)
 
 					// retrieve dialog
-					switch (token.data?.cardinality) {
+					switch (state.data?.cardinality) {
 						case DataObjCardinality.list:
 							break
 
 						case DataObjCardinality.detail:
 							app.getCurrTab().listInitDialog(state)
 							await app.addLevelDialog(state, token)
-							if (token.queryType === TokenApiQueryType.new) app.getCurrTabParent().listSetId('')
+							if (token.queryType === TokenApiQueryType.new)
+								app.getCurrTabParent().metaParmSetId('')
 							app = app
 							break
 
@@ -214,7 +211,7 @@
 							error(500, {
 								file: FILENAME,
 								function: 'App.initDialog',
-								message: `No case defined for token.cardinality: ${token.data?.cardinality}`
+								message: `No case defined for state.cardinality: ${state.data?.cardinality}`
 							})
 					}
 					dataObjUpdate = new DataObjUpdate(true, true, true)

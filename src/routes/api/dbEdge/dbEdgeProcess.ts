@@ -12,9 +12,10 @@ import {
 	DataObjData,
 	DataObjRecordRow,
 	DataObjRecordStatus,
-	formatDateTime
+	formatDateTime,
+	strOptional
 } from '$comps/types'
-import { EdgeQL, getValExpr } from '$routes/api/dbEdge/dbEdgeScriptBuilder'
+import { EdgeQL, getValExpr, Table } from '$routes/api/dbEdge/dbEdgeScriptBuilder'
 import type { DataObjRecord, DataObjRecordRowList, DataObjRaw } from '$comps/types'
 import {
 	getDataObjById,
@@ -74,21 +75,37 @@ export async function processQuery(token: TokenApiQuery) {
 			dataRowStatus = DataObjRecordStatus.updated
 			script = query.tables.queryScriptSaveInsert(queryData)
 			dataRowRaw = await querySingle(script)
-			checkResult(script, dataRowRaw)
 
-			queryData.tree.upsertData(dataObj.table?.name, dataRowRaw)
-			script = query.tables.queryScriptSelectUser(queryData)
-			rawDataList = await queryMultiple(script)
+			const parentColumn = strOptional(
+				dataObjRaw._parentColumn,
+				'processQuery.saveInsert',
+				'parentColumn'
+			)
+			const parentTable = dataObjRaw._parentTable ? new Table(dataObjRaw._parentTable) : undefined
+
+			if (checkResult(script, dataRowRaw)) {
+				if (parentColumn && parentTable) {
+					queryData.tree.upsertData(dataObj.table?.name, { id: dataRowRaw.id })
+					const scriptSubTable = query.tables.queryScriptSelectUser(queryData)
+					script = `UPDATE ${parentTable.getObject()} FILTER .id = ${getValExpr('<uuid,parms,listRecordIdParent>', queryData)} SET { ${parentColumn} += ( ${scriptSubTable} ) }`
+					dataRowRaw = await querySingle(script)
+					if (checkResult(script, dataRowRaw)) rawDataList = await queryMultiple(scriptSubTable)
+				} else {
+					queryData.tree.upsertData(dataObj.table?.name, dataRowRaw)
+					script = query.tables.queryScriptSelectUser(queryData)
+					rawDataList = await queryMultiple(script)
+				}
+			}
 			break
 
 		case TokenApiQueryType.saveUpdate:
 			dataRowStatus = DataObjRecordStatus.updated
 			script = query.tables.queryScriptSaveUpdate(queryData)
 			dataRowRaw = await querySingle(script)
-			checkResult(script, dataRowRaw)
-
-			script = query.tables.queryScriptSelectSys(queryData)
-			rawDataList = await queryMultiple(script)
+			if (checkResult(script, dataRowRaw)) {
+				script = query.tables.queryScriptSelectSys(queryData)
+				rawDataList = await queryMultiple(script)
+			}
 			break
 
 		default:
@@ -111,7 +128,7 @@ export async function processQuery(token: TokenApiQuery) {
 
 	if (dataResult.dataObjRowList.length > 0) {
 		// log('processQuery.3:', { dataResult: dataResult.dataObjRowList })
-		log('processQuery.3:', { dataResult: dataResult.dataObjRowList[0] })
+		// log('processQuery.3:', { dataResult: dataResult.dataObjRowList[0] })
 	}
 	return new ApiResultDoSuccess(dataObjRaw, dataResult)
 	// return new ApiResultDoFail('failed under testing...')

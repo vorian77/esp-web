@@ -22,7 +22,7 @@ export async function query(
 	queryType: TokenApiQueryType,
 	app: App | undefined = undefined
 ) {
-	const dataRecord = { ...tab.data?.getDataRecord() }
+	const dataRecordPre = { ...tab.data?.getDataRecord() }
 	let { dataTree, parms } = queryDataPre(queryType, tab.data?.parms, app)
 	const queryData = new TokenApiQueryData({ tree: dataTree, parms })
 	let table = tab.getTable() // table will be undefined prior to retrieve
@@ -47,31 +47,35 @@ export async function query(
 	tab.isRetrieved = true
 	tab.dataObjRaw = result.data.dataObjRaw
 	const resultData = DataObjData.load(result.data.dataObjData)
+	const dataRecordPost = resultData.getDataRecord()
 	tab.dataObj = await DataObj.init(result.data.dataObjRaw, resultData)
+	tab.data = resultData
 
 	if (tab.dataObj) {
-		if (tab.dataObj.cardinality === DataObjCardinality.list) {
-			tab.data = resultData
-			const dataList = tab.data.getDataList()
-			tab.listFilter(dataList.map((recordRow) => recordRow.record.id))
-			return true
+		switch (tab.dataObj.cardinality) {
+			case DataObjCardinality.detail:
+				table = tab.getTable()
+				dataTree.upsertData(table, queryDataPost(queryType, dataRecordPre, dataRecordPost))
+				await queryExecuteActions(
+					state,
+					tab.dataObj?.actionsQuery,
+					queryType,
+					ActionQueryTriggerTiming.post,
+					table,
+					dataTree
+				)
+				break
+
+			case DataObjCardinality.list:
+				break
+
+			default:
+				error(500, {
+					file: FILENAME,
+					function: 'types.appQuery.query',
+					message: `No case defined for cardinality: ${tab.dataObj.cardinality}`
+				})
 		}
-
-		table = tab.getTable()
-		const queryDataRecord = resultData.getDataRecord()
-		let dataAction = queryDataPost(queryType, dataRecord, queryDataRecord)
-		tab.data = resultData
-
-		dataTree.upsertData(table, dataAction)
-		await queryExecuteActions(
-			state,
-			tab.dataObj?.actionsQuery,
-			queryType,
-			ActionQueryTriggerTiming.post,
-			table,
-			dataTree
-		)
-
 		return true
 	}
 	return false
@@ -112,8 +116,8 @@ function queryDataPre(
 			const dataObj = currTab.dataObj
 			if (dataObj) {
 				if (dataObj.cardinality === DataObjCardinality.list) {
-					const { listRecordIdCurrent } = currTab.listData()
-					if (listRecordIdCurrent) {
+					const { idCurrent } = currTab.metaParmData()
+					if (idCurrent) {
 						dataTree.upsertData(dataObj.table?.name, currTab.listGetData())
 					}
 				} else {

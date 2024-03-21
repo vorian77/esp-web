@@ -21,10 +21,7 @@ export class EdgeQL {
 	exprFilter: string | undefined
 	exprObject: string | undefined
 	objName: string
-	parentColumn?: string
-	parentTable?: Table
 	tables: DataObjTables
-
 	constructor(dataObjRaw: DataObjRaw) {
 		const clazz = 'EdgeQL'
 		const obj = valueOrDefault(dataObjRaw, {})
@@ -38,8 +35,6 @@ export class EdgeQL {
 		this.exprFilter = strOptional(obj.exprFilter, clazz, 'exprFilter')
 		this.exprObject = strOptional(obj.exprObject, clazz, 'exprObject')
 		this.objName = obj.name
-		this.parentColumn = strOptional(dataObjRaw._parentColumn, clazz, 'parentColumn')
-		this.parentTable = dataObjRaw._parentTable ? new Table(dataObjRaw._parentTable) : undefined
 		this.tables = new DataObjTables(this, obj)
 	}
 	queryScriptObjectExpr(data: TokenApiQueryData) {
@@ -60,13 +55,9 @@ export class EdgeQL {
 type DataObjTableMap = Map<string, DataObjTable>
 
 class DataObjTables {
-	parentColumn?: string
-	parentTable?: Table
 	tables: DataObjTableMap
 	constructor(query: EdgeQL, obj: any) {
 		obj = valueOrDefault(obj, {})
-		this.parentColumn = query.parentColumn
-		this.parentTable = query.parentTable
 		this.tables = new Map()
 		const tables = getArray(obj._tables)
 		tables.forEach((t: any) => {
@@ -175,18 +166,15 @@ class DataObjTables {
 			}
 			prevTable = table
 		}
+		scriptObj.concatReturn(prefix, scriptObj.prefix, ',')
+		prefix = scriptObj.prefixScript('WITH', prefix)
+		script = scriptObj.concat(prefix, scriptObj.script)
 		logScript('save', script)
-		script = scriptObj.getScript()
 		return script
 	}
 
 	queryScriptSaveInsert(data: TokenApiQueryData) {
-		let script = this.queryScriptSave(data, DataObjTableActionType.saveInsert)
-		if (this.parentColumn && this.parentTable) {
-			script = `UPDATE ${this.parentTable.getObject()} FILTER .id = ${getValExpr('<uuid,parms,parentRecordId>', data)} SET { ${this.parentColumn} += (${script}) }`
-			logScript('save', script)
-		}
-		return script
+		return this.queryScriptSave(data, DataObjTableActionType.saveInsert)
 	}
 	queryScriptSaveUpdate(data: TokenApiQueryData) {
 		return this.queryScriptSave(data, DataObjTableActionType.saveUpdate)
@@ -308,20 +296,6 @@ class DataObjTableAction {
 		})
 		return script
 	}
-	// getOp(op: DataFieldOp) {
-	// 	switch (op) {
-	// 		case DataFieldOp.eq:
-	// 			return '='
-	// 			break
-
-	// 		default:
-	// 			error(500, {
-	// 				file: FILENAME,
-	// 				function: 'getOp',
-	// 				message: `No case defined for op: ${op}`
-	// 			})
-	// 	}
-	// }
 
 	getScriptTypeSave(fields: DataFieldData[], data: TokenApiQueryData, isInsert: boolean) {
 		let script = new DataObjTableScript()
@@ -386,7 +360,7 @@ class DataObjTableActionFilter extends DataObjTableAction {
 		this.fields = this.initList(DataFieldDataFilter, obj._fieldsDbFilter)
 	}
 	getScript(data: TokenApiQueryData) {
-		const script = new DataObjTableScript({ prefix: 'FILTER' })
+		const script = new DataObjTableScript()
 		let exprFilter = ''
 
 		// exprFilter
@@ -402,9 +376,7 @@ class DataObjTableActionFilter extends DataObjTableAction {
 			script.concatScript(`.id in {<uuidList,parms,filterInIds>}`)
 		}
 
-		// data
-		script.script = getValExpr(script.script, data)
-
+		script.script = script.prefixScript('FILTER', getValExpr(script.script, data))
 		return script
 	}
 }
@@ -517,11 +489,7 @@ class DataObjTableScript {
 	prefix: string = ''
 	prefixColumn: string = ''
 	script: string = ''
-	constructor(obj: any = {}) {
-		this.itemsField = Object.hasOwn(obj, 'itemsField') ? obj.itemsField : this.itemsField
-		this.prefix = Object.hasOwn(obj, 'prefix') ? obj.prefix : this.prefix
-		this.script = Object.hasOwn(obj, 'script') ? obj.script : this.script
-	}
+	constructor() {}
 	addItemField(item: string) {
 		this.itemsField = this.concatReturn(this.itemsField, item, ',')
 	}
@@ -562,7 +530,7 @@ class DataObjTableScript {
 		const rootTable = this.getRootTable(data)
 		const rootFilter = this.getRootFilter(data)
 		const idColumn = table.getFieldNameRoot('.') + '.id'
-		return `WITH ${prefixColumn} := (SELECT ${rootTable} ${rootFilter}).${idColumn}`
+		return `${prefixColumn} := (SELECT ${rootTable} ${rootFilter}).${idColumn}`
 	}
 	getPrefixColumnUpdate(table: DataObjTable) {
 		return '__' + table.getFieldNameRoot('_')
@@ -574,7 +542,10 @@ class DataObjTableScript {
 		return data.parmsValueGet('rootTable')
 	}
 	getScript() {
-		return this.script ? this.concat(this.prefix, this.script, ' ') : ''
+		// <temp> - 240321 - better organize EdgeQL sections and concats - WITH, FILTER, SELECT, INSERT, UPDATE, DELETE
+		const prefix = this.prefixScript('WITH', this.prefix)
+		const script = this.prefixScript(prefix, this.script)
+		return script
 	}
 	getScriptOrder() {
 		if (this.exprOrder) return this.exprOrder
@@ -590,6 +561,9 @@ class DataObjTableScript {
 	getScriptTable() {
 		this.script = this.script.replace(this.itemsProxy, this.itemsField)
 		return this.script
+	}
+	prefixScript(prefix: string, script: string) {
+		return script ? prefix + ' ' + script : ''
 	}
 	setExprOrder(expr: string) {
 		this.exprOrder = expr

@@ -273,14 +273,12 @@ export class TokenAppCrumbs extends TokenApp {
 	}
 }
 export class TokenAppDialog extends TokenApp {
-	data: DataObjData
 	dataObjIdDialog: string
 	dataObjIdDisplay: string
 	queryType: TokenApiQueryType
-	constructor(obj: any, data: DataObjData) {
+	constructor(obj: any) {
 		const clazz = 'TokenAppDialog'
 		super()
-		this.data = data
 		this.dataObjIdDialog = strRequired(obj.dataObjIdDialog, clazz, 'dataObjIdDialog')
 		this.dataObjIdDisplay = strRequired(obj.dataObjIdDisplay, clazz, 'dataObjIdDisplay')
 		this.queryType = required(obj.queryType, clazz, 'queryType')
@@ -288,11 +286,9 @@ export class TokenAppDialog extends TokenApp {
 }
 export class TokenAppDo extends TokenApp {
 	action: TokenAppDoAction
-	data: DataObjData | undefined
-	constructor(action: TokenAppDoAction, data: DataObjData | undefined) {
+	constructor(action: TokenAppDoAction) {
 		super()
 		this.action = action
-		this.data = data
 	}
 }
 export enum TokenAppDoAction {
@@ -314,21 +310,20 @@ export enum TokenAppDoAction {
 
 export class TokenAppDoDetail extends TokenAppDo {
 	confirm?: DataObjActionConfirm
-	constructor(
-		action: TokenAppDoAction,
-		data: DataObjData | undefined,
-		confirm?: DataObjActionConfirm
-	) {
-		super(action, data)
+	data: DataObjData
+	constructor(action: TokenAppDoAction, data: DataObjData, confirm?: DataObjActionConfirm) {
+		super(action)
 		this.confirm = confirm
+		this.data = data
 	}
 }
 
 export class TokenAppDoList extends TokenAppDo {
+	data = new DataObjData(DataObjCardinality.list)
 	listFilterIds: Array<string>
 	listRowId: string
 	constructor(action: TokenAppDoAction, listFilterIds: Array<string>, listRowId: string) {
-		super(action, new DataObjData(DataObjCardinality.list))
+		super(action)
 		this.listFilterIds = listFilterIds
 		this.listRowId = listRowId
 	}

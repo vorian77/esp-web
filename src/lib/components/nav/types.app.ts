@@ -47,7 +47,6 @@ export class App {
 		return new App(await AppLevel.initNode(state, token))
 	}
 	async addLevelDialog(state: StateObjDialog, token: TokenAppDialog) {
-		const newLevelIdx = this.levels.length
 		const newLevel = await AppLevel.initDialog(state, token.dataObjIdDialog)
 		if (newLevel) {
 			this.levels.push(newLevel)
@@ -81,6 +80,23 @@ export class App {
 		this.back(backCnt)
 		return this
 	}
+	async detailUpdate(state: State, token: TokenAppDoDetail, queryType: TokenApiQueryType) {
+		this.getCurrLevel().resetTabs()
+		if (!(await this.update(state, queryType, token.data.getDataRecord()))) return this
+
+		if (this.levels.length > 1) {
+			const tabParent = this.getCurrTabParent()
+			await tabParent.listUpdate(state, this.getCurrTab(), this)
+			if (queryType === TokenApiQueryType.delete) {
+				if (tabParent.listHasRecords()) {
+					await this.update(state, TokenApiQueryType.retrieve, tabParent.listGetData())
+				} else {
+					this.popLevel()
+				}
+			}
+		}
+		return this
+	}
 	getCrumbsList() {
 		this.crumbs = [new AppLevelCrumb(-1, 'Home')]
 		this.levels.forEach((level, i) => {
@@ -112,13 +128,7 @@ export class App {
 		if (this.levels.length > 1) {
 			const tabParent = this.getCurrTabParent()
 			tabParent.listSetIdByAction(rowAction)
-
-			this.getCurrLevel().resetTabs()
-
-			const currTab = this.getCurrTab()
-			currTab.detailSetData(tabParent.listGetData())
-
-			await query(state, currTab, TokenApiQueryType.retrieve, this)
+			await this.update(state, TokenApiQueryType.retrieve, tabParent.listGetData())
 		}
 		return this
 	}
@@ -128,16 +138,11 @@ export class App {
 		if (currTab.data) currTab.data.dataObjRow.status = DataObjRecordStatus.created
 		return this
 	}
-	async tabUpdate(state: State, token: TokenAppDoDetail, queryType: TokenApiQueryType) {
+	async update(state: State, queryType: TokenApiQueryType, dataRecord: DataObjRecord) {
 		this.getCurrLevel().resetTabs()
-
 		const currTab = this.getCurrTab()
-		currTab.data = token.data
-		// currTab.detailSetData()
-		if (!(await query(state, currTab, queryType, this))) return this
-
-		if (this.levels.length > 1) await this.getCurrTabParent().listUpdate(state, currTab, this)
-		return this
+		currTab.detailSetData(dataRecord)
+		return await query(state, currTab, queryType, this)
 	}
 }
 
@@ -240,7 +245,6 @@ export class AppLevelTab {
 	metaParmListRecordIdCurrent = 'listRecordIdCurrent'
 	metaParmListRecordIdList = 'listRecordIdList'
 	metaParmListRecordIdParent = 'listRecordIdParent'
-	metaParmListRecords = 'listRecords'
 
 	nodeId: string
 	private constructor(
@@ -276,7 +280,6 @@ export class AppLevelTab {
 	static initNode(levelIdx: number, idx: number, node: NodeApp) {
 		return new AppLevelTab(levelIdx, idx, node.dataObjId, undefined, node.label, node.id)
 	}
-
 	detailGetData() {
 		return this.data ? this.data.getDataRecord() : {}
 	}
@@ -290,138 +293,149 @@ export class AppLevelTab {
 
 	listCrumbLabelId() {
 		let id = ''
-		const listRecordIdCurrent = this.dataMeta.getValue(this.metaParmListRecordIdCurrent)
 		const crumbFieldNames: Array<string> = this.dataObj?.crumbs ? this.dataObj.crumbs : []
-
-		if (crumbFieldNames.length > 0 && listRecordIdCurrent) {
+		const { idCurrent } = this.metaParmData()
+		if (crumbFieldNames.length > 0 && idCurrent) {
 			const dataRow = this.listGetData()
-			crumbFieldNames.forEach((f) => {
-				if (Object.hasOwn(dataRow, f)) {
-					if (id) id += ' '
-					id += Object.hasOwn(dataRow[f], 'display') ? dataRow[f] : dataRow[f]
-				}
-			})
+			if (dataRow) {
+				crumbFieldNames.forEach((f) => {
+					if (Object.hasOwn(dataRow, f)) {
+						if (id) id += ' '
+						id += Object.hasOwn(dataRow[f], 'display') ? dataRow[f] : dataRow[f]
+					}
+				})
+			}
 		}
 		return id ? ` [${id}]` : ''
 	}
-	listData() {
-		const listRecordIdCurrent = this.dataMeta.getValue(this.metaParmListRecordIdCurrent)
-		const listRecordIdList: Array<string> = this.dataMeta.getValue(this.metaParmListRecordIdList)
-		const listRecords: DataObjListRecord = this.dataMeta.getValue(this.metaParmListRecords)
-		return { listRecordIdCurrent, listRecordIdList, listRecords }
-	}
-	listFilter(listRecordIdList: Array<string>) {
-		console.log('types.app.listFilter.listRecordIdList:', listRecordIdList)
-		this.dataMeta.setValue(this.metaParmListRecordIdList, listRecordIdList, true)
-		let listRecords: DataObjListRecord = []
-		if (listRecordIdList) {
-			listRecords =
-				this.data?.dataObjRowList
-					.filter((row) => {
-						return listRecordIdList.includes(row.record['id'])
-					})
-					.map((row) => row.record) || []
-		}
-		this.dataMeta.setValue(this.metaParmListRecords, listRecords, false)
-	}
 	listGetData() {
-		const rowIdx = this.listGetRow()
-		const { listRecords } = this.listData()
-		if (rowIdx > -1) {
-			return listRecords[rowIdx] || {}
-		} else {
-			return {}
-		}
+		const records = this.listGetRecords()
+		const { idCurrent } = this.metaParmData()
+		return records && idCurrent
+			? records.find((row) => {
+					return row.id === idCurrent
+				}) || {}
+			: {}
+	}
+	listGetRecords() {
+		const { idList } = this.metaParmData()
+		return idList
+			? this.data?.dataObjRowList
+					.filter((row) => idList.includes(row.record.id))
+					.map((row) => row.record)
+			: []
 	}
 	listGetRow() {
-		const { listRecordIdCurrent, listRecords } = this.listData()
-		return listRecordIdCurrent && listRecords
-			? listRecords.findIndex((row) => {
-					return row.id === listRecordIdCurrent
+		const { idCurrent } = this.metaParmData()
+		const records = this.listGetRecords()
+		return idCurrent && records
+			? records.findIndex((row) => {
+					return row.id === idCurrent
 				})
 			: -1
 	}
-	listInit(listRecordIdList: Array<string>, listRecordId?: string) {
-		this.listSetId(listRecordId)
-		this.listFilter(listRecordIdList)
-	}
 	listInitDialog(state: StateObjDialog) {
-		// this.listInit(
-		// 	state.data.parmsValueGet('listRecordIdList'),
-		// 	state.data.parmsValueGet('listRecordIdCurrent')
-		// )
-		// this.dataMeta.setValue(
-		// 	this.metaParmListRecordIdParent,
-		// 	state.data.parmsValueGet('listRecordIdParent'),
-		// 	true
-		// )
-		this.listSetId(state.data.parmsValueGet('listRecordIdCurrent'))
+		this.metaParmSetId(state.data.parmsValueGet(this.metaParmListRecordIdCurrent))
+		this.metaParmSet(
+			this.metaParmListRecordIdParent,
+			state.data.parmsValueGet(this.metaParmListRecordIdParent),
+			true
+		)
+		const idList = this.data?.dataObjRowList.map((row) => row.record.id) || []
+		this.metaParmSet(this.metaParmListRecordIdList, idList, true)
 	}
 	listInitPage(token: TokenAppDoList) {
-		this.listInit(token.listFilterIds, token.listRowId)
+		this.metaParmSetId(token.listRowId)
+		this.metaParmSet(this.metaParmListRecordIdList, token.listFilterIds, true)
 	}
 	listRowStatus() {
-		const { listRecordIdCurrent, listRecords } = this.listData()
-		if (listRecords && listRecordIdCurrent) {
-			const rowIdx = listRecords.findIndex((row) => {
-				return row.id === listRecordIdCurrent
+		const listRecords = this.listGetRecords()
+		const { idCurrent } = this.metaParmData()
+		if (listRecords && idCurrent) {
+			const rowIdx = listRecords.findIndex((record) => {
+				return record.id === idCurrent
 			})
 			if (rowIdx > -1) return new AppLevelRowStatus(listRecords.length, rowIdx)
 		}
 	}
-	listSetId(recordId?: string) {
-		this.dataMeta.setValue(this.metaParmListRecordIdCurrent, recordId, true)
+	listHasRecords() {
+		const data = this.data
+		return this.data?.dataObjRowList.length && this.data?.dataObjRowList.length > 0
 	}
 	listSetIdByAction(rowAction: AppRowActionType) {
-		const { listRecords } = this.listData()
-		const rowCount = listRecords.length || 0
-		let rowIdx = this.listGetRow()
-		if (!rowCount || rowIdx < 0) return
+		const listRecords = this.listGetRecords()
+		if (listRecords) {
+			const rowCount = listRecords.length
+			let rowIdx = this.listGetRow()
+			if (!rowCount || rowIdx < 0) return
 
-		switch (rowAction) {
-			case AppRowActionType.first:
-				rowIdx = 0
-				break
+			switch (rowAction) {
+				case AppRowActionType.first:
+					rowIdx = 0
+					break
 
-			case AppRowActionType.left:
-				rowIdx--
-				break
+				case AppRowActionType.left:
+					rowIdx--
+					break
 
-			case AppRowActionType.right:
-				rowIdx++
-				break
+				case AppRowActionType.right:
+					rowIdx++
+					break
 
-			case AppRowActionType.last:
-				rowIdx = rowCount - 1
-				break
+				case AppRowActionType.last:
+					rowIdx = rowCount - 1
+					break
 
-			default:
-				error(500, {
-					file: FILENAME,
-					function: 'AppLevelTab.listSetIdByAction',
-					message: `No case defined for AppRowActionType: ${rowAction}`
-				})
+				default:
+					error(500, {
+						file: FILENAME,
+						function: 'AppLevelTab.listSetIdByAction',
+						message: `No case defined for AppRowActionType: ${rowAction}`
+					})
+			}
+			this.metaParmSetId(listRecords[rowIdx].id)
 		}
-		this.listSetId(listRecords[rowIdx].id)
 	}
 	async listUpdate(state: State, currTab: AppLevelTab, app: App) {
-		let { listRecordIdCurrent, listRecordIdList } = this.listData()
 		this.reset()
 		await query(state, this, TokenApiQueryType.retrieve, app)
 
+		let { idList } = this.metaParmData()
 		if (currTab.data) {
-			const id = currTab.data.getRecordValue('id')
-			this.listSetId(id)
+			const recordId = currTab.data.getRecordValue('id')
+			switch (currTab.data.dataObjRow.status) {
+				case DataObjRecordStatus.deleted:
+					if (this.listHasRecords()) {
+						let idx = idList.findIndex((id: string) => id === recordId)
+						this.metaParmSetId(idList[idx === 0 ? 1 : idx - 1])
+						idList = idList.filter((id: string) => id !== recordId)
+					}
+					break
 
-			if (currTab.data.dataObjRow.status === DataObjRecordStatus.deleted) {
-				listRecordIdList = listRecordIdList.filter((id) => id !== listRecordIdCurrent)
-			} else {
-				if (listRecordIdList) {
-					if (!listRecordIdList.includes(id)) listRecordIdList.push(id)
-				}
+				default:
+					this.metaParmSetId(recordId)
+					idList = this.data?.dataObjRowList.map((row) => row.record.id) || []
 			}
-			this.listFilter(listRecordIdList)
+
+			this.metaParmSet(this.metaParmListRecordIdList, idList, true)
 		}
+	}
+
+	metaParmData() {
+		return {
+			idCurrent: this.metaParmGet(this.metaParmListRecordIdCurrent),
+			idList: this.metaParmGet(this.metaParmListRecordIdList),
+			idParent: this.metaParmGet(this.metaParmListRecordIdParent)
+		}
+	}
+	metaParmGet(key: string) {
+		return this.dataMeta.getValue(key)
+	}
+	metaParmSet(key: string, value: any, isQueryParm: boolean) {
+		this.dataMeta.setValue(key, value, isQueryParm)
+	}
+	metaParmSetId(id?: string) {
+		this.metaParmSet(this.metaParmListRecordIdCurrent, id, true)
 	}
 
 	reset() {

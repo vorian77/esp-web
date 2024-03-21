@@ -175,7 +175,7 @@ export class StateObjDialog extends StateObj {
 		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
 		this.packet = new StatePacket({
 			component: StatePacketComponent.navApp,
-			token: new TokenAppDialog(obj, this.data)
+			token: new TokenAppDialog(obj)
 		})
 	}
 }

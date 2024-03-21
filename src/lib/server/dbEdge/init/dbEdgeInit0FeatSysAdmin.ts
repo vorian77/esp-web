@@ -1126,7 +1126,7 @@ async function initDataObj() {
 				dbOrderSelect: 100,
 				fieldListConfig: 'flc_data_obj_tables',
 				indexTable: '0',
-				link: { table: { module: 'sys_db', name: 'SysDataObjTable' } }
+				link: { table: { module: 'sys_core', name: 'SysDataObjTable' } }
 			},
 			{
 				codeAccess: 'readOnly',

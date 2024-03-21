@@ -979,6 +979,7 @@ export async function initPreColumn() {
 	await addColumn({
 		codeDataType: 'link',
 		header: 'Tables',
+		isMultiSelect: true,
 		name: 'tables',
 		owner: 'app_sys'
 	})
