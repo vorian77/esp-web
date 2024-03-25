@@ -29,64 +29,20 @@
 
 	state.setUpdateCallback(onClickActionObj)
 
+	$: {
+		const idList = state.metaData.valueGetIdList()
+		const idCurrent = state.metaData.valueGetId()
+
+		if (idList.length === 0 && idCurrent) {
+			console.log('OverlayModalItems.closing...')
+			if ($modalStore[0].response)
+				$modalStore[0].response(new TokenAppModalReturn(TokenAppModalReturnType.complete, idList))
+			modalStore.close()
+		}
+	}
+
 	async function onClickActionObj(obj: any) {
-		const func = 'OverlayModalDialog.onClickObjAction'
-		const packet = obj.packet
-		console.log('OverlayModalDialog.onClickObjAction:', { state, packet })
-
-		// switch (packet.token.component) {
-		// 	case StatePacketComponent.appDataObj:
-		// 		// state.setDataParms(packet.token.data)
-		// 		break
-
-		// 	case StatePacketComponent.appRow:
-		// 		if (packet.token instanceof TokenAppRow) {
-		// 			switch (packet.token.rowAction) {
-		// 				case AppRowActionType.first:
-		// 					state.embedRecordIdCurrent = state.embedRecordIdList[0]
-		// 					break
-
-		// 				case AppRowActionType.left:
-		// 					if (state.embedRecordIdCurrent) {
-		// 						state.embedRecordIdCurrent =
-		// 							state.embedRecordIdList[
-		// 								state.embedRecordIdList.indexOf(state.embedRecordIdCurrent) - 1
-		// 							]
-		// 					}
-		// 					break
-
-		// 				case AppRowActionType.right:
-		// 					if (state.embedRecordIdCurrent) {
-		// 						state.embedRecordIdCurrent =
-		// 							state.embedRecordIdList[
-		// 								state.embedRecordIdList.indexOf(state.embedRecordIdCurrent) + 1
-		// 							]
-		// 					}
-		// 					break
-
-		// 				case AppRowActionType.last:
-		// 					state.embedRecordIdCurrent =
-		// 						state.embedRecordIdList[state.embedRecordIdList.length - 1]
-		// 					break
-
-		// 				default:
-		// 					error(500, {
-		// 						file: FILENAME,
-		// 						function: func,
-		// 						message: `No case defined for packet.token.rowAction: ${packet.token.rowAction} `
-		// 					})
-		// 			}
-		// 		}
-		// 		break
-
-		// 	default:
-		// 		error(500, {
-		// 			file: FILENAME,
-		// 			function: func,
-		// 			message: `No case defined for state.component: ${packet.token.component} `
-		// 		})
-		// }
-		state.packet = packet
+		state.packet = obj.packet
 	}
 	async function onBtnComplete() {
 		// async function objActionSave(rowStatus: DataObjRecordStatus) {
@@ -142,7 +98,10 @@
 			case TokenAppDoAction.dialogDone:
 				if ($modalStore[0].response)
 					$modalStore[0].response(
-						new TokenAppModalReturn(TokenAppModalReturnType.complete, undefined)
+						new TokenAppModalReturn(
+							TokenAppModalReturnType.complete,
+							state.metaData.valueGetIdList()
+						)
 					)
 				modalStore.close()
 				break
@@ -179,3 +138,8 @@
 		</div>
 	</div>
 {/if}
+
+<DataViewer
+	header="state.metaData"
+	data={{ recordIdCurrent: state.metaData.valueGetId(), idList: state.metaData.valueGetIdList() }}
+/>

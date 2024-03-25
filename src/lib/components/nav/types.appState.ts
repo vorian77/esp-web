@@ -6,9 +6,11 @@ import {
 	type DataObjRecord,
 	initNavTree,
 	memberOfEnum,
+	MetaData,
 	NodeType,
 	User,
-	userInit
+	userInit,
+	DataObjCardinality
 } from '$comps/types'
 import {
 	Token,
@@ -27,6 +29,7 @@ const FILENAME = '/$comps/nav/types.appState.ts'
 export class State {
 	drawerStore: any
 	layout: StateLayout
+	metaData: MetaData = new MetaData()
 	modalStore: any
 	nodeType: NodeType = NodeType.home
 	objHasChanged: boolean = false
@@ -46,6 +49,7 @@ export class State {
 		if (Object.hasOwn(obj, 'drawerStore')) this.drawerStore = obj.drawerStore
 		if (Object.hasOwn(obj, 'modalStore')) this.modalStore = obj.modalStore
 		if (Object.hasOwn(obj, 'onRowClick')) this.onRowClick = obj.onRowClick
+		if (Object.hasOwn(obj, 'parms')) this.metaData.dataInit(obj.parms)
 		if (Object.hasOwn(obj, 'toastStore')) this.toastStore = obj.toastStore
 		if (Object.hasOwn(obj, 'updateCallback')) this.updateCallback = obj.updateCallback
 		if (Object.hasOwn(obj, 'user')) this.user = obj.user
@@ -90,6 +94,7 @@ export class State {
 		if (Object.hasOwn(obj, 'nodeType')) this.nodeType = obj.nodeType
 		if (Object.hasOwn(obj, 'onRowClick')) this.onRowClick = obj.onRowClick
 		if (Object.hasOwn(obj, 'page')) this.page = obj.page
+		if (Object.hasOwn(obj, 'parms')) this.metaData.dataUpdate(obj.parms)
 		return this
 	}
 }
@@ -129,32 +134,27 @@ export class StateLayout {
 }
 
 export class StateObj extends State {
-	data: DataObjData
+	cardinality: DataObjCardinality
 	constructor(obj: any) {
 		const clazz = 'StateObj'
 		super(obj)
-		console.log('StateObj', obj)
-		this.data = new DataObjData(obj.cardinality)
-		if (Object.hasOwn(obj, 'parms')) this.data.parms = obj.parms
+		this.cardinality = required(obj.cardinality, clazz, 'cardinality')
 	}
 }
 
 export class StateObjDataObj extends StateObj {
-	dataObjName: string
-	queryType: TokenApiQueryType
 	constructor(obj: any) {
 		const clazz = 'StateObjDataObj'
 		super(obj)
-		this.dataObjName = strRequired(obj.dataObjName, clazz, 'dataObj')
-		this.queryType = required(obj.queryType, clazz, 'queryType')
-
 		this.nodeType = NodeType.object
 		this.packet = new StatePacket({
-			component: StatePacketComponent.query,
+			component: StatePacketComponent.embeddedField,
 			token: new TokenApiQuery(
-				this.queryType,
-				new TokenApiDbDataObj({ dataObjName: this.dataObjName }),
-				new TokenApiQueryData({ dataObjData: this.data })
+				required(obj.queryType, clazz, 'queryType'),
+				new TokenApiDbDataObj({ dataObjName: strRequired(obj.dataObjName, clazz, 'dataObj') }),
+				new TokenApiQueryData({
+					dataObjData: obj.data ? obj.data : new DataObjData(this.cardinality)
+				})
 			)
 		})
 		this.page = obj.page ? obj.page : this.page
@@ -174,7 +174,7 @@ export class StateObjDialog extends StateObj {
 		this.isBtnDelete = booleanOrFalse(obj.isBtnDelete, 'isBtnDelete')
 		this.isMultiSelect = booleanOrFalse(obj.isMultiSelect, 'isMultiSelect')
 		this.packet = new StatePacket({
-			component: StatePacketComponent.navApp,
+			component: StatePacketComponent.dialog,
 			token: new TokenAppDialog(obj)
 		})
 	}
@@ -192,13 +192,15 @@ export class StatePacket {
 	}
 }
 export enum StatePacketComponent {
+	appBack = 'appBack',
 	appCrumbs = 'appCrumbs',
 	appDataObj = 'appDataObj',
 	appRow = 'appRow',
 	appTab = 'appTab',
-	query = 'query',
-	navApp = 'navApp',
-	navTree = 'navTree'
+	appTree = 'appTree',
+	embeddedField = 'embeddedField',
+	dialog = 'dialog',
+	navReset = 'navReset'
 }
 export enum StateSurfaceStyle {
 	drawer = 'drawer',

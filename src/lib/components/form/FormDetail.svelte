@@ -41,7 +41,7 @@
 	$: loadData(dataObjData)
 
 	$: if (state instanceof StateObj) {
-		state.data.setRecord(dataObj.objData.getDataRecord())
+		state.metaData.valueSetRecord(dataObj.objData.getDataRecord())
 	}
 
 	function loadData(data: DataObjData) {

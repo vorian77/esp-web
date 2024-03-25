@@ -89,7 +89,7 @@ async function getUser(token: TokenApiUserId, cookies: Cookies) {
 	// return getServerResponse(user)
 
 	/*  
-	<temp> 231130 - esp user record
+	<todo> 231130 - esp user record
 	user_id: 170896,
 		per_name_first: 'Phyllip',
 		per_name_last: 'Hall',
@@ -141,7 +141,7 @@ async function getUser(token: TokenApiUserId, cookies: Cookies) {
 	
 	*/
 
-	// <temp> 231008 - need to figure out how to set global current user
+	// <todo> 231008 - need to figure out how to set global current user
 	// set global current user
 	// await dbExecute(`set global sys_user::currentUserId := <uuid>"${user.id}"`)
 	// set global currentUserId := <uuid>"9a2966ba-4e96-11ee-abc0-73f75479eb42";

@@ -78,6 +78,7 @@
 	}
 
 	function overlay(queryType: TokenApiQueryType, id: string | undefined = undefined) {
+		console.log('FormElListConfig.overlay:', { queryType, id })
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
@@ -97,7 +98,11 @@
 						}),
 						modalStore,
 						page: '/',
-						parms: { listRecordIdCurrent: id, listRecordIdParent },
+						parms: {
+							listRecordIdCurrent: id,
+							listRecordIdList: field.valueCurrent,
+							listRecordIdParent
+						},
 						queryType
 					})
 				},
@@ -110,28 +115,22 @@
 			if (response !== false) {
 				let id: string
 				const modalReturn = response as TokenAppModalReturn
-				console.log('FormElListConfig.modalReturn:', modalReturn)
-				// switch (modalReturn.type) {
-				// 	case TokenAppModalReturnType.complete:
-				// 		// id = modalReturn.records[0].id
-				// 		// if (!field.valueCurrent.includes(id)) {
-				// 		// 	field.valueCurrent.push(id)
-				// 		// }
-				// 		break
+				switch (modalReturn.type) {
+					case TokenAppModalReturnType.complete:
+						field.valueCurrent = modalReturn.data
+						setValue(field.valueCurrent)
+						break
 
-				// 	case TokenAppModalReturnType.delete:
-				// 		// id = modalReturn.records[0].id
-				// 		// field.valueCurrent = field.valueCurrent.filter((v: string) => v !== id)
-				// 		break
+					case TokenAppModalReturnType.delete:
+						break
 
-				// 	default:
-				// 		error(500, {
-				// 			file: FILENAME,
-				// 			function: 'overlay',
-				// 			message: `No case defined for modal return type: ${modalReturn.type} for field: ${field.name}`
-				// 		})
-				// }
-				setValue(field.valueCurrent)
+					default:
+						error(500, {
+							file: FILENAME,
+							function: 'overlay',
+							message: `No case defined for TokenAppModalReturnType: ${modalReturn.type}`
+						})
+				}
 			}
 		})
 	}
@@ -153,6 +152,5 @@
 	{/if}
 </div>
 
-<!-- <DataViewer header="record" data={dataObjData.dataObjRow.record} />
-<DataViewer header="parentRecordId" data={parentRecordId} /> -->
-<DataViewer header="parms" data={dataObjData} />
+<DataViewer header="listRecordIdParent" data={listRecordIdParent} />
+<DataViewer header="value" data={field.valueCurrent} />

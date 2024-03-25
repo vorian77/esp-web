@@ -10,7 +10,7 @@ import {
 } from '$lib/utils/utils'
 import { DataObjCardinality } from '$comps/types'
 import type { DataObjRaw, DataObjRecord } from '$comps/types'
-import { TokenApiQueryData, type TokenApiQueryDataValue } from '$comps/types.token'
+import { type DataRecord, TokenApiQueryData } from '$comps/types.token'
 import { Tree } from '$utils/utils.tree'
 import { error } from '@sveltejs/kit'
 
@@ -73,6 +73,9 @@ class DataObjTables {
 			parent.children.push(table)
 			if (parent.columnParent) table.ancestors.push(parent.columnParent)
 		}
+	}
+	formatScriptItem(script: string) {
+		return script ? '\n' + script : ''
 	}
 	getDbTableRoot() {
 		return this.tables.values().next().value.table.getObject()
@@ -167,7 +170,7 @@ class DataObjTables {
 			prevTable = table
 		}
 		scriptObj.concatReturn(prefix, scriptObj.prefix, ',')
-		prefix = scriptObj.prefixScript('WITH', prefix)
+		prefix = scriptObj.prefixScript('WITH', prefix, '\n')
 		script = scriptObj.concat(prefix, scriptObj.script)
 		logScript('save', script)
 		return script
@@ -181,10 +184,13 @@ class DataObjTables {
 	}
 
 	queryScriptSelect(querySelectItems: string, data: TokenApiQueryData) {
-		const queryFilter = this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
-		const queryOrder = this.queryScriptOrder()
+		const queryFilter = this.formatScriptItem(
+			this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
+		)
+		const queryOrder = this.formatScriptItem(this.queryScriptOrder())
+		querySelectItems = querySelectItems ? ` {${this.formatScriptItem(querySelectItems)} }` : ''
 
-		const script = `SELECT ${this.getDbTableRoot()} {\n${querySelectItems}\n} \n${queryFilter} \n${queryOrder}`
+		const script = `SELECT ${this.getDbTableRoot()}${querySelectItems}${queryFilter}${queryOrder}`
 		logScript('select', script)
 		return script
 	}
@@ -377,6 +383,7 @@ class DataObjTableActionFilter extends DataObjTableAction {
 		}
 
 		script.script = script.prefixScript('FILTER', getValExpr(script.script, data))
+
 		return script
 	}
 }
@@ -526,6 +533,9 @@ class DataObjTableScript {
 	concatScript(val: string) {
 		this.script = this.concatReturn(this.script, val, 'AND')
 	}
+	formatScriptItem(script: string) {
+		return script ? '\n' + script : ''
+	}
 	getPrefixUpdate(table: DataObjTable, data: TokenApiQueryData, prefixColumn: string) {
 		const rootTable = this.getRootTable(data)
 		const rootFilter = this.getRootFilter(data)
@@ -542,10 +552,8 @@ class DataObjTableScript {
 		return data.parmsValueGet('rootTable')
 	}
 	getScript() {
-		// <temp> - 240321 - better organize EdgeQL sections and concats - WITH, FILTER, SELECT, INSERT, UPDATE, DELETE
-		const prefix = this.prefixScript('WITH', this.prefix)
-		const script = this.prefixScript(prefix, this.script)
-		return script
+		// <todo> - 240321 - better organize EdgeQL sections and concats - WITH, FILTER, SELECT, INSERT, UPDATE, DELETE
+		return this.concat(this.prefixScript('WITH', this.prefix, '\n'), this.script)
 	}
 	getScriptOrder() {
 		if (this.exprOrder) return this.exprOrder
@@ -562,8 +570,8 @@ class DataObjTableScript {
 		this.script = this.script.replace(this.itemsProxy, this.itemsField)
 		return this.script
 	}
-	prefixScript(prefix: string, script: string) {
-		return script ? prefix + ' ' + script : ''
+	prefixScript(prefix: string, script: string, separator: string = '') {
+		return script ? prefix + ' ' + script + separator : ''
 	}
 	setExprOrder(expr: string) {
 		this.exprOrder = expr
@@ -578,8 +586,10 @@ class DataObjTableScript {
 	}
 	setScriptUpdateRoot(data: TokenApiQueryData) {
 		const rootTable = this.getRootTable(data)
-		const rootFilter = this.getRootFilter(data)
-		this.script = `UPDATE ${rootTable} ${rootFilter} SET { ${this.itemsProxy} }`
+		const rootFilter = this.formatScriptItem(this.getRootFilter(data))
+		const itemsProxy = this.itemsProxy ? '\nSET {\n' + this.itemsProxy + '\n}' : ''
+
+		this.script = `UPDATE ${rootTable}${rootFilter}${itemsProxy}`
 	}
 	setScriptUpdateSub(table: DataObjTable, data: TokenApiQueryData) {
 		const parentColumn = table.columnParent!
@@ -665,11 +675,11 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 					message: `No case defined for source: ${field.codeSource}`
 				})
 		}
-		function getValue(source: DataFieldSource, data: TokenApiQueryDataValue, key: string) {
+		function getValue(source: DataFieldSource, data: DataRecord, key: string) {
 			const result = getValueNested(data, key)
 			return result ? result[1] : valueNotFound(source, data)
 		}
-		function getValueNested(data: TokenApiQueryDataValue, key: string) {
+		function getValueNested(data: DataRecord, key: string) {
 			const tokens = key.split('.')
 			let currentData = data
 			for (let i = 0; i < tokens.length - 1; i++) {
@@ -680,7 +690,7 @@ export function getValSave(field: DataFieldData, data: TokenApiQueryData): any {
 			if (!currentData || !Object.hasOwn(currentData, tokens[idx])) return false
 			return [true, currentData[tokens[idx]]]
 		}
-		function valueNotFound(source: DataFieldSource, data: TokenApiQueryDataValue) {
+		function valueNotFound(source: DataFieldSource, data: DataRecord) {
 			error(500, {
 				file: FILENAME,
 				function: funct,

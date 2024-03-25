@@ -15,6 +15,8 @@ import { error } from '@sveltejs/kit'
 
 const FILENAME = 'lib/api.ts'
 
+export type DataRecord = Record<string, any>
+
 export class Token {
 	constructor() {}
 }
@@ -86,10 +88,10 @@ export class TokenApiQuery extends TokenApi {
 
 export class TokenApiQueryData {
 	dataObjData: DataObjData | undefined
-	parms: TokenApiQueryDataValue
-	system: TokenApiQueryDataValue
+	parms: DataRecord
+	system: DataRecord
 	tree: TokenApiQueryDataTree
-	user: TokenApiQueryDataValue
+	user: DataRecord
 	constructor(data: any) {
 		data = valueOrDefault(data, {})
 		this.dataObjData = this.setData(data, 'dataObjData', undefined)
@@ -144,11 +146,9 @@ export class TokenApiQueryDataTree {
 	}
 
 	getRecord(table: string | undefined = undefined) {
-		if (table) {
-			return this.levels.find((l) => l.table === table)?.data
-		} else {
-			return this.levels[this.levels.length - 1]?.data
-		}
+		const idx = table ? this.levels.findIndex((t) => t.table === table) : this.levels.length - 1
+		const rtn = idx > -1 ? this.levels[idx].data : {}
+		return rtn ? rtn : {}
 	}
 
 	setFieldData(table: string | undefined, fieldName: string, value: any) {
@@ -186,8 +186,6 @@ export class TokenApiQueryDataTreeLevel {
 		this.table = table
 	}
 }
-
-export type TokenApiQueryDataValue = Record<string, any>
 
 export class TokenApiDbDataObj {
 	dataObjId: string | undefined
@@ -319,13 +317,8 @@ export class TokenAppDoDetail extends TokenAppDo {
 }
 
 export class TokenAppDoList extends TokenAppDo {
-	data = new DataObjData(DataObjCardinality.list)
-	listFilterIds: Array<string>
-	listRowId: string
-	constructor(action: TokenAppDoAction, listFilterIds: Array<string>, listRowId: string) {
+	constructor(action: TokenAppDoAction) {
 		super(action)
-		this.listFilterIds = listFilterIds
-		this.listRowId = listRowId
 	}
 }
 
@@ -367,11 +360,9 @@ export class TokenAppTab extends TokenApp {
 }
 export class TokenAppTreeNode extends TokenApp {
 	node: Node
-	programId: string | undefined
-	constructor(node: Node, programId: string | undefined = undefined) {
+	constructor(node: Node) {
 		super()
 		this.node = node
-		this.programId = programId
 	}
 }
 export class TokenAppTreeNodeId extends TokenApp {

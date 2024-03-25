@@ -4,7 +4,7 @@ const FILENAME = 'hooks.server'
 
 const routesUnprotected = ['/about', '/auth', '/legalDisclosure']
 
-// <temp> - 240206 - possible way to control user reload of a page
+// <todo> - 240206 - possible way to control user reload of a page
 // function beforeNavigate(
 // 	callback: (
 // 		navigation: import('@sveltejs/kit').BeforeNavigate
@@ -49,7 +49,7 @@ export async function handle({ event, resolve }) {
 	}
 
 	// get user info
-	// <temp> 240127 - only retrieved for legal disclosure???
+	// <todo> 240127 - only retrieved for legal disclosure???
 	// const user = await getUserByUserId(sessionId)
 	// console.log(FILENAME, `retrieved user...`)
 	// if (!user) {

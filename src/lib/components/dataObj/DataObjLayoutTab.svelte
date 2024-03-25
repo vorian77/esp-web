@@ -42,7 +42,7 @@
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: true,
-				component: StatePacketComponent.navApp,
+				component: StatePacketComponent.appBack,
 				token: new TokenAppBack()
 			})
 		})

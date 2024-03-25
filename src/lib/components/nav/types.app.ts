@@ -3,15 +3,26 @@ import {
 	DataObjCardinality,
 	DataObjData,
 	DataObjRecordStatus,
+	MetaData,
+	nbrRequired,
 	Node,
 	NodeApp,
 	RawNode,
-	ResponseBody
+	ResponseBody,
+	required,
+	strRequired,
+	valueOrDefault
 } from '$comps/types'
-import type { DataObjListRecord, DataObjRaw, DataObjRecord, DbNode } from '$comps/types'
+import type {
+	DataObjListRecord,
+	DataObjRaw,
+	DataObjRecord,
+	DataObjRecordRowList,
+	DbNode
+} from '$comps/types'
 import { apiFetch, ApiFunction } from '$lib/api'
 import {
-	type TokenApiQueryDataValue,
+	type DataRecord,
 	TokenApiQueryType,
 	TokenApiQuery,
 	TokenAppDialog,
@@ -22,7 +33,7 @@ import {
 	TokenAppDoDetail
 } from '$comps/types.token'
 import { query } from '$comps/nav/types.appQuery'
-import { State, StateObjDialog } from '$comps/nav/types.appState'
+import { State, StateObj, StateObjDataObj, StateObjDialog } from '$comps/nav/types.appState'
 import { error } from '@sveltejs/kit'
 
 const FILENAME = '/$comps/nav/types.app.ts'
@@ -33,21 +44,77 @@ export class App {
 	private constructor(newLevel: AppLevel) {
 		this.levels.push(newLevel)
 	}
-	static async initDataObj(state: State, token: TokenApiQuery) {
-		const newApp = new App(await AppLevel.initDataObj(state, token))
+	static async initDialog(state: StateObjDialog, token: TokenAppDialog) {
+		const newLevel = new AppLevel([
+			new AppLevelTab({
+				dataObjId: token.dataObjIdDisplay,
+				idx: 0,
+				levelIdx: 0
+			})
+		])
+		newLevel.getCurrTab().list.listInit(state.metaData.valueGetAll())
+
+		const newApp = new App(newLevel)
+		await query(state, newApp.getCurrTab(), TokenApiQueryType.retrieve, newApp)
+		return newApp
+	}
+	static async initEmbeddedField(state: StateObjDataObj, token: TokenApiQuery) {
+		// get tab dataObjId
+		let dataObjId = ''
+		const result: ResponseBody = await apiFetch(ApiFunction.dbEdgeGetDataObjId, token)
+		if (result.success) {
+			dataObjId = result.data.id
+		} else {
+			error(500, {
+				file: FILENAME,
+				function: 'App.initEmbeddedField',
+				message: `Error retrieving dataObj.id: ${token.dataObj.dataObjName}`
+			})
+		}
+
+		// get new level
+		const newLevel = new AppLevel([
+			new AppLevelTab({
+				levelIdx: 0,
+				idx: 0,
+				dataObjId,
+				data: token.queryData.dataObjData
+			})
+		])
+		newLevel.getCurrTab().list.listInit(state.metaData.valueGetAll())
+
+		// app
+		const newApp = new App(newLevel)
 		await query(state, newApp.getCurrTab(), token.queryType, newApp)
 		return newApp
 	}
-	static async initDialog(state: StateObjDialog, token: TokenAppDialog) {
-		const newApp = new App(await AppLevel.initDialog(state, token.dataObjIdDisplay))
-		await query(state, newApp.getCurrTab(), TokenApiQueryType.retrieve)
+	static async initNode(state: State, token: TokenAppTreeNode) {
+		const nodeApp = new NodeApp(token.node)
+		const tabParms = App.getTabParmsNode(0, 0, token.node)
+		const newApp = new App(new AppLevel([new AppLevelTab(tabParms)]))
+		await query(state, newApp.getCurrTab(), TokenApiQueryType.retrieve, newApp)
 		return newApp
 	}
-	static async initNode(state: State, token: TokenAppTreeNode) {
-		return new App(await AppLevel.initNode(state, token))
+	static getTabParmsNode(levelIdx: number, idx: number, node: Node) {
+		const nodeApp = new NodeApp(node)
+		return {
+			data: undefined,
+			dataObjId: nodeApp.dataObjId,
+			idx,
+			label: nodeApp.label,
+			levelIdx,
+			nodeId: nodeApp.id
+		}
 	}
+
 	async addLevelDialog(state: StateObjDialog, token: TokenAppDialog) {
-		const newLevel = await AppLevel.initDialog(state, token.dataObjIdDialog)
+		const newLevel = new AppLevel([
+			new AppLevelTab({
+				dataObjId: token.dataObjIdDialog,
+				idx: 0,
+				levelIdx: 0
+			})
+		])
 		if (newLevel) {
 			this.levels.push(newLevel)
 			await query(state, this.getCurrTab(), token.queryType, this)
@@ -55,14 +122,37 @@ export class App {
 		return this
 	}
 	async addLevelNode(state: State, queryType: TokenApiQueryType) {
+		// current tab
+		this.getCurrTab().list.listInit(state.metaData.valueGetAll())
+
+		// new level
+		const tabs: Array<AppLevelTab> = []
 		const newLevelIdx = this.levels.length
-		const newLevel = await AppLevel.addLevelNode(newLevelIdx, this.getCurrLevel().getCurrTab())
-		if (newLevel) {
-			this.levels.push(newLevel)
+		const currLevel = this.getCurrLevel()
+		const rawNodes: {
+			root: Array<DbNode>
+			children: Array<DbNode>
+		} = await getNodesLevel(currLevel.getCurrTab().nodeId)
+
+		if (rawNodes.root.length === 1) {
+			// add root
+			tabs.push(
+				new AppLevelTab(
+					App.getTabParmsNode(newLevelIdx, 0, new Node(new RawNode(rawNodes.root[0])))
+				)
+			)
+			// add children
+			rawNodes.children.forEach(async (rawNode, idx) => {
+				tabs.push(
+					new AppLevelTab(App.getTabParmsNode(newLevelIdx, idx + 1, new Node(new RawNode(rawNode))))
+				)
+			})
+			this.levels.push(new AppLevel(tabs))
 			await query(state, this.getCurrTab(), queryType, this)
 		}
 		return this
 	}
+
 	async back(backCnt: number) {
 		for (let i = 0; i < backCnt; i++) {
 			const currLevel = this.getCurrLevel()
@@ -108,17 +198,38 @@ export class App {
 		return this.crumbs
 	}
 	getCurrLevel() {
-		return this.levels[this.levels.length - 1]
+		return this.levels[this.getCurrLevelIdx()]
+	}
+	getCurrLevelIdx() {
+		return this.levels.length - 1
 	}
 	getCurrTab() {
-		return this.levels[this.levels.length - 1].getCurrTab()
+		return this.levels[this.getCurrLevelIdx()].getCurrTab()
 	}
 	getCurrTabParent() {
-		return this.levels[this.levels.length - 2].getCurrTab()
+		return this.levels[this.getCurrTabParentLevelIdx()].getCurrTab()
+	}
+	getCurrTabParentLevel() {
+		return this.levels[this.getCurrTabParentLevelIdx()]
+	}
+	getCurrTabParentLevelIdx() {
+		return this.levels.length - 2
+	}
+	getParms() {
+		let parms: DataRecord = {}
+		this.levels.forEach((level) => {
+			level.tabs[level.currTabIdx].list.listSetParms(parms)
+			Object.entries(level.tabs[level.currTabIdx].parms).forEach(([key, value]) => {
+				parms[key] = value
+			})
+		})
+		return parms
 	}
 	getRowStatus() {
-		const parentLevel = this.levels.length - 2
-		if (parentLevel > -1) return this.levels[parentLevel].getCurrTab().listRowStatus()
+		const parentLevel = this.getCurrTabParentLevelIdx()
+		if (parentLevel > -1) {
+			return this.levels[parentLevel].getCurrTab().listRowStatus()
+		}
 	}
 	popLevel() {
 		this.levels.pop()
@@ -148,44 +259,11 @@ export class App {
 
 export class AppLevel {
 	currTabIdx: number
-	programId?: string
 	tabs: Array<AppLevelTab> = []
 	tabSet: number = 0
-	private constructor(tabs: Array<AppLevelTab>, programId: string | undefined = undefined) {
+	constructor(tabs: Array<AppLevelTab>) {
 		this.currTabIdx = 0
-		this.programId = programId
 		this.tabs = tabs
-	}
-	static async initDataObj(state: State, token: TokenApiQuery) {
-		return new AppLevel([await AppLevelTab.initDataObj(token)])
-	}
-	static async initDialog(state: StateObjDialog, dataObjId: string) {
-		return new AppLevel([AppLevelTab.initDialog(dataObjId, state.data)])
-	}
-	static async initNode(state: State, token: TokenAppTreeNode) {
-		const nodeApp = new NodeApp(token.node)
-		const newLevel = new AppLevel([AppLevelTab.initNode(0, 0, nodeApp)], token.programId)
-		await query(state, newLevel.getCurrTab(), TokenApiQueryType.retrieve)
-		return newLevel
-	}
-	static async addLevelNode(newLevelIdx: number, currTab: AppLevelTab) {
-		const tabs: Array<AppLevelTab> = []
-
-		const rawNodes: {
-			root: Array<DbNode>
-			children: Array<DbNode>
-		} = await getNodesLevel(currTab.nodeId)
-
-		if (rawNodes.root.length === 1) {
-			// add root
-			tabs.push(AppLevelTab.initNode(newLevelIdx, 0, new NodeApp(new RawNode(rawNodes.root[0]))))
-
-			// add children
-			rawNodes.children.forEach(async (rawNode, idx) => {
-				tabs.push(AppLevelTab.initNode(newLevelIdx, idx + 1, new NodeApp(new RawNode(rawNode))))
-			})
-			return new AppLevel(tabs)
-		}
 	}
 	getCrumbLabel(tabIdx: number, parentLevel: AppLevel | undefined = undefined) {
 		const label = this.tabs[tabIdx].label
@@ -195,6 +273,7 @@ export class AppLevel {
 	getCurrTab() {
 		return this.tabs[this.currTabIdx]
 	}
+
 	resetTabs() {
 		this.tabs.forEach((tab) => {
 			tab.reset()
@@ -234,7 +313,6 @@ export class AppLevelRowStatusDialog extends AppLevelRowStatus {}
 
 export class AppLevelTab {
 	data?: DataObjData
-	dataMeta: AppLevelTabMetaData = new AppLevelTabMetaData()
 	dataObj?: DataObj
 	dataObjId: string
 	dataObjRaw?: DataObjRaw
@@ -242,43 +320,18 @@ export class AppLevelTab {
 	isRetrieved: boolean = false
 	label: string
 	levelIdx: number
-	metaParmListRecordIdCurrent = 'listRecordIdCurrent'
-	metaParmListRecordIdList = 'listRecordIdList'
-	metaParmListRecordIdParent = 'listRecordIdParent'
-
+	list: AppLevelTabList = new AppLevelTabList()
 	nodeId: string
-	private constructor(
-		levelIdx: number,
-		idx: number,
-		dataObjId: string,
-		data: DataObjData | undefined = undefined,
-		label: string = '',
-		nodeId: string = ''
-	) {
-		this.data = data
-		this.dataObjId = dataObjId
-		this.idx = idx
-		this.label = label
-		this.levelIdx = levelIdx
-		this.nodeId = nodeId
-	}
-	static async initDataObj(token: TokenApiQuery) {
-		const result: ResponseBody = await apiFetch(ApiFunction.dbEdgeGetDataObjId, token)
-		if (result.success) {
-			return new AppLevelTab(0, 0, result.data.id, token.queryData.dataObjData)
-		} else {
-			error(500, {
-				file: FILENAME,
-				function: 'initDataObj',
-				message: `Error retrieving dataObj: ${token.dataObj.dataObjName}`
-			})
-		}
-	}
-	static initDialog(dataObjId: string, data: DataObjData) {
-		return new AppLevelTab(0, 0, dataObjId, data)
-	}
-	static initNode(levelIdx: number, idx: number, node: NodeApp) {
-		return new AppLevelTab(levelIdx, idx, node.dataObjId, undefined, node.label, node.id)
+	parms: DataRecord = {}
+	constructor(obj: any) {
+		obj = valueOrDefault(obj, {})
+		const clazz = 'AppLevelTab'
+		this.data = valueOrDefault(obj.data, undefined)
+		this.dataObjId = strRequired(obj.dataObjId, clazz, 'dataObjId')
+		this.idx = nbrRequired(obj.idx, 'idx')
+		this.label = valueOrDefault(obj.label, '')
+		this.levelIdx = nbrRequired(obj.levelIdx, 'levelIdx')
+		this.nodeId = valueOrDefault(obj.nodeId, '')
 	}
 	detailGetData() {
 		return this.data ? this.data.getDataRecord() : {}
@@ -294,7 +347,7 @@ export class AppLevelTab {
 	listCrumbLabelId() {
 		let id = ''
 		const crumbFieldNames: Array<string> = this.dataObj?.crumbs ? this.dataObj.crumbs : []
-		const { idCurrent } = this.metaParmData()
+		const idCurrent = this.list.idCurrent
 		if (crumbFieldNames.length > 0 && idCurrent) {
 			const dataRow = this.listGetData()
 			if (dataRow) {
@@ -308,9 +361,10 @@ export class AppLevelTab {
 		}
 		return id ? ` [${id}]` : ''
 	}
+
 	listGetData() {
+		const idCurrent = this.list.idCurrent
 		const records = this.listGetRecords()
-		const { idCurrent } = this.metaParmData()
 		return records && idCurrent
 			? records.find((row) => {
 					return row.id === idCurrent
@@ -318,7 +372,7 @@ export class AppLevelTab {
 			: {}
 	}
 	listGetRecords() {
-		const { idList } = this.metaParmData()
+		const idList = this.list.idList
 		return idList
 			? this.data?.dataObjRowList
 					.filter((row) => idList.includes(row.record.id))
@@ -326,7 +380,7 @@ export class AppLevelTab {
 			: []
 	}
 	listGetRow() {
-		const { idCurrent } = this.metaParmData()
+		const idCurrent = this.list.idCurrent
 		const records = this.listGetRecords()
 		return idCurrent && records
 			? records.findIndex((row) => {
@@ -334,33 +388,18 @@ export class AppLevelTab {
 				})
 			: -1
 	}
-	listInitDialog(state: StateObjDialog) {
-		this.metaParmSetId(state.data.parmsValueGet(this.metaParmListRecordIdCurrent))
-		this.metaParmSet(
-			this.metaParmListRecordIdParent,
-			state.data.parmsValueGet(this.metaParmListRecordIdParent),
-			true
-		)
-		const idList = this.data?.dataObjRowList.map((row) => row.record.id) || []
-		this.metaParmSet(this.metaParmListRecordIdList, idList, true)
-	}
-	listInitPage(token: TokenAppDoList) {
-		this.metaParmSetId(token.listRowId)
-		this.metaParmSet(this.metaParmListRecordIdList, token.listFilterIds, true)
+	listHasRecords() {
+		return this.data?.dataObjRowList.length && this.data?.dataObjRowList.length > 0
 	}
 	listRowStatus() {
+		const idCurrent = this.list.idCurrent
 		const listRecords = this.listGetRecords()
-		const { idCurrent } = this.metaParmData()
 		if (listRecords && idCurrent) {
 			const rowIdx = listRecords.findIndex((record) => {
 				return record.id === idCurrent
 			})
 			if (rowIdx > -1) return new AppLevelRowStatus(listRecords.length, rowIdx)
 		}
-	}
-	listHasRecords() {
-		const data = this.data
-		return this.data?.dataObjRowList.length && this.data?.dataObjRowList.length > 0
 	}
 	listSetIdByAction(rowAction: AppRowActionType) {
 		const listRecords = this.listGetRecords()
@@ -393,71 +432,66 @@ export class AppLevelTab {
 						message: `No case defined for AppRowActionType: ${rowAction}`
 					})
 			}
-			this.metaParmSetId(listRecords[rowIdx].id)
+			this.list.idSet(listRecords[rowIdx].id)
 		}
 	}
 	async listUpdate(state: State, currTab: AppLevelTab, app: App) {
 		this.reset()
 		await query(state, this, TokenApiQueryType.retrieve, app)
 
-		let { idList } = this.metaParmData()
 		if (currTab.data) {
 			const recordId = currTab.data.getRecordValue('id')
-			switch (currTab.data.dataObjRow.status) {
-				case DataObjRecordStatus.deleted:
-					if (this.listHasRecords()) {
-						let idx = idList.findIndex((id: string) => id === recordId)
-						this.metaParmSetId(idList[idx === 0 ? 1 : idx - 1])
-						idList = idList.filter((id: string) => id !== recordId)
-					}
-					break
-
-				default:
-					this.metaParmSetId(recordId)
-					idList = this.data?.dataObjRowList.map((row) => row.record.id) || []
-			}
-
-			this.metaParmSet(this.metaParmListRecordIdList, idList, true)
+			this.list.listUpdate(this?.data?.dataObjRowList, recordId, currTab.data.dataObjRow.status)
 		}
 	}
-
-	metaParmData() {
-		return {
-			idCurrent: this.metaParmGet(this.metaParmListRecordIdCurrent),
-			idList: this.metaParmGet(this.metaParmListRecordIdList),
-			idParent: this.metaParmGet(this.metaParmListRecordIdParent)
-		}
-	}
-	metaParmGet(key: string) {
-		return this.dataMeta.getValue(key)
-	}
-	metaParmSet(key: string, value: any, isQueryParm: boolean) {
-		this.dataMeta.setValue(key, value, isQueryParm)
-	}
-	metaParmSetId(id?: string) {
-		this.metaParmSet(this.metaParmListRecordIdCurrent, id, true)
-	}
-
 	reset() {
 		this.isRetrieved = false
 	}
 }
 
-class AppLevelTabMetaData {
-	data: Record<string, { value: any; isQueryParm: boolean }> = {}
-	getValue(key: string) {
-		const value = this.data[key]
-		return value ? value.value : undefined
-	}
-	setParms(parms: TokenApiQueryDataValue | undefined) {
-		if (parms) {
-			Object.entries(this.data).forEach(([key, value]) => {
-				if (value.value && value.isQueryParm) parms[key] = value.value
-			})
+export class AppLevelTabList {
+	idCurrent: string = ''
+	idList: string[] = []
+	metaParmListRecordIdCurrent = 'listRecordIdCurrent'
+	metaParmListRecordIdList = 'listRecordIdList'
+	constructor() {}
+	getParms() {
+		return {
+			[this.metaParmListRecordIdCurrent]: this.idCurrent,
+			[this.metaParmListRecordIdList]: this.idList
 		}
 	}
-	setValue(key: string, value: any, isQueryParm: boolean) {
-		this.data[key] = { value, isQueryParm }
+	idSet(id: string) {
+		this.idCurrent = id
+	}
+	listInit(parms: DataRecord) {
+		const clazz = 'AppLevelTabList'
+		this.idCurrent = strRequired(parms[this.metaParmListRecordIdCurrent], clazz, 'idCurrent')
+		this.idList = required(parms[this.metaParmListRecordIdList], clazz, 'idList')
+	}
+	listSetParms(parms: DataRecord) {
+		if (this.idCurrent && this.idList) {
+			parms[this.metaParmListRecordIdCurrent] = this.idCurrent
+			parms[this.metaParmListRecordIdList] = this.idList
+		}
+	}
+	listUpdate(
+		records: DataObjRecordRowList | undefined,
+		recordId: string,
+		status: DataObjRecordStatus
+	) {
+		if (records && records.length > 0) {
+			if (status === DataObjRecordStatus.deleted) {
+				let idx = this.idList.findIndex((id: string) => id === recordId)
+				idx = idx === 0 ? 1 : idx - 1
+				recordId = this.idList[idx]
+			}
+			this.idCurrent = recordId
+			this.idList = records.map((row) => row.record.id)
+		} else {
+			this.idCurrent = ''
+			this.idList = []
+		}
 	}
 }
 

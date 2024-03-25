@@ -3,6 +3,7 @@
 	import { query } from '$comps/nav/types.appQuery'
 	import {
 		State,
+		StateObjDataObj,
 		StateObjDialog,
 		StatePacket,
 		StatePacketComponent,
@@ -44,12 +45,14 @@
 	let dataObjUpdate: DataObjUpdate | undefined
 
 	const components = [
+		StatePacketComponent.appBack,
 		StatePacketComponent.appCrumbs,
 		StatePacketComponent.appDataObj,
 		StatePacketComponent.appRow,
 		StatePacketComponent.appTab,
-		StatePacketComponent.query,
-		StatePacketComponent.navApp
+		StatePacketComponent.appTree,
+		StatePacketComponent.dialog,
+		StatePacketComponent.embeddedField
 	]
 	const surfaceTypes: Record<string, any> = {
 		DataObjLayout: DataObjLayout,
@@ -75,6 +78,17 @@
 		const token = packet.token
 
 		switch (packet.component) {
+			case StatePacketComponent.appBack:
+				if (token instanceof TokenAppBack) {
+					if (app.levels.length === 1) {
+						returnHome()
+					} else {
+						app = await app.back(1)
+						dataObjUpdate = new DataObjUpdate(true, true, true)
+					}
+				}
+				break
+
 			case StatePacketComponent.appCrumbs:
 				if (token instanceof TokenAppCrumbs) {
 					if (token.crumbIdx === 0) {
@@ -97,8 +111,8 @@
 							break
 
 						case TokenAppDoAction.detailNew:
+							app.getCurrTab().list.idSet('')
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
-							app.getCurrTabParent().metaParmSetId('')
 							app = app
 							dataObjUpdate = new DataObjUpdate(false, false, true)
 							break
@@ -126,15 +140,14 @@
 
 						case TokenAppDoAction.listEdit:
 							if (token instanceof TokenAppDoList) {
-								app.getCurrTab().listInitPage(token)
 								app = await app.addLevelNode(state, TokenApiQueryType.retrieve)
 								dataObjUpdate = new DataObjUpdate(true, true, true)
 							}
 							break
 
 						case TokenAppDoAction.listNew:
+							app.getCurrTab().list.idSet('')
 							await app.addLevelNode(state, TokenApiQueryType.new)
-							app.getCurrTabParent().metaParmSetId('')
 							app = app
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break
@@ -168,42 +181,27 @@
 					currLevel.setTabIdx(token.tabIdx)
 					currTab = currLevel.getCurrTab()
 					if (!currTab.isRetrieved) {
-						await query(state, currLevel.getCurrTab(), TokenApiQueryType.retrieve, app)
+						await query(state, currTab, TokenApiQueryType.retrieve, app)
 						dataObjUpdate = new DataObjUpdate(true, true, true)
 					}
 				}
 				app = app
 				break
 
-			case StatePacketComponent.query:
-				if (token instanceof TokenApiQuery) {
-					app = await App.initDataObj(state, token)
-					dataObjUpdate = new DataObjUpdate(true, true, true)
-				}
-
-			case StatePacketComponent.navApp:
-				if (token instanceof TokenAppBack) {
-					if (app.levels.length === 1) {
-						returnHome()
-					} else {
-						app = await app.back(1)
-						dataObjUpdate = new DataObjUpdate(true, true, true)
-					}
-				}
-
-				if (token instanceof TokenAppDialog && state instanceof StateObjDialog) {
+			case StatePacketComponent.dialog:
+				if (state instanceof StateObjDialog && token instanceof TokenAppDialog) {
 					app = await App.initDialog(state, token)
 
 					// retrieve dialog
-					switch (state.data?.cardinality) {
+					switch (state.cardinality) {
 						case DataObjCardinality.list:
 							break
 
 						case DataObjCardinality.detail:
-							app.getCurrTab().listInitDialog(state)
 							await app.addLevelDialog(state, token)
-							if (token.queryType === TokenApiQueryType.new)
-								app.getCurrTabParent().metaParmSetId('')
+							if (token.queryType === TokenApiQueryType.new) {
+								app.getCurrTab().list.idSet('')
+							}
 							app = app
 							break
 
@@ -211,12 +209,21 @@
 							error(500, {
 								file: FILENAME,
 								function: 'App.initDialog',
-								message: `No case defined for state.cardinality: ${state.data?.cardinality}`
+								message: `No case defined for state.cardinality: ${state.cardinality}`
 							})
 					}
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
+				break
 
+			case StatePacketComponent.embeddedField:
+				if (state instanceof StateObjDataObj && token instanceof TokenApiQuery) {
+					app = await App.initEmbeddedField(state, token)
+					dataObjUpdate = new DataObjUpdate(true, true, true)
+				}
+				break
+
+			case StatePacketComponent.appTree:
 				if (token instanceof TokenAppTreeNode) {
 					app = await App.initNode(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
@@ -240,8 +247,8 @@
 				if (dataObjUpdate?.updateObj) dataObj = currTab.dataObj
 				if (dataObjUpdate?.updateObjData) {
 					state.statusReset()
+					state.metaData.dataUpdate(app.getParms())
 					dataObjData = currTab.data
-					currTab.dataMeta.setParms(dataObjData?.parms)
 				}
 			}
 		}
@@ -252,7 +259,7 @@
 			page: '/home',
 			nodeType: NodeType.home,
 			packet: new StatePacket({
-				component: StatePacketComponent.navTree,
+				component: StatePacketComponent.navReset,
 				token: new TokenAppTreeSetParent()
 			})
 		})

@@ -11,7 +11,7 @@
 	} from '$comps/nav/types.appState'
 	import { TokenApiQueryType } from '$comps/types.token'
 	import DataObj from '$comps/dataObj/DataObj.svelte'
-	import { type DataObjData } from '$comps/types'
+	import { DataObjCardinality, type DataObjData } from '$comps/types'
 	import Icon from '$comps/Icon.svelte'
 	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -28,6 +28,23 @@
 
 	$: setStateDisplay(field.valueCurrent)
 
+	function setStateDisplay(ids: string[]) {
+		stateLocal = new StateObjDataObj({
+			cardinality: DataObjCardinality.list,
+			dataObjName: field.dataObjNameDisplay,
+			layout: new StateLayout({
+				isEmbedHeight: true,
+				surfaceStyle: StateSurfaceStyle.embedded,
+				surfaceType: StateSurfaceType.DataObjLayout
+			}),
+			modalStore,
+			onRowClick: (rows: any, record: any) => overlay(),
+			parms: { listRecordIdList: ids },
+			queryType: TokenApiQueryType.retrieve,
+			updateFunction: () => overlay()
+		})
+	}
+
 	function overlay() {
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
@@ -37,8 +54,8 @@
 					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
 						btnLabelComplete: field.btnLabelComplete,
+						cardinality: DataObjCardinality.detail,
 						dataObjData,
-
 						dataObjName: field.dataObjNameSelect,
 						layout: new StateLayout({
 							surfaceStyle: StateSurfaceStyle.dialogSelect,
@@ -48,6 +65,10 @@
 						modalStore,
 						onRowClick: (rows: any, record: any) => {},
 						page: '/',
+						parms: {
+							embedRecordIdList: field.valueCurrent,
+							listRecordIdList: field.valueCurrent
+						},
 						queryType: TokenApiQueryType.retrieve,
 						embedRecordIdList: field.valueCurrent
 					})
@@ -63,24 +84,6 @@
 				// field.valueCurrent = response.map((v: any) => v.id)
 				// setValue(field.valueCurrent)
 			}
-		})
-	}
-
-	function setStateDisplay(ids: string[]) {
-		const data = dataObjData.copy()
-		data.parmsUpsert({ filterInIds: ids })
-		stateLocal = new StateObjDataObj({
-			dataObjData: data,
-			dataObjName: field.dataObjNameDisplay,
-			layout: new StateLayout({
-				isEmbedHeight: true,
-				surfaceStyle: StateSurfaceStyle.embedded,
-				surfaceType: StateSurfaceType.DataObjLayout
-			}),
-			modalStore,
-			onRowClick: (rows: any, record: any) => overlay(),
-			queryType: TokenApiQueryType.retrieve,
-			updateFunction: () => overlay()
 		})
 	}
 

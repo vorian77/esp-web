@@ -67,12 +67,9 @@
 					packet: new StatePacket({
 						checkObjChanged: false,
 						component: StatePacketComponent.appDataObj,
-						token: new TokenAppDoList(
-							TokenAppDoAction.listEdit,
-							rows.map((r: any) => r.id),
-							record.id
-						)
-					})
+						token: new TokenAppDoList(TokenAppDoAction.listEdit)
+					}),
+					parms: { listRecordIdList: rows.map((r: any) => r.id), listRecordIdCurrent: record.id }
 				})
 			},
 			toastStore,
@@ -101,7 +98,6 @@
 		await statePacketTrigger()
 	}
 	async function statePacketTrigger() {
-		if (state.packet) console.log('statePacketTrigger.state w packet:', { packet: state.packet })
 		while (statePackets.length > 0 && !state.packet) {
 			const packet = statePacketPop()
 
@@ -120,7 +116,7 @@
 			page: '/home',
 			nodeType: NodeType.home,
 			packet: new StatePacket({
-				component: StatePacketComponent.navTree,
+				component: StatePacketComponent.navReset,
 				token: new TokenAppTreeReset()
 			})
 		})

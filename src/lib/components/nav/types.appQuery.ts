@@ -10,7 +10,12 @@ import {
 	valueOrDefault
 } from '$comps/types'
 import { apiDbQuery } from '$lib/api'
-import { TokenApiQueryType, TokenApiQueryData, TokenApiQueryDataTree } from '$comps/types.token'
+import {
+	type DataRecord,
+	TokenApiQueryType,
+	TokenApiQueryData,
+	TokenApiQueryDataTree
+} from '$comps/types.token'
 import { getEnhancement } from '$enhance/crud/_crud'
 import { error } from '@sveltejs/kit'
 
@@ -47,15 +52,17 @@ export async function query(
 	tab.isRetrieved = true
 	tab.dataObjRaw = result.data.dataObjRaw
 	const resultData = DataObjData.load(result.data.dataObjData)
-	const dataRecordPost = resultData.getDataRecord()
-	tab.dataObj = await DataObj.init(result.data.dataObjRaw, resultData)
+	tab.dataObj = await DataObj.init(result.data.dataObjRaw, resultData, dataTree)
 	tab.data = resultData
 
 	if (tab.dataObj) {
 		switch (tab.dataObj.cardinality) {
 			case DataObjCardinality.detail:
 				table = tab.getTable()
-				dataTree.upsertData(table, queryDataPost(queryType, dataRecordPre, dataRecordPost))
+				dataTree.upsertData(
+					table,
+					queryDataPost(queryType, dataRecordPre, resultData.getDataRecord())
+				)
 				await queryExecuteActions(
 					state,
 					tab.dataObj?.actionsQuery,
@@ -67,6 +74,15 @@ export async function query(
 				break
 
 			case DataObjCardinality.list:
+				// if (app) {
+				// 	app.levels[tab.levelIdx].metaData.valueSetIdList(
+				// 		tab.data?.dataObjRowList.map((row) => row.record.id) || []
+				// 	)
+				// 	console.log('types.appQuery.queryExecute.list:', {
+				// 		levelIdx: tab.levelIdx,
+				// 		metaData: app.levels[tab.levelIdx].metaData.valueGetAll()
+				// 	})
+				// }
 				break
 
 			default:
@@ -83,7 +99,7 @@ export async function query(
 
 function queryDataPre(
 	queryType: TokenApiQueryType,
-	parms: { [key: string]: any } = {},
+	parms: DataRecord = {},
 	app: App | undefined = undefined
 ) {
 	let dataTree = new TokenApiQueryDataTree()
@@ -116,20 +132,15 @@ function queryDataPre(
 			const dataObj = currTab.dataObj
 			if (dataObj) {
 				if (dataObj.cardinality === DataObjCardinality.list) {
-					const { idCurrent } = currTab.metaParmData()
-					if (idCurrent) {
-						dataTree.upsertData(dataObj.table?.name, currTab.listGetData())
-					}
+					dataTree.upsertData(dataObj.table?.name, currTab.listGetData())
 				} else {
 					if (currTab.data) dataTree.upsertData(dataObj.table?.name, currTab.detailGetData())
 				}
-				if (level.programId && !Object.hasOwn(parms, 'programId')) {
-					parms['programId'] = level.programId
-				}
-				currTab.dataMeta.setParms(parms)
 			}
 		}
+		parms = app.getParms()
 	}
+	console.log('types.appQuery.queryDataPre:', { parms, dataTree })
 	return { dataTree, parms }
 }
 

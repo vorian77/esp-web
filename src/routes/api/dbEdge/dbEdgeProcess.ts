@@ -33,9 +33,9 @@ export async function processQuery(token: TokenApiQuery) {
 	log('processQuery.0')
 	const queryData = TokenApiQueryData.load(token.queryData)
 	let dataObjRaw: DataObjRaw = await getDataObjRaw(token.dataObj)
+
 	const query = new EdgeQL(dataObjRaw)
 	const dataObj = new DataObj(dataObjRaw)
-
 	let dataRowRaw: Record<string, any> = {}
 	let dataRowStatus: DataObjRecordStatus = DataObjRecordStatus.retrieved
 	let rawDataList: RawDataList = []

@@ -87,10 +87,11 @@ export class NavTree {
 			case NodeType.programObject:
 				state.update({
 					page: '/home',
+					parms: { programId: this.getProgramId(nodeNav) },
 					nodeType: nodeNav.type,
 					packet: new StatePacket({
-						component: StatePacketComponent.navApp,
-						token: new TokenAppTreeNode(nodeNav, this.getProgramId(nodeNav))
+						component: StatePacketComponent.appTree,
+						token: new TokenAppTreeNode(nodeNav)
 						// callbacks: [() => dispatch('treeChanged')]
 					})
 				})
@@ -213,7 +214,7 @@ export class NavTree {
 export async function initNavTree(user: User) {
 	let rawBranch: Array<DbNode> = user?.resource_programs ? user?.resource_programs : []
 
-	// <temp> filter to single program for dev
+	// <todo> filter to single program for dev
 	// rawBranch = rawBranch.filter((p: any) => {
 	// 	return p.name === 'node_pgm_cm_staff_provider'
 	// })

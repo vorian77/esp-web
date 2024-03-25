@@ -61,7 +61,7 @@
 		switch (node.type) {
 			case NodeType.home:
 				packet = new StatePacket({
-					component: StatePacketComponent.navTree,
+					component: StatePacketComponent.navReset,
 					token: new TokenAppTreeReset()
 				})
 				break
@@ -69,7 +69,7 @@
 			case NodeType.object:
 			case NodeType.programObject:
 				packet = new StatePacket({
-					component: StatePacketComponent.navApp,
+					component: StatePacketComponent.appTree,
 					token: new TokenAppTreeNode(node)
 				})
 				break

@@ -17,7 +17,7 @@
 	$: if ($appStoreNavTree) navTree = new NavTree($appStoreNavTree)
 
 	$: if (state && state.packet) {
-		const packet = state.consume(StatePacketComponent.navTree)
+		const packet = state.consume(StatePacketComponent.navReset)
 		if (packet?.token instanceof TokenAppTreeReset) {
 			;(async () => {
 				await changeNode(navTree.listTree[0])

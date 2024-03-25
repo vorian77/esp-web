@@ -37,8 +37,9 @@ import { FieldTextarea } from '$comps/form/fieldTextarea'
 import { FieldToggle } from '$comps/form/fieldToggle'
 import { ActionsQuery, ActionQuery, queryExecute } from '$comps/nav/types.appQuery'
 import {
+	type DataRecord,
 	TokenApiQueryData,
-	type TokenApiQueryDataValue,
+	TokenApiQueryDataTree,
 	TokenApiQueryType,
 	TokenAppDoAction
 } from '$comps/types.token'
@@ -110,11 +111,11 @@ export class DataObj {
 		})
 		return newActions
 	}
-	static async init(dataObjRaw: DataObjRaw, data: DataObjData) {
+	static async init(dataObjRaw: DataObjRaw, data: DataObjData, dataTree: TokenApiQueryDataTree) {
 		const dataObj = new DataObj(dataObjRaw)
 		await loadActionsField(dataObj.fields)
 		await loadActionsQuery()
-		await loadFieldListItems(dataObj.fields)
+		await loadFieldListItems(dataObj.fields, data, dataTree)
 		return dataObj
 
 		async function loadActionsField(fields: Array<Field>) {
@@ -127,21 +128,27 @@ export class DataObj {
 		async function loadActionsQuery() {
 			dataObj.actionsQuery = await ActionsQuery.initEnhancement(dataObjRaw.actionsQuery)
 		}
-		async function loadFieldListItems(fields: Array<Field>) {
+		async function loadFieldListItems(
+			fields: Array<Field>,
+			data: DataObjData,
+			dataTree: TokenApiQueryDataTree
+		) {
+			const queryData = new TokenApiQueryData({
+				tree: dataTree
+			})
 			for (const field of fields) {
 				if (field.fieldListItems) {
+					queryData.parms = {
+						field: {
+							items: field.items,
+							fieldListItems: field.fieldListItems,
+							valueCurrent: data.getRecordValue(field.name)
+						}
+					}
 					const result = await queryExecute(
 						{ dataObjName: dataObj.name },
 						TokenApiQueryType.fieldItems,
-						new TokenApiQueryData({
-							parms: {
-								field: {
-									items: field.items,
-									fieldListItems: field.fieldListItems,
-									valueCurrent: data.getRecordValue(field.name)
-								}
-							}
-						})
+						queryData
 					)
 					field.items = result.data
 				}
@@ -162,7 +169,7 @@ export class DataObj {
 		let data: any
 		switch (this.data.cardinality) {
 			case DataObjCardinality.list:
-				// <temp> - 240125 - will change when data is manipulated in lists
+				// <todo> - 240125 - will change when data is manipulated in lists
 				data = []
 				break
 
@@ -488,7 +495,7 @@ export class DataObjData {
 	cardinality: DataObjCardinality
 	dataObjRow: DataObjRecordRow
 	dataObjRowList: DataObjRecordRowList = []
-	parms: TokenApiQueryDataValue = {}
+	parms: DataRecord = {}
 	constructor(cardinality: DataObjCardinality, data: any = undefined) {
 		const clazz = 'DataObjData'
 		this.cardinality = cardinality
@@ -531,7 +538,7 @@ export class DataObjData {
 		if (!this.dataObjRow.record) return false
 		return Object.keys(this.dataObjRow.record).length > 0
 	}
-	parmsUpsert(data: any) {
+	parmsUpsert(data: DataRecord) {
 		if (!data) return
 		Object.entries(data).forEach(([key, value]) => {
 			this.parms[key] = value
@@ -657,5 +664,55 @@ export class DataObjStatus {
 	}
 	setObjValid(status: boolean) {
 		this.objValidToSave = status
+	}
+}
+
+export class MetaData {
+	data: Record<string, any> = {}
+	metaParmDetailRecord = 'detailRecord'
+	metaParmListRecordIdCurrent = 'listRecordIdCurrent'
+	metaParmListRecordIdList = 'listRecordIdList'
+	metaParmListRecordIdParent = 'listRecordIdParent'
+	constructor() {}
+	dataInit(parms: Record<string, any>) {
+		this.data = parms
+	}
+	dataSet(parms: Record<string, any>) {
+		Object.entries(this.data).forEach(([key, value]) => {
+			parms[key] = value
+		})
+	}
+	dataUpdate(parms: Record<string, any>) {
+		Object.entries(parms).forEach(([key, value]) => {
+			this.data[key] = value
+		})
+	}
+	valueGet(key: string) {
+		return this.data[key]
+	}
+	valueGetId() {
+		return this.valueGet(this.metaParmListRecordIdCurrent)
+	}
+	valueGetIdList() {
+		return this.valueGet(this.metaParmListRecordIdList)
+	}
+	valueGetRecord() {
+		return this.valueGet(this.metaParmDetailRecord)
+	}
+	valueGetAll() {
+		return this.data
+	}
+	valueSet(key: string, value: any) {
+		this.data[key] = value
+	}
+	valueSetId(val?: string) {
+		this.valueSet(this.metaParmListRecordIdCurrent, val)
+	}
+	valueSetIdList(val: string[]) {
+		console.log('valueSetIdList: ', val)
+		this.valueSet(this.metaParmListRecordIdList, val)
+	}
+	valueSetRecord(record: DataObjRecord) {
+		this.valueSet(this.metaParmDetailRecord, record)
 	}
 }

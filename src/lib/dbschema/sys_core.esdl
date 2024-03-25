@@ -284,7 +284,7 @@ module sys_core {
   function isObjectLink(objName: str, linkName: str) -> optional bool
     using (select count(schema::ObjectType filter .name = objName and .links.name = linkName) > 0);     
 
-  # <temp> migrate itemsList to functions rather than raw selects
+  # <todo> migrate itemsList to functions rather than raw selects
   # have to beable to return an array from a function
   # function getItemsListCodeByCodeTypeName() -> array<Code>
   #     using (select Code );
