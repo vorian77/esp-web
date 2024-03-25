@@ -104,8 +104,9 @@ export class StateLayout {
 	footerCompleteButtonLabel?: string
 	headerDialog?: string
 	isEmbedHeight: boolean = false
-	surfaceStyle: StateSurfaceStyle
-	surfaceType: StateSurfaceType
+	layoutComponent: StateLayoutComponent
+	layoutStyle: StateLayoutStyle
+
 	constructor(obj: any) {
 		const clazz = 'StateLayout'
 		this.footerActionGroup = obj.footerActionGroup ? obj.footerActionGroup : undefined
@@ -116,19 +117,19 @@ export class StateLayout {
 		)
 		this.headerDialog = strOptional(obj.headerDialog, clazz, 'headerDialog')
 		this.isEmbedHeight = booleanOrFalse(obj.isEmbedHeight, 'isEmbedHeight')
-		this.surfaceStyle = memberOfEnum(
-			obj.surfaceStyle,
+		this.layoutComponent = memberOfEnum(
+			obj.layoutComponent,
 			clazz,
-			'surfaceStyle',
-			'StateSurfaceStyle',
-			StateSurfaceStyle
+			'layoutComponent',
+			'StateLayoutComponent',
+			StateLayoutComponent
 		)
-		this.surfaceType = memberOfEnum(
-			obj.surfaceType,
+		this.layoutStyle = memberOfEnum(
+			obj.layoutStyle,
 			clazz,
-			'surfaceType',
-			'StateSurfaceType',
-			StateSurfaceType
+			'layoutStyle',
+			'StateLayoutStyle',
+			StateLayoutStyle
 		)
 	}
 }
@@ -148,7 +149,7 @@ export class StateObjDataObj extends StateObj {
 		super(obj)
 		this.nodeType = NodeType.object
 		this.packet = new StatePacket({
-			component: StatePacketComponent.embeddedField,
+			component: StatePacketComponent.dataObjFieldEmbedded,
 			token: new TokenApiQuery(
 				required(obj.queryType, clazz, 'queryType'),
 				new TokenApiDbDataObj({ dataObjName: strRequired(obj.dataObjName, clazz, 'dataObj') }),
@@ -191,29 +192,29 @@ export class StatePacket {
 		this.token = obj.token ? obj.token : undefined
 	}
 }
-export enum StatePacketComponent {
-	appBack = 'appBack',
-	appCrumbs = 'appCrumbs',
-	appDataObj = 'appDataObj',
-	appRow = 'appRow',
-	appTab = 'appTab',
-	appTree = 'appTree',
-	embeddedField = 'embeddedField',
-	dialog = 'dialog',
-	navReset = 'navReset'
-}
-export enum StateSurfaceStyle {
-	drawer = 'drawer',
-	embedded = 'embedded',
-	dialogDetail = 'dialogDetail',
-	dialogSelect = 'dialogSelect',
-	dialogWizard = 'dialogWizard',
-	page = 'page'
-}
-export enum StateSurfaceType {
+export enum StateLayoutComponent {
 	DataObjLayout = 'DataObjLayout',
-	DataObjLayoutTab = 'DataObjLayoutTab',
-	DataObjLayoutDialogDetail = 'DataObjLayoutDialogDetail'
+	DataObjLayoutTab = 'DataObjLayoutTab'
+}
+
+export enum StateLayoutStyle {
+	dataObjTab = 'dataObjTab',
+	embeddedField = 'embeddedField',
+	overlayDrawerDetail = 'overlayDrawerDetail',
+	overlayModalDetail = 'overlayModalDetail',
+	overlayModalSelect = 'overlayModalSelect',
+	overlayModalWizard = 'overlayModalWizard'
+}
+export enum StatePacketComponent {
+	dataObj = 'dataObj',
+	dataObjFieldEmbedded = 'dataObjFieldEmbedded',
+	dialog = 'dialog',
+	navBack = 'navBack',
+	navCrumbs = 'navCrumbs',
+	navHome = 'navHome',
+	navRow = 'navRow',
+	navTab = 'navTab',
+	navTree = 'navTree'
 }
 
 export async function stateUpdateDataObj(

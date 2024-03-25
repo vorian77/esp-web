@@ -27,7 +27,7 @@
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalDialog',
+				component: 'formlDialog',
 				meta: {
 					state: new StateObjDialog({
 						btnLabelComplete: field.btnLabelComplete,

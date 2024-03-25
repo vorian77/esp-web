@@ -32,7 +32,7 @@
 	async function onClickTab(event: any) {
 		state.update({
 			packet: new StatePacket({
-				component: StatePacketComponent.appTab,
+				component: StatePacketComponent.navTab,
 				token: new TokenAppTab(parseInt(event.target.value))
 			})
 		})
@@ -42,7 +42,7 @@
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: true,
-				component: StatePacketComponent.appBack,
+				component: StatePacketComponent.navBack,
 				token: new TokenAppBack()
 			})
 		})

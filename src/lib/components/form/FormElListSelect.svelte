@@ -6,8 +6,8 @@
 		StateObjDataObj,
 		StateObjDialog,
 		StateLayout,
-		StateSurfaceStyle,
-		StateSurfaceType
+		StateLayoutStyle,
+		StateLayoutComponent
 	} from '$comps/nav/types.appState'
 	import { TokenApiQueryType } from '$comps/types.token'
 	import DataObj from '$comps/dataObj/DataObj.svelte'
@@ -34,8 +34,8 @@
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
 				isEmbedHeight: true,
-				surfaceStyle: StateSurfaceStyle.embedded,
-				surfaceType: StateSurfaceType.DataObjLayout
+				layoutComponent: StateLayoutComponent.DataObjLayout,
+				layoutStyle: StateLayoutStyle.embeddedField
 			}),
 			modalStore,
 			onRowClick: (rows: any, record: any) => overlay(),
@@ -49,7 +49,7 @@
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalDialog',
+				component: 'formlDialog',
 				meta: {
 					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
@@ -58,8 +58,8 @@
 						dataObjData,
 						dataObjName: field.dataObjNameSelect,
 						layout: new StateLayout({
-							surfaceStyle: StateSurfaceStyle.dialogSelect,
-							surfaceType: StateSurfaceType.DataObjLayout
+							layoutComponent: StateLayoutComponent.DataObjLayout,
+							layoutStyle: StateLayoutStyle.overlayModalSelect
 						}),
 						isMultiSelect: field.isMultiSelect,
 						modalStore,

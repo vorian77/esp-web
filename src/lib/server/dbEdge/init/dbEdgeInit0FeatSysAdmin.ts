@@ -71,7 +71,7 @@ async function initFieldListConfigDataObjTables() {
 	sectionHeader('Field List Config - DataObj.Tables')
 
 	await addDataObj({
-		actionsFieldGroup: 'doag_base_list',
+		actionsFieldGroup: 'doag_base_config_list',
 		codeCardinality: 'list',
 		codeComponent: 'FormList',
 		exprFilter: `.id IN (SELECT sys_core::SysDataObj FILTER .id = <uuid,parms,listRecordIdParent>).tables.id`,
@@ -137,6 +137,7 @@ async function initFieldListConfigDataObjTables() {
 		tables: [{ index: '0', table: 'SysDataObjTable' }],
 		fields: [
 			{
+				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
 				indexTable: '0',

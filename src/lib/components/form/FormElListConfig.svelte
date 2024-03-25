@@ -7,8 +7,8 @@
 		StateObjDialog,
 		StateLayout,
 		StatePacketComponent,
-		StateSurfaceType,
-		StateSurfaceStyle
+		StateLayoutComponent,
+		StateLayoutStyle
 	} from '$comps/nav/types.appState'
 	import {
 		TokenApiQueryType,
@@ -46,8 +46,8 @@
 			dataObjName: field.dataObjNameDisplay,
 			layout: new StateLayout({
 				isEmbedHeight: true,
-				surfaceStyle: StateSurfaceStyle.embedded,
-				surfaceType: StateSurfaceType.DataObjLayout
+				layoutComponent: StateLayoutComponent.DataObjLayout,
+				layoutStyle: StateLayoutStyle.embeddedField
 			}),
 			modalStore,
 			onRowClick: (rows: any, record: any) => overlay(TokenApiQueryType.retrieve, record.id),
@@ -58,11 +58,10 @@
 	}
 
 	async function stateUpdateCallback(obj: any) {
-		console.log('FormElListConfig.stateUpdateCallback:', obj)
 		const packet = obj.packet
 		const token = packet.token
 		switch (packet.component) {
-			case StatePacketComponent.appDataObj:
+			case StatePacketComponent.dataObj:
 				if (token instanceof TokenAppDoDetail) {
 					overlay(TokenApiQueryType.new)
 				}
@@ -78,11 +77,10 @@
 	}
 
 	function overlay(queryType: TokenApiQueryType, id: string | undefined = undefined) {
-		console.log('FormElListConfig.overlay:', { queryType, id })
 		new Promise<any>((resolve) => {
 			const modal: ModalSettings = {
 				type: 'component',
-				component: 'overlayModalDialog',
+				component: 'dataObjDialog',
 				meta: {
 					state: new StateObjDialog({
 						actionsFieldDialog: field.actionsFieldDialog,
@@ -93,8 +91,8 @@
 						isBtnDelete: true,
 						isMultiSelect: field.isMultiSelect,
 						layout: new StateLayout({
-							surfaceStyle: StateSurfaceStyle.dialogDetail,
-							surfaceType: StateSurfaceType.DataObjLayoutDialogDetail
+							layoutComponent: StateLayoutComponent.DataObjLayout,
+							layoutStyle: StateLayoutStyle.overlayModalDetail
 						}),
 						modalStore,
 						page: '/',
@@ -113,31 +111,15 @@
 			modalStore.trigger(modal)
 		}).then((response) => {
 			if (response !== false) {
-				let id: string
 				const modalReturn = response as TokenAppModalReturn
-				switch (modalReturn.type) {
-					case TokenAppModalReturnType.complete:
-						field.valueCurrent = modalReturn.data
-						setValue(field.valueCurrent)
-						break
-
-					case TokenAppModalReturnType.delete:
-						break
-
-					default:
-						error(500, {
-							file: FILENAME,
-							function: 'overlay',
-							message: `No case defined for TokenAppModalReturnType: ${modalReturn.type}`
-						})
-				}
+				field.valueCurrent = modalReturn.data
+				setValue(field.valueCurrent)
 			}
 		})
 	}
 
 	function setValue(value: string[]) {
 		setStateDisplay(value)
-		dispatch('changeItem', { fieldName: field.name, value })
 	}
 </script>
 
@@ -152,5 +134,5 @@
 	{/if}
 </div>
 
-<DataViewer header="listRecordIdParent" data={listRecordIdParent} />
-<DataViewer header="value" data={field.valueCurrent} />
+<!-- <DataViewer header="listRecordIdParent" data={listRecordIdParent} />
+<DataViewer header="value" data={field.valueCurrent} /> -->

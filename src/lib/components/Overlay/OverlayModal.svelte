@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Modal, getModalStore } from '@skeletonlabs/skeleton'
 	import type { ModalComponent } from '@skeletonlabs/skeleton'
-	import overlayModalDialog from '$comps/Surface/OverlayModalDialog.svelte'
+	import DataObjDialog from '$comps/dataObj/DataObjDialog.svelte'
 
 	const modalStore = getModalStore()
 
 	const modalRegistry: Record<string, ModalComponent> = {
-		overlayModalDialog: { ref: overlayModalDialog }
+		dataObjDialog: { ref: DataObjDialog }
 	}
 </script>
 

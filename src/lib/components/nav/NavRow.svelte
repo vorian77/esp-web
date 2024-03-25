@@ -11,7 +11,7 @@
 	async function onChange(rowAction: AppRowActionType) {
 		state.update({
 			packet: new StatePacket({
-				component: StatePacketComponent.appRow,
+				component: StatePacketComponent.navRow,
 				token: new TokenAppRow(rowAction)
 			})
 		})

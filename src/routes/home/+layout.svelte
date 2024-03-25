@@ -4,10 +4,10 @@
 	import {
 		State,
 		StateLayout,
-		StateSurfaceType,
+		StateLayoutComponent,
 		StatePacket,
 		StatePacketComponent,
-		StateSurfaceStyle
+		StateLayoutStyle
 	} from '$comps/nav/types.appState'
 	import { TokenAppDoAction, TokenAppDoList, TokenAppTreeReset } from '$comps/types.token'
 	import {
@@ -58,15 +58,15 @@
 		state = new State({
 			drawerStore,
 			layout: new StateLayout({
-				surfaceStyle: StateSurfaceStyle.page,
-				surfaceType: StateSurfaceType.DataObjLayoutTab
+				layoutComponent: StateLayoutComponent.DataObjLayoutTab,
+				layoutStyle: StateLayoutStyle.dataObjTab
 			}),
 			modalStore,
 			onRowClick: (rows: any, record: any) => {
 				state.update({
 					packet: new StatePacket({
 						checkObjChanged: false,
-						component: StatePacketComponent.appDataObj,
+						component: StatePacketComponent.dataObj,
 						token: new TokenAppDoList(TokenAppDoAction.listEdit)
 					}),
 					parms: { listRecordIdList: rows.map((r: any) => r.id), listRecordIdCurrent: record.id }
@@ -116,7 +116,7 @@
 			page: '/home',
 			nodeType: NodeType.home,
 			packet: new StatePacket({
-				component: StatePacketComponent.navReset,
+				component: StatePacketComponent.navHome,
 				token: new TokenAppTreeReset()
 			})
 		})

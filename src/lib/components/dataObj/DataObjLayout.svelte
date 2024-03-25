@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { App, AppLevelRowStatus } from '$comps/nav/types.app'
-	import { State, StateSurfaceStyle, StateObjDialog } from '$comps/nav/types.appState'
+	import { State, StateLayoutStyle } from '$comps/nav/types.appState'
 	import type { DataObj, DataObjData } from '$comps/types'
 	import FormListApp from '$comps/form/FormListApp.svelte'
 	import FormDetailApp from '$comps/form/FormDetailApp.svelte'
@@ -29,7 +29,7 @@
 	let headerDialog: string = ''
 	let headerObj: string = ''
 	let headerObjSub: string = ''
-	let isHeaderObjX: boolean = false
+	let isHeaderClose: boolean = false
 	let rowStatus: AppLevelRowStatus | undefined
 
 	$: currComponent = comps[dataObj.component]
@@ -40,31 +40,31 @@
 		headerObjSub = ''
 		rowStatus = undefined
 
-		switch (state.layout.surfaceStyle) {
-			case StateSurfaceStyle.dialogDetail:
+		switch (state.layout.layoutStyle) {
+			case StateLayoutStyle.overlayDrawerDetail:
+				headerObj = dataObj.header
+				headerObjSub = dataObj.subHeader
+				isHeaderClose = true
+				break
+
+			case StateLayoutStyle.overlayModalDetail:
 				headerObj = dataObj.header
 				headerObjSub = dataObj.subHeader
 				rowStatus = app.getRowStatus()
 				break
 
-			case StateSurfaceStyle.dialogSelect:
+			case StateLayoutStyle.overlayModalSelect:
 				headerObj = dataObj.header
 				headerObjSub = dataObj.subHeader
 				break
 
-			case StateSurfaceStyle.dialogWizard:
+			case StateLayoutStyle.overlayModalWizard:
 				headerDialog = ''
 				headerObj = dataObj.header
 				headerObjSub = dataObj.subHeader
 				break
 
-			case StateSurfaceStyle.drawer:
-				headerObj = dataObj.header
-				headerObjSub = dataObj.subHeader
-				isHeaderObjX = true
-				break
-
-			case StateSurfaceStyle.embedded:
+			case StateLayoutStyle.embeddedField:
 				break
 		}
 		classContent =
@@ -94,7 +94,7 @@
 							<div class="mr-0">
 								<NavRow {state} {rowStatus} />
 							</div>
-							{#if isHeaderObjX}
+							{#if isHeaderClose}
 								<button
 									type="button"
 									class="btn-icon btn-icon-sm variant-filled-error"

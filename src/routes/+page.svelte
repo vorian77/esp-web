@@ -5,7 +5,11 @@
 	import { DataObjCardinality, userInit } from '$comps/types'
 	import { apiFetch, ApiFunction } from '$lib/api'
 	import { TokenApiQueryType, TokenApiUserName } from '$comps/types.token'
-	import { StateObjDataObj, StateSurfaceType, StateSurfaceStyle } from '$comps/nav/types.appState'
+	import {
+		StateObjDataObj,
+		StateLayoutComponent,
+		StateLayoutStyle
+	} from '$comps/nav/types.appState'
 	import { goto } from '$app/navigation'
 
 	const FILENAME = 'routes/+page.svelte'
@@ -39,9 +43,8 @@
 					dataObjName,
 					drawerStore,
 					layout: {
-						surfaceStyle: StateSurfaceStyle.drawer,
-						surfaceType: StateSurfaceType.DataObjLayout,
-						headerCancelX: true
+						layoutComponent: StateLayoutComponent.DataObjLayout,
+						layoutStyle: StateLayoutStyle.overlayDrawerDetail
 					},
 					page: '/',
 					queryType: TokenApiQueryType.new,

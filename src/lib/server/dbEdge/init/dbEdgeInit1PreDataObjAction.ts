@@ -134,6 +134,25 @@ export async function initPreDataObjAction() {
 		name: 'noa_detail_delete_update'
 	})
 
+	// config
+	await addDataObjAction({
+		checkObjChanged: true,
+		codeActionType: 'listNew',
+		codeRenderShowSaveMode: 'any',
+		header: 'New',
+		isRenderDisableOnInvalidToSave: false,
+		isRenderShowRequiresObjHasChanged: false,
+		name: 'noa_list_config_new',
+		order: 110,
+		owner: 'app_sys'
+	})
+	await addDataObjActionConfirm({
+		confirmButtonLabel: 'Ok',
+		confirmMessage: 'Please save the parent record before a child record can be created.',
+		confirmTitle: 'New Child Record',
+		name: 'noa_list_config_new'
+	})
+
 	// dialog
 	await addDataObjAction({
 		checkObjChanged: true,

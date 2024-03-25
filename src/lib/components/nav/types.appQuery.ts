@@ -74,15 +74,7 @@ export async function query(
 				break
 
 			case DataObjCardinality.list:
-				// if (app) {
-				// 	app.levels[tab.levelIdx].metaData.valueSetIdList(
-				// 		tab.data?.dataObjRowList.map((row) => row.record.id) || []
-				// 	)
-				// 	console.log('types.appQuery.queryExecute.list:', {
-				// 		levelIdx: tab.levelIdx,
-				// 		metaData: app.levels[tab.levelIdx].metaData.valueGetAll()
-				// 	})
-				// }
+				tab.list.listSet(tab.data.dataObjRowList)
 				break
 
 			default:

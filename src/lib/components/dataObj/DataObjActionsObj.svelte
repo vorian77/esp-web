@@ -49,7 +49,7 @@
 		state.update({
 			packet: new StatePacket({
 				checkObjChanged: action.checkObjChanged,
-				component: StatePacketComponent.appDataObj,
+				component: StatePacketComponent.dataObj,
 				token: new TokenAppDoDetail(action.dbAction, dataObj.objData, action.confirm)
 			})
 		})

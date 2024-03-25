@@ -2,8 +2,8 @@
 	import '../app.postcss'
 
 	// overlays
-	import OverlayDrawer from '$comps/Surface/OverlayDrawer.svelte'
-	import OverlayModal from '$comps/Surface/OverlayModal.svelte'
+	import OverlayDrawer from '$comps/Overlay/OverlayDrawer.svelte'
+	import OverlayModal from '$comps/Overlay/OverlayModal.svelte'
 	import { Toast, initializeStores } from '@skeletonlabs/skeleton'
 	initializeStores()
 

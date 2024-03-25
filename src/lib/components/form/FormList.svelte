@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { State, StateObjDialog, StateSurfaceStyle } from '$comps/nav/types.appState'
+	import { State, StateObjDialog, StateLayoutStyle } from '$comps/nav/types.appState'
 	import { DataObj, DataObjData } from '$comps/types'
 	import { DataHandler, Datatable, Th, ThFilter } from '@vincjo/datatables'
 	import data0 from '$routes/data0.json'
@@ -20,9 +20,10 @@
 
 	const isAllSelected = handler.isAllSelected()
 	let isSelect =
-		state instanceof StateObjDialog && state.layout.surfaceStyle === StateSurfaceStyle.dialogSelect
+		state instanceof StateObjDialog &&
+		state.layout.layoutStyle === StateLayoutStyle.overlayModalSelect
 	let isSelectMulti = state instanceof StateObjDialog && state.isMultiSelect
-	let isSurfaceEmbedded = state.layout.surfaceStyle === StateSurfaceStyle.embedded
+	let isSurfaceEmbedded = state.layout.layoutStyle === StateLayoutStyle.embeddedField
 	let listHeight = 'full'
 
 	if (state instanceof StateObjDialog) {

@@ -12,7 +12,7 @@
 	async function onClick(crumbIdx: number) {
 		state.update({
 			packet: new StatePacket({
-				component: StatePacketComponent.appCrumbs,
+				component: StatePacketComponent.navCrumbs,
 				token: new TokenAppCrumbs(crumbIdx)
 			})
 		})

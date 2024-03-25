@@ -6,8 +6,7 @@
 		StateObjDataObj,
 		StateObjDialog,
 		StatePacket,
-		StatePacketComponent,
-		StateSurfaceStyle
+		StatePacketComponent
 	} from '$comps/nav/types.appState'
 	import {
 		TokenApiQuery,
@@ -28,7 +27,6 @@
 	import { NodeType } from '$comps/types'
 	import DataObjLayout from '$comps/dataObj/DataObjLayout.svelte'
 	import DataObjLayoutTab from '$comps/dataObj/DataObjLayoutTab.svelte'
-	import DataObjLayoutDialogDetail from '$comps/dataObj/DataObjLayoutDialogDetail.svelte'
 	import { error } from '@sveltejs/kit'
 	import DataViewer from '$comps/DataViewer.svelte'
 
@@ -45,23 +43,21 @@
 	let dataObjUpdate: DataObjUpdate | undefined
 
 	const components = [
-		StatePacketComponent.appBack,
-		StatePacketComponent.appCrumbs,
-		StatePacketComponent.appDataObj,
-		StatePacketComponent.appRow,
-		StatePacketComponent.appTab,
-		StatePacketComponent.appTree,
+		StatePacketComponent.navBack,
+		StatePacketComponent.navCrumbs,
+		StatePacketComponent.dataObj,
+		StatePacketComponent.navRow,
+		StatePacketComponent.navTab,
+		StatePacketComponent.navTree,
 		StatePacketComponent.dialog,
-		StatePacketComponent.embeddedField
+		StatePacketComponent.dataObjFieldEmbedded
 	]
-	const surfaceTypes: Record<string, any> = {
+	const layoutComponents: Record<string, any> = {
 		DataObjLayout: DataObjLayout,
-		DataObjLayoutTab: DataObjLayoutTab,
-		DataObjLayoutDialogDetail: DataObjLayoutDialogDetail
+		DataObjLayoutTab: DataObjLayoutTab
 	}
 
 	$: if (state && state.packet) {
-		// console.log('DataObj.state:', state)
 		const packet = state.consume(components)
 		if (packet) {
 			;(async () => await processState(packet))()
@@ -79,7 +75,7 @@
 		const token = packet.token
 
 		switch (packet.component) {
-			case StatePacketComponent.appBack:
+			case StatePacketComponent.navBack:
 				if (token instanceof TokenAppBack) {
 					if (app.levels.length === 1) {
 						returnHome()
@@ -90,7 +86,7 @@
 				}
 				break
 
-			case StatePacketComponent.appCrumbs:
+			case StatePacketComponent.navCrumbs:
 				if (token instanceof TokenAppCrumbs) {
 					if (token.crumbIdx === 0) {
 						returnHome()
@@ -101,7 +97,7 @@
 				}
 				break
 
-			case StatePacketComponent.appDataObj:
+			case StatePacketComponent.dataObj:
 				if (token instanceof TokenAppDo) {
 					switch (token.action) {
 						case TokenAppDoAction.detailDelete:
@@ -112,7 +108,7 @@
 							break
 
 						case TokenAppDoAction.detailNew:
-							app.getCurrTab().list.idSet('')
+							app.getCurrTabParent().list.idSet('')
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
 							app = app
 							dataObjUpdate = new DataObjUpdate(false, false, true)
@@ -169,14 +165,14 @@
 				}
 				break
 
-			case StatePacketComponent.appRow:
+			case StatePacketComponent.navRow:
 				if (token instanceof TokenAppRow) {
 					app = await app.rowUpdate(state, token.rowAction)
 					dataObjUpdate = new DataObjUpdate(false, false, true)
 				}
 				break
 
-			case StatePacketComponent.appTab:
+			case StatePacketComponent.navTab:
 				if (token instanceof TokenAppTab) {
 					currLevel = app.getCurrLevel()
 					currLevel.setTabIdx(token.tabIdx)
@@ -201,7 +197,7 @@
 						case DataObjCardinality.detail:
 							await app.addLevelDialog(state, token)
 							if (token.queryType === TokenApiQueryType.new) {
-								app.getCurrTab().list.idSet('')
+								app.getCurrTabParent().list.idSet('')
 							}
 							app = app
 							break
@@ -217,14 +213,14 @@
 				}
 				break
 
-			case StatePacketComponent.embeddedField:
+			case StatePacketComponent.dataObjFieldEmbedded:
 				if (state instanceof StateObjDataObj && token instanceof TokenApiQuery) {
 					app = await App.initEmbeddedField(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
 				break
 
-			case StatePacketComponent.appTree:
+			case StatePacketComponent.navTree:
 				if (token instanceof TokenAppTreeNode) {
 					app = await App.initNode(state, token)
 					dataObjUpdate = new DataObjUpdate(true, true, true)
@@ -250,6 +246,7 @@
 					state.statusReset()
 					state.metaData.dataUpdate(app.getParms())
 					dataObjData = currTab.data
+					console.log('DataObj.setNavApp.parms:', app.getParms())
 				}
 			}
 		}
@@ -260,7 +257,7 @@
 			page: '/home',
 			nodeType: NodeType.home,
 			packet: new StatePacket({
-				component: StatePacketComponent.navReset,
+				component: StatePacketComponent.navHome,
 				token: new TokenAppTreeSetParent()
 			})
 		})
@@ -281,7 +278,7 @@
 {#if dataObj && dataObjData}
 	<div class="p-4">
 		<svelte:component
-			this={surfaceTypes[state.layout.surfaceType]}
+			this={layoutComponents[state.layout.layoutComponent]}
 			bind:app
 			bind:state
 			{dataObj}

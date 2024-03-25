@@ -90,7 +90,7 @@ export class NavTree {
 					parms: { programId: this.getProgramId(nodeNav) },
 					nodeType: nodeNav.type,
 					packet: new StatePacket({
-						component: StatePacketComponent.appTree,
+						component: StatePacketComponent.navTree,
 						token: new TokenAppTreeNode(nodeNav)
 						// callbacks: [() => dispatch('treeChanged')]
 					})

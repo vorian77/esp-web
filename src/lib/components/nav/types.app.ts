@@ -45,22 +45,22 @@ export class App {
 		this.levels.push(newLevel)
 	}
 	static async initDialog(state: StateObjDialog, token: TokenAppDialog) {
-		const newLevel = new AppLevel([
-			new AppLevelTab({
-				dataObjId: token.dataObjIdDisplay,
-				idx: 0,
-				levelIdx: 0
-			})
-		])
-		console.log('initDialog', { metaData: state.metaData.valueGetAll() })
-		newLevel.getCurrTab().list.listInit(state.metaData.valueGetAll())
-
-		const newApp = new App(newLevel)
+		const newApp = new App(
+			new AppLevel([
+				new AppLevelTab({
+					dataObjId: token.dataObjIdDisplay,
+					idx: 0,
+					levelIdx: 0,
+					parms: state.metaData.valueGetAll()
+				})
+			])
+		)
 		await query(state, newApp.getCurrTab(), TokenApiQueryType.retrieve, newApp)
 		return newApp
 	}
 	static async initEmbeddedField(state: StateObjDataObj, token: TokenApiQuery) {
 		// get tab dataObjId
+		// <todo> 240325 - retrieve dataObjId from database
 		let dataObjId = ''
 		const result: ResponseBody = await apiFetch(ApiFunction.dbEdgeGetDataObjId, token)
 		if (result.success) {
@@ -79,11 +79,10 @@ export class App {
 				levelIdx: 0,
 				idx: 0,
 				dataObjId,
-				data: token.queryData.dataObjData
+				data: token.queryData.dataObjData,
+				parms: state.metaData.valueGetAll()
 			})
 		])
-		console.log('initEmbeddedField', { metaData: state.metaData.valueGetAll() })
-		newLevel.getCurrTab().list.listInit(state.metaData.valueGetAll())
 
 		// app
 		const newApp = new App(newLevel)
@@ -124,9 +123,8 @@ export class App {
 		return this
 	}
 	async addLevelNode(state: State, queryType: TokenApiQueryType) {
-		console.log('addLevelNode', { metaData: state.metaData.valueGetAll() })
 		// current tab
-		this.getCurrTab().list.listInit(state.metaData.valueGetAll())
+		this.getCurrTab().list.init(state.metaData.valueGetAll())
 
 		// new level
 		const tabs: Array<AppLevelTab> = []
@@ -220,10 +218,10 @@ export class App {
 	}
 	getParms() {
 		let parms: DataRecord = {}
-		this.levels.forEach((level) => {
+		this.levels.forEach((level, idx) => {
 			level.tabs[level.currTabIdx].list.listSetParms(parms)
 			Object.entries(level.tabs[level.currTabIdx].parms).forEach(([key, value]) => {
-				parms[key] = value
+				if (!Object.keys(parms).includes(key)) parms[key] = value
 			})
 		})
 		return parms
@@ -334,7 +332,9 @@ export class AppLevelTab {
 		this.idx = nbrRequired(obj.idx, 'idx')
 		this.label = valueOrDefault(obj.label, '')
 		this.levelIdx = nbrRequired(obj.levelIdx, 'levelIdx')
+		this.list.init(obj.parms)
 		this.nodeId = valueOrDefault(obj.nodeId, '')
+		this.parms = valueOrDefault(obj.parms, {})
 	}
 	detailGetData() {
 		return this.data ? this.data.getDataRecord() : {}
@@ -439,12 +439,19 @@ export class AppLevelTab {
 		}
 	}
 	async listUpdate(state: State, currTab: AppLevelTab, app: App) {
-		this.reset()
-		await query(state, this, TokenApiQueryType.retrieve, app)
-
 		if (currTab.data) {
-			const recordId = currTab.data.getRecordValue('id')
-			this.list.listUpdate(this?.data?.dataObjRowList, recordId, currTab.data.dataObjRow.status)
+			this.reset()
+			const recordIdOld = currTab.data.getRecordValue('id')
+			let recordIdNew = ''
+
+			if (currTab.data.dataObjRow.status === DataObjRecordStatus.deleted) {
+				let idx = this.list.idList.findIndex((id: string) => id === recordIdOld)
+				idx = idx === 0 ? 1 : idx - 1
+				recordIdNew = this.list.idList[idx]
+			}
+
+			await query(state, this, TokenApiQueryType.retrieve, app)
+			this.list.listUpdate(this?.data?.dataObjRowList, recordIdOld, recordIdNew)
 		}
 	}
 	reset() {
@@ -467,8 +474,8 @@ export class AppLevelTabList {
 	idSet(id: string) {
 		this.idCurrent = id
 	}
-	listInit(parms: DataRecord) {
-		const clazz = 'AppLevelTabList'
+	init(parms: DataRecord) {
+		parms = valueOrDefault(parms, {})
 		this.idCurrent = Object.hasOwn(parms, this.metaParmListRecordIdCurrent)
 			? parms[this.metaParmListRecordIdCurrent]
 			: ''
@@ -476,29 +483,18 @@ export class AppLevelTabList {
 			? parms[this.metaParmListRecordIdList]
 			: []
 	}
+	listSet(records: DataObjRecordRowList | undefined) {
+		this.idList = records ? records.map((row) => row.record.id) : []
+	}
 	listSetParms(parms: DataRecord) {
 		if (this.idCurrent && this.idList) {
 			parms[this.metaParmListRecordIdCurrent] = this.idCurrent
 			parms[this.metaParmListRecordIdList] = this.idList
 		}
 	}
-	listUpdate(
-		records: DataObjRecordRowList | undefined,
-		recordId: string,
-		status: DataObjRecordStatus
-	) {
-		if (records && records.length > 0) {
-			if (status === DataObjRecordStatus.deleted) {
-				let idx = this.idList.findIndex((id: string) => id === recordId)
-				idx = idx === 0 ? 1 : idx - 1
-				recordId = this.idList[idx]
-			}
-			this.idCurrent = recordId
-			this.idList = records.map((row) => row.record.id)
-		} else {
-			this.idCurrent = ''
-			this.idList = []
-		}
+	listUpdate(records: DataObjRecordRowList | undefined, recordIdOld: string, recordIdNew: string) {
+		this.idCurrent = recordIdNew ? recordIdNew : recordIdOld
+		this.listSet(records)
 	}
 }
 
