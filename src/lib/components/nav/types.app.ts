@@ -52,6 +52,7 @@ export class App {
 				levelIdx: 0
 			})
 		])
+		console.log('initDialog', { metaData: state.metaData.valueGetAll() })
 		newLevel.getCurrTab().list.listInit(state.metaData.valueGetAll())
 
 		const newApp = new App(newLevel)
@@ -81,6 +82,7 @@ export class App {
 				data: token.queryData.dataObjData
 			})
 		])
+		console.log('initEmbeddedField', { metaData: state.metaData.valueGetAll() })
 		newLevel.getCurrTab().list.listInit(state.metaData.valueGetAll())
 
 		// app
@@ -122,6 +124,7 @@ export class App {
 		return this
 	}
 	async addLevelNode(state: State, queryType: TokenApiQueryType) {
+		console.log('addLevelNode', { metaData: state.metaData.valueGetAll() })
 		// current tab
 		this.getCurrTab().list.listInit(state.metaData.valueGetAll())
 
@@ -466,8 +469,12 @@ export class AppLevelTabList {
 	}
 	listInit(parms: DataRecord) {
 		const clazz = 'AppLevelTabList'
-		this.idCurrent = strRequired(parms[this.metaParmListRecordIdCurrent], clazz, 'idCurrent')
-		this.idList = required(parms[this.metaParmListRecordIdList], clazz, 'idList')
+		this.idCurrent = Object.hasOwn(parms, this.metaParmListRecordIdCurrent)
+			? parms[this.metaParmListRecordIdCurrent]
+			: ''
+		this.idList = Object.hasOwn(parms, this.metaParmListRecordIdList)
+			? parms[this.metaParmListRecordIdList]
+			: []
 	}
 	listSetParms(parms: DataRecord) {
 		if (this.idCurrent && this.idList) {

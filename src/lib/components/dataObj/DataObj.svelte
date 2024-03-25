@@ -61,6 +61,7 @@
 	}
 
 	$: if (state && state.packet) {
+		// console.log('DataObj.state:', state)
 		const packet = state.consume(components)
 		if (packet) {
 			;(async () => await processState(packet))()
