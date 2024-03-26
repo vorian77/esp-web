@@ -91,7 +91,7 @@
 	</div>
 {/if}
 
-<DataViewer
+<!-- <DataViewer
 	header="state.metaData"
 	data={{ recordIdCurrent: state.metaData.valueGetId(), idList: state.metaData.valueGetIdList() }}
-/>
+/> -->

@@ -12,10 +12,7 @@
 	const FILENAME = '$comps/Surface/DataObjLayout.svelte'
 	const dispatch = createEventDispatcher()
 
-	const comps: Record<string, any> = {
-		FormList: FormListApp,
-		FormDetail: FormDetailApp
-	}
+	const comps: Record<string, any> = { FormList: FormListApp, FormDetail: FormDetailApp }
 
 	export let app: App
 	export let state: State
