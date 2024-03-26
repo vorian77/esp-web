@@ -47,6 +47,8 @@
 	</select>
 </label>
 
+<!-- <DataViewer header="value" data={field.valueCurrent} /> -->
+
 <style>
 	/* select {
 		@apply {field.colorBackground} rounded-lg;

@@ -34,6 +34,7 @@ export async function initPreTable() {
 		['app_cm', 'app_cm', 'CmClientServiceFlow', true],
 		['app_cm', 'app_cm', 'CmCourse', true],
 		['app_cm', 'app_cm', 'CmCohort', true],
+		['app_cm', 'app_cm', 'CmCohortAttd', true],
 		['app_cm', 'app_cm', 'CmCsfCohort', true],
 		['app_cm', 'app_cm', 'CmCsfCohortAttd', true],
 		['app_cm', 'app_cm', 'CmCsfDocument', true],

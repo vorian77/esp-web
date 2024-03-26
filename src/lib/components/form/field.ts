@@ -258,6 +258,7 @@ export interface FieldRaw {
 		patternReplacement: string
 		placeHolder: string
 		spinStep: string
+		togglePresetTrue: boolean
 		toggleValueFalse: string
 		toggleValueShow: boolean
 		toggleValueTrue: string

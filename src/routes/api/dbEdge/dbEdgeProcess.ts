@@ -264,6 +264,10 @@ export async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData) 
 	} else if (field.fieldListItems) {
 		queryData = TokenApiQueryData.load(queryData)
 		queryData.parmsUpsert({ ...field.fieldListItems.parms, fieldValueCurrent: field.valueCurrent })
+		console.log('dbEdgeProcess.getDataItems.script...')
+		console.log(field.fieldListItems.exprSelect)
+		console.log(getValExpr(field.fieldListItems.exprSelect, queryData))
+		console.log()
 		const resultObj = await queryMultiple(getValExpr(field.fieldListItems.exprSelect, queryData))
 		const resultArray = []
 		for (const [key, value] of Object.entries(resultObj)) {

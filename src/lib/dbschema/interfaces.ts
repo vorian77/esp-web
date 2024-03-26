@@ -76,6 +76,13 @@ export namespace app_cm {
     "dateStart"?: edgedb.LocalDate | null;
     "cost"?: number | null;
   }
+  export interface CmCohortAttd extends sys_user.Mgmt {
+    "cohort": CmCohort;
+    "date": edgedb.LocalDate;
+    "duration": number;
+    "file"?: unknown | null;
+    "note"?: string | null;
+  }
   export interface CmCourse extends sys_core.SysObj {
     "description"?: string | null;
     "schedule"?: string | null;
@@ -105,10 +112,11 @@ export namespace app_cm {
     "dateStartEst"?: edgedb.LocalDate | null;
   }
   export interface CmCsfCohortAttd extends sys_user.Mgmt {
-    "csfCohort": CmCsfCohort;
-    "date": edgedb.LocalDate;
     "duration": number;
     "note"?: string | null;
+    "cohortAttd": CmCohortAttd;
+    "csfCohort": CmCsfCohort;
+    "fullDuration": string;
   }
   export interface CmCsfDocument extends CmCsfData {
     "codeType": sys_core.SysCode;
@@ -647,6 +655,7 @@ export namespace sys_db {
     "toggleValueFalse"?: string | null;
     "toggleValueTrue"?: string | null;
     "toggleValueShow"?: boolean | null;
+    "togglePresetTrue"?: boolean | null;
   }
   export interface SysTable extends sys_core.SysObj {
     "columns": SysColumn[];
@@ -688,6 +697,7 @@ export interface types {
     "CmClient": app_cm.CmClient;
     "CmClientServiceFlow": app_cm.CmClientServiceFlow;
     "CmCohort": app_cm.CmCohort;
+    "CmCohortAttd": app_cm.CmCohortAttd;
     "CmCourse": app_cm.CmCourse;
     "CmCsfData": app_cm.CmCsfData;
     "CmCsfCohort": app_cm.CmCsfCohort;

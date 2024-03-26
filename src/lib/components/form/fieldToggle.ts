@@ -2,12 +2,14 @@ import { Field, FieldAccess, type FieldRaw } from '$comps/form/field'
 import { Validation, ValidationStatus, valueOrDefault } from '$comps/types'
 
 export class FieldToggle extends Field {
+	presetTrue: boolean
 	valueFalse: string
 	valueShow: boolean
 	valueTrue: string
 	constructor(obj: any, index: number, isFirstVisible: boolean) {
 		super(obj, index, isFirstVisible)
 		this.access = FieldAccess.optional
+		this.presetTrue = valueOrDefault(obj._column.togglePresetTrue, false)
 		this.valueFalse = valueOrDefault(obj._column.toggleValueFalse, undefined)
 		this.valueShow = valueOrDefault(obj._column.toggleValueShow, false)
 		this.valueTrue = valueOrDefault(obj._column.toggleValueTrue, undefined)

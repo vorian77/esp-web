@@ -32,6 +32,14 @@ module app_cm {
       venue: sys_core::SysOrg;
     }
 
+  type CmCohortAttd extending sys_user::Mgmt {
+      required cohort: app_cm::CmCohort;
+      required date: cal::local_date;
+      required duration: float32;
+      file: json;
+      note: str;
+    }
+
   # Service Flow
   type CmServiceFlow extending sys_core::SysObj {}
 
@@ -75,10 +83,12 @@ module app_cm {
   }
 
   type CmCsfCohortAttd extending sys_user::Mgmt {
-    required csfCohort: app_cm::CmCsfCohort;
-    required date: cal::local_date;
+    required csfCohort: CmCsfCohort;
+    required cohortAttd: CmCohortAttd;
+    required fullDuration: str;
     required duration: float32;
     note: str;
+    constraint exclusive on ((.csfCohort, .cohortAttd));
   }  
 
   type CmCsfDocument extending app_cm::CmCsfData {

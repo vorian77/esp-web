@@ -16,7 +16,9 @@ export async function dbEdgeInit() {
 	sectionHeader('Init Start')
 	// await initSys()
 	// await initFeatures()
-	await initFeatSysAdmin()
+	// await initFeatSysAdmin()
+	await initTraining()
+	await initFeatCMStudent()
 	sectionHeader('Init Complete')
 }
 export async function initSys() {

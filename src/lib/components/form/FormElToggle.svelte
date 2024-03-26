@@ -28,9 +28,15 @@
 				return [true, false]
 		}
 	})()
-
 	let toggleValue: boolean
-	setToggle(field.valueCurrent)
+
+	$: {
+		if (field.valueCurrent === undefined || field.valueCurrent === null) {
+			field.valueCurrent = field.presetTrue ? selections[0] : selections[1]
+			dispatch(dispatchType, { fieldName: field.name, value: field.valueCurrent })
+		}
+		setToggle(field.valueCurrent)
+	}
 
 	function onChange(event: Event) {
 		const idx = selections.findIndex((s: any) => {

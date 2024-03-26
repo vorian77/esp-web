@@ -107,5 +107,3 @@
 		</object>
 	{/if}
 </div>
-
-<!-- <DataViewer header="field" data={field} /> -->

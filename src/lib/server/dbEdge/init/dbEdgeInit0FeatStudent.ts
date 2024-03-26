@@ -771,20 +771,21 @@ async function initStudentCsfCohortAttd() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'csfCohort',
+				columnName: 'cohortAttd',
+				dbOrderCrumb: 10,
+				dbOrderList: 10,
 				dbOrderSelect: 20,
+				headerAlt: 'Date',
 				indexTable: '0',
-				isDisplay: false,
-				link: { columnsDisplay: ['id'] }
+				link: {
+					columnsDisplay: ['date'],
+					table: { module: 'app_cm', name: 'CmCohortAttd' }
+				}
 			},
 			{
 				codeAccess: 'readOnly',
-				codeDbListDir: 'desc',
-				codeElement: 'date',
-				columnName: 'date',
-				dbOrderCrumb: 10,
-				dbOrderList: 10,
-				dbOrderSelect: 30,
+				columnName: 'fullDuration',
+				dbOrderSelect: 35,
 				indexTable: '0'
 			},
 			{
@@ -824,11 +825,18 @@ async function initStudentCsfCohortAttd() {
 				}
 			},
 			{
-				codeElement: 'date',
-				columnName: 'date',
-				dbOrderCrumb: 10,
-				dbOrderList: 10,
+				codeElement: 'select',
+				columnName: 'cohortAttd',
 				dbOrderSelect: 30,
+				headerAlt: 'Date',
+				indexTable: '0',
+				fieldListItems: 'il_cm_cohort_attd_cohort',
+				link: { table: { module: 'app_cm', name: 'CmCohortAttd' } }
+			},
+			{
+				codeElement: 'toggle',
+				columnName: 'fullDuration',
+				dbOrderSelect: 35,
 				indexTable: '0'
 			},
 			{

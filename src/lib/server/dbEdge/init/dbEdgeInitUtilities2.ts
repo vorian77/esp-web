@@ -113,6 +113,7 @@ export async function addColumn(data: any) {
 			patternReplacement: e.optional(e.str),
 			placeHolder: e.optional(e.str),
 			spinStep: e.optional(e.str),
+			togglePresetTrue: e.optional(e.bool),
 			toggleValueFalse: e.optional(e.str),
 			toggleValueShow: e.optional(e.bool),
 			toggleValueTrue: e.optional(e.str)
@@ -146,6 +147,7 @@ export async function addColumn(data: any) {
 				patternReplacement: p.patternReplacement,
 				placeHolder: p.placeHolder,
 				spinStep: p.spinStep,
+				togglePresetTrue: p.togglePresetTrue,
 				toggleValueFalse: p.toggleValueFalse,
 				toggleValueShow: p.toggleValueShow,
 				toggleValueTrue: p.toggleValueTrue

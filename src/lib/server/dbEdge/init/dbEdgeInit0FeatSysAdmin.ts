@@ -935,6 +935,12 @@ async function initColumn() {
 			},
 			{
 				codeAccess: 'optional',
+				columnName: 'togglePresetTrue',
+				dbOrderSelect: 305,
+				indexTable: '0'
+			},
+			{
+				codeAccess: 'optional',
 				columnName: 'toggleValueTrue',
 				dbOrderSelect: 310,
 				indexTable: '0'
@@ -2165,8 +2171,7 @@ async function initConfig() {
 			{
 				codeElement: 'checkbox',
 				columnName: 'hasMgmt',
-				dbOrderSelect: 45,
-				exprPresetScalar: `(SELECT true)`
+				dbOrderSelect: 45
 			},
 			{
 				codeElement: 'custom',

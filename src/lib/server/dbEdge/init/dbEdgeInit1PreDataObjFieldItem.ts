@@ -3,7 +3,24 @@ import { addDataObjFieldItems } from '$server/dbEdge/init/dbEdgeInitUtilities2'
 
 export async function initPreDataObjFieldItem() {
 	sectionHeader('DataObjFieldItem')
-
+	await addDataObjFieldItems({
+		exprSelect: `SELECT app_cm::CmCohortAttd {data := .id, display := std::to_str(<cal::local_date>.date)} 
+		FILTER (.cohort = (SELECT app_cm::CmCsfCohort FILTER .id = <uuid,tree,CmCsfCohort.id>).cohort
+			AND .id NOT IN (SELECT app_cm::CmCsfCohortAttd FILTER .csfCohort.id = <uuid,tree,CmCsfCohort.id>).cohortAttd.id)
+			OR .id IN <uuidList,parms,fieldValueCurrent> 
+		ORDER BY .display`,
+		name: 'il_cm_cohort_attd_cohort',
+		owner: 'app_cm'
+	})
+	await addDataObjFieldItems({
+		exprSelect: `SELECT app_cm::CmCsfCohort {data := .id, display := .csf.client.person.fullName} 
+		FILTER (.cohort IN (SELECT app_cm::CmCohort FILTER .id = <uuid,tree,CmCohort.id>) 
+			AND .csf NOT IN (SELECT app_cm::CmCsfCohortAttd FILTER .cohortAttd.id = <uuid,tree,CmCohortAttd.id>).csfCohort.csf)
+			OR .id IN <uuidList,parms,fieldValueCurrent> 
+		ORDER BY .csf.client.person.lastName THEN .csf.client.person.firstName`,
+		name: 'il_cm_cohort_attd_student',
+		owner: 'app_cm'
+	})
 	await addDataObjFieldItems({
 		exprSelect: `SELECT app_cm::CmEmployer {data := .id, display := .name} FILTER .owner IN (SELECT sys_user::SysUser FILTER .userName = <str,user,userName>).orgs OR .id IN <uuidList,parms,fieldValueCurrent> ORDER BY .name`,
 		name: 'il_cm_employer_by_userName',

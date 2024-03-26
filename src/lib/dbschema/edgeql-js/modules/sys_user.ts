@@ -97,6 +97,8 @@ export type $UserRootλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f738
   "<createdBy[is sys_core::SysDataObjFieldListConfig]": $.LinkDesc<_sys_core.$SysDataObjFieldListConfig, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy[is sys_core::SysDataObjActionGroup]": $.LinkDesc<_sys_core.$SysDataObjActionGroup, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy[is sys_core::SysDataObjActionGroup]": $.LinkDesc<_sys_core.$SysDataObjActionGroup, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<modifiedBy[is app_cm::CmCohortAttd]": $.LinkDesc<_app_cm.$CmCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<createdBy[is app_cm::CmCohortAttd]": $.LinkDesc<_app_cm.$CmCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<createdBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<modifiedBy": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;

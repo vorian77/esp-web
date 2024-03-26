@@ -230,6 +230,12 @@ export async function initPreColumn() {
 		name: 'cohort'
 	})
 	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'link',
+		header: 'Cohort Attendance',
+		name: 'cohortAttd'
+	})
+	await addColumn({
 		owner: 'app_sys_admin',
 		codeDataType: 'str',
 		header: 'Color',
@@ -465,7 +471,7 @@ export async function initPreColumn() {
 	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'float64',
-		header: 'Duration',
+		header: 'Duration (Hours)',
 		maxValue: 24,
 		minValue: 0,
 		name: 'duration',
@@ -528,6 +534,16 @@ export async function initPreColumn() {
 		header: 'First Name',
 		name: 'firstName'
 	})
+
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'str',
+		header: 'Full Duration',
+		name: 'fullDuration',
+		togglePresetTrue: true,
+		toggleValueFalse: 'No',
+		toggleValueTrue: 'Yes'
+	})
 	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'str',
@@ -539,6 +555,7 @@ export async function initPreColumn() {
 		codeDataType: 'bool',
 		header: 'Has Management Columns',
 		name: 'hasMgmt',
+		togglePresetTrue: true,
 		toggleValueFalse: 'No',
 		toggleValueTrue: 'Yes'
 	})
@@ -988,6 +1005,12 @@ export async function initPreColumn() {
 		codeDataType: 'str',
 		header: 'Title',
 		name: 'title'
+	})
+	await addColumn({
+		owner: 'app_sys_admin',
+		codeDataType: 'bool',
+		header: 'Toggle Preset True',
+		name: 'togglePresetTrue'
 	})
 	await addColumn({
 		owner: 'app_sys_admin',

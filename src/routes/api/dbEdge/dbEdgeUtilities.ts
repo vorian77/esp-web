@@ -91,6 +91,7 @@ export async function getDataObjById(dataObjId: string) {
 					patternReplacement: true,
 					placeHolder: true,
 					spinStep: true,
+					togglePresetTrue: true,
 					toggleValueFalse: true,
 					toggleValueShow: true,
 					toggleValueTrue: true

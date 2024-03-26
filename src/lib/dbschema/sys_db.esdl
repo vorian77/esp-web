@@ -22,6 +22,7 @@ module sys_db{
     patternReplacement: str;
     placeHolder: str;
     spinStep: str;
+    togglePresetTrue: bool;
     toggleValueFalse: str;
     toggleValueShow: bool;
     toggleValueTrue: str;
