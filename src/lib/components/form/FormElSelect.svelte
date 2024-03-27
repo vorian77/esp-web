@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { FieldSelect } from '$comps/form/fieldSelect'
-	import { onMount } from 'svelte'
 	import { FieldAccess } from '$comps/form/field'
 	import { createEventDispatcher } from 'svelte'
 	import DataViewer from '$comps/DataViewer.svelte'
@@ -11,12 +10,10 @@
 	const dispatchType = 'changeItem'
 	const fieldId = 'field' + field.index
 
-	onMount(() => {
-		if (field.items.length === 1 && !field.valueCurrent && field.access === FieldAccess.required) {
-			field.valueCurrent = field.items[0].data
-			dispatch(dispatchType, { fieldName: field.name, value: field.items[0].data })
-		}
-	})
+	$: if (field.items.length === 1 && !field.valueCurrent && field.access === FieldAccess.required) {
+		field.valueCurrent = field.items[0].data
+		dispatch(dispatchType, { fieldName: field.name, value: field.items[0].data })
+	}
 
 	function onChange(event: Event) {
 		const target = event.currentTarget as HTMLSelectElement
@@ -26,7 +23,6 @@
 </script>
 
 <!-- <DataViewer header="value" data={field.value} /> -->
-<!-- <DataViewer header="items" data={field.items} /> -->
 
 <label for={fieldId} class="label">
 	<span>{field.label}</span>
@@ -47,7 +43,8 @@
 	</select>
 </label>
 
-<!-- <DataViewer header="value" data={field.valueCurrent} /> -->
+<DataViewer header="value" data={field.valueCurrent} />
+<DataViewer header="items" data={field.items} />
 
 <style>
 	/* select {

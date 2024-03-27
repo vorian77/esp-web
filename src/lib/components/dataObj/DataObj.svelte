@@ -75,28 +75,6 @@
 		const token = packet.token
 
 		switch (packet.component) {
-			case StatePacketComponent.navBack:
-				if (token instanceof TokenAppBack) {
-					if (app.levels.length === 1) {
-						returnHome()
-					} else {
-						app = await app.back(1)
-						dataObjUpdate = new DataObjUpdate(true, true, true)
-					}
-				}
-				break
-
-			case StatePacketComponent.navCrumbs:
-				if (token instanceof TokenAppCrumbs) {
-					if (token.crumbIdx === 0) {
-						returnHome()
-					} else {
-						app = await app.changeCrumbs(token)
-						dataObjUpdate = new DataObjUpdate(true, true, true)
-					}
-				}
-				break
-
 			case StatePacketComponent.dataObj:
 				if (token instanceof TokenAppDo) {
 					switch (token.action) {
@@ -111,7 +89,7 @@
 							app.getCurrTabParent().list.idSet('')
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
 							app = app
-							dataObjUpdate = new DataObjUpdate(false, false, true)
+							dataObjUpdate = new DataObjUpdate(false, true, true)
 							break
 
 						case TokenAppDoAction.detailSaveAs:
@@ -165,24 +143,11 @@
 				}
 				break
 
-			case StatePacketComponent.navRow:
-				if (token instanceof TokenAppRow) {
-					app = await app.rowUpdate(state, token.rowAction)
-					dataObjUpdate = new DataObjUpdate(false, false, true)
+			case StatePacketComponent.dataObjFieldEmbedded:
+				if (state instanceof StateObjDataObj && token instanceof TokenApiQuery) {
+					app = await App.initEmbeddedField(state, token)
+					dataObjUpdate = new DataObjUpdate(true, true, true)
 				}
-				break
-
-			case StatePacketComponent.navTab:
-				if (token instanceof TokenAppTab) {
-					currLevel = app.getCurrLevel()
-					currLevel.setTabIdx(token.tabIdx)
-					currTab = currLevel.getCurrTab()
-					if (!currTab.isRetrieved) {
-						await query(state, currTab, TokenApiQueryType.retrieve, app)
-						dataObjUpdate = new DataObjUpdate(true, true, true)
-					}
-				}
-				app = app
 				break
 
 			case StatePacketComponent.dialog:
@@ -213,11 +178,46 @@
 				}
 				break
 
-			case StatePacketComponent.dataObjFieldEmbedded:
-				if (state instanceof StateObjDataObj && token instanceof TokenApiQuery) {
-					app = await App.initEmbeddedField(state, token)
-					dataObjUpdate = new DataObjUpdate(true, true, true)
+			case StatePacketComponent.navBack:
+				if (token instanceof TokenAppBack) {
+					if (app.levels.length === 1) {
+						returnHome()
+					} else {
+						app = await app.back(1)
+						dataObjUpdate = new DataObjUpdate(true, true, true)
+					}
 				}
+				break
+
+			case StatePacketComponent.navCrumbs:
+				if (token instanceof TokenAppCrumbs) {
+					if (token.crumbIdx === 0) {
+						returnHome()
+					} else {
+						app = await app.changeCrumbs(token)
+						dataObjUpdate = new DataObjUpdate(true, true, true)
+					}
+				}
+				break
+
+			case StatePacketComponent.navRow:
+				if (token instanceof TokenAppRow) {
+					app = await app.rowUpdate(state, token.rowAction)
+					dataObjUpdate = new DataObjUpdate(false, true, true)
+				}
+				break
+
+			case StatePacketComponent.navTab:
+				if (token instanceof TokenAppTab) {
+					currLevel = app.getCurrLevel()
+					currLevel.setTabIdx(token.tabIdx)
+					currTab = currLevel.getCurrTab()
+					if (!currTab.isRetrieved) {
+						await query(state, currTab, TokenApiQueryType.retrieve, app)
+						dataObjUpdate = new DataObjUpdate(true, true, true)
+					}
+				}
+				app = app
 				break
 
 			case StatePacketComponent.navTree:
