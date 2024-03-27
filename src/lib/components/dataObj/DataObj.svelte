@@ -35,12 +35,13 @@
 	export let state: State
 
 	let app: App
-	let currLevel: AppLevel
-	let currTab: AppLevelTab
+	let currLevel: AppLevel | undefined
+	let currTab: AppLevelTab | undefined
 
 	let dataObj: DataObj | undefined
 	let dataObjData: DataObjData | undefined
 	let dataObjUpdate: DataObjUpdate | undefined
+	let parentTab: AppLevelTab | undefined
 
 	const components = [
 		StatePacketComponent.navBack,
@@ -86,7 +87,8 @@
 							break
 
 						case TokenAppDoAction.detailNew:
-							app.getCurrTabParent().list.idSet('')
+							parentTab = app.getCurrTabParentTab()
+							if (parentTab) parentTab.list.idSet('')
 							await query(state, app.getCurrTab(), TokenApiQueryType.new, app)
 							app = app
 							dataObjUpdate = new DataObjUpdate(false, true, true)
@@ -121,9 +123,7 @@
 							break
 
 						case TokenAppDoAction.listNew:
-							await app.addLevelNode(state, TokenApiQueryType.new)
-							app.getCurrTabParent().list.idSet('')
-							app = app
+							app = await app.addLevelNode(state, TokenApiQueryType.new)
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break
 
@@ -160,11 +160,7 @@
 							break
 
 						case DataObjCardinality.detail:
-							await app.addLevelDialog(state, token)
-							if (token.queryType === TokenApiQueryType.new) {
-								app.getCurrTabParent().list.idSet('')
-							}
-							app = app
+							app = await app.addLevelDialog(state, token)
 							break
 
 						default:
@@ -210,11 +206,13 @@
 			case StatePacketComponent.navTab:
 				if (token instanceof TokenAppTab) {
 					currLevel = app.getCurrLevel()
-					currLevel.setTabIdx(token.tabIdx)
-					currTab = currLevel.getCurrTab()
-					if (!currTab.isRetrieved) {
-						await query(state, currTab, TokenApiQueryType.retrieve, app)
-						dataObjUpdate = new DataObjUpdate(true, true, true)
+					if (currLevel) {
+						currLevel.setTabIdx(token.tabIdx)
+						currTab = currLevel.getCurrTab()
+						if (!currTab.isRetrieved) {
+							await query(state, currTab, TokenApiQueryType.retrieve, app)
+							dataObjUpdate = new DataObjUpdate(true, true, true)
+						}
 					}
 				}
 				app = app

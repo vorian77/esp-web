@@ -531,6 +531,9 @@ export class DataObjData {
 	getDataRecord() {
 		return this.dataObjRow.record
 	}
+	getDataRecordStatus() {
+		return this.dataObjRow.status
+	}
 	getRecordValue(key: string) {
 		if (!this.hasRecord()) return undefined
 		return this.dataObjRow.record[key]

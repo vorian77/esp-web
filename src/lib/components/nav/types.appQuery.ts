@@ -23,10 +23,11 @@ const FILENAME = '/$comps/nav/types.appQuery.ts'
 
 export async function query(
 	state: State,
-	tab: AppLevelTab,
+	tab: AppLevelTab | undefined,
 	queryType: TokenApiQueryType,
 	app: App | undefined = undefined
 ) {
+	if (!tab) return false
 	const dataRecordPre = { ...tab.data?.getDataRecord() }
 	let { dataTree, parms } = queryDataPre(queryType, tab.data?.parms, app)
 	const queryData = new TokenApiQueryData({ tree: dataTree, parms })
@@ -74,7 +75,6 @@ export async function query(
 				break
 
 			case DataObjCardinality.list:
-				console.log('types.appQuery.list:', tab.data.dataObjRowList)
 				tab.list.listSet(tab.data.dataObjRowList)
 				break
 
@@ -133,7 +133,7 @@ function queryDataPre(
 		}
 		parms = app.getParms()
 	}
-	console.log('types.appQuery.queryDataPre:', { parms, dataTree })
+	// console.log('types.appQuery.queryDataPre:', { parms, dataTree })
 	return { dataTree, parms }
 }
 

@@ -94,6 +94,10 @@ export class App {
 		const tabParms = App.getTabParmsNode(0, 0, token.node)
 		const newApp = new App(new AppLevel([new AppLevelTab(tabParms)]))
 		await query(state, newApp.getCurrTab(), TokenApiQueryType.retrieve, newApp)
+
+		const currTab = newApp.getCurrTab()
+		if (currTab) currTab.list.listSet(currTab?.data?.dataObjRowList)
+
 		return newApp
 	}
 	static getTabParmsNode(levelIdx: number, idx: number, node: Node) {
@@ -109,6 +113,11 @@ export class App {
 	}
 
 	async addLevelDialog(state: StateObjDialog, token: TokenAppDialog) {
+		// current tab
+		const currTab = this.getCurrTab()
+		if (currTab) currTab.list.initLevel(state.metaData.valueGetAll())
+
+		// new level
 		const newLevel = new AppLevel([
 			new AppLevelTab({
 				dataObjId: token.dataObjIdDialog,
@@ -123,33 +132,40 @@ export class App {
 		return this
 	}
 	async addLevelNode(state: State, queryType: TokenApiQueryType) {
-		// current tab
-		this.getCurrTab().list.init(state.metaData.valueGetAll())
+		const currTab = this.getCurrTab()
+		if (currTab && currTab.data) {
+			// current tab
+			currTab.list.initLevel(state.metaData.valueGetAll())
 
-		// new level
-		const tabs: Array<AppLevelTab> = []
-		const newLevelIdx = this.levels.length
-		const currLevel = this.getCurrLevel()
-		const rawNodes: {
-			root: Array<DbNode>
-			children: Array<DbNode>
-		} = await getNodesLevel(currLevel.getCurrTab().nodeId)
+			// new level
+			const tabs: Array<AppLevelTab> = []
+			const newLevelIdx = this.levels.length
+			const currLevel = this.getCurrLevel()
+			if (currLevel) {
+				const rawNodes: {
+					root: Array<DbNode>
+					children: Array<DbNode>
+				} = await getNodesLevel(currLevel.getCurrTab().nodeId)
 
-		if (rawNodes.root.length === 1) {
-			// add root
-			tabs.push(
-				new AppLevelTab(
-					App.getTabParmsNode(newLevelIdx, 0, new Node(new RawNode(rawNodes.root[0])))
-				)
-			)
-			// add children
-			rawNodes.children.forEach(async (rawNode, idx) => {
-				tabs.push(
-					new AppLevelTab(App.getTabParmsNode(newLevelIdx, idx + 1, new Node(new RawNode(rawNode))))
-				)
-			})
-			this.levels.push(new AppLevel(tabs))
-			await query(state, this.getCurrTab(), queryType, this)
+				if (rawNodes.root.length === 1) {
+					// add root
+					tabs.push(
+						new AppLevelTab(
+							App.getTabParmsNode(newLevelIdx, 0, new Node(new RawNode(rawNodes.root[0])))
+						)
+					)
+					// add children
+					rawNodes.children.forEach(async (rawNode, idx) => {
+						tabs.push(
+							new AppLevelTab(
+								App.getTabParmsNode(newLevelIdx, idx + 1, new Node(new RawNode(rawNode)))
+							)
+						)
+					})
+					this.levels.push(new AppLevel(tabs))
+					await query(state, this.getCurrTab(), queryType, this)
+				}
+			}
 		}
 		return this
 	}
@@ -157,10 +173,12 @@ export class App {
 	async back(backCnt: number) {
 		for (let i = 0; i < backCnt; i++) {
 			const currLevel = this.getCurrLevel()
-			if (currLevel.currTabIdx > 0) {
-				currLevel.setTabIdx(0, true)
-			} else {
-				this.levels.pop()
+			if (currLevel) {
+				if (currLevel.currTabIdx > 0) {
+					currLevel.setTabIdx(0, true)
+				} else {
+					this.levels.pop()
+				}
 			}
 		}
 		return this
@@ -172,17 +190,45 @@ export class App {
 		return this
 	}
 	async detailUpdate(state: State, token: TokenAppDoDetail, queryType: TokenApiQueryType) {
-		this.getCurrLevel().resetTabs()
-		if (!(await this.update(state, queryType, token.data.getDataRecord()))) return this
+		const currTab = this.getCurrTab()
+		if (currTab && currTab.data) {
+			const currRecord = token.data.getDataRecord()
+			const tabParent = this.getCurrTabParentTab()
 
-		if (this.levels.length > 1) {
-			const tabParent = this.getCurrTabParent()
-			await tabParent.listUpdate(state, this.getCurrTab(), this)
-			if (queryType === TokenApiQueryType.delete) {
-				if (tabParent.listHasRecords()) {
-					await this.update(state, TokenApiQueryType.retrieve, tabParent.listGetData())
+			if (queryType !== TokenApiQueryType.delete) {
+				if (!(await this.update(state, queryType, currRecord))) return this
+				if (tabParent) {
+					await query(state, tabParent, TokenApiQueryType.retrieve, this)
+					tabParent.list.listUpdate(
+						tabParent?.data?.dataObjRowList,
+						currTab.data.getRecordValue('id')
+					)
+				}
+			} else {
+				if (currTab.data.getDataRecordStatus() === DataObjRecordStatus.created) {
+					if (!tabParent || !tabParent.listHasRecords()) {
+						this.popLevel()
+					} else {
+						tabParent.list.idSet(tabParent.list.idList[0])
+						await this.update(state, TokenApiQueryType.retrieve, tabParent.listGetData())
+					}
 				} else {
-					this.popLevel()
+					let recordIdOld = currTab.data.getRecordValue('id')
+					let recordIdNew = ''
+					if (tabParent && tabParent.list.idList.length > 1) {
+						let idx = tabParent.list.idList.findIndex((id: string) => id === recordIdOld)
+						idx = idx === 0 ? 1 : idx - 1
+						recordIdNew = tabParent.list.idList[idx]
+
+						if (!(await this.update(state, queryType, currRecord))) return this
+						await query(state, tabParent, TokenApiQueryType.retrieve, this)
+						tabParent.list.listUpdate(tabParent?.data?.dataObjRowList, recordIdOld, recordIdNew)
+						await this.update(state, TokenApiQueryType.retrieve, tabParent.listGetData())
+					} else {
+						if (!(await this.update(state, queryType, currRecord))) return this
+						await query(state, tabParent, TokenApiQueryType.retrieve, this)
+						this.popLevel()
+					}
 				}
 			}
 		}
@@ -198,23 +244,28 @@ export class App {
 		})
 		return this.crumbs
 	}
-	getCurrLevel() {
-		return this.levels[this.getCurrLevelIdx()]
+	getLevel(levelIdx?: number) {
+		if (levelIdx === 0) {
+			return this.levels[0]
+		} else if (!levelIdx || levelIdx > this.levels.length - 1) {
+			return undefined
+		} else {
+			return this.levels[levelIdx]
+		}
 	}
-	getCurrLevelIdx() {
-		return this.levels.length - 1
+	getCurrLevel() {
+		return this.getLevel(this.levels.length - 1)
 	}
 	getCurrTab() {
-		return this.levels[this.getCurrLevelIdx()].getCurrTab()
-	}
-	getCurrTabParent() {
-		return this.levels[this.getCurrTabParentLevelIdx()].getCurrTab()
+		const level = this.getCurrLevel()
+		return level ? level.getCurrTab() : undefined
 	}
 	getCurrTabParentLevel() {
-		return this.levels[this.getCurrTabParentLevelIdx()]
+		return this.getLevel(this.levels.length - 2)
 	}
-	getCurrTabParentLevelIdx() {
-		return this.levels.length - 2
+	getCurrTabParentTab() {
+		const level = this.getCurrTabParentLevel()
+		return level ? level.getCurrTab() : undefined
 	}
 	getParms() {
 		let parms: DataRecord = {}
@@ -227,10 +278,8 @@ export class App {
 		return parms
 	}
 	getRowStatus() {
-		const parentLevel = this.getCurrTabParentLevelIdx()
-		if (parentLevel > -1) {
-			return this.levels[parentLevel].getCurrTab().listRowStatus()
-		}
+		const parentLevel = this.getCurrTabParentLevel()
+		if (parentLevel) return parentLevel.getCurrTab().listRowStatus()
 	}
 	popLevel() {
 		this.levels.pop()
@@ -238,23 +287,30 @@ export class App {
 	}
 	async rowUpdate(state: State, rowAction: AppRowActionType) {
 		if (this.levels.length > 1) {
-			const tabParent = this.getCurrTabParent()
-			tabParent.listSetIdByAction(rowAction)
-			await this.update(state, TokenApiQueryType.retrieve, tabParent.listGetData())
+			const tabParent = this.getCurrTabParentTab()
+			if (tabParent) {
+				tabParent.listSetIdByAction(rowAction)
+				await this.update(state, TokenApiQueryType.retrieve, tabParent.listGetData())
+			}
 		}
 		return this
 	}
 	async tabDuplicate(state: State, token: TokenAppDoDetail) {
 		const currTab = this.getCurrTab()
-		currTab.data = token.data
-		if (currTab.data) currTab.data.dataObjRow.status = DataObjRecordStatus.created
+		if (currTab) {
+			currTab.data = token.data
+			if (currTab.data) currTab.data.dataObjRow.status = DataObjRecordStatus.created
+		}
 		return this
 	}
 	async update(state: State, queryType: TokenApiQueryType, dataRecord: DataObjRecord) {
-		this.getCurrLevel().resetTabs()
-		const currTab = this.getCurrTab()
-		currTab.detailSetData(dataRecord)
-		return await query(state, currTab, queryType, this)
+		const currLevel = this.getCurrLevel()
+		if (currLevel) {
+			currLevel.resetTabs()
+			const currTab = currLevel.getCurrTab()
+			currTab.detailSetData(dataRecord)
+			return await query(state, currTab, queryType, this)
+		}
 	}
 }
 
@@ -438,22 +494,6 @@ export class AppLevelTab {
 			this.list.idSet(listRecords[rowIdx].id)
 		}
 	}
-	async listUpdate(state: State, currTab: AppLevelTab, app: App) {
-		if (currTab.data) {
-			this.reset()
-			const recordIdOld = currTab.data.getRecordValue('id')
-			let recordIdNew = ''
-
-			if (currTab.data.dataObjRow.status === DataObjRecordStatus.deleted) {
-				let idx = this.list.idList.findIndex((id: string) => id === recordIdOld)
-				idx = idx === 0 ? 1 : idx - 1
-				recordIdNew = this.list.idList[idx]
-			}
-
-			await query(state, this, TokenApiQueryType.retrieve, app)
-			this.list.listUpdate(this?.data?.dataObjRowList, recordIdOld, recordIdNew)
-		}
-	}
 	reset() {
 		this.isRetrieved = false
 	}
@@ -483,6 +523,16 @@ export class AppLevelTabList {
 			? parms[this.metaParmListRecordIdList]
 			: []
 	}
+	initLevel(parms: DataRecord) {
+		parms = valueOrDefault(parms, {})
+		this.idCurrent = Object.hasOwn(parms, this.metaParmListRecordIdCurrent)
+			? parms[this.metaParmListRecordIdCurrent]
+			: ''
+		this.idList = Object.hasOwn(parms, this.metaParmListRecordIdList)
+			? parms[this.metaParmListRecordIdList]
+			: this.idList
+		console.log('types.app.AppLevelTabList.initLevel: ', { id: this.idCurrent, list: this.idList })
+	}
 	listSet(records: DataObjRecordRowList | undefined) {
 		this.idList = records ? records.map((row) => row.record.id) : []
 	}
@@ -492,8 +542,12 @@ export class AppLevelTabList {
 			parms[this.metaParmListRecordIdList] = this.idList
 		}
 	}
-	listUpdate(records: DataObjRecordRowList | undefined, recordIdOld: string, recordIdNew: string) {
-		this.idCurrent = recordIdNew ? recordIdNew : recordIdOld
+	listUpdate(
+		records: DataObjRecordRowList | undefined,
+		recordId: string,
+		recordIdAlt: string = ''
+	) {
+		this.idCurrent = recordIdAlt ? recordIdAlt : recordId
 		this.listSet(records)
 	}
 }
