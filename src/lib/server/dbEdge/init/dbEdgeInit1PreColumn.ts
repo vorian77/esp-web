@@ -94,6 +94,12 @@ export async function initPreColumn() {
 	})
 	await addColumn({
 		codeDataType: 'link',
+		header: 'Duration',
+		name: 'codeCmCohortAttdDuration',
+		owner: 'app_cm'
+	})
+	await addColumn({
+		codeDataType: 'link',
 		header: 'Component',
 		name: 'codeComponent',
 		owner: 'app_sys'
@@ -259,6 +265,15 @@ export async function initPreColumn() {
 		header: 'Columns',
 		isMultiSelect: true,
 		name: 'columns'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'float64',
+		header: 'Hours (Computed)',
+		isExcludeInsert: true,
+		isExcludeUpdate: true,
+		isSetBySys: true,
+		name: 'computedHours'
 	})
 	await addColumn({
 		codeDataType: 'link',
@@ -470,15 +485,6 @@ export async function initPreColumn() {
 	})
 	await addColumn({
 		owner: 'app_sys',
-		codeDataType: 'float64',
-		header: 'Duration (Hours)',
-		maxValue: 24,
-		minValue: 0,
-		name: 'duration',
-		spinStep: '0.25'
-	})
-	await addColumn({
-		owner: 'app_sys',
 		codeDataType: 'str',
 		header: 'Email',
 		name: 'email'
@@ -534,16 +540,6 @@ export async function initPreColumn() {
 		header: 'First Name',
 		name: 'firstName'
 	})
-
-	await addColumn({
-		owner: 'app_sys_admin',
-		codeDataType: 'str',
-		header: 'Full Duration',
-		name: 'fullDuration',
-		togglePresetTrue: true,
-		toggleValueFalse: 'No',
-		toggleValueTrue: 'Yes'
-	})
 	await addColumn({
 		owner: 'app_sys',
 		codeDataType: 'str',
@@ -570,6 +566,15 @@ export async function initPreColumn() {
 		codeDataType: 'str',
 		header: 'Header (Side)',
 		name: 'headerSide'
+	})
+	await addColumn({
+		owner: 'app_sys',
+		codeDataType: 'float64',
+		header: 'Hours',
+		maxValue: 24,
+		minValue: 0,
+		name: 'hours',
+		spinStep: '0.25'
 	})
 	await addColumn({
 		owner: 'app_sys',

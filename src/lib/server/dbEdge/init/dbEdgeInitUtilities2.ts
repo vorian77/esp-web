@@ -273,6 +273,8 @@ export async function addDataObj(data: any) {
 
 						isDisplayable: e.cast(e.bool, e.json_get(f, 'isDisplayable')),
 
+						isDisplayBlock: e.cast(e.bool, e.json_get(f, 'isDisplayBlock')),
+
 						items: e.cast(e.array(e.json), e.json_get(f, 'items')),
 
 						nameCustom: e.cast(e.str, e.json_get(f, 'nameCustom')),

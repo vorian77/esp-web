@@ -5,10 +5,10 @@ export async function initTraining() {
 	sectionHeader('DataObject - CM-Training')
 	await reset()
 	// await initCodes()
-	await initCMTrainingCourse()
-	await initCMTrainingCohort()
-	await initCMTrainingCohortAttd()
-	await initStudentCsfCohortAttd()
+	await initCourse()
+	await initCohort()
+	await initCohortAttd()
+	await initCsfCohortAttdCohort()
 }
 
 async function reset() {
@@ -16,7 +16,6 @@ async function reset() {
 	const reset = new ResetDb()
 
 	reset.delFeature('cm_csf_cohort_attd_cohort')
-	reset.delFeature('cm_csf_cohort_attd')
 	reset.delFeature('cm_cohort_attd')
 	reset.delFeature('cm_cohort')
 	reset.delFeature('cm_course')
@@ -37,7 +36,7 @@ async function initCodes() {
 	])
 }
 
-async function initCMTrainingCourse() {
+async function initCourse() {
 	await addDataObj({
 		actionsFieldGroup: 'doag_base_list',
 		codeComponent: 'FormList',
@@ -295,7 +294,7 @@ async function initCMTrainingCourse() {
 	})
 }
 
-async function initCMTrainingCohort() {
+async function initCohort() {
 	await addDataObj({
 		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
@@ -527,7 +526,7 @@ async function initCMTrainingCohort() {
 	})
 }
 
-async function initCMTrainingCohortAttd() {
+async function initCohortAttd() {
 	await addDataObj({
 		actionsFieldGroup: 'doag_base_list',
 		codeCardinality: 'list',
@@ -542,7 +541,7 @@ async function initCMTrainingCohortAttd() {
 				codeAccess: 'readOnly',
 				columnName: 'id',
 				dbOrderSelect: 10,
-				isDisplay: true,
+				isDisplay: false,
 				indexTable: '0'
 			},
 			{
@@ -556,7 +555,7 @@ async function initCMTrainingCohortAttd() {
 			{
 				codeAccess: 'readOnly',
 				codeElement: 'number',
-				columnName: 'duration',
+				columnName: 'hours',
 				dbOrderSelect: 30,
 				indexTable: '0'
 			},
@@ -605,7 +604,7 @@ async function initCMTrainingCohortAttd() {
 			},
 			{
 				codeElement: 'number',
-				columnName: 'duration',
+				columnName: 'hours',
 				dbOrderSelect: 40,
 				indexTable: '0'
 			},
@@ -674,7 +673,7 @@ async function initCMTrainingCohortAttd() {
 	})
 }
 
-async function initStudentCsfCohortAttd() {
+async function initCsfCohortAttdCohort() {
 	await addDataObj({
 		owner: 'app_cm',
 		codeComponent: 'FormList',
@@ -707,13 +706,14 @@ async function initStudentCsfCohortAttd() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'fullDuration',
-				dbOrderSelect: 35,
-				indexTable: '0'
+				columnName: 'codeCmCohortAttdDuration',
+				dbOrderSelect: 30,
+				indexTable: '0',
+				link: { columnsDisplay: ['name'] }
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'duration',
+				columnName: 'computedHours',
 				dbOrderSelect: 40,
 				indexTable: '0'
 			}
@@ -740,7 +740,7 @@ async function initStudentCsfCohortAttd() {
 				columnName: 'cohortAttd',
 				dbOrderSelect: 20,
 				indexTable: '0',
-				isDisplay: true,
+				isDisplay: false,
 				link: {
 					exprSave: '(SELECT app_cm::CmCohortAttd filter.id = (<uuid,tree,CmCohortAttd.id>))',
 					table: { module: 'app_cm', name: 'CmCohortAttd' }
@@ -756,14 +756,18 @@ async function initStudentCsfCohortAttd() {
 				link: { table: { module: 'app_cm', name: 'CmCsfCohort' } }
 			},
 			{
-				codeElement: 'toggle',
-				columnName: 'fullDuration',
+				codeElement: 'radio',
+				columnName: 'codeCmCohortAttdDuration',
 				dbOrderSelect: 35,
-				indexTable: '0'
+				indexTable: '0',
+				fieldListItems: 'il_sys_code_order_index_by_codeType_name',
+				fieldListItemsParms: { codeTypeName: 'ct_cm_cohort_attd_duration' },
+				link: { table: { module: 'sys_core', name: 'SysCode' } }
 			},
 			{
+				codeAccess: 'readOnly',
 				codeElement: 'number',
-				columnName: 'duration',
+				columnName: 'computedHours',
 				dbOrderSelect: 40,
 				indexTable: '0'
 			},
@@ -816,7 +820,7 @@ async function initStudentCsfCohortAttd() {
 	await addNodeProgramObj({
 		codeIcon: 'application',
 		dataObj: 'data_obj_cm_csf_cohort_attd_cohort_detail',
-		header: 'Attendance Record',
+		header: 'Attendance',
 		name: 'node_obj_cm_csf_cohort_attd_cohort_detail',
 		order: 10,
 		owner: 'app_cm',

@@ -158,10 +158,12 @@ export type $SysCodeλShape = $.typeutil.flatten<$SysObjλShape & {
   "<codeReferralType[is app_cm::CmClientServiceFlow]": $.LinkDesc<_app_cm.$CmClientServiceFlow, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeActionType[is sys_core::SysDataObjAction]": $.LinkDesc<$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeRenderShowSaveMode[is sys_core::SysDataObjAction]": $.LinkDesc<$SysDataObjAction, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeCmCohortAttdDuration[is app_cm::CmCsfCohortAttd]": $.LinkDesc<_app_cm.$CmCsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAccess": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeActionType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeAlignment": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeCardinality": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<codeCmCohortAttdDuration": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeComponent": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDataType": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
   "<codeDataTypeDisplay": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
@@ -326,6 +328,7 @@ export type $SysDataObjColumnλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee
   "fieldListItemsParms": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "fieldListSelect": $.LinkDesc<$SysDataObjFieldListSelect, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
   "fieldListConfig": $.LinkDesc<$SysDataObjFieldListConfig, $.Cardinality.AtMostOne, {}, false, false,  false, false>;
+  "isDisplayBlock": $.PropertyDesc<_std.$bool, $.Cardinality.AtMostOne, false, false, false, false>;
   "<columns[is sys_core::SysDataObj]": $.LinkDesc<$SysDataObj, $.Cardinality.Many, {}, false, false,  false, false>;
   "<columns": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;

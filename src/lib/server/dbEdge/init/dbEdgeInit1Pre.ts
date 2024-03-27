@@ -19,30 +19,22 @@ export async function initPre() {
 
 async function initPreCodes() {
 	await codeTypes([
-		['app_cm', 0, 'ct_sys_do_action_type'],
+		['app_cm', 0, 'ct_cm_cohort_attd_duration'],
 		['app_cm', 0, 'ct_cm_doc_type'],
 		['app_cm', 0, 'ct_cm_job_type'],
 		['app_cm', 0, 'ct_cm_job_wage_type'],
 		['app_cm', 0, 'ct_cm_job_training_related'],
 		['app_cm', 0, 'ct_cm_service_flow_type'],
-		['app_cm', 0, 'ct_cm_service_flow_end_type']
+		['app_cm', 0, 'ct_cm_service_flow_end_type'],
+
+		['app_cm', 0, 'ct_sys_do_action_type']
 	])
 
 	await codes([
-		// ct_sys_do_action_type
-		['ct_sys_do_action_type', 'app_sys', 'listEdit', 0],
-		['ct_sys_do_action_type', 'app_sys', 'listNew', 0],
-		['ct_sys_do_action_type', 'app_sys', 'detailDelete', 0],
-		['ct_sys_do_action_type', 'app_sys', 'detailNew', 0],
-		['ct_sys_do_action_type', 'app_sys', 'detailSaveAs', 0],
-		['ct_sys_do_action_type', 'app_sys', 'detailSaveInsert', 0],
-		['ct_sys_do_action_type', 'app_sys', 'detailSaveUpdate', 0],
-		['ct_sys_do_action_type', 'app_sys', 'dialogCancel', 0],
-		['ct_sys_do_action_type', 'app_sys', 'dialogDone', 0],
-		['ct_sys_do_action_type', 'app_sys', 'dialogNext', 0],
-		['ct_sys_do_action_type', 'app_sys', 'dialogPrevious', 0],
-		['ct_sys_do_action_type', 'app_sys', 'none', 0],
-		['ct_sys_do_action_type', 'app_sys', 'refresh', 0],
+		// ct_cm_cohort_attd_duration
+		['ct_cm_cohort_attd_duration', 'app_cm', 'Full Class', 0],
+		['ct_cm_cohort_attd_duration', 'app_cm', 'Half Class', 0],
+		['ct_cm_cohort_attd_duration', 'app_cm', 'Missed Class', 0],
 
 		// ct_cm_doc_type
 		['ct_cm_doc_type', 'app_cm', 'Certificate - Asbestos Abatement', 0],
@@ -82,6 +74,21 @@ async function initPreCodes() {
 		['ct_cm_service_flow_end_type', 'app_cm', 'Completed', 0],
 		['ct_cm_service_flow_end_type', 'app_cm', 'Dropped Out', 0],
 		['ct_cm_service_flow_end_type', 'app_cm', 'Suspended', 0],
-		['ct_cm_service_flow_end_type', 'app_cm', 'Unappointed', 0]
+		['ct_cm_service_flow_end_type', 'app_cm', 'Unappointed', 0],
+
+		// ct_sys_do_action_type
+		['ct_sys_do_action_type', 'app_sys', 'listEdit', 0],
+		['ct_sys_do_action_type', 'app_sys', 'listNew', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailDelete', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailNew', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailSaveAs', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailSaveInsert', 0],
+		['ct_sys_do_action_type', 'app_sys', 'detailSaveUpdate', 0],
+		['ct_sys_do_action_type', 'app_sys', 'dialogCancel', 0],
+		['ct_sys_do_action_type', 'app_sys', 'dialogDone', 0],
+		['ct_sys_do_action_type', 'app_sys', 'dialogNext', 0],
+		['ct_sys_do_action_type', 'app_sys', 'dialogPrevious', 0],
+		['ct_sys_do_action_type', 'app_sys', 'none', 0],
+		['ct_sys_do_action_type', 'app_sys', 'refresh', 0]
 	])
 }

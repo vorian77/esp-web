@@ -154,6 +154,7 @@ export async function getDataObjById(dataObjId: string) {
 				height: true,
 				isDisplay: true,
 				isDisplayable: true,
+				isDisplayBlock: true,
 				items: true,
 				nameCustom: true,
 				width: true,

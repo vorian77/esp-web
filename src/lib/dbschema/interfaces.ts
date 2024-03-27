@@ -79,9 +79,9 @@ export namespace app_cm {
   export interface CmCohortAttd extends sys_user.Mgmt {
     "cohort": CmCohort;
     "date": edgedb.LocalDate;
-    "duration": number;
     "file"?: unknown | null;
     "note"?: string | null;
+    "hours": number;
   }
   export interface CmCourse extends sys_core.SysObj {
     "description"?: string | null;
@@ -112,11 +112,11 @@ export namespace app_cm {
     "dateStartEst"?: edgedb.LocalDate | null;
   }
   export interface CmCsfCohortAttd extends sys_user.Mgmt {
-    "duration": number;
     "note"?: string | null;
     "cohortAttd": CmCohortAttd;
     "csfCohort": CmCsfCohort;
-    "fullDuration": string;
+    "codeCmCohortAttdDuration": sys_core.SysCode;
+    "computedHours"?: number | null;
   }
   export interface CmCsfDocument extends CmCsfData {
     "codeType": sys_core.SysCode;
@@ -243,6 +243,7 @@ export namespace sys_core {
     "fieldListItemsParms"?: unknown | null;
     "fieldListSelect"?: SysDataObjFieldListSelect | null;
     "fieldListConfig"?: SysDataObjFieldListConfig | null;
+    "isDisplayBlock"?: boolean | null;
   }
   export interface SysDataObjFieldLink extends std.$Object {
     "exprSelect"?: string | null;

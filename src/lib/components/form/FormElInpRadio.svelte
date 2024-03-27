@@ -6,9 +6,9 @@
 	const dispatch = createEventDispatcher()
 
 	export let field: FieldRadio
-	const dispatchType = 'changeItem'
 
-	let color = '#ff3e00'
+	const dispatchType = 'changeItem'
+	const format = field.isDisplayBlock ? 'block mb-2' : 'inline mr-7'
 
 	function onChange(event: Event) {
 		const target = event.currentTarget as HTMLInputElement
@@ -19,16 +19,18 @@
 
 <legend>{field.label}</legend>
 <fieldset class={field.access === FieldAccess.required ? 'fieldsetRequired' : 'fieldsetOptional'}>
-	{#each field.items as { data: id, display: label }, index (id)}
-		<label class="flex items-center space-x-2 {index === 0 ? 'mt-3' : ''}">
-			<input
-				type="radio"
-				name={field.name}
-				value={id}
-				checked={field.valueCurrent == id}
-				on:click={onChange}
-			/>
-			<p>{label}</p>
-		</label>
-	{/each}
+	<div class="mt-3">
+		{#each field.items as { data: id, display: label }, index (id)}
+			<label class="{format} {index === 0 ? 'mt-4' : ''}">
+				<input
+					type="radio"
+					name={field.name}
+					value={id}
+					checked={field.valueCurrent == id}
+					on:click={onChange}
+				/>
+				{label}
+			</label>
+		{/each}
+	</div>
 </fieldset>

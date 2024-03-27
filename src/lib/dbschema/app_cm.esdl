@@ -35,7 +35,7 @@ module app_cm {
   type CmCohortAttd extending sys_user::Mgmt {
       required cohort: app_cm::CmCohort;
       required date: cal::local_date;
-      required duration: float32;
+      required hours: float32;
       file: json;
       note: str;
     }
@@ -83,10 +83,10 @@ module app_cm {
   }
 
   type CmCsfCohortAttd extending sys_user::Mgmt {
-    required csfCohort: CmCsfCohort;
     required cohortAttd: CmCohortAttd;
-    required fullDuration: str;
-    required duration: float32;
+    required codeCmCohortAttdDuration: sys_core::SysCode;
+    required csfCohort: CmCsfCohort;
+    computedHours := (select .codeCmCohortAttdDuration.valueDecimal * .cohortAttd.hours);
     note: str;
     constraint exclusive on ((.csfCohort, .cohortAttd));
   }  

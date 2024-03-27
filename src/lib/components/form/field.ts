@@ -289,6 +289,7 @@ export interface FieldRaw {
 	height: number
 	isDisplay: boolean
 	isDisplayable: boolean
+	isDisplayBlock: boolean
 	items: Array<FieldItem>
 	nameCustom: string
 	width: number

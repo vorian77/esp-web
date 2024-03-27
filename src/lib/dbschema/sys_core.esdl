@@ -140,6 +140,7 @@ module sys_core {
     height: int16;
     isDisplay: bool;
     isDisplayable: bool;
+    isDisplayBlock: bool;
     items: array<json>;
     width: int16;
   }

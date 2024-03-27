@@ -75,9 +75,9 @@ const CmCohort: $.$expr_PathNode<$.TypeSet<$CmCohort, $.Cardinality.Many>, null>
 export type $CmCohortAttdλShape = $.typeutil.flatten<_sys_user.$MgmtλShape & {
   "cohort": $.LinkDesc<$CmCohort, $.Cardinality.One, {}, false, false,  false, false>;
   "date": $.PropertyDesc<_cal.$local_date, $.Cardinality.One, false, false, false, false>;
-  "duration": $.PropertyDesc<_std.$float32, $.Cardinality.One, false, false, false, false>;
   "file": $.PropertyDesc<_std.$json, $.Cardinality.AtMostOne, false, false, false, false>;
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
+  "hours": $.PropertyDesc<_std.$float32, $.Cardinality.One, false, false, false, false>;
   "<cohortAttd[is app_cm::CmCsfCohortAttd]": $.LinkDesc<$CmCsfCohortAttd, $.Cardinality.Many, {}, false, false,  false, false>;
   "<cohortAttd": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
@@ -142,11 +142,11 @@ const $CmCsfCohort = $.makeType<$CmCsfCohort>(_.spec, "509f841a-b3c2-11ee-bb5b-5
 const CmCsfCohort: $.$expr_PathNode<$.TypeSet<$CmCsfCohort, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($CmCsfCohort, $.Cardinality.Many), null);
 
 export type $CmCsfCohortAttdλShape = $.typeutil.flatten<_sys_user.$MgmtλShape & {
-  "duration": $.PropertyDesc<_std.$float32, $.Cardinality.One, false, false, false, false>;
   "note": $.PropertyDesc<_std.$str, $.Cardinality.AtMostOne, false, false, false, false>;
   "cohortAttd": $.LinkDesc<$CmCohortAttd, $.Cardinality.One, {}, false, false,  false, false>;
   "csfCohort": $.LinkDesc<$CmCsfCohort, $.Cardinality.One, {}, false, false,  false, false>;
-  "fullDuration": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
+  "codeCmCohortAttdDuration": $.LinkDesc<_sys_core.$SysCode, $.Cardinality.One, {}, false, false,  false, false>;
+  "computedHours": $.PropertyDesc<_std.$float64, $.Cardinality.AtMostOne, false, true, false, false>;
 }>;
 type $CmCsfCohortAttd = $.ObjectType<"app_cm::CmCsfCohortAttd", $CmCsfCohortAttdλShape, null, [
   ..._sys_user.$Mgmt['__exclusives__'],
