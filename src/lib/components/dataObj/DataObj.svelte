@@ -121,8 +121,8 @@
 							break
 
 						case TokenAppDoAction.listNew:
-							app.getCurrTab().list.idSet('')
 							await app.addLevelNode(state, TokenApiQueryType.new)
+							app.getCurrTabParent().list.idSet('')
 							app = app
 							dataObjUpdate = new DataObjUpdate(true, true, true)
 							break

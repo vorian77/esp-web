@@ -22,8 +22,6 @@
 	}
 </script>
 
-<!-- <DataViewer header="value" data={field.value} /> -->
-
 <label for={fieldId} class="label">
 	<span>{field.label}</span>
 	<select
@@ -43,8 +41,8 @@
 	</select>
 </label>
 
-<DataViewer header="value" data={field.valueCurrent} />
-<DataViewer header="items" data={field.items} />
+<!-- <DataViewer header="value" data={field.valueCurrent} /> -->
+<!-- <DataViewer header="items" data={field.items} /> -->
 
 <style>
 	/* select {
