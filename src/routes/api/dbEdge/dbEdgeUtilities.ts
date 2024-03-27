@@ -28,6 +28,7 @@ export async function getDataObjById(dataObjId: string) {
 			description: true,
 			exprFilter: true,
 			exprObject: true,
+			exprOrder: true,
 			header: true,
 			id: true,
 			name: true,
@@ -183,6 +184,7 @@ export async function getDataObjById(dataObjId: string) {
 				_codeDbListDir: f.codeDbListDir.name,
 				_name: f.column.name,
 				dbOrderList: true,
+				nameCustom: true,
 				indexTable: true,
 				filter: e.op('exists', f.dbOrderList),
 				order_by: f.dbOrderList

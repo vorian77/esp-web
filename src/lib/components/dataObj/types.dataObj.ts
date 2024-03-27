@@ -58,6 +58,7 @@ export class DataObj {
 	dataListRecord: DataObjListRecord = []
 	description: string
 	exprObject?: string
+	exprOrder?: string
 	fields: Array<Field> = []
 	header: string
 	name: string
@@ -91,6 +92,7 @@ export class DataObj {
 		this.data = new DataObjData(this.cardinality)
 		this.description = valueOrDefault(dataObjRaw.description, '')
 		this.exprObject = strOptional(dataObjRaw.exprObject, clazz, 'exprObject')
+		this.exprOrder = strOptional(dataObjRaw.exprOrder, clazz, 'exprOrder')
 		this.fields = this.initFields(dataObjRaw._fieldsEl)
 		this.header = valueOrDefault(dataObjRaw.header, '')
 		this.name = strRequired(dataObjRaw.name, clazz, 'name')
@@ -353,9 +355,9 @@ export class DataObj {
 	}
 
 	initOrderItems(orderFields: any) {
-		orderFields = getArray(orderFields)
 		let list: DataObjListOrder = []
-		orderFields.forEach((of: any) => {
+		if (this.exprOrder) return list
+		getArray(orderFields).forEach((of: any) => {
 			list.push(new DataObjListOrderField(of))
 		})
 		return list
@@ -614,6 +616,7 @@ export interface DataObjRaw {
 	description?: string | null
 	exprFilter?: string | null
 	exprObject?: string | null
+	exprOrder?: string | null
 	header: string | null
 	id?: string
 	name: string

@@ -194,6 +194,7 @@ export namespace sys_core {
     "tables": SysDataObjTable[];
     "parentColumn"?: sys_db.SysColumn | null;
     "parentTable"?: sys_db.SysTable | null;
+    "exprOrder"?: string | null;
   }
   export interface SysDataObjAction extends SysObj {
     "color"?: string | null;
@@ -244,6 +245,7 @@ export namespace sys_core {
     "fieldListSelect"?: SysDataObjFieldListSelect | null;
     "fieldListConfig"?: SysDataObjFieldListConfig | null;
     "isDisplayBlock"?: boolean | null;
+    "exprOrder"?: string | null;
   }
   export interface SysDataObjFieldLink extends std.$Object {
     "exprSelect"?: string | null;

@@ -246,7 +246,6 @@
 					state.statusReset()
 					state.metaData.dataUpdate(app.getParms())
 					dataObjData = currTab.data
-					console.log('DataObj.setNavApp.parms:', app.getParms())
 				}
 			}
 		}

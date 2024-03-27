@@ -693,28 +693,35 @@ async function initCsfCohortAttdCohort() {
 			},
 			{
 				codeAccess: 'readOnly',
-				columnName: 'csfCohort',
-				dbOrderCrumb: 10,
-				dbOrderList: 10,
+				columnName: 'custom_select_str',
+				dbOrderList: 20,
 				dbOrderSelect: 20,
-				headerAlt: 'Student',
+				exprCustom: `.csfCohort.csf.client.person.firstName`,
+				headerAlt: 'First Name',
 				indexTable: '0',
-				link: {
-					columnsDisplay: ['csf', 'client', 'person', 'fullName'],
-					table: { module: 'app_cm', name: 'CmCsfCohort' }
-				}
+				nameCustom: 'customNameFirst'
+			},
+			{
+				codeAccess: 'readOnly',
+				columnName: 'custom_select_str',
+				dbOrderList: 10,
+				dbOrderSelect: 30,
+				exprCustom: `.csfCohort.csf.client.person.lastName`,
+				headerAlt: 'Last Name',
+				indexTable: '0',
+				nameCustom: 'customNameLast'
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'codeCmCohortAttdDuration',
-				dbOrderSelect: 30,
+				dbOrderSelect: 40,
 				indexTable: '0',
 				link: { columnsDisplay: ['name'] }
 			},
 			{
 				codeAccess: 'readOnly',
 				columnName: 'computedHours',
-				dbOrderSelect: 40,
+				dbOrderSelect: 50,
 				indexTable: '0'
 			}
 		]

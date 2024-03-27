@@ -68,7 +68,7 @@ export async function processQuery(token: TokenApiQuery) {
 			break
 
 		case TokenApiQueryType.retrieve:
-			rawDataList = await queryMultiple(query.tables.queryScriptSelectUser(queryData))
+			rawDataList = await queryMultiple(query.queryScriptSelectUser(queryData))
 			break
 
 		case TokenApiQueryType.saveInsert:
@@ -86,13 +86,13 @@ export async function processQuery(token: TokenApiQuery) {
 			if (checkResult(script, dataRowRaw)) {
 				if (parentColumn && parentTable) {
 					queryData.tree.upsertData(dataObj.table?.name, { id: dataRowRaw.id })
-					const scriptSubTable = query.tables.queryScriptSelectUser(queryData)
+					const scriptSubTable = query.queryScriptSelectUser(queryData)
 					script = `UPDATE ${parentTable.getObject()} FILTER .id = ${getValExpr('<uuid,parms,listRecordIdParent>', queryData)} SET { ${parentColumn} += ( ${scriptSubTable} ) }`
 					dataRowRaw = await querySingle(script)
 					if (checkResult(script, dataRowRaw)) rawDataList = await queryMultiple(scriptSubTable)
 				} else {
 					queryData.tree.upsertData(dataObj.table?.name, dataRowRaw)
-					script = query.tables.queryScriptSelectUser(queryData)
+					script = query.queryScriptSelectUser(queryData)
 					rawDataList = await queryMultiple(script)
 				}
 			}
@@ -103,7 +103,7 @@ export async function processQuery(token: TokenApiQuery) {
 			script = query.tables.queryScriptSaveUpdate(queryData)
 			dataRowRaw = await querySingle(script)
 			if (checkResult(script, dataRowRaw)) {
-				script = query.tables.queryScriptSelectSys(queryData)
+				script = query.queryScriptSelectSys(queryData)
 				rawDataList = await queryMultiple(script)
 			}
 			break
@@ -264,10 +264,6 @@ export async function getDataItems(query: EdgeQL, queryData: TokenApiQueryData) 
 	} else if (field.fieldListItems) {
 		queryData = TokenApiQueryData.load(queryData)
 		queryData.parmsUpsert({ ...field.fieldListItems.parms, fieldValueCurrent: field.valueCurrent })
-		console.log()
-		console.log('dbEdgeProcess.getDataItems.script...')
-		console.log(getValExpr(field.fieldListItems.exprSelect, queryData))
-
 		const resultObj = await queryMultiple(getValExpr(field.fieldListItems.exprSelect, queryData))
 		const resultArray = []
 		for (const [key, value] of Object.entries(resultObj)) {

@@ -74,6 +74,7 @@ export async function query(
 				break
 
 			case DataObjCardinality.list:
+				console.log('types.appQuery.list:', tab.data.dataObjRowList)
 				tab.list.listSet(tab.data.dataObjRowList)
 				break
 

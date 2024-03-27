@@ -68,6 +68,7 @@ module sys_core {
     description: str;
     exprFilter: str;
     exprObject: str;
+    exprOrder: str;
     subHeader: str;
     parentColumn: sys_db::SysColumn;
     parentTable: sys_db::SysTable;
@@ -114,8 +115,8 @@ module sys_core {
     codeDbListDir: sys_core::SysCode;
     dbDataSourceKey: str;
     dbOrderList: default::nonNegative;
-    exprPresetScalar: str;
     exprCustom: str;
+    exprPresetScalar: str;
     fieldName: str;
     indexTable: str;
     isDbAllowNull: bool;

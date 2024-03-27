@@ -20,6 +20,7 @@ export class EdgeQL {
 	cardinality: DataObjCardinality
 	exprFilter: string | undefined
 	exprObject: string | undefined
+	exprOrder: string | undefined
 	objName: string
 	tables: DataObjTables
 	constructor(dataObjRaw: DataObjRaw) {
@@ -34,9 +35,11 @@ export class EdgeQL {
 		)
 		this.exprFilter = strOptional(obj.exprFilter, clazz, 'exprFilter')
 		this.exprObject = strOptional(obj.exprObject, clazz, 'exprObject')
+		this.exprOrder = strOptional(obj.exprOrder, clazz, 'exprOrder')
 		this.objName = obj.name
 		this.tables = new DataObjTables(this, obj)
 	}
+
 	queryScriptObjectExpr(data: TokenApiQueryData) {
 		if (this.exprObject) {
 			const script = getValExpr(this.exprObject, data)
@@ -49,6 +52,14 @@ export class EdgeQL {
 				message: `No object expression provided for object: ${this.objName}`
 			})
 		}
+	}
+	queryScriptSelectSys(data: TokenApiQueryData) {
+		const querySelectItems = this.tables.getScriptItemsAll(DataObjTableActionType.selectSys, data)
+		return this.tables.queryScriptSelect(this, querySelectItems, data)
+	}
+	queryScriptSelectUser(data: TokenApiQueryData) {
+		const querySelectItems = this.tables.getScriptItemsAll(DataObjTableActionType.selectUser, data)
+		return this.tables.queryScriptSelect(this, querySelectItems, data)
 	}
 }
 
@@ -120,10 +131,11 @@ class DataObjTables {
 		logScript('delete', script)
 		return script
 	}
-	queryScriptOrder() {
+	queryScriptOrder(query: EdgeQL) {
+		if (query.exprOrder) return 'ORDER BY ' + query.exprOrder
 		let script = new DataObjTableScript()
 		this.tables.forEach((table) => {
-			script.concatItemsOrder(
+			const tableOrder = script.concatItemsOrder(
 				this.getScriptItemsTable(table, DataObjTableActionType.order, new TokenApiQueryData({}))
 			)
 		})
@@ -183,24 +195,16 @@ class DataObjTables {
 		return this.queryScriptSave(data, DataObjTableActionType.saveUpdate)
 	}
 
-	queryScriptSelect(querySelectItems: string, data: TokenApiQueryData) {
+	queryScriptSelect(query: EdgeQL, querySelectItems: string, data: TokenApiQueryData) {
 		const queryFilter = this.formatScriptItem(
 			this.getScriptTableRoot(DataObjTableActionType.filter, data).getScript()
 		)
-		const queryOrder = this.formatScriptItem(this.queryScriptOrder())
+		const queryOrder = this.formatScriptItem(this.queryScriptOrder(query))
 		querySelectItems = querySelectItems ? ` {${this.formatScriptItem(querySelectItems)} }` : ''
 
 		const script = `SELECT ${this.getDbTableRoot()}${querySelectItems}${queryFilter}${queryOrder}`
 		logScript('select', script)
 		return script
-	}
-	queryScriptSelectSys(data: TokenApiQueryData) {
-		const querySelectItems = this.getScriptItemsAll(DataObjTableActionType.selectSys, data)
-		return this.queryScriptSelect(querySelectItems, data)
-	}
-	queryScriptSelectUser(data: TokenApiQueryData) {
-		const querySelectItems = this.getScriptItemsAll(DataObjTableActionType.selectUser, data)
-		return this.queryScriptSelect(querySelectItems, data)
 	}
 }
 
@@ -395,20 +399,13 @@ class DataObjTableActionOrder extends DataObjTableAction {
 	}
 	getScriptItems(data: TokenApiQueryData) {
 		let script = new DataObjTableScript()
-
-		for (let i = 0; i < this.fields.length; i++) {
-			const field = this.fields[i]
-			if (field.expr) {
-				script.setExprOrder(field.expr)
-				return script
-			} else {
-				const item =
-					field.codeDataType === DataFieldDataType.str
-						? `str_lower(.${field.name})`
-						: '.' + field.name
-				script.addItemOrder(item, field.codeDirection, field.dbOrderList)
-			}
-		}
+		this.fields.forEach((field) => {
+			const item =
+				field.codeDataType === DataFieldDataType.str
+					? `str_lower(.${field.name})`
+					: '.' + field.name
+			script.addItemOrder(item, field.codeDirection, field.dbOrderList)
+		})
 		return script
 	}
 }
@@ -489,7 +486,6 @@ enum DataObjTableActionType {
 }
 
 class DataObjTableScript {
-	exprOrder: string = ''
 	itemsField: string = ''
 	itemsOrder: DataObjTableScriptItemOrder[] = []
 	itemsProxy: string = '<<itemsProxy>>'
@@ -501,7 +497,6 @@ class DataObjTableScript {
 		this.itemsField = this.concatReturn(this.itemsField, item, ',')
 	}
 	addItemOrder(item: string, direction: string, order: number) {
-		if (this.exprOrder) return
 		const newItem = new DataObjTableScriptItemOrder(item, direction, order)
 		let inserted = false
 		for (let i = 0; i < this.itemsOrder.length; i++) {
@@ -556,8 +551,6 @@ class DataObjTableScript {
 		return this.concat(this.prefixScript('WITH', this.prefix, '\n'), this.script)
 	}
 	getScriptOrder() {
-		if (this.exprOrder) return this.exprOrder
-
 		let script = ''
 		this.itemsOrder.forEach((item) => {
 			if (script) script += ' THEN '
@@ -572,10 +565,6 @@ class DataObjTableScript {
 	}
 	prefixScript(prefix: string, script: string, separator: string = '') {
 		return script ? prefix + ' ' + script + separator : ''
-	}
-	setExprOrder(expr: string) {
-		this.exprOrder = expr
-		this.itemsOrder = []
 	}
 	setScriptInsertRoot(data: TokenApiQueryData) {
 		const rootTable = this.getRootTable(data)
@@ -932,7 +921,6 @@ export class DataFieldOrder extends DataField {
 	codeDataType: DataFieldDataType
 	codeDirection: DataFieldDirection
 	dbOrderList: number
-	expr: string | undefined
 	name: string | undefined
 	constructor(obj: any) {
 		super(obj)
@@ -953,9 +941,8 @@ export class DataFieldOrder extends DataField {
 			DataFieldDirection,
 			DataFieldDirection.asc
 		)
-		this.expr = strOptional(obj._expr, clazz, '_expr')
 		this.dbOrderList = required(obj.dbOrderList, clazz, 'dbOrderList')
-		this.name = strOptional(obj._name, clazz, 'name')
+		this.name = strOptional(obj.nameCustom || obj._name, clazz, 'name')
 	}
 }
 export class DataFieldPreset extends DataField {
