@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Form as FormClass } from '$comps/esp/form/form'
-	import Form from '$comps/esp/form/Form.svelte'
+	// import { Form as FormClass } from '$comps/dataObj/dataObjOld'
+	import Form from '$comps/form/FormDetail.svelte'
 
 	export let data
 
-	let formCol = new FormClass(data.defnFormCol)
+	// let formCol = new FormClass(data.defnFormCol)
 </script>
 
-<Form bind:formObj={formCol} />
+<!-- <Form bind:formObj={formCol} /> -->

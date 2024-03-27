@@ -1,10 +1,5 @@
-import { getForm } from '$server/dbForm'
+import { getEnvVar } from '$server/env'
 
 export async function load() {
-	return {
-		auth_login: await getForm('auth_login'),
-		auth_signup: await getForm('auth_signup'),
-		auth_verify_phone_mobile: await getForm('auth_verify_phone_mobile'),
-		auth_reset_password: await getForm('auth_reset_password')
-	}
+	return { system: { org_name: getEnvVar('ORG_NAME'), server_mode: getEnvVar('SERVER_MODE') } }
 }

@@ -7,7 +7,7 @@ import {
 	FormSourceItem,
 	FormSourceItemDataType,
 	FormSourceItemSource,
-	FormSourceResponse,
+	getServerResponse,
 	HTMLMETHOD
 } from '$comps/types'
 import { error } from '@sveltejs/kit'
@@ -28,7 +28,7 @@ export async function dbESP(
 					if (i.value) {
 						data[i.dbName] = i.value
 					} else {
-						throw error(500, {
+						error(500, {
 							file: FILENAME,
 							function: 'dbESP',
 							message: `No value derived for required apiArg: ${i.dbName}`
@@ -70,7 +70,7 @@ export async function dbESP(
 						break
 
 					default:
-						throw error(500, {
+						error(500, {
 							file: FILENAME,
 							function: 'dbESP',
 							message: `No case defined for computed DB action: ${dbAction}`
@@ -80,7 +80,7 @@ export async function dbESP(
 			}
 
 		default:
-			throw error(500, {
+			error(500, {
 				file: FILENAME,
 				function: 'dbESP',
 				message: `No case defined for sourceAction.type: ${sourceAction.type}`
@@ -109,28 +109,29 @@ export async function dbESPAPI(
 
 	try {
 		const resp = await axios(options)
-		const data = resp.data
-		let newData = {}
+		return getServerResponse(resp.data)
 
-		// set message
-		if (data.hasOwnProperty('success')) {
-			newData = data
-			if (newData.success) {
-				newData.message = msgSuccess ?? data.message ?? ''
-			} else {
-				newData.message = msgFail ?? data.message ?? ''
-			}
-		} else {
-			// assume success
-			newData = {
-				success: true,
-				message: msgSuccess,
-				data
-			}
-		}
-		return FormSourceResponse(newData)
+		// console.log('dbESP.axios.resp.data:', data)
+		// let newData = {}
+
+		// // set message
+		// if (Object.hasOwn(data, 'success')) {
+		// 	newData = data
+		// 	if (newData.success) {
+		// 		newData.message = msgSuccess ?? data.message ?? ''
+		// 	} else {
+		// 		newData.message = msgFail ?? data.message ?? ''
+		// 	}
+		// } else {
+		// 	// assume success
+		// 	newData = {
+		// 		success: true,
+		// 		message: msgSuccess,
+		// 		data
+		// 	}
+		// }
 	} catch (err: any) {
-		throw error(500, {
+		error(500, {
 			file: FILENAME,
 			function: 'dbESPAPI',
 			message: `Axios status: ${err.response?.status} stautsText: ${err.response?.statusText} message: ${err.message}`
@@ -211,7 +212,7 @@ function getSqlSelect(sourceAction: FormSourceActionDirect) {
 		}
 		return getSQLExecute(HTMLMETHOD.GET, sql, sourceAction)
 	} else {
-		return FormSourceResponse({})
+		return getServerResponse({})
 	}
 }
 
@@ -228,7 +229,7 @@ function getSqlUpdate(sourceAction: FormSourceActionDirect) {
 		}
 	})
 	if (cols == '') {
-		throw error(500, {
+		error(500, {
 			file: FILENAME,
 			function: 'getSqlUpdate',
 			message: `No updatabled columns defined for update to table: ${sourceAction.singleTable}`
@@ -260,7 +261,7 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 		if (allowNull) {
 			return null
 		} else {
-			throw error(500, {
+			error(500, {
 				file: FILENAME,
 				function: 'getSQLColValue',
 				message: `Null value submitted for required field: (${item.dbName}).`
@@ -288,7 +289,7 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 			val = '(' + val + ')'
 			break
 		default:
-			throw error(500, {
+			error(500, {
 				file: FILENAME,
 				function: 'getSQLColValue',
 				message: `No case defined for item: (${item.dbName}) data type: (${item.dbDataType}).`
@@ -298,10 +299,10 @@ function getSQLColValue(item: FormSourceItem, allowNull: boolean) {
 	if (val) {
 		return val
 	} else {
-		throw error(500, {
+		error(500, {
 			file: FILENAME,
 			function: 'getSQLColValue',
-			message: `Get value failed for field: ${item.dbName}.`
+			message: `Get value failed for field: ${item.dbName}`
 		})
 	}
 	function quoteVal(val) {
@@ -313,7 +314,7 @@ function getSqlTable(sourceAction: FormSourceActionDirect) {
 	if (sourceAction.singleTable && sourceAction.singleTable.length > 0) {
 		return sourceAction.singleTable
 	} else {
-		throw error(500, {
+		error(500, {
 			file: FILENAME,
 			function: 'getSqlTable',
 			message: `Single table not defined for source action.`
@@ -327,7 +328,7 @@ function getSqlStatement(sourceAction: FormSourceActionDirect) {
 		const dbName = i.dbName
 		const value = i.value
 		if (value == null || value == undefined) {
-			throw error(500, {
+			error(500, {
 				file: FILENAME,
 				function: 'getSqlStatement',
 				message: `Cannnot retrieve source. Value for db argument: ${dbName} is null or undefined.`

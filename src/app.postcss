@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
 html,
 body {
 	@apply h-full overflow-hidden;
@@ -12,15 +17,22 @@ fieldset {
 	@apply border border-surface-400-500-token focus:border-surface-400-500-token rounded-lg px-3 pb-2;
 }
 
+.fieldsetOptional {
+	@apply bg-white;
+}
+.fieldsetRequired {
+	@apply bg-blue-100;
+}
+
 h1 {
 	@apply font-semibold;
 }
 
 .esp-card {
-	@apply bg-white p-4;
+	@apply bg-white;
 }
 
 .esp-card-space-y {
-	@apply bg-white p-4;
+	@apply bg-white;
 	@apply space-y-5;
 }

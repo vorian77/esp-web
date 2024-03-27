@@ -1,0 +1,109 @@
+<script lang="ts">
+	import type { FieldListSelect } from '$comps/form/fieldListSelect'
+	import { type ModalSettings, getModalStore } from '@skeletonlabs/skeleton'
+	import {
+		State,
+		StateObjDataObj,
+		StateObjDialog,
+		StateLayout,
+		StateLayoutStyle,
+		StateLayoutComponent
+	} from '$comps/nav/types.appState'
+	import { TokenApiQueryType } from '$comps/types.token'
+	import DataObj from '$comps/dataObj/DataObj.svelte'
+	import { DataObjCardinality, type DataObjData } from '$comps/types'
+	import Icon from '$comps/Icon.svelte'
+	import { createEventDispatcher } from 'svelte'
+	import DataViewer from '$comps/DataViewer.svelte'
+
+	const FILENAME = '$comps/form/FormElListSelect.svelte'
+	const dispatch = createEventDispatcher()
+	const modalStore = getModalStore()
+
+	export let state: State
+	export let field: FieldListSelect
+	export let dataObjData: DataObjData
+
+	let stateLocal: State
+
+	$: setStateDisplay(field.valueCurrent)
+
+	function setStateDisplay(ids: string[]) {
+		stateLocal = new StateObjDataObj({
+			cardinality: DataObjCardinality.list,
+			dataObjName: field.dataObjNameDisplay,
+			layout: new StateLayout({
+				isEmbedHeight: true,
+				layoutComponent: StateLayoutComponent.DataObjLayout,
+				layoutStyle: StateLayoutStyle.embeddedField
+			}),
+			modalStore,
+			onRowClick: (rows: any, record: any) => overlay(),
+			parms: { listRecordIdList: ids },
+			queryType: TokenApiQueryType.retrieve,
+			updateFunction: () => overlay()
+		})
+	}
+
+	function overlay() {
+		new Promise<any>((resolve) => {
+			const modal: ModalSettings = {
+				type: 'component',
+				component: 'formlDialog',
+				meta: {
+					state: new StateObjDialog({
+						actionsFieldDialog: field.actionsFieldDialog,
+						btnLabelComplete: field.btnLabelComplete,
+						cardinality: DataObjCardinality.detail,
+						dataObjData,
+						dataObjName: field.dataObjNameSelect,
+						layout: new StateLayout({
+							layoutComponent: StateLayoutComponent.DataObjLayout,
+							layoutStyle: StateLayoutStyle.overlayModalSelect
+						}),
+						isMultiSelect: field.isMultiSelect,
+						modalStore,
+						onRowClick: (rows: any, record: any) => {},
+						page: '/',
+						parms: {
+							embedRecordIdList: field.valueCurrent,
+							listRecordIdList: field.valueCurrent
+						},
+						queryType: TokenApiQueryType.retrieve,
+						embedRecordIdList: field.valueCurrent
+					})
+				},
+				response: (r: any) => {
+					resolve(r)
+				}
+			}
+			modalStore.trigger(modal)
+		}).then((response) => {
+			if (response !== false) {
+				console.log('FormElListSelect.response:', response)
+				// field.valueCurrent = response.map((v: any) => v.id)
+				// setValue(field.valueCurrent)
+			}
+		})
+	}
+
+	function setValue(value: string[]) {
+		setStateDisplay(value)
+		dispatch('changeItem', { fieldName: field.name, value })
+	}
+</script>
+
+<div class="flex mt-6">
+	<label for={field.name}>{field.label}</label>
+	<button class="ml-1" on:click={() => overlay()}>
+		<Icon name={'select'} width="28" height="28" fill={'#3b79e1'} />
+	</button>
+</div>
+
+<div>
+	{#if stateLocal}
+		<object title="embedded column" class="mb-4">
+			<DataObj state={stateLocal} />
+		</object>
+	{/if}
+</div>

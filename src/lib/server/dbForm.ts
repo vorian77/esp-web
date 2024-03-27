@@ -4,25 +4,19 @@ import {
 	FormSourceDBAction,
 	FormSourceItem,
 	FormSourceItemSource,
-	FormSourceResponse,
+	getServerResponse,
 	FormSourceTarget
 } from '$comps/types'
-import type { Field } from '$comps/esp/form/field'
+import type { Field } from '$comps/form/field'
 
 import { dbGetForm } from '$server/dbMongo'
 import { getEnvVar } from '$server/env'
 import { dbESP } from '$server/dbESP'
 import { error } from '@sveltejs/kit'
 
-import { dbTest } from '$server/dbEdge'
-
 const FILENAME = '$server/dbForm.ts'
 
 export async function getForm(formName: string, pageData = {}) {
-	// test
-	console.log()
-	dbTest()
-
 	// retrieve form file
 	console.log()
 	console.log('getForm:', formName)
@@ -30,31 +24,31 @@ export async function getForm(formName: string, pageData = {}) {
 	form.pageData = pageData
 
 	// check for data source
-	if (!form.hasOwnProperty('source')) {
+	if (!Object.hasOwn(form, 'source')) {
 		return form
 	}
 
 	// attempt to retrieve form data
 	form.values = await getValues(formName, form.source, pageData)
 
-	if (formName === 'auth_login') {
-		// temp
+	// <todo> 230815: auto login - must be removed prior to production deployment
+	if (formName === 'form_auth_login') {
 		form.fields[0].value = '2489999999'
 		form.fields[1].value = 'JakeDog#1'
-		console.log('form.values:', form.fields)
+		// console.log('form.values:', form.fields)
 	}
 
 	// retrieve drop-down-list field items
 	if (form.fields) {
 		for (let i = 0; i < form.fields.length; i++) {
-			if (form.fields[i].hasOwnProperty('source')) {
+			if (Object.hasOwn(form.fields[i], 'source')) {
 				form.fields[i].items = await getValues(form.fields[i].name, form.fields[i].source, pageData)
 			}
 		}
 	}
 
 	// set field values
-	if (JSON.stringify(form.values) === '{}' || !form.hasOwnProperty('fields')) {
+	if (JSON.stringify(form.values) === '{}' || !Object.hasOwn(form, 'fields')) {
 		return form
 	}
 
@@ -80,8 +74,8 @@ export async function getForm(formName: string, pageData = {}) {
 async function getValues(sourceName: string, formSource: {}, data: {}) {
 	const source = new FormSource(formSource)
 	const respPromise = await processForm(sourceName, source, FormSourceDBAction.select, data, true)
-	const resp = await respPromise.json()
-	return resp.data
+	// const resp = await respPromise.json()
+	// return resp.data
 }
 
 export async function processForm(
@@ -96,12 +90,12 @@ export async function processForm(
 
 	if (actionIdx < 0) {
 		if (optional) {
-			return FormSourceResponse({})
+			return getServerResponse({})
 		} else {
-			throw error(500, {
+			error(500, {
 				file: FILENAME,
 				function: 'processForm',
-				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}.`
+				message: `Form ${sourceName} does not contain source with dbAction: ${dbAction}`
 			})
 		}
 	}
@@ -117,7 +111,7 @@ export async function processForm(
 			break
 
 		default:
-			throw error(500, {
+			error(500, {
 				file: FILENAME,
 				function: 'processForm',
 				message: `No case defined for sourceAction.target: ${sourceAction.target}`
@@ -161,17 +155,17 @@ export async function processForm(
 							sourceAction.items[i].value = dateStr
 							break
 						default:
-							throw error(500, {
+							error(500, {
 								file: FILENAME,
 								function: 'setParmVals',
-								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}.`
+								message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}" type: ${sourceKey}`
 							})
 					}
 					break // nested case
 				case FormSourceItemSource.none:
 					break
 				default:
-					throw error(500, {
+					error(500, {
 						file: FILENAME,
 						function: 'setParmVals',
 						message: `No case defined for FormSourceAction.FormSourceItemSource: "${source}".`
